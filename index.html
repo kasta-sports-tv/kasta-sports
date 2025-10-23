@@ -25,7 +25,7 @@
     .responsive-player {
       position: relative;
       width: 100%;
-      padding-bottom: 56.25%; /* 16:9 */
+      padding-bottom: 56.25%;
       background-color: black;
       border-radius: 10px;
       overflow: hidden;
@@ -134,17 +134,8 @@
       <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fstream-2.kasta-sports-tv.workers.dev%2Fproxy%2Fvideo.m3u8%3Ftoken%3D6581EDABE41C0')">
         Stream 1 | <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png'>
       </button>
-
       <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F77%2Findex.m3u8')">
         Stream 2 | <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Flag_of_Poland.svg/330px-Flag_of_Poland.svg.png'>
-      </button>
-
-      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F77%2Findex.m3u8')">
-        Stream 3 | <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/330px-Flag_of_France.svg.png'>
-      </button>
-
-      <button class="stream-btn" onclick="setStream('https://sportzonline.live/channels/hd/hd10.php')">
-        Stream 4 | <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Flag_of_Romania.svg/330px-Flag_of_Romania.svg.png'>
       </button>
     </div>
   </div>
@@ -154,6 +145,23 @@
       const iframe = document.getElementById('mainPlayer');
       iframe.src = url;
     }
+
+    // Автоматичний поворот при fullscreen
+    document.addEventListener('fullscreenchange', async () => {
+      if (document.fullscreenElement) {
+        try {
+          await screen.orientation.lock('landscape');
+        } catch (err) {
+          console.warn('Не вдалося заблокувати орієнтацію:', err);
+        }
+      } else {
+        try {
+          await screen.orientation.unlock();
+        } catch (err) {
+          // нічого
+        }
+      }
+    });
   </script>
 </body>
 </html>
