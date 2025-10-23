@@ -122,7 +122,6 @@
     </div>
 
     <div class="responsive-player">
-      <!-- Тут поки що пустий iframe -->
       <iframe id="mainPlayer"
         src=""
         allowfullscreen
@@ -131,25 +130,29 @@
     </div>
 
     <div class="buttons">
-      <!-- Кнопки, які будуть підставляти iframe-плеєри -->
-      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F77%2Findex.m3u8')">
-        Stream 1 🇺🇦
+      <!-- Вказуєш URL на плеєр і URL на прапор -->
+      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F77%2Findex.m3u8','https://flagcdn.com/w20/ua.png')">
+        Stream 1 <img src="https://flagcdn.com/w20/ua.png" alt="UA">
       </button>
-      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F78%2Findex.m3u8')">
-        Stream 2 🇵🇱
+      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F78%2Findex.m3u8','https://flagcdn.com/w20/pl.png')">
+        Stream 2 <img src="https://flagcdn.com/w20/pl.png" alt="PL">
       </button>
-      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F79%2Findex.m3u8')">
-        Stream 3 🇬🇧
+      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F79%2Findex.m3u8','https://flagcdn.com/w20/gb.png')">
+        Stream 3 <img src="https://flagcdn.com/w20/gb.png" alt="GB">
       </button>
-      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F80%2Findex.m3u8')">
-        Stream 4 🇪🇸
+      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F80%2Findex.m3u8','https://flagcdn.com/w20/es.png')">
+        Stream 4 <img src="https://flagcdn.com/w20/es.png" alt="ES">
       </button>
     </div>
   </div>
 
   <script>
-    function setStream(url) {
-      document.getElementById('mainPlayer').src = url;
+    function setStream(playerUrl, flagUrl) {
+      // змінюємо src iframe на новий плеєр
+      document.getElementById('mainPlayer').src = playerUrl;
+
+      // змінюємо прапор у кнопці (при бажанні)
+      // тут можна додати логіку підсвічування активного потоку
     }
   </script>
 </body>
