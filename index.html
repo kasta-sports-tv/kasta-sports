@@ -1,65 +1,37 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Футбольна трансляція</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Streams</title>
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: url("https://imgpx.com/kfcPatf7nzWH.png") no-repeat center center fixed;
+      background: url('https://imgpx.com/kfcPatf7nzWH.png') no-repeat center center fixed;
       background-size: cover;
-      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: white;
       text-align: center;
     }
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px;
-    }
-
-    .match-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-
-    .match-header img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .match-header h2 {
-      font-size: 24px;
-      margin: 0;
-      text-shadow: 2px 2px 5px #000;
-    }
-
     .player-container {
-      position: relative;
-      width: 90%;
       max-width: 900px;
-      background: #000;
-      border: 2px solid #666;
+      margin: 20px auto;
+      background-color: rgba(0, 0, 0, 0.7);
       border-radius: 12px;
-      overflow: hidden;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
 
     .responsive-player {
       position: relative;
       width: 100%;
-      padding-bottom: 53%; /* трохи менше, ніж 16:9, але не занадто */
+      padding-bottom: 54%; /* трішки більший ніж 56.25%, щоб знизу кнопки влазили */
+      background-color: black;
     }
 
-    iframe {
+    .responsive-player iframe {
       position: absolute;
       top: 0;
       left: 0;
@@ -68,88 +40,120 @@
       border: none;
     }
 
-    .buttons {
+    .poster {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-top: 12px;
+      align-items: center;
+      gap: 15px;
+      margin: 15px 0;
       flex-wrap: wrap;
     }
 
-    .buttons button {
-      background: rgba(41, 52, 64, 0.9);
+    .poster img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .poster h2 {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .stream-btn {
+      background-color: rgba(41, 52, 64, 0.9);
       color: white;
       border: 1px solid gray;
-      border-radius: 8px;
       padding: 8px 15px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 16px;
+      transition: all 0.3s;
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: background 0.3s;
+      gap: 8px;
     }
 
-    .buttons button:hover {
-      background: #3e4e63;
+    .stream-btn:hover {
+      background-color: #556;
+      transform: scale(1.05);
     }
 
-    /* Для мобільних — плеєр залишається стандартним 16:9 */
+    .stream-btn img {
+      width: 22px;
+      height: 15px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+
     @media (max-width: 768px) {
-      .responsive-player {
-        padding-bottom: 56.25%;
+      .player-container {
+        max-width: 100%;
+        margin: 10px;
+        padding: 10px;
       }
-      .match-header h2 {
-        font-size: 18px;
-      }
-      .match-header img {
-        width: 40px;
-        height: 40px;
-      }
-    }
 
-    /* Для великих екранів — трохи менше, але не надто */
-    @media (min-width: 1025px) {
       .responsive-player {
-        padding-bottom: 52%; /* трохи менше, щоб видно кнопки */
+        padding-bottom: 56.25%; /* стандарт 16:9 для мобільного */
+      }
+
+      .poster img {
+        width: 45px;
+        height: 45px;
+      }
+
+      .poster h2 {
+        font-size: 18px;
       }
     }
   </style>
 </head>
 <body>
-
-  <div class="container">
-    <div class="match-header">
-      <img src="https://upload.wikimedia.org/wikipedia/en/7/79/FC_Shakhtar_Donetsk_logo.svg" alt="Shakhtar">
+  <div class="player-container">
+    <div class="poster">
+      <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/FC_Shakhtar_Donetsk_logo.svg" alt="Shakhtar">
       <h2>Шахтар vs Легія</h2>
-      <img src="https://upload.wikimedia.org/wikipedia/en/5/53/Legia_Warsaw.svg" alt="Legia">
+      <img src="https://upload.wikimedia.org/wikipedia/en/6/6e/Legia_Warsaw.svg" alt="Legia">
     </div>
 
-    <div class="player-container">
-      <div class="responsive-player">
-        <iframe id="playerFrame"
-          src=""
-          allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
-          allowfullscreen
-          sandbox="allow-same-origin allow-scripts allow-popups"
-        ></iframe>
-      </div>
+    <div class="responsive-player">
+      <iframe id="mainPlayer" 
+        src="" 
+        allowfullscreen
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
+      </iframe>
     </div>
 
     <div class="buttons">
-      <button onclick="setStream('https://example.com/stream1.m3u8')">Stream 1 🇺🇦</button>
-      <button onclick="setStream('https://example.com/stream2.m3u8')">Stream 2 🇵🇱</button>
-      <button onclick="setStream('https://example.com/stream3.m3u8')">Stream 3 🇬🇧</button>
-      <button onclick="setStream('https://example.com/stream4.m3u8')">Stream 4 🇪🇸</button>
+      <button class="stream-btn" onclick="setStream('https://example1.com/stream1.m3u8')">
+        Stream 1 <img src="https://flagcdn.com/w20/ua.png" alt="UA">
+      </button>
+      <button class="stream-btn" onclick="setStream('https://example2.com/stream2.m3u8')">
+        Stream 2 <img src="https://flagcdn.com/w20/pl.png" alt="PL">
+      </button>
+      <button class="stream-btn" onclick="setStream('https://example3.com/stream3.m3u8')">
+        Stream 3 <img src="https://flagcdn.com/w20/gb.png" alt="GB">
+      </button>
+      <button class="stream-btn" onclick="setStream('https://example4.com/stream4.m3u8')">
+        Stream 4 <img src="https://flagcdn.com/w20/es.png" alt="ES">
+      </button>
     </div>
   </div>
 
   <script>
     function setStream(url) {
-      document.getElementById("playerFrame").src =
-        "https://www.liveplayer.org/embed?url=" + encodeURIComponent(url);
+      document.getElementById('mainPlayer').src =
+        "https://player.example.com/?url=" + encodeURIComponent(url);
     }
   </script>
-
 </body>
 </html>
