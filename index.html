@@ -1,116 +1,139 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <title>Player</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Футбольна трансляція</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: url("https://imgpx.com/kfcPatf7nzWH.png") no-repeat center center fixed;
       background-size: cover;
-      color: white;
+      color: #fff;
       text-align: center;
     }
 
-    .player-container {
-      max-width: 100%;
-      margin: 0 auto;
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 10px;
     }
 
-    .responsive-player {
-      position: relative;
-      width: 100%;
-      padding-bottom: 50%; /* трохи менше на ПК */
-    }
-
-    iframe {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      left: 0;
-      top: 0;
-      border: none;
-    }
-
-    .buttons {
+    .match-header {
       display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .buttons button {
-      background-color: #293440;
-      border: 1px solid gray;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: 0.3s;
-    }
-
-    .buttons button:hover {
-      background-color: #3c4b5d;
-    }
-
-    .match-banner {
-      display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       gap: 15px;
       margin-bottom: 10px;
       flex-wrap: wrap;
     }
 
-    .match-banner img {
+    .match-header img {
       width: 50px;
       height: 50px;
       border-radius: 50%;
       object-fit: cover;
     }
 
-    .match-banner h2 {
-      margin: 0;
+    .match-header h2 {
       font-size: 24px;
-      text-shadow: 2px 2px 5px black;
+      margin: 0;
+      text-shadow: 2px 2px 5px #000;
     }
 
+    .player-container {
+      position: relative;
+      width: 90%;
+      max-width: 900px;
+      background: #000;
+      border: 2px solid #666;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .responsive-player {
+      position: relative;
+      width: 100%;
+      padding-bottom: 50%; /* для ПК — трохи менше, ніж 16:9 */
+    }
+
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .buttons button {
+      background: rgba(41, 52, 64, 0.9);
+      color: white;
+      border: 1px solid gray;
+      border-radius: 8px;
+      padding: 8px 15px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.3s;
+    }
+
+    .buttons button:hover {
+      background: #3e4e63;
+    }
+
+    /* Для мобільних — робимо плеєр більшим */
     @media (max-width: 768px) {
       .responsive-player {
-        padding-bottom: 56.25%; /* стандарт 16:9 для мобільного */
+        padding-bottom: 56.25%; /* стандартне 16:9 */
       }
-      .match-banner h2 {
+      .match-header h2 {
         font-size: 18px;
       }
-      .match-banner img {
+      .match-header img {
         width: 40px;
         height: 40px;
+      }
+    }
+
+    /* Для великих екранів — трохи зменшуємо висоту плеєра */
+    @media (min-width: 1025px) {
+      .responsive-player {
+        padding-bottom: 45%; /* менше, щоб кнопки одразу були видимі */
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="player-container">
-
-    <div class="match-banner">
+  <div class="container">
+    <div class="match-header">
       <img src="https://upload.wikimedia.org/wikipedia/en/7/79/FC_Shakhtar_Donetsk_logo.svg" alt="Shakhtar">
       <h2>Шахтар vs Легія</h2>
       <img src="https://upload.wikimedia.org/wikipedia/en/5/53/Legia_Warsaw.svg" alt="Legia">
     </div>
 
-    <div class="responsive-player">
-      <iframe
-        id="playerFrame"
-        src=""
-        allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
-        allowfullscreen
-        sandbox="allow-same-origin allow-scripts allow-popups"
-      ></iframe>
+    <div class="player-container">
+      <div class="responsive-player">
+        <iframe id="playerFrame"
+          src=""
+          allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
+          allowfullscreen
+          sandbox="allow-same-origin allow-scripts allow-popups"
+        ></iframe>
+      </div>
     </div>
 
     <div class="buttons">
@@ -119,12 +142,12 @@
       <button onclick="setStream('https://example.com/stream3.m3u8')">Stream 3 🇬🇧</button>
       <button onclick="setStream('https://example.com/stream4.m3u8')">Stream 4 🇪🇸</button>
     </div>
-
   </div>
 
   <script>
     function setStream(url) {
-      document.getElementById("playerFrame").src = url;
+      document.getElementById("playerFrame").src =
+        "https://www.liveplayer.org/embed?url=" + encodeURIComponent(url);
     }
   </script>
 
