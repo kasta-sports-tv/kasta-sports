@@ -1,16 +1,9 @@
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Футбольні матчі</title>
+  <title>Player</title>
   <style>
-    body {
-      margin: 0;
-      background-color: #111;
-      font-family: Arial, sans-serif;
-      color: #fff;
-    }
-
     .player-container {
       max-width: 100%;
       margin: 0 auto;
@@ -20,12 +13,12 @@
     .responsive-player {
       position: relative;
       width: 100%;
-      padding-bottom: 56.25%;
+      padding-bottom: 56.25%; /* 16:9 */
       height: 0;
       overflow: hidden;
-      border: 2px solid rgba(128, 128, 128, 0.3);
+      border: 2px solid rgba(128, 128, 128, 0.3); /* мягкая серая рамка */
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(128, 128, 128, 0.2);
+      box-shadow: 0 0 10px rgba(128, 128, 128, 0.2); /* лёгкая тень */
     }
 
     .responsive-player iframe {
@@ -37,119 +30,37 @@
       border: none;
     }
 
-    .search-box {
-      text-align: center;
-      margin: 20px 0 10px;
-    }
-
-    .search-box input {
-      padding: 10px;
-      width: 90%;
-      max-width: 400px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      background-color: #222;
-      color: #fff;
-      outline: none;
-    }
-
     .channel-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 16px;
-      padding: 0 10px 20px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+      padding: 0 10px;
     }
 
     .channel-button {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 14px;
-      background-color: #1a1a1a;
-      color: #fff;
-      border: 1px solid #444;
-      border-radius: 12px;
+      gap: 8px;
+      padding: 10px;
+      font-size: 16px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      background-color: #004d4d;
+      color: white;
+      border: none;
+      border-radius: 5px;
       text-align: center;
-      height: 120px;
-      box-sizing: border-box;
+      transition: background-color 0.3s;
+    }
+
+    .channel-button img {
+      height: 20px;
+      width: auto;
     }
 
     .channel-button:hover {
-      background-color: #2a2a2a;
-      border-color: #00cccc;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-    }
-
-    .channel-button.active {
-      background-color: #333;
-      border-color: #00ffff;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
-    }
-
-    .match-time {
-      font-size: 16px;
-      font-weight: bold;
-      color: #00ffff;
-      margin-bottom: 8px;
-    }
-
-    .match-teams {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-size: 15px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 100%;
-    }
-
-    .match-teams img {
-      width: 28px;
-      height: 20px;
-      object-fit: cover;
-      border-radius: 3px;
-      border: 1px solid #444;
-      flex-shrink: 0;
-    }
-
-    .match-teams span {
-      flex-grow: 1;
-      text-align: center;
-      font-size: 15px;
-    }
-
-    .channel-button.hidden {
-      display: none;
-    }
-
-    @media (max-width: 480px) {
-      .channel-list {
-        grid-template-columns: 1fr;
-      }
-
-      .channel-button {
-        height: 100px;
-        padding: 10px;
-      }
-
-      .match-time {
-        font-size: 14px;
-      }
-
-      .match-teams img {
-        width: 24px;
-        height: 16px;
-      }
-
-      .match-teams span {
-        font-size: 14px;
-      }
+      background-color: #00cccc;
     }
   </style>
 </head>
@@ -157,132 +68,41 @@
 
 <div class="player-container" id="playerTop">
   <div class="responsive-player">
-    <iframe allowfullscreen id="mainPlayer" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation" src="https://anym3u8player.com/tv/p.php?url="></iframe>
+    <iframe id="mainPlayer" src="https://anym3u8player.com/tv/p.php?url="
+      sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
+      allowfullscreen></iframe>
   </div>
 
-  <div class="search-box">
-    <input id="searchInput" placeholder="Пошук матчу..." type="text" />
-  </div>
-
-  <div class="channel-list" id="channelList">
+  <div class="channel-list">
+<button class="channel-button" onclick="changeChannel('https://rereyano.ru/player/4/200')">
+      Stream 1 | UA
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png" alt="RO">
+    </button>
     
-    <!-- Матч 0 -->
-    <button class="channel-button" onclick="changeChannel(event, 'https://rereyano.ru/player/4/200')">
-      <div class="match-time">22:00</div>
-      <div class="match-teams">
-        <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/b/bf/UEFA_Champions_League_logo_2.svg/248px-UEFA_Champions_League_logo_2.svg.png" alt="">
-        <span>Simulcast</span>
-        <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/b/bf/UEFA_Champions_League_logo_2.svg/248px-UEFA_Champions_League_logo_2.svg.png" alt="">
-      </div>
+    <button class="channel-button" onclick="changeChannel('https://rereyano.ru/player/4/200')">
+      Stream 2 | ru
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Rettangolo_aureo.svg/320px-Rettangolo_aureo.svg.png" alt="">
     </button>
 
-    <!-- Матч 1 -->
-    <button class="channel-button" onclick="changeChannel(event, 'https://rereyano.ru/player/4/200')">
-      <div class="match-time">22:00</div>
-      <div class="match-teams">
-        <img src="https://s8.vcdn.biz/static/f/10537309871/image.jpg" alt="">
-        <span>Bayer vs PSG</span>
-        <img src="https://s1.vcdn.biz/static/f/6503163931/image.jpg" alt="">
-      </div>
-    </button>
-
-    <!-- Матч 2 -->
-    <button class="channel-button" onclick="changeChannel(event, 'https://rereyano.ru/player/4/200')">
-      <div class="match-time">22:00</div>
-      <div class="match-teams">
-        <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/5/53/Arsenal_FC.svg/251px-Arsenal_FC.svg.png" alt="">
-        <span>Arsenal vs Atlético</span>
-        <img src="https://upload.wikimedia.org/wikipedia/uk/1/1a/Atl%C3%A9tico_Madrid_logo.png" alt="">
-      </div>
-    </button>
-
-    <!-- Матч 3 -->
-    <button class="channel-button" onclick="changeChannel(event, 'https://rereyano.ru/player/4/200')">
-      <div class="match-time">22:00</div>
-      <div class="match-teams">
-        <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/3/34/FC_Villarreal_Logo.svg/500px-FC_Villarreal_Logo.svg.png" alt="">
-        <span>Villarreal vs Man City</span>
-        <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/e/eb/Manchester_City_FC_badge.svg/316px-Manchester_City_FC_badge.svg.png" alt="">
-      </div>
+    <button class="channel-button" onclick="changeChannel('https://rereyano.ru/player/4/200')">
+      Stream 3 | ru
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Rettangolo_aureo.svg/320px-Rettangolo_aureo.svg.png" alt="">
     </button>
     
-    <!-- Матч 4 -->
-    <button class="channel-button" onclick="changeChannel(event, 'https://rereyano.ru/player/4/200')">
-      <div class="match-time">22:00</div>
-      <div class="match-teams">
-        <img src="https://upload.wikimedia.org/wikipedia/ru/e/ea/FC_K%C3%B8benhavn.png" alt="">
-        <span>København vs Borussia D</span>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Borussia_Dortmund_logo.svg/500px-Borussia_Dortmund_logo.svg.png" alt="">
-      </div>
+    <button class="channel-button" onclick="changeChannel('https://rereyano.ru/player/4/200')">
+       Stream 4 |PT
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Portugal.svg/330px-Flag_of_Portugal.svg.png" alt="">
     </button>
-    
-    <!-- Матч 5 -->
-    <button class="channel-button" onclick="changeChannel(event, 'https://rereyano.ru/player/4/200')">
-      <div class="match-time">22:00</div>
-      <div class="match-teams">
-        <img src="https://uk.wikipedia.org/wiki/%D0%A4%D0%B0%D0%B9%D0%BB:Royale_Union_Saint-Gilloise.png" alt="">
-        <span>Union vs Inter</span>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/FC_Internazionale_Milano_2021.svg/500px-FC_Internazionale_Milano_2021.svg.png" alt="">
-      </div>
-    </button>
-    
-    <!-- Матч 6 -->
-    <button class="channel-button" onclick="changeChannel(event, 'https://rereyano.ru/player/4/200')">
-      <div class="match-time">22:00</div>
-      <div class="match-teams">
-        <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/5/56/Newcastle_United_Logo.svg/250px-Newcastle_United_Logo.svg.png" alt="">
-        <span>Newcastle vs Benfica</span>
-        <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/6/6a/SL_Benfica_Logo.svg/318px-SL_Benfica_Logo.svg.png" alt="">
-      </div>
-    </button>
-    
-    <!-- Матч 7 -->
-    <button class="channel-button" onclick="changeChannel(event, 'https://rereyano.ru/player/4/200')">
-      <div class="match-time">22:00</div>
-      <div class="match-teams">
-        <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/9/9d/PSV_Eindhoven_logo.svg/330px-PSV_Eindhoven_logo.svg.png" alt="">
-        <span>PSV vs Napoli</span>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/SSC_Napoli.svg/446px-SSC_Napoli.svg.png" alt="">
-      </div>
-    </button>
-    
-    <!-- Матч 8 -->
-    <button class="channel-button" onclick="changeChannel(event, 'https://rereyano.ru/player/4/200')">
-      <div class="match-time">00:00</div>
-      <div class="match-teams">
-        <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/b/bf/UEFA_Champions_League_logo_2.svg/248px-UEFA_Champions_League_logo_2.svg.png" alt="">
-        <span>-------------</span>
-        <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/b/bf/UEFA_Champions_League_logo_2.svg/248px-UEFA_Champions_League_logo_2.svg.png" alt="">
-      </div>
-    </button>
-    
   </div>
 </div>
 
 <script>
-  function changeChannel(event, url) {
+  function changeChannel(url) {
     const player = document.getElementById('mainPlayer');
-    player.src = '';
-    setTimeout(() => {
-      player.src = url;
-    }, 100);
-
+    player.src = url;
+    // Прокрутка к плееру плавно
     document.getElementById('playerTop').scrollIntoView({ behavior: 'smooth' });
-
-    document.querySelectorAll('.channel-button').forEach(btn => btn.classList.remove('active'));
-    event.currentTarget.classList.add('active');
   }
-
-  // Пошук матчів
-  document.getElementById('searchInput').addEventListener('input', function () {
-    const filter = this.value.toLowerCase();
-    const buttons = document.querySelectorAll('.channel-button');
-
-    buttons.forEach(button => {
-      const text = button.innerText.toLowerCase();
-      button.classList.toggle('hidden', !text.includes(filter));
-    });
-  });
 </script>
 
 </body>
