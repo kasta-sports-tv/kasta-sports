@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Football Streams</title>
+  <title>Футбольна трансляція</title>
   <style>
     body {
       background: url('https://imgpx.com/kfcPatf7nzWH.png') no-repeat center center fixed;
@@ -25,7 +25,7 @@
     .responsive-player {
       position: relative;
       width: 100%;
-      padding-bottom: 54%; /* трішки більший ніж 56.25%, щоб кнопки влазили */
+      padding-bottom: 56.25%; /* 16:9 */
       background-color: black;
       border-radius: 10px;
       overflow: hidden;
@@ -77,10 +77,10 @@
       border-radius: 10px;
       cursor: pointer;
       font-size: 16px;
-      transition: all 0.3s;
       display: flex;
       align-items: center;
       gap: 8px;
+      transition: all 0.3s;
     }
 
     .stream-btn:hover {
@@ -102,10 +102,6 @@
         padding: 10px;
       }
 
-      .responsive-player {
-        padding-bottom: 56.25%; /* стандарт 16:9 для мобільного */
-      }
-
       .poster img {
         width: 45px;
         height: 45px;
@@ -120,39 +116,40 @@
 <body>
   <div class="player-container">
     <div class="poster">
-      <img src="https://s3.vcdn.biz/static/f/10541502741/image.jpg" alt="Shakhtar">
+      <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/FC_Shakhtar_Donetsk_logo.svg" alt="Shakhtar">
       <h2>Шахтар vs Легія</h2>
-      <img src="https://s3.vcdn.biz/static/f/10546394691/image.jpg" alt="Legia">
+      <img src="https://upload.wikimedia.org/wikipedia/en/6/6e/Legia_Warsaw.svg" alt="Legia">
     </div>
 
     <div class="responsive-player">
-      <iframe id="mainPlayer" 
-        src="" 
+      <!-- Тут поки що пустий iframe -->
+      <iframe id="mainPlayer"
+        src=""
         allowfullscreen
         sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
       </iframe>
     </div>
 
     <div class="buttons">
-      <button class="stream-btn" onclick="setStream('https://example1.com/stream1.m3u8')">
-        Stream 1 | <img src="https://flagcdn.com/w20/ua.png" alt="UA">
-      </button>
-      <button class="stream-btn" onclick="setStream('https://example2.com/stream2.m3u8')">
-        Stream 2 | <img src="https://flagcdn.com/w20/pl.png" alt="PL">
-      </button>
+      <!-- Кнопки, які будуть підставляти iframe-плеєри -->
       <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F77%2Findex.m3u8')">
-        Stream 3 | <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Flag_of_Poland.svg/330px-Flag_of_Poland.svg.png" alt="GB">
+        Stream 1 🇺🇦
       </button>
-      <button class="stream-btn" onclick="setStream('https://example4.com/stream4.m3u8')">
-        Stream 4 | <img src="https://flagcdn.com/w20/es.png" alt="ES">
+      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F78%2Findex.m3u8')">
+        Stream 2 🇵🇱
+      </button>
+      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F79%2Findex.m3u8')">
+        Stream 3 🇬🇧
+      </button>
+      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/player.html?url=https%3A%2F%2Fs4.wizja.cc%2F80%2Findex.m3u8')">
+        Stream 4 🇪🇸
       </button>
     </div>
   </div>
 
   <script>
     function setStream(url) {
-      document.getElementById('mainPlayer').src =
-        "https://player.example.com/?url=" + encodeURIComponent(url);
+      document.getElementById('mainPlayer').src = url;
     }
   </script>
 </body>
