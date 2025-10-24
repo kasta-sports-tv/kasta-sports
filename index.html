@@ -77,10 +77,10 @@
       text-align: center;
       font-weight: bold;
       max-width: 100%;
-      flex-wrap: nowrap; /* один рядок */
+      flex-wrap: nowrap;
       overflow: hidden;
-      white-space: nowrap; /* обов’язково, щоб не переносило */
-      text-overflow: ellipsis; /* якщо не влізає, показує ... */
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     .match-info img {
@@ -176,7 +176,6 @@
         justify-content: center;
       }
 
-      /* Зменшимо шрифт назви під плеєром, щоб був в один рядок */
       .match-info {
         font-size: 16px;
       }
@@ -186,23 +185,103 @@
 <body>
   <div class="layout">
     <div class="sidebar" id="streamButtons">
+
+      <!-- Вердер vs Уніон -->
       <button class="stream-btn"
-        onclick="setStream('https://rereyano.ru/player/4/200', this,
-        'https://s5.vcdn.biz/static/f/6346283531/image.jpg','Самсунспор','19:00','Динамо',
-        'https://s2.vcdn.biz/static/f/10541488691/image.jpg')">
-
+        onclick="setStream('https://laceaccept.net/embed/w5kdm1n', this,
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/SV-Werder-Bremen-Logo.svg/159px-SV-Werder-Bremen-Logo.svg.png','Вердер','21:30','Уніон',
+        'https://upload.wikimedia.org/wikipedia/sco/thumb/f/fe/1._FC_Union_Berlin_logo.svg/330px-1._FC_Union_Berlin_logo.svg.png')">
         <span class="team">
-          <img src="https://s5.vcdn.biz/static/f/6346283531/image.jpg">
-          Самсунспор
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/SV-Werder-Bremen-Logo.svg/159px-SV-Werder-Bremen-Logo.svg.png">
+          Вердер
         </span>
-
-        <span class="match-time">19:00</span>
-
+        <span class="match-time">21:30</span>
         <span class="team">
-          Динамо
-          <img src="https://s2.vcdn.biz/static/f/10541488691/image.jpg">
+          Уніон
+          <img src="https://upload.wikimedia.org/wikipedia/sco/thumb/f/fe/1._FC_Union_Berlin_logo.svg/330px-1._FC_Union_Berlin_logo.svg.png">
         </span>
       </button>
+
+      <!-- Мілан vs Піза -->
+      <button class="stream-btn"
+        onclick="setStream('https://wagontorch.net/embed/v41cc2p4r4', this,
+        'https://s2.vcdn.biz/static/f/6502769291/image.jpg','Мілан','21:45','Піза',
+        'https://s3.vcdn.biz/static/f/6374621631/image.jpg')">
+        <span class="team">
+          <img src="https://s2.vcdn.biz/static/f/6502769291/image.jpg">
+          Мілан
+        </span>
+        <span class="match-time">21:45</span>
+        <span class="team">
+          Піза
+          <img src="https://s3.vcdn.biz/static/f/6374621631/image.jpg">
+        </span>
+      </button>
+
+      <!-- Париж vs Нант -->
+      <button class="stream-btn"
+        onclick="setStream('https://shelfnoise.net/embed/7ruwgcd75hy', this,
+        'https://s2.vcdn.biz/static/f/9601789331/image.jpg','Париж','21:45','Нант',
+        'https://s1.vcdn.biz/static/f/6503143141/image.jpg')">
+        <span class="team">
+          <img src="https://s2.vcdn.biz/static/f/9601789331/image.jpg">
+          Париж
+        </span>
+        <span class="match-time">21:45</span>
+        <span class="team">
+          Нант
+          <img src="https://s1.vcdn.biz/static/f/6503143141/image.jpg">
+        </span>
+      </button>
+
+      <!-- Реал Сосьєдад vs Севілья -->
+      <button class="stream-btn"
+        onclick="setStream('https://dropbang.net/embed/9nfrg', this,
+        'https://s8.vcdn.biz/static/f/6411642191/image.jpg','Реал Сосьєдад','22:00','Севілья',
+        'https://s5.vcdn.biz/static/f/6411644501/image.jpg')">
+        <span class="team">
+          <img src="https://s8.vcdn.biz/static/f/6411642191/image.jpg">
+          Реал Сосьєдад
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Севілья
+          <img src="https://s5.vcdn.biz/static/f/6411644501/image.jpg">
+        </span>
+      </button>
+
+      <!-- Лідс vs Вест Гем -->
+      <button class="stream-btn"
+        onclick="setStream('https://wagontorch.net/embed/c9bl7i8d6eznv', this,
+        'https://s8.vcdn.biz/static/f/10540954601/image.jpg','Лідс','22:00','Вест Гем',
+        'https://s2.vcdn.biz/static/f/10540912421/image.jpg')">
+        <span class="team">
+          <img src="https://s8.vcdn.biz/static/f/10540954601/image.jpg">
+          Лідс
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Вест Гем
+          <img src="https://s2.vcdn.biz/static/f/10540912421/image.jpg">
+        </span>
+      </button>
+
+      <!-- Альверка vs Жил Вісенте -->
+      <button class="stream-btn"
+        onclick="setStream('https://rereyano.ru/player/4/174', this,
+        'https://s6.vcdn.biz/static/f/10112512821/image.jpg','Альверка','22:15','Жил Вісенте',
+        'https://s8.vcdn.biz/static/f/5710238891/image.jpg')">
+        <span class="team">
+          <img src="https://s6.vcdn.biz/static/f/10112512821/image.jpg">
+          Альверка
+        </span>
+        <span class="match-time">22:15</span>
+        <span class="team">
+          Жил Вісенте
+          <img src="https://s8.vcdn.biz/static/f/5710238891/image.jpg">
+        </span>
+      </button>
+
     </div>
 
     <div class="player-section">
