@@ -41,9 +41,9 @@
 
   .stream-btn {
     width: 100%;
-    background-color: rgba(41,52,64,0.92);
+    background-color: rgba(20,25,35,0.95);
     color: white;
-    border: 1px solid gray;
+    border: 2px solid rgba(0,180,255,0.6);
     padding: 10px;
     border-radius: 10px;
     cursor: pointer;
@@ -53,28 +53,32 @@
     align-items: center;
     gap: 6px;
     transition: .25s;
+    backdrop-filter: blur(4px);
   }
 
   .stream-btn:hover {
-    background-color: #556;
+    transform: scale(1.05);
+    border-color: rgb(0,210,255);
+    box-shadow: 0 0 12px #00eaff;
+  }
+
+  .active-btn {
+    background-color: #0077ff !important;
+    box-shadow: 0 0 14px #00eaff;
+    border-color: #00eaff;
+    transform: scale(1.06);
   }
 
   .stream-btn img {
-    width: 22px;
-    height: 15px;
+    width: 26px;
+    height: 18px;
     object-fit: cover;
-  }
-
-  /* ✅ Активна кнопка */
-  .active-btn {
-    background-color: #0077ff !important;
-    border-color: white;
-    transform: scale(1.05);
   }
 
   .player-container {
     flex: 3;
     overflow: hidden;
+    position: relative;
   }
 
   .responsive-player {
@@ -83,6 +87,8 @@
     padding-bottom: 56.25%;
     background: black;
     border-radius: 10px;
+    border: 3px solid rgba(0,200,255,0.7);
+    box-shadow: 0 0 18px #00eaff;
   }
 
   iframe {
@@ -93,104 +99,120 @@
     border: none;
   }
 
-  /* Назва обраного матчу */
+  /* 🔥 Назва з логотипами */
   #matchTitle {
-    margin-top: 10px;
-    font-size: 20px;
+    margin-top: 14px;
+    font-size: 22px;
     font-weight: bold;
     text-shadow: 0 0 6px black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  #matchTitle img {
+    width: 35px;
+    height: 24px;
+    border-radius: 3px;
+    object-fit: cover;
   }
 
   @media (max-width: 768px) {
-    body {
-      overflow: auto;
-    }
+    body { overflow: hidden; }
 
     .layout {
       flex-direction: column;
-      height: auto;
-    }
-
-    .player-container {
-      width: 100%;
-      order: 1;
+      height: 100vh;
     }
 
     .sidebar {
       width: 100%;
-      max-height: 220px;
-      order: 2;
+      max-height: 180px;
       overflow-y: scroll;
+      order: 2;
+    }
+
+    .player-container {
+      order: 1;
+      max-height: calc(100vh - 200px);
+      overflow: hidden;
     }
 
     .stream-btn {
       justify-content: center;
       text-align: center;
-      gap: 5px;
       font-size: 14px;
+    }
+
+    #matchTitle {
+      font-size: 19px;
+      flex-wrap: wrap;
+      text-align: center;
     }
   }
 </style>
+
 </head>
-
 <body>
-  <div class="layout">
 
-    <!-- ✅ Кнопки матчів -->
-    <div class="sidebar">
-      <div class="buttons">
+<div class="layout">
 
-        <button class="stream-btn"
-          onclick="setStream('https://rereyano.ru/player/4/200','Самсунспор vs Динамо', this)">
-          <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png'>
-          Самсунспор <b>19:00</b> Динамо
-          <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png'>
-        </button>
+  <!-- ✅ Кнопки -->
+  <div class="sidebar">
+    <div class="buttons">
 
-        <button class="stream-btn"
-          onclick="setStream('https://rereyano.ru/player/4/200','Stream 2', this)">
-          <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/330px-Flag_of_France.svg.png'>
-          Stream 2 <b>21:00</b> FR
-          <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/330px-Flag_of_France.svg.png'>
-        </button>
+      <button class="stream-btn"
+        onclick="setStream('https://rereyano.ru/player/4/200',
+         'Самсунспор vs Динамо',
+         'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Flag_of_Turkey.svg/320px-Flag_of_Turkey.svg.png',
+         'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png',
+         this)">
+        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Flag_of_Turkey.svg/320px-Flag_of_Turkey.svg.png'>
+        Самсунспор <b>19:00</b> Динамо
+        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png'>
+      </button>
 
-        <button class="stream-btn"
-          onclick="setStream('https://rereyano.ru/player/4/200','Stream 3', this)">
-          <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Rettangolo_aureo.svg/320px-Rettangolo_aureo.svg.png'>
-          Stream 3 <b>21:00</b> RU
-          <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Rettangolo_aureo.svg/320px-Rettangolo_aureo.svg.png'>
-        </button>
+      <button class="stream-btn"
+        onclick="setStream('https://rereyano.ru/player/4/200',
+        'Матч 2','https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png',
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png', this)">
+        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png'>
+        Stream 2 <b>21:00</b>
+        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png'>
+      </button>
 
-      </div>
-    </div>
-
-    <!-- ✅ Плеєр справа -->
-    <div class="player-container">
-      <div class="responsive-player">
-        <iframe id="mainPlayer"
-          src=""
-          allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
-          allowfullscreen
-          sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock">
-        </iframe>
-      </div>
-
-      <!-- ✅ Назва обраного матчу -->
-      <div id="matchTitle">Оберіть трансляцію ⚽</div>
     </div>
   </div>
+
+  <!-- ✅ Плеєр -->
+  <div class="player-container">
+    <div class="responsive-player">
+      <iframe id="mainPlayer"
+        src=""
+        allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
+        allowfullscreen
+        sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock">
+      </iframe>
+    </div>
+
+    <!-- ✅ Назва з логотипами -->
+    <div id="matchTitle">Оберіть трансляцію ⚽</div>
+  </div>
+
+</div>
 
 <script>
   let activeButton = null;
 
-  function setStream(url, title, btn) {
+  function setStream(url, title, img1, img2, btn) {
     document.getElementById('mainPlayer').src = url;
-    document.getElementById('matchTitle').innerText = title;
 
-    if (activeButton) {
-      activeButton.classList.remove('active-btn');
-    }
+    document.getElementById('matchTitle').innerHTML = `
+      <img src="${img1}"> ${title} <img src="${img2}">
+    `;
 
+    if (activeButton) activeButton.classList.remove('active-btn');
     btn.classList.add('active-btn');
     activeButton = btn;
   }
