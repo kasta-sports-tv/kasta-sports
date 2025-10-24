@@ -4,227 +4,220 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Футбольна трансляція</title>
-
-<style>
-  body {
-    background: url('https://imgpx.com/kfcPatf7nzWH.png') no-repeat center center fixed;
-    background-size: cover;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    color: white;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .layout {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    height: 100vh;
-    max-width: 1500px;
-    margin: auto;
-    padding: 10px;
-  }
-
-  .sidebar {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 6px;
-  }
-
-  .buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .stream-btn {
-    width: 100%;
-    background-color: rgba(20,25,35,0.95);
-    color: white;
-    border: 2px solid rgba(0,180,255,0.6);
-    padding: 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 6px;
-    transition: .25s;
-    backdrop-filter: blur(4px);
-  }
-
-  .stream-btn:hover {
-    transform: scale(1.05);
-    border-color: rgb(0,210,255);
-    box-shadow: 0 0 12px #00eaff;
-  }
-
-  .active-btn {
-    background-color: #0077ff !important;
-    box-shadow: 0 0 14px #00eaff;
-    border-color: #00eaff;
-    transform: scale(1.06);
-  }
-
-  .stream-btn img {
-    width: 26px;
-    height: 18px;
-    object-fit: cover;
-  }
-
-  .player-container {
-    flex: 3;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .responsive-player {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%;
-    background: black;
-    border-radius: 10px;
-    border: 3px solid rgba(0,200,255,0.7);
-    box-shadow: 0 0 18px #00eaff;
-  }
-
-  iframe {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-
-  /* 🔥 Назва з логотипами */
-  #matchTitle {
-    margin-top: 14px;
-    font-size: 22px;
-    font-weight: bold;
-    text-shadow: 0 0 6px black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-  }
-
-  #matchTitle img {
-    width: 35px;
-    height: 24px;
-    border-radius: 3px;
-    object-fit: cover;
-  }
-
-  @media (max-width: 768px) {
-    body { overflow: hidden; }
+  <style>
+    body {
+      background: url('https://imgpx.com/kfcPatf7nzWH.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: white;
+      overflow-x: hidden;
+    }
 
     .layout {
-      flex-direction: column;
+      display: flex;
       height: 100vh;
-    }
-
-    .sidebar {
-      width: 100%;
-      max-height: 180px;
-      overflow-y: scroll;
-      order: 2;
-    }
-
-    .player-container {
-      order: 1;
-      max-height: calc(100vh - 200px);
+      max-height: 100vh;
       overflow: hidden;
     }
 
-    .stream-btn {
+    .sidebar {
+      width: 28%;
+      min-width: 180px;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 10px;
+      border-right: 2px solid rgba(0, 200, 255, 0.6);
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .player-section {
+      width: 72%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .player-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      background-color: black;
+      border-radius: 12px;
+      border: 2px solid rgba(0, 200, 255, 0.6);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .match-info {
+      display: none;
       justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 20px;
       text-align: center;
+    }
+
+    .match-info img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .match-info.active {
+      display: flex;
+    }
+
+    .stream-btn {
+      width: 100%;
+      background-color: rgba(41, 52, 64, 0.9);
+      color: white;
+      border: 1px solid rgba(0, 200, 255, 0.6);
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
       font-size: 14px;
-    }
-
-    #matchTitle {
-      font-size: 19px;
-      flex-wrap: wrap;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: all 0.3s;
       text-align: center;
     }
-  }
-</style>
 
+    .stream-btn:hover {
+      background-color: rgba(0, 200, 255, 0.2);
+      transform: scale(1.04);
+    }
+
+    .stream-btn.active {
+      background-color: rgba(0, 200, 255, 0.4);
+      border-color: cyan;
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      flex: 1;
+    }
+
+    .team img {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+    }
+
+    .match-time {
+      width: 45px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        order: 2;
+        border-right: none;
+        border-top: 2px solid rgba(0, 200, 255, 0.6);
+        display: flex;
+        flex-direction: column;
+        max-height: 140px;
+      }
+      .player-section {
+        width: 100%;
+        order: 1;
+        overflow: hidden;
+      }
+      .stream-btn {
+        flex-direction: row;
+        justify-content: center;
+      }
+      body {
+        overflow-x: hidden;
+      }
+    }
+  </style>
 </head>
 <body>
-
-<div class="layout">
-
-  <!-- ✅ Кнопки -->
-  <div class="sidebar">
-    <div class="buttons">
-
+  <div class="layout">
+    <div class="sidebar" id="streamButtons">
       <button class="stream-btn"
-        onclick="setStream('https://rereyano.ru/player/4/200',
-         'Самсунспор vs Динамо',
-         'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Flag_of_Turkey.svg/320px-Flag_of_Turkey.svg.png',
-         'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png',
-         this)">
-        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Flag_of_Turkey.svg/320px-Flag_of_Turkey.svg.png'>
-        Самсунспор <b>19:00</b> Динамо
-        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png'>
+        onclick="setStream('https://rereyano.ru/player/4/200', this,
+        'https://s5.vcdn.biz/static/f/6346283531/image.jpg','Самсунспор','19:00','Динамо',
+        'https://s2.vcdn.biz/static/f/10541488691/image.jpg')">
+        <span class="team"><img src="https://s5.vcdn.biz/static/f/6346283531/image.jpg">Самс.</span>
+        <span class="match-time">19:00</span>
+        <span class="team">Динамо<img src="https://s2.vcdn.biz/static/f/10541488691/image.jpg"></span>
       </button>
+    </div>
 
-      <button class="stream-btn"
-        onclick="setStream('https://rereyano.ru/player/4/200',
-        'Матч 2','https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png',
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png', this)">
-        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png'>
-        Stream 2 <b>21:00</b>
-        <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png'>
-      </button>
+    <div class="player-section">
+      <div class="player-container">
+        <iframe id="mainPlayer"
+          src=""
+          allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
+          allowfullscreen
+          sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock"
+        ></iframe>
+      </div>
 
+      <div class="match-info" id="matchInfo">
+        <img id="team1Img" src="">
+        <span id="team1Name"></span>
+        <span id="matchTime"></span>
+        <span id="team2Name"></span>
+        <img id="team2Img" src="">
+      </div>
     </div>
   </div>
 
-  <!-- ✅ Плеєр -->
-  <div class="player-container">
-    <div class="responsive-player">
-      <iframe id="mainPlayer"
-        src=""
-        allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
-        allowfullscreen
-        sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock">
-      </iframe>
-    </div>
+  <script>
+    function setStream(url, btn, img1, t1, time, t2, img2) {
+      const iframe = document.getElementById('mainPlayer');
+      const matchInfo = document.getElementById('matchInfo');
 
-    <!-- ✅ Назва з логотипами -->
-    <div id="matchTitle">Оберіть трансляцію ⚽</div>
-  </div>
+      document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-</div>
+      iframe.src = url;
 
-<script>
-  let activeButton = null;
-
-  function setStream(url, title, img1, img2, btn) {
-    document.getElementById('mainPlayer').src = url;
-
-    document.getElementById('matchTitle').innerHTML = `
-      <img src="${img1}"> ${title} <img src="${img2}">
-    `;
-
-    if (activeButton) activeButton.classList.remove('active-btn');
-    btn.classList.add('active-btn');
-    activeButton = btn;
-  }
-
-  document.addEventListener('fullscreenchange', async () => {
-    if (document.fullscreenElement) {
-      try { await screen.orientation.lock('landscape'); } catch {}
-    } else {
-      try { await screen.orientation.unlock(); } catch {}
+      document.getElementById('team1Img').src = img1;
+      document.getElementById('team2Img').src = img2;
+      document.getElementById('team1Name').innerText = t1;
+      document.getElementById('team2Name').innerText = t2;
+      document.getElementById('matchTime').innerText = time;
+      matchInfo.classList.add('active');
     }
-  });
-</script>
 
+    document.addEventListener('fullscreenchange', async () => {
+      if (document.fullscreenElement) {
+        try { await screen.orientation.lock('landscape'); } catch {}
+      } else {
+        try { await screen.orientation.unlock(); } catch {}
+      }
+    });
+  </script>
 </body>
 </html>
