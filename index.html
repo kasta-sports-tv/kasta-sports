@@ -1,170 +1,148 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Футбольна трансляція</title>
-  <style>
-    body {
-      background: url('https://imgpx.com/kfcPatf7nzWH.png') no-repeat center center fixed;
-      background-size: cover;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      color: white;
-      text-align: center;
+<body>
+  <div class="layout">
+    
+    <div class="player-container">
+      <div class="responsive-player">
+        <iframe id="mainPlayer"
+          src=""
+          allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
+          allowfullscreen
+          sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock">
+        </iframe>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="buttons">
+        <button class="stream-btn" onclick="setStream('https://rereyano.ru/player/4/200')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png">
+          Самсунспор <b>19:00</b> Динамо <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png">
+        </button>
+
+        <button class="stream-btn" onclick="setStream('https://rereyano.ru/player/4/200')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/330px-Flag_of_France.svg.png">
+          Stream 2 <b>19:00</b> FR <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/330px-Flag_of_France.svg.png">
+        </button>
+
+        <button class="stream-btn" onclick="setStream('https://rereyano.ru/player/4/200')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Rettangolo_aureo.svg/320px-Rettangolo_aureo.svg.png">
+          Stream 3 <b>19:00</b> RU <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Rettangolo_aureo.svg/320px-Rettangolo_aureo.svg.png">
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  function setStream(url) {
+    const iframe = document.getElementById('mainPlayer');
+    iframe.src = url;
+  }
+
+  document.addEventListener('fullscreenchange', async () => {
+    if (document.fullscreenElement) {
+      try { await screen.orientation.lock('landscape'); }
+      catch (err) {}
+    } else {
+      try { await screen.orientation.unlock(); }
+      catch (err) {}
+    }
+  });
+</script>
+</body>
+
+<style>
+  .layout {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 1300px;
+    margin: auto;
+    padding: 10px;
+  }
+
+  .player-container {
+    flex: 3;
+  }
+
+  .responsive-player {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    background: black;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .sidebar {
+    flex: 1;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 5px;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .stream-btn {
+    width: 100%;
+    background-color: rgba(41,52,64,0.9);
+    color: white;
+    border: 1px solid gray;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    transition: .25s;
+  }
+
+  .stream-btn:hover {
+    background-color: #556;
+    transform: scale(1.02);
+  }
+
+  .stream-btn img {
+    width: 22px;
+    height: 15px;
+    object-fit: cover;
+  }
+
+  /* 📱 Мобільна адаптація */
+  @media (max-width: 768px) {
+    .layout {
+      flex-direction: column;
+      max-height: none;
     }
 
-    .player-container {
-      max-width: 900px;
-      margin: 20px auto;
-      border-radius: 12px;
-      padding: 15px;
-    }
-
-    .responsive-player {
-      position: relative;
+    .sidebar {
       width: 100%;
-      padding-bottom: 56.25%;
-      background-color: black;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .poster {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-      margin: 15px 0;
-      flex-wrap: wrap;
-    }
-
-    .poster img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .poster h2 {
-      font-size: 22px;
-      font-weight: bold;
+      max-height: 200px;
+      overflow-y: auto;
     }
 
     .buttons {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
     }
 
     .stream-btn {
-      background-color: rgba(41, 52, 64, 0.9);
-      color: white;
-      border: 1px solid gray;
-      padding: 8px 15px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s;
+      justify-content: center;
+      text-align: center;
+      font-size: 14px;
     }
-
-    .stream-btn:hover {
-      background-color: #556;
-      transform: scale(1.05);
-    }
-
-    .stream-btn img {
-      width: 22px;
-      height: 15px;
-      object-fit: cover;
-      border-radius: 2px;
-    }
-
-    @media (max-width: 768px) {
-      .player-container {
-        max-width: 100%;
-        margin: 10px;
-        padding: 10px;
-      }
-
-      .poster img {
-        width: 45px;
-        height: 45px;
-      }
-
-      .poster h2 {
-        font-size: 18px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="player-container">
-    <div class="poster">
-      <img src="https://s5.vcdn.biz/static/f/6346283531/image.jpg" alt="Shakhtar">
-      <h2>Самсунспор vs Динамо</h2>
-      <img src="https://s2.vcdn.biz/static/f/10541488691/image.jpg" alt="Legia">
-    </div>
-
-    <div class="responsive-player">
-      <iframe id="mainPlayer"
-        src=""
-        allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
-        allowfullscreen
-        sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock"
-      ></iframe>
-    </div>
-
-    <div class="buttons">
-      <button class="stream-btn" onclick="setStream('https://rereyano.ru/player/4/200')">
-        Stream 1 | UA <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png'>
-      </button>
-      <button class="stream-btn" onclick="setStream('https://rereyano.ru/player/4/200')">
-        Stream 2 | FR <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/330px-Flag_of_France.svg.png'>
-      </button>
-      <button class="stream-btn" onclick="setStream('https://rereyano.ru/player/4/200')">
-        Stream 3 | ru <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Rettangolo_aureo.svg/320px-Rettangolo_aureo.svg.png'>
-      </button>
-    </div>
-  </div>
-
-  <script>
-    function setStream(url) {
-      const iframe = document.getElementById('mainPlayer');
-      iframe.src = url;
-    }
-
-    // Автоматичний поворот при fullscreen
-    document.addEventListener('fullscreenchange', async () => {
-      if (document.fullscreenElement) {
-        try {
-          await screen.orientation.lock('landscape');
-        } catch (err) {
-          console.warn('Не вдалося заблокувати орієнтацію:', err);
-        }
-      } else {
-        try {
-          await screen.orientation.unlock();
-        } catch (err) {
-          // нічого
-        }
-      }
-    });
-  </script>
-</body>
-</html>
+  }
+</style>
