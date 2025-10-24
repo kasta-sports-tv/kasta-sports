@@ -76,8 +76,11 @@
       font-size: 22px;
       text-align: center;
       font-weight: bold;
-      max-width: 100%; /* ✅ не ширше сторінки */
-      flex-wrap: wrap;  /* щоб текст переносився на новий рядок при потребі */
+      max-width: 100%;
+      flex-wrap: nowrap; /* один рядок */
+      overflow: hidden;
+      white-space: nowrap; /* обов’язково, щоб не переносило */
+      text-overflow: ellipsis; /* якщо не влізає, показує ... */
     }
 
     .match-info img {
@@ -171,6 +174,11 @@
 
       .stream-btn {
         justify-content: center;
+      }
+
+      /* Зменшимо шрифт назви під плеєром, щоб був в один рядок */
+      .match-info {
+        font-size: 16px;
       }
     }
   </style>
