@@ -12,7 +12,7 @@
       margin: 0;
       padding: 0;
       color: white;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     .layout {
@@ -27,7 +27,6 @@
       min-width: 180px;
       background: rgba(0, 0, 0, 0.55);
       padding: 10px;
-      border-right: 2px solid rgba(0, 200, 255, 0.6);
       overflow-y: auto;
       scrollbar-width: thin;
     }
@@ -47,7 +46,6 @@
       padding-bottom: 56.25%;
       background-color: black;
       border-radius: 12px;
-      border: 2px solid rgba(0, 200, 255, 0.6);
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -61,19 +59,27 @@
       border: none;
     }
 
+    .select-text {
+      margin-top: 12px;
+      font-size: 18px;
+      text-align: center;
+      opacity: 0.9;
+    }
+
     .match-info {
       display: none;
       justify-content: center;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       margin-top: 12px;
-      font-size: 20px;
+      font-size: 22px;
       text-align: center;
+      font-weight: bold;
     }
 
     .match-info img {
-      width: 38px;
-      height: 38px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       object-fit: cover;
     }
@@ -84,17 +90,17 @@
 
     .stream-btn {
       width: 100%;
-      background-color: rgba(41, 52, 64, 0.9);
+      background-color: rgba(41, 52, 64, 0.7);
       color: white;
       border: 1px solid rgba(0, 200, 255, 0.6);
-      padding: 10px;
+      padding: 12px 8px;
       border-radius: 10px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 10px;
       transition: all 0.3s;
       text-align: center;
     }
@@ -112,50 +118,55 @@
     .team {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 14px;
+      gap: 7px;
+      font-size: 15px;
       flex: 1;
+      justify-content: center;
+      text-align: center;
     }
 
     .team img {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
     }
 
     .match-time {
-      width: 45px;
+      width: 55px;
       text-align: center;
+      font-size: 15px;
       font-weight: bold;
-      font-size: 14px;
       flex-shrink: 0;
     }
 
     @media (max-width: 768px) {
+      body {
+        overflow-x: hidden;
+      }
+
       .layout {
         flex-direction: column;
+        height: auto;
       }
+
       .sidebar {
         width: 100%;
-        height: auto;
+        max-height: 150px;
         order: 2;
-        border-right: none;
-        border-top: 2px solid rgba(0, 200, 255, 0.6);
         display: flex;
         flex-direction: column;
-        max-height: 140px;
+        border-right: none;
+        overflow-y: auto;
+        background: rgba(0,0,0,0.55);
       }
+
       .player-section {
         width: 100%;
         order: 1;
-        overflow: hidden;
       }
+
       .stream-btn {
-        flex-direction: row;
         justify-content: center;
-      }
-      body {
-        overflow-x: hidden;
       }
     }
   </style>
@@ -163,14 +174,25 @@
 <body>
   <div class="layout">
     <div class="sidebar" id="streamButtons">
+
       <button class="stream-btn"
         onclick="setStream('https://rereyano.ru/player/4/200', this,
         'https://s5.vcdn.biz/static/f/6346283531/image.jpg','Самсунспор','19:00','Динамо',
         'https://s2.vcdn.biz/static/f/10541488691/image.jpg')">
-        <span class="team"><img src="https://s5.vcdn.biz/static/f/6346283531/image.jpg">Самс.</span>
+
+        <span class="team">
+          <img src="https://s5.vcdn.biz/static/f/6346283531/image.jpg">
+          Самсунспор
+        </span>
+
         <span class="match-time">19:00</span>
-        <span class="team">Динамо<img src="https://s2.vcdn.biz/static/f/10541488691/image.jpg"></span>
+
+        <span class="team">
+          Динамо
+          <img src="https://s2.vcdn.biz/static/f/10541488691/image.jpg">
+        </span>
       </button>
+
     </div>
 
     <div class="player-section">
@@ -182,6 +204,8 @@
           sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock"
         ></iframe>
       </div>
+
+      <div class="select-text" id="selectText">Оберіть трансляцію</div>
 
       <div class="match-info" id="matchInfo">
         <img id="team1Img" src="">
@@ -197,11 +221,13 @@
     function setStream(url, btn, img1, t1, time, t2, img2) {
       const iframe = document.getElementById('mainPlayer');
       const matchInfo = document.getElementById('matchInfo');
+      const selectText = document.getElementById('selectText');
 
       document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
       iframe.src = url;
+      selectText.style.display = 'none';
 
       document.getElementById('team1Img').src = img1;
       document.getElementById('team2Img').src = img2;
