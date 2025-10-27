@@ -31,6 +31,26 @@
       scrollbar-width: thin;
     }
 
+    /* ✅ Новий блок під лого турнірів */
+    .tournament-title {
+      text-align: center;
+      margin: 18px 0 10px;
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tournament-title img {
+      width: 55px;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      border-radius: 6px;
+    }
+
     .player-section {
       width: 72%;
       display: flex;
@@ -186,6 +206,12 @@
   <div class="layout">
     <div class="sidebar" id="streamButtons">
 
+      <!-- ✅ Турнір 1 -->
+      <div class="tournament-title">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/LaLiga_EA_Sports_2023_Vertical_Logo.svg/330px-LaLiga_EA_Sports_2023_Vertical_Logo.svg.png">
+        ЛаЛіга
+      </div>
+
       <!-- Райо Вальєкано vs Алавес -->
       <button class="stream-btn"
         onclick="setStream('https://anym3u8player.com/ultimate-player-generator/player.php?player=clappr&url=https%3A%2F%2Fplayertv.xyz%2Fsite3%2Fvideo.m3u8&controls=auto&theme=default&buffer=30&quality=1&speed=1&pip=1&fullscreen=1&no_download=1&width=responsive&aspect=16%3A9', this,
@@ -202,6 +228,12 @@
         </span>
       </button>
 
+      <!-- ✅ Турнір 2 -->
+      <div class="tournament-title">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/LaLiga_EA_Sports_2023_Vertical_Logo.svg/330px-LaLiga_EA_Sports_2023_Vertical_Logo.svg.png">
+        АПЛ
+      </div>
+
       <!-- Лаціо vs Ювентус -->
       <button class="stream-btn"
         onclick="setStream('https://anym3u8player.com/ultimate-player-generator/player.php?player=clappr&url=https%3A%2F%2Fs4.wizja.cc%2F73%2Frewind-36000.m3u8&controls=auto&theme=default&buffer=30&quality=1&speed=1&pip=1&fullscreen=1&no_download=1&width=responsive&aspect=16%3A9', this,
@@ -217,6 +249,12 @@
           <img src="https://s2.vcdn.biz/static/f/10616763341/image.jpg">
         </span>
       </button>
+
+      <!-- ✅ Турнір 3 -->
+      <div class="tournament-title">
+        <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/d/df/Bundesliga_logo_%282017%29.svg/250px-Bundesliga_logo_%282017%29.svg.png">
+        Бундесліга
+      </div>
 
       <!-- F1 vs Гонка -->
       <button class="stream-btn"
@@ -286,5 +324,6 @@
       }
     });
   </script>
+
 </body>
 </html>
