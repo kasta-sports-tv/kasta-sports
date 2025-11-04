@@ -75,6 +75,7 @@
   </div>
 
   <script>
+    // отримуємо url потоку з параметра ?url=
     function getQueryVariable(variable) {
       var query = window.location.search.substring(1);
       var vars = query.split("&");
@@ -87,6 +88,7 @@
 
     var streamURL = getQueryVariable("url") || "https://amg17560-fcb-amg17560c2-rakuten-es-4889.playouts.now.amagi.tv/playlist_fc18f0fd_2d126755.m3u8";
 
+    // створення плеєра
     var player = new Clappr.Player({
       source: streamURL,
       parentId: "#player",
@@ -100,6 +102,7 @@
       mediacontrol: { seekbar: "#00bfff", buttons: "#00bfff" }
     });
 
+    // оновлення при повноекранному режимі
     player.on(Clappr.Events.PLAYER_FULLSCREEN, function(e) {
       var container = document.getElementById("player-container");
       if (e.fullscreen) {
@@ -107,7 +110,7 @@
       } else {
         container.classList.remove("fullscreen");
       }
-      updateWatermarkSize(); // 🔁 оновлюємо розмір лого при зміні режиму
+      updateWatermarkSize();
     });
 
     // === 📏 Автоматичне регулювання водяного знаку ===
@@ -115,33 +118,29 @@
       const wmImg = document.querySelector('.clappr-watermark img');
       const wmBox = document.querySelector('.clappr-watermark');
       if (wmImg && wmBox) {
-        clearInterval(wmInterval); // знайшли — зупиняємо перевірку
+        clearInterval(wmInterval);
 
-        const baseWidth = 120; // 🔧 базовий розмір (у неповноекранному)
+        const baseWidth = 120;
         function updateWatermarkSize() {
           const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
           const isDesktop = window.innerWidth > 768;
 
           if (isFullscreen) {
             if (isDesktop) {
-              // 💻 повноекранний десктоп
               wmImg.style.width = (baseWidth * 1.8) + 'px';
               wmBox.style.top = '7%';
               wmBox.style.right = '3%';
             } else {
-              // 📱 повноекранний мобільний
               wmImg.style.width = (baseWidth * 1.2) + 'px';
               wmBox.style.top = '4%';
               wmBox.style.right = '10%';
             }
           } else {
             if (isDesktop) {
-              // 💻 звичайний десктоп
               wmImg.style.width = (baseWidth * 1.6) + 'px';
               wmBox.style.top = '7%';
               wmBox.style.right = '4%';
             } else {
-              // 📱 звичайний мобільний
               wmImg.style.width = baseWidth + 'px';
               wmBox.style.top = '4%';
               wmBox.style.right = '6%';
@@ -149,7 +148,6 @@
           }
         }
 
-        // первинний виклик + при зміні розміру екрана
         updateWatermarkSize();
         window.addEventListener('resize', updateWatermarkSize);
         document.addEventListener('fullscreenchange', updateWatermarkSize);
