@@ -11,7 +11,7 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden; /* прибираємо скролл */
+      overflow: hidden;
       background: #293440;
     }
     #player-container {
@@ -35,6 +35,7 @@
       opacity: 1;
       position: absolute;
       filter: drop-shadow(0 0 6px rgba(0, 191, 255, 0.8)) drop-shadow(0 0 12px rgba(173, 216, 230, 0.6));
+      transition: all 0.3s ease;
     }
     @media (min-width: 768px) {
       #player-container .clappr-watermark {
@@ -62,8 +63,6 @@
       left: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      padding: 0 !important;
-      margin: 0 !important;
       z-index: 9998;
     }
   </style>
@@ -74,19 +73,21 @@
   </div>
 
   <script>
+    // === 🔗 Отримуємо параметр ?url= ===
     function getQueryVariable(variable) {
-      var query = window.location.search.substring(1);
-      var vars = query.split("&");
-      for (var i=0;i<vars.length;i++) {
-        var pair = vars[i].split("=");
-        if(pair[0] == variable){return decodeURIComponent(pair[1]);}
+      const query = window.location.search.substring(1);
+      const vars = query.split("&");
+      for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split("=");
+        if (pair[0] === variable) return decodeURIComponent(pair[1]);
       }
       return null;
     }
 
-    var streamURL = getQueryVariable("url") || "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
+    const streamURL = getQueryVariable("url") || "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
 
-    var player = new Clappr.Player({
+    // === 🎥 Ініціалізація плеєра ===
+    const player = new Clappr.Player({
       source: streamURL,
       parentId: "#player",
       autoPlay: true,
@@ -99,14 +100,58 @@
       mediacontrol: { seekbar: "#00bfff", buttons: "#00bfff" }
     });
 
+    // === 🖼️ Керування повноекранним режимом ===
     player.on(Clappr.Events.PLAYER_FULLSCREEN, function(e) {
-      var container = document.getElementById("player-container");
+      const container = document.getElementById("player-container");
       if (e.fullscreen) {
         container.classList.add("fullscreen");
       } else {
         container.classList.remove("fullscreen");
       }
+      updateWatermarkSize();
     });
+
+    // === 💧 Автоматичне регулювання водяного знаку ===
+    const wmInterval = setInterval(() => {
+      const wmImg = document.querySelector('.clappr-watermark img');
+      const wmBox = document.querySelector('.clappr-watermark');
+      if (wmImg && wmBox) {
+        clearInterval(wmInterval);
+
+        const baseWidth = 120;
+        function updateWatermarkSize() {
+          const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+          const isDesktop = window.innerWidth > 768;
+
+          if (isFullscreen) {
+            if (isDesktop) {
+              wmImg.style.width = (baseWidth * 2.4) + 'px';
+              wmBox.style.top = '5%';
+              wmBox.style.right = '3%';
+            } else {
+              wmImg.style.width = (baseWidth * 1.4) + 'px';
+              wmBox.style.top = '4%';
+              wmBox.style.right = '10%';
+            }
+          } else {
+            if (isDesktop) {
+              wmImg.style.width = (baseWidth * 1.6) + 'px';
+              wmBox.style.top = '4%';
+              wmBox.style.right = '1%';
+            } else {
+              wmImg.style.width = baseWidth + 'px';
+              wmBox.style.top = '3%';
+              wmBox.style.right = '4%';
+            }
+          }
+        }
+
+        updateWatermarkSize();
+        window.addEventListener('resize', updateWatermarkSize);
+        document.addEventListener('fullscreenchange', updateWatermarkSize);
+        document.addEventListener('webkitfullscreenchange', updateWatermarkSize);
+      }
+    }, 300);
   </script>
 </body>
 </html>
