@@ -11,7 +11,7 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden; /* прибираємо скролл */
+      overflow: hidden;
       background: #293440;
     }
     #player-container {
@@ -37,36 +37,6 @@
       filter: drop-shadow(0 0 6px rgba(0, 191, 255, 0.8)) drop-shadow(0 0 12px rgba(173, 216, 230, 0.6));
       transition: all 0.3s ease;
     }
-    @media (min-width: 768px) {
-      #player-container .clappr-watermark {
-        top: 100px;
-        right: 50px;
-      }
-      #player-container .clappr-watermark img {
-        width: 200px;
-        height: auto;
-      }
-    }
-    @media (max-width: 767px) {
-      #player-container .clappr-watermark {
-        top: 8px;
-        right: 50px;
-      }
-      #player-container .clappr-watermark img {
-        width: 120px;
-        height: auto;
-      }
-    }
-    #player-container.fullscreen {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      z-index: 9998;
-    }
   </style>
 </head>
 <body>
@@ -75,20 +45,20 @@
   </div>
 
   <script>
-    // отримуємо url потоку з параметра ?url=
     function getQueryVariable(variable) {
       var query = window.location.search.substring(1);
       var vars = query.split("&");
-      for (var i=0;i<vars.length;i++) {
+      for (var i = 0; i < vars.length; i++) {
         var pair = vars[i].split("=");
-        if(pair[0] == variable){return decodeURIComponent(pair[1]);}
+        if (pair[0] == variable) return decodeURIComponent(pair[1]);
       }
       return null;
     }
 
-    var streamURL = getQueryVariable("url") || "https://amg17560-fcb-amg17560c2-rakuten-es-4889.playouts.now.amagi.tv/playlist_fc18f0fd_2d126755.m3u8";
+    var streamURL =
+      getQueryVariable("url") ||
+      "https://amg17560-fcb-amg17560c2-rakuten-es-4889.playouts.now.amagi.tv/playlist_fc18f0fd_2d126755.m3u8";
 
-    // створення плеєра
     var player = new Clappr.Player({
       source: streamURL,
       parentId: "#player",
@@ -102,56 +72,59 @@
       mediacontrol: { seekbar: "#00bfff", buttons: "#00bfff" }
     });
 
-    // оновлення при повноекранному режимі
-    player.on(Clappr.Events.PLAYER_FULLSCREEN, function(e) {
+    player.on(Clappr.Events.PLAYER_FULLSCREEN, function (e) {
       var container = document.getElementById("player-container");
       if (e.fullscreen) {
         container.classList.add("fullscreen");
       } else {
         container.classList.remove("fullscreen");
       }
-      updateWatermarkSize();
+      updateWatermarkSize(); // оновлення при зміні режиму
     });
 
     // === 📏 Автоматичне регулювання водяного знаку ===
     const wmInterval = setInterval(() => {
-      const wmImg = document.querySelector('.clappr-watermark img');
-      const wmBox = document.querySelector('.clappr-watermark');
+      const wmImg = document.querySelector(".clappr-watermark img");
+      const wmBox = document.querySelector(".clappr-watermark");
       if (wmImg && wmBox) {
-        clearInterval(wmInterval);
+        clearInterval(wmInterval); // знайшли — зупиняємо перевірку
 
         const baseWidth = 120;
         function updateWatermarkSize() {
-          const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+          const isFullscreen =
+            document.fullscreenElement || document.webkitFullscreenElement;
           const isDesktop = window.innerWidth > 768;
 
           if (isFullscreen) {
             if (isDesktop) {
-              wmImg.style.width = (baseWidth * 1.8) + 'px';
-              wmBox.style.top = '7%';
-              wmBox.style.right = '3%';
+              wmImg.style.width = baseWidth * 1.8 + "px";
+              wmBox.style.top = "7%";
+              wmBox.style.right = "3%";
             } else {
-              wmImg.style.width = (baseWidth * 1.2) + 'px';
-              wmBox.style.top = '4%';
-              wmBox.style.right = '10%';
+              wmImg.style.width = baseWidth * 1.2 + "px";
+              wmBox.style.top = "4%";
+              wmBox.style.right = "10%";
             }
           } else {
             if (isDesktop) {
-              wmImg.style.width = (baseWidth * 1.6) + 'px';
-              wmBox.style.top = '2%';
-              wmBox.style.right = '4%';
+              wmImg.style.width = baseWidth * 1.6 + "px";
+              wmBox.style.top = "7%";
+              wmBox.style.right = "4%";
             } else {
-              wmImg.style.width = baseWidth + 'px';
-              wmBox.style.top = '4%';
-              wmBox.style.right = '6%';
+              wmImg.style.width = baseWidth + "px";
+              wmBox.style.top = "4%";
+              wmBox.style.right = "6%";
             }
           }
         }
 
+        // ✅ первинний виклик одразу після виявлення водяного знаку
         updateWatermarkSize();
-        window.addEventListener('resize', updateWatermarkSize);
-        document.addEventListener('fullscreenchange', updateWatermarkSize);
-        document.addEventListener('webkitfullscreenchange', updateWatermarkSize);
+
+        // оновлення при зміні розміру або режиму
+        window.addEventListener("resize", updateWatermarkSize);
+        document.addEventListener("fullscreenchange", updateWatermarkSize);
+        document.addEventListener("webkitfullscreenchange", updateWatermarkSize);
       }
     }, 300);
   </script>
