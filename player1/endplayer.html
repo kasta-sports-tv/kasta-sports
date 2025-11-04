@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>Radio Player Fullscreen Ready</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* щоб не було повзунків */
+    height: 100%;
+  }
+
+  /* Контейнер 16:9 для вбудування в iframe */
+  .radio-wrapper {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 формат */
+    overflow: hidden;
+    border-radius: 10px;
+    background: #000;
+  }
+
+  .radio-wrapper .background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+  }
+
+  .play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .play-btn::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 28px solid #3a6ea5;
+    border-top: 18px solid transparent;
+    border-bottom: 18px solid transparent;
+  }
+
+  video {
+    display: none;
+  }
+
+  .radio-wrapper:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    padding-bottom: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="radio-wrapper" id="radioContainer">
+  <img class="background" src="https://imgpx.com/iaVQ3l8BcymC.jpg" alt="Radio Background">
+  <button class="play-btn" id="playBtn"></button>
+  <video id="radio" preload="none" crossorigin="anonymous" playsinline></video>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+const video = document.getElementById('radio');
+const playBtn = document.getElementById('playBtn');
+const container = document.getElementById('radioContainer');
+const streamUrl = "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
+let hls;
+
+function startStream() {
+  if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = streamUrl;
+    video.play().then(() => {
+      playBtn.style.display = "none";
+    }).catch(err => console.log("Safari блок:", err));
+  } else if (Hls.isSupported()) {
+    hls = new Hls({ autoStartLoad: true });
+    hls.loadSource(streamUrl);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+      video.play().then(() => {
+        playBtn.style.display = "none";
+      }).catch(err => console.log("HLS блок:", err));
+    });
+  } else {
+    alert("Ваш браузер не підтримує HLS.");
+  }
+}
+
+playBtn.addEventListener('click', startStream);
+playBtn.addEventListener('touchstart', startStream, { passive: true });
+
+container.addEventListener('dblclick', () => {
+  if (!document.fullscreenElement) {
+    container.requestFullscreen().catch(err => console.log(err));
+  } else {
+    document.exitFullscreen();
+  }
+});
+</script>
+
+</body>
+</html>
