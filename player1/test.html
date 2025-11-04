@@ -29,8 +29,6 @@
       width: 100%;
       height: 100%;
     }
-
-    /* === ВОДЯНИЙ ЗНАК === */
     #player-container .clappr-watermark {
       pointer-events: none;
       z-index: 9999;
@@ -39,32 +37,26 @@
       filter: drop-shadow(0 0 6px rgba(0, 191, 255, 0.8)) drop-shadow(0 0 12px rgba(173, 216, 230, 0.6));
       transition: all 0.3s ease;
     }
-
-    /* 🖥️ Десктоп — НЕ повноекранний */
     @media (min-width: 768px) {
       #player-container .clappr-watermark {
-        top: 30px;
-        right: 35px;
+        top: 100px;
+        right: 50px;
       }
       #player-container .clappr-watermark img {
-        width: 180px;
+        width: 200px;
         height: auto;
       }
     }
-
-    /* 📱 Мобільний — НЕ повноекранний */
     @media (max-width: 767px) {
       #player-container .clappr-watermark {
-        top: 10px;
-        right: 10px;
+        top: 8px;
+        right: 50px;
       }
       #player-container .clappr-watermark img {
         width: 120px;
         height: auto;
       }
     }
-
-    /* === Повноекранний режим === */
     #player-container.fullscreen {
       position: fixed !important;
       top: 0 !important;
@@ -74,30 +66,6 @@
       padding: 0 !important;
       margin: 0 !important;
       z-index: 9998;
-    }
-
-    /* 🖥️ Десктоп — повноекранний режим */
-    @media (min-width: 768px) {
-      #player-container.fullscreen .clappr-watermark {
-        top: 15px !important;
-        right: 70px !important;
-      }
-      #player-container.fullscreen .clappr-watermark img {
-        width: 200px !important;
-        height: auto !important;
-      }
-    }
-
-    /* 📱 Мобільний — повноекранний режим */
-    @media (max-width: 767px) {
-      #player-container.fullscreen .clappr-watermark {
-        top: 20px !important;
-        right: 70px !important;
-      }
-      #player-container.fullscreen .clappr-watermark img {
-        width: 140px !important;
-        height: auto !important;
-      }
     }
   </style>
 </head>
@@ -110,16 +78,14 @@
     function getQueryVariable(variable) {
       var query = window.location.search.substring(1);
       var vars = query.split("&");
-      for (var i = 0; i < vars.length; i++) {
+      for (var i=0;i<vars.length;i++) {
         var pair = vars[i].split("=");
-        if (pair[0] == variable) {
-          return decodeURIComponent(pair[1]);
-        }
+        if(pair[0] == variable){return decodeURIComponent(pair[1]);}
       }
       return null;
     }
 
-    var streamURL = getQueryVariable("url") || "https://02.arlivre.online/pre1/index.m3u8";
+    var streamURL = getQueryVariable("url") || "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
 
     var player = new Clappr.Player({
       source: streamURL,
@@ -134,15 +100,62 @@
       mediacontrol: { seekbar: "#00bfff", buttons: "#00bfff" }
     });
 
-    // Клас fullscreen для контейнера — щоб лого не зникало
-    player.on(Clappr.Events.PLAYER_FULLSCREEN, function (e) {
+    player.on(Clappr.Events.PLAYER_FULLSCREEN, function(e) {
       var container = document.getElementById("player-container");
       if (e.fullscreen) {
         container.classList.add("fullscreen");
       } else {
         container.classList.remove("fullscreen");
       }
+      updateWatermarkSize(); // 🔁 оновлюємо розмір лого при зміні режиму
     });
+
+    // === 📏 Автоматичне регулювання водяного знаку ===
+    const wmInterval = setInterval(() => {
+      const wmImg = document.querySelector('.clappr-watermark img');
+      const wmBox = document.querySelector('.clappr-watermark');
+      if (wmImg && wmBox) {
+        clearInterval(wmInterval); // знайшли — зупиняємо перевірку
+
+        const baseWidth = 120; // 🔧 базовий розмір (у неповноекранному)
+        function updateWatermarkSize() {
+          const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+          const isDesktop = window.innerWidth > 768;
+
+          if (isFullscreen) {
+            if (isDesktop) {
+              // 💻 повноекранний десктоп
+              wmImg.style.width = (baseWidth * 1.8) + 'px';
+              wmBox.style.top = '5%';
+              wmBox.style.right = '3%';
+            } else {
+              // 📱 повноекранний мобільний
+              wmImg.style.width = (baseWidth * 1.2) + 'px';
+              wmBox.style.top = '2%';
+              wmBox.style.right = '8%';
+            }
+          } else {
+            if (isDesktop) {
+              // 💻 звичайний десктоп
+              wmImg.style.width = (baseWidth * 1.6) + 'px';
+              wmBox.style.top = '8%';
+              wmBox.style.right = '4%';
+            } else {
+              // 📱 звичайний мобільний
+              wmImg.style.width = baseWidth + 'px';
+              wmBox.style.top = '3%';
+              wmBox.style.right = '10%';
+            }
+          }
+        }
+
+        // первинний виклик + при зміні розміру екрана
+        updateWatermarkSize();
+        window.addEventListener('resize', updateWatermarkSize);
+        document.addEventListener('fullscreenchange', updateWatermarkSize);
+        document.addEventListener('webkitfullscreenchange', updateWatermarkSize);
+      }
+    }, 300);
   </script>
 </body>
 </html>
