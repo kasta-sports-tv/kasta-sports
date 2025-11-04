@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clappr</title>
+  <title>Clappr Плеєр з водяним знаком</title>
   <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
   <style>
     html, body {
@@ -37,6 +37,34 @@
       filter: drop-shadow(0 0 6px rgba(0, 191, 255, 0.8)) drop-shadow(0 0 12px rgba(173, 216, 230, 0.6));
       transition: all 0.3s ease;
     }
+    @media (min-width: 768px) {
+      #player-container .clappr-watermark {
+        top: 100px;
+        right: 50px;
+      }
+      #player-container .clappr-watermark img {
+        width: 200px;
+        height: auto;
+      }
+    }
+    @media (max-width: 767px) {
+      #player-container .clappr-watermark {
+        top: 8px;
+        right: 50px;
+      }
+      #player-container .clappr-watermark img {
+        width: 120px;
+        height: auto;
+      }
+    }
+    #player-container.fullscreen {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: 9998;
+    }
   </style>
 </head>
 <body>
@@ -45,21 +73,21 @@
   </div>
 
   <script>
+    // === 🔗 Отримуємо параметр ?url= ===
     function getQueryVariable(variable) {
-      var query = window.location.search.substring(1);
-      var vars = query.split("&");
-      for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == variable) return decodeURIComponent(pair[1]);
+      const query = window.location.search.substring(1);
+      const vars = query.split("&");
+      for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split("=");
+        if (pair[0] === variable) return decodeURIComponent(pair[1]);
       }
       return null;
     }
 
-    var streamURL =
-      getQueryVariable("url") ||
-      "https://amg17560-fcb-amg17560c2-rakuten-es-4889.playouts.now.amagi.tv/playlist_fc18f0fd_2d126755.m3u8";
+    const streamURL = getQueryVariable("url") || "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
 
-    var player = new Clappr.Player({
+    // === 🎥 Ініціалізація плеєра ===
+    const player = new Clappr.Player({
       source: streamURL,
       parentId: "#player",
       autoPlay: true,
@@ -72,59 +100,56 @@
       mediacontrol: { seekbar: "#00bfff", buttons: "#00bfff" }
     });
 
-    player.on(Clappr.Events.PLAYER_FULLSCREEN, function (e) {
-      var container = document.getElementById("player-container");
+    // === 🖼️ Керування повноекранним режимом ===
+    player.on(Clappr.Events.PLAYER_FULLSCREEN, function(e) {
+      const container = document.getElementById("player-container");
       if (e.fullscreen) {
         container.classList.add("fullscreen");
       } else {
         container.classList.remove("fullscreen");
       }
-      updateWatermarkSize(); // оновлення при зміні режиму
+      updateWatermarkSize();
     });
 
-    // === 📏 Автоматичне регулювання водяного знаку ===
+    // === 💧 Автоматичне регулювання водяного знаку ===
     const wmInterval = setInterval(() => {
-      const wmImg = document.querySelector(".clappr-watermark img");
-      const wmBox = document.querySelector(".clappr-watermark");
+      const wmImg = document.querySelector('.clappr-watermark img');
+      const wmBox = document.querySelector('.clappr-watermark');
       if (wmImg && wmBox) {
-        clearInterval(wmInterval); // знайшли — зупиняємо перевірку
+        clearInterval(wmInterval);
 
         const baseWidth = 120;
         function updateWatermarkSize() {
-          const isFullscreen =
-            document.fullscreenElement || document.webkitFullscreenElement;
+          const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
           const isDesktop = window.innerWidth > 768;
 
           if (isFullscreen) {
             if (isDesktop) {
-              wmImg.style.width = baseWidth * 1.8 + "px";
-              wmBox.style.top = "7%";
-              wmBox.style.right = "3%";
+              wmImg.style.width = (baseWidth * 1.8) + 'px';
+              wmBox.style.top = '5%';
+              wmBox.style.right = '3%';
             } else {
-              wmImg.style.width = baseWidth * 1.2 + "px";
-              wmBox.style.top = "4%";
-              wmBox.style.right = "10%";
+              wmImg.style.width = (baseWidth * 1.2) + 'px';
+              wmBox.style.top = '2%';
+              wmBox.style.right = '8%';
             }
           } else {
             if (isDesktop) {
-              wmImg.style.width = baseWidth * 1.6 + "px";
-              wmBox.style.top = "7%";
-              wmBox.style.right = "4%";
+              wmImg.style.width = (baseWidth * 1.6) + 'px';
+              wmBox.style.top = '8%';
+              wmBox.style.right = '4%';
             } else {
-              wmImg.style.width = baseWidth + "px";
-              wmBox.style.top = "4%";
-              wmBox.style.right = "6%";
+              wmImg.style.width = baseWidth + 'px';
+              wmBox.style.top = '3%';
+              wmBox.style.right = '10%';
             }
           }
         }
 
-        // ✅ первинний виклик одразу після виявлення водяного знаку
         updateWatermarkSize();
-
-        // оновлення при зміні розміру або режиму
-        window.addEventListener("resize", updateWatermarkSize);
-        document.addEventListener("fullscreenchange", updateWatermarkSize);
-        document.addEventListener("webkitfullscreenchange", updateWatermarkSize);
+        window.addEventListener('resize', updateWatermarkSize);
+        document.addEventListener('fullscreenchange', updateWatermarkSize);
+        document.addEventListener('webkitfullscreenchange', updateWatermarkSize);
       }
     }, 300);
   </script>
