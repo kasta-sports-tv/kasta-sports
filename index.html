@@ -410,7 +410,35 @@
         <span id="matchTime"></span>
         <span id="team2Name"></span>
         <img id="team2Img" src="">
-          
+          <iframe 
+  src="https://kasta-sports.vercel.app/chat.html"
+  id="chatFrame"
+  style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    height: 300px;
+    border: none;
+    border-radius: 10px;
+    z-index: 9999;
+  ">
+</iframe>
+
+<style>
+  @media (max-width: 768px) {
+    #chatFrame {
+      width: 95%;
+      max-width: 525px;
+      height: 300px;
+      left: 50%;
+      right: auto;
+      bottom: 10px;
+      transform: translateX(-50%);
+    }
+  }
+</style>
+
       </div>
     </div>
   </div>
