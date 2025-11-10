@@ -3,45 +3,47 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Hola Player Live</title>
+<title>Hola Player 16:9</title>
 <script src="//player2.h-cdn.com/hola_player.js?customer=demo"></script>
 <style>
-  body {
+  html, body {
     margin: 0;
     padding: 0;
-    background: #000;
+    height: 100%;
+    width: 100%;
+    background: black;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    overflow: hidden;
   }
 
-  /* Контейнер задає потрібну ширину/висоту та пропорції 16:9 */
+  /* Контейнер задає розмір і пропорції, нічого більше */
   .player-container {
     width: 100%;
     max-width: 100%;
     aspect-ratio: 16 / 9;
-    background: #000;
+    background: black;
   }
 </style>
 </head>
 <body>
   <div class="player-container" id="player-container">
-    <video id="myVideo" preload="none" controls>
-      <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL">
-    </video>
+    <video id="myVideo" preload="auto" controls></video>
   </div>
 
   <script>
-    // Просто викликаємо Hola Player на нашому video
+    // Виклик Hola Player
     hola_player({
       video: '#myVideo',
-      width: '100%',
-      height: '100%',
+      file: 'https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8',
       autoplay: true,
       controls: true,
-      playsinline: true
+      width: '100%',
+      height: '100%',
+      playsinline: true,
+      forceHLS: true,
+      poster: '',
+      features: ['playpause','progress','current','duration','volume','fullscreen','setting']
     });
   </script>
 </body>
