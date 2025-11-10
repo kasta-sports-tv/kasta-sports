@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hola Player HLS</title>
+  <title>Hola Player — Kronehit</title>
   <script src="https://player2.h-cdn.com/hola_player.js?customer=demo"></script>
-
   <style>
     html, body {
       margin: 0;
@@ -17,20 +16,19 @@
     }
 
     #player-container {
-      position: relative;
       width: 100%;
       height: 100vh;
-      max-height: 100%;
-      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: black;
     }
 
-    #hola_player {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain; /* <--- не обрізає відео */
+    /* Hola вставляє свій iframe усередину, тому масштаб контролюємо тут */
+    .hola-player video {
+      object-fit: contain !important; /* показує все відео без обрізки */
+      width: 100% !important;
+      height: 100% !important;
     }
   </style>
 </head>
@@ -49,6 +47,11 @@
       forceHLS: true,
       poster: '',
       playsinline: true,
+      lang: 'uk',
+      title: 'Kronehit Live',
+      controls: true,
+      preload: 'auto',
+      features: ['playpause', 'progress', 'current', 'duration', 'volume', 'fullscreen']
     });
   </script>
 </body>
