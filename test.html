@@ -1,46 +1,37 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hola Player Live</title>
-<script src="//player2.h-cdn.com/hola_player.js?customer=demo"></script>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    background: black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  /* Контейнер для плеєра */
-  #hola-player-container {
-    width: 100%;
-    max-width: 100%;
-    aspect-ratio: 16 / 9;
-    background: black;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hola Player Test</title>
+  <script src="//player2.h‑cdn.com/hola_player.js?customer=demo"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+    }
+    #player-container {
+      width: 100%;
+      height: 100%;
+      background: #000;
+    }
+  </style>
 </head>
 <body>
-  <div id="hola-player-container"></div>
+  <div id="player-container"></div>
 
   <script>
     hola_player({
-      player: '#hola-player-container',
+      player: '#player-container',
       file: 'https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8',
       width: '100%',
       height: '100%',
       autoplay: true,
       controls: true,
-      playsinline: true,
-      forceHLS: true,
-      poster: '',
-      features: ['playpause','progress','current','duration','volume','fullscreen','setting']
+      playsinline: true
     });
   </script>
 </body>
