@@ -15,35 +15,35 @@
       height: 100vh;
     }
 
-    .player-container {
+    .player-wrapper {
       position: relative;
       width: 100%;
-      max-width: 900px; /* можна змінити */
+      max-width: 900px; /* можна змінити або прибрати */
       aspect-ratio: 16 / 9;
       background: #000;
-      overflow: hidden;
     }
 
-    #hola-player {
+    .player-wrapper video {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      object-fit: cover;
     }
   </style>
 </head>
 <body>
-  <div class="player-container">
-    <div id="hola-player"></div>
+  <div class="player-wrapper">
+    <video preload="none" class="video-js vjs-default-skin" controls>
+      <source src="https://amg17560-fcb-amg17560c2-rakuten-es-4889.playouts.now.amagi.tv/playlist_fc18f0fd_2d126755.m3u8">
+    </video>
   </div>
 
   <script>
-    hola_player({
-      target: '#hola-player',
-      source: 'https://amg17560-fcb-amg17560c2-rakuten-es-4889.playouts.now.amagi.tv/playlist_fc18f0fd_2d126755.m3u8',
-      width: '100%',
-      height: '100%',
-      autoplay: false,
-      controls: true
-    });
+    (function() {
+      window.hola_player();
+    })();
   </script>
 </body>
 </html>
