@@ -19,36 +19,54 @@
     .player-container {
       position: relative;
       width: 100%;
-      max-width: 900px; /* можеш прибрати, якщо треба на всю ширину */
+      max-width: 900px; /* прибери, якщо треба на всю ширину */
       aspect-ratio: 16 / 9;
       background: #000;
+      overflow: hidden;
     }
 
-    /* ВАЖЛИВО: не чіпаємо відео напряму */
-    .hola_spark_player,
-    .hola_spark_player > div {
+    /* фікс для hola контейнера */
+    .player-container .hola_spark_player,
+    .player-container .hola_spark_player > div,
+    .player-container .hola_spark_player video {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
       width: 100% !important;
       height: 100% !important;
+      object-fit: contain !important;
     }
   </style>
 </head>
 <body>
-  <div class="player-container">
+  <div class="player-container" id="player-box">
     <video id="myVideo" preload="none" class="video-js vjs-default-skin" controls>
       <source src="https://amg17560-fcb-amg17560c2-rakuten-es-4889.playouts.now.amagi.tv/playlist_fc18f0fd_2d126755.m3u8" type="application/x-mpegurl">
     </video>
   </div>
 
   <script>
-    (function() {
-      const player = window.hola_player({
-        video: '#myVideo',
-        width: '100%',
-        height: '100%',
-        autoplay: false,
-        controls: true
-      });
-    })();
+    const player = window.hola_player({
+      video: '#myVideo',
+      autoplay: false,
+      controls: true
+    });
+
+    // Після ініціалізації — виправляємо Hola стилі
+    const fixHola = () => {
+      const spark = document.querySelector('.hola_spark_player');
+      if (spark) {
+        spark.style.position = 'absolute';
+        spark.style.top = '0';
+        spark.style.left = '0';
+        spark.style.width = '100%';
+        spark.style.height = '100%';
+      }
+    };
+
+    // одразу і ще через секунду (Hola підвантажує стилі з затримкою)
+    fixHola();
+    setTimeout(fixHola, 1000);
   </script>
 </body>
 </html>
