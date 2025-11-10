@@ -18,15 +18,13 @@
     .player-container {
       position: relative;
       width: 100%;
-      max-width: 900px; /* можна змінити або прибрати */
+      max-width: 900px; /* можна змінити */
       aspect-ratio: 16 / 9;
       background: #000;
+      overflow: hidden;
     }
 
-    video {
-      position: absolute;
-      top: 0;
-      left: 0;
+    #hola-player {
       width: 100%;
       height: 100%;
     }
@@ -34,15 +32,18 @@
 </head>
 <body>
   <div class="player-container">
-    <video preload="none" class="video-js vjs-default-skin" controls>
-      <source src="https://v5on.site/proxy4.php?url=https://mfvideo246.top/hls/ms1.m3u8&header_Referer=https://myfootball.life/" type="application/x-mpegurl">
-    </video>
+    <div id="hola-player"></div>
   </div>
 
   <script>
-    (function() {
-      window.hola_player();
-    })();
+    hola_player({
+      target: '#hola-player',
+      source: 'https://amg17560-fcb-amg17560c2-rakuten-es-4889.playouts.now.amagi.tv/playlist_fc18f0fd_2d126755.m3u8',
+      width: '100%',
+      height: '100%',
+      autoplay: false,
+      controls: true
+    });
   </script>
 </body>
 </html>
