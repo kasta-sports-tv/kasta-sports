@@ -3,410 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kasta Sports</title>
+  <script src="//player2.h-cdn.com/hola_player.js?customer=demo"></script>
+  <title>Hola Player 16:9</title>
   <style>
     body {
-      background: url('https://bogatyr.club/uploads/posts/2023-01/400/1674742150_bogatyr-club-p-fon-dlya-saita-fon-2.jpg') no-repeat center center fixed;
-      background-size: cover;
-      background-color: black;
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      color: white;
-      overflow-x: hidden;
-    }
-
-    .layout {
+      background: #000;
       display: flex;
-      height: 100vh;
-      max-height: 100vh;
-      overflow: hidden;
-    }
-
-    .sidebar {
-      width: 28%;
-      min-width: 180px;
-      background: rgba(0, 0, 0, 0.55);
-      padding: 10px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-    }
-
-    /* новий стиль для заголовка турніру (логотип + назва поруч) */
-    .tournament-header {
-      display: flex;
-      align-items: center;
       justify-content: center;
-      gap: 10px;
-      margin: 12px 0 6px;
-    }
-
-    .tournament-header img {
-      width: 42px;
-      height: 42px;
-      border-radius: 6px;
-      object-fit: contain;
-      display: block;
-    }
-
-    .tournament-name {
-      color: #00A8E8; /* колір такий як рамка контейнера */
-      font-weight: 700;
-      font-size: 18px;
-      white-space: nowrap;
-    }
-
-    .player-section {
-      width: 72%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      padding: 10px;
-      overflow: hidden;
+      align-items: center;
+      height: 100vh;
     }
 
     .player-container {
       position: relative;
       width: 100%;
-      padding-bottom: 56.25%;
-      background-color: black;
-      border-radius: 12px;
-      border: 3px solid #00A8E8;
+      max-width: 900px; /* можна змінити */
+      aspect-ratio: 16 / 9;
+      background: #000;
       overflow: hidden;
-      flex-shrink: 0;
     }
 
-    iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
+    #hola-player {
       width: 100%;
       height: 100%;
-      border: none;
-    }
-
-    .select-text {
-      margin-top: 12px;
-      font-size: 18px;
-      text-align: center;
-      opacity: 0.9;
-    }
-
-    .match-info {
-      display: none;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      margin-top: 12px;
-      font-size: 22px;
-      text-align: center;
-      font-weight: bold;
-      max-width: 100%;
-      flex-wrap: nowrap;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    .match-info img {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .match-info.active {
-      display: flex;
-    }
-
-    .stream-btn {
-      width: 100%;
-      background-color: rgba(41, 52, 64, 0.7);
-      color: white;
-      border: 2px solid #00A8E8;
-      padding: 12px 8px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      transition: all 0.3s;
-      text-align: center;
-    }
-
-    .stream-btn:hover {
-      background-color: rgba(0, 200, 232, 0.25);
-      transform: scale(1.04);
-    }
-
-    .stream-btn.active {
-      background-color: rgba(0, 200, 232, 0.4);
-      border-color: cyan;
-    }
-
-    .team {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 15px;
-      flex: 1;
-      justify-content: center;
-      text-align: center;
-    }
-
-    .team img {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-    }
-
-    .match-time {
-      width: 55px;
-      text-align: center;
-      font-size: 15px;
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    @media (max-width: 768px) {
-      body {
-        overflow-x: hidden;
-      }
-
-      .layout {
-        flex-direction: column;
-        align-items: center;
-        height: auto;
-      }
-
-      .sidebar {
-        width: 95%;
-        max-height: 350px;
-        order: 2;
-        display: flex;
-        flex-direction: column;
-        border-right: none;
-        overflow-y: auto;
-        background: rgba(0,0,0,0.55);
-      }
-
-      .player-section {
-        width: 95%;
-        order: 1;
-      }
-
-      .stream-btn {
-        justify-content: center;
-      }
-
-      .match-info {
-        font-size: 16px;
-      }
-
-      .tournament-header {
-        gap: 8px;
-      }
-
-      .tournament-header img {
-        width: 34px;
-        height: 34px;
-      }
-
-      .tournament-name {
-        font-size: 16px;
-      }
     }
   </style>
 </head>
 <body>
-  <div class="layout">
-    <div class="sidebar" id="streamButtons">
-
-      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
-      <div class="tournament-header">
-        <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/f/f2/Premier_League_Logo.svg/320px-Premier_League_Logo.svg.png" alt="">
-        <div class="tournament-name">АПЛ</div>
-      </div>
-
-      <!-- Ман Сіті vs Ліверпуль -->
-      <button class="stream-btn"
-        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
-        'https://s8.vcdn.biz/static/f/10540959731/image.jpg','Ман Сіті','vs','Ліверпуль',
-        'https://s2.vcdn.biz/static/f/10540944911/image.jpg')">
-        <span class="team">
-          <img src="https://s8.vcdn.biz/static/f/10540959731/image.jpg" alt="">
-          Ман Сіті
-        </span>
-        <span class="match-time">18:30</span>
-        <span class="team">
-          Ліверпуль
-          <img src="https://s2.vcdn.biz/static/f/10540944911/image.jpg" alt="">
-        </span>
-      </button>
-
-      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
-      <div class="tournament-header">
-        <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-01.png" alt="">
-        <div class="tournament-name">F1</div>
-      </div>
-
-      <!-- F1 vs Гонка -->
-      <button class="stream-btn"
-        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
-        'https://crystalpng.com/wp-content/uploads/2025/06/F1-01.png','F1','vs','Гонка',
-        'https://crystalpng.com/wp-content/uploads/2025/06/F1-01.png')">
-        <span class="team">
-          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-01.png" alt="">
-          F1
-        </span>
-        <span class="match-time">19:00</span>
-        <span class="team">
-          Гонка
-          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-01.png" alt="">
-        </span>
-      </button>
-
-      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
-      <div class="tournament-header">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/LaLiga_EA_Sports_2023_Vertical_Logo.svg/330px-LaLiga_EA_Sports_2023_Vertical_Logo.svg.png" alt="">
-        <div class="tournament-name">ЛаЛіга</div>
-      </div>
-
-      <!-- Сельта vs Барселона -->
-      <button class="stream-btn"
-        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
-        'https://s4.vcdn.biz/static/f/6411319411/image.jpg','Сельта','vs','Барселона',
-        'https://s7.vcdn.biz/static/f/6411315931/image.jpg')">
-        <span class="team">
-          <img src="https://s4.vcdn.biz/static/f/6411319411/image.jpg" alt="">
-          Сельта
-        </span>
-        <span class="match-time">22:00</span>
-        <span class="team">
-          Барселона
-          <img src="https://s7.vcdn.biz/static/f/6411315931/image.jpg" alt="">
-        </span>
-      </button>
-
-      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
-      <div class="tournament-header">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Serie_A.png/250px-Serie_A.png" alt="">
-        <div class="tournament-name">Серія А</div>
-      </div>
-
-      <!-- Інтер vs Лаціо -->
-      <button class="stream-btn"
-        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
-        'https://s6.vcdn.biz/static/f/6502749171/image.jpg','Інтер','vs','Лаціо',
-        'https://s9.vcdn.biz/static/f/6502760091/image.jpg')">
-        <span class="team">
-          <img src="https://s6.vcdn.biz/static/f/6502749171/image.jpg" alt="">
-          Інтер
-        </span>
-        <span class="match-time">21:45</span>
-        <span class="team">
-          Лаціо
-          <img src="https://s9.vcdn.biz/static/f/6502760091/image.jpg" alt="">
-        </span>
-      </button>
-
-      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
-      <div class="tournament-header">
-        <img src="https://vectorseek.com/wp-content/uploads/2024/04/LIGUE-1-New-Logo-Vector.png" alt="">
-        <div class="tournament-name">Ліга 1</div>
-      </div>
-
-      <!-- Ліон vs ПСЖ -->
-      <button class="stream-btn"
-        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
-        'https://s6.vcdn.biz/static/f/6503117901/image.jpg','Ліон','vs','ПСЖ',
-        'https://s1.vcdn.biz/static/f/6503163931/image.jpg')">
-        <span class="team">
-          <img src="https://s6.vcdn.biz/static/f/6503117901/image.jpg" alt="">
-          Ліон
-        </span>
-        <span class="match-time">21:45</span>
-        <span class="team">
-          ПСЖ
-          <img src="https://s1.vcdn.biz/static/f/6503163931/image.jpg" alt="">
-        </span>
-      </button>
-
-      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
-      <div class="tournament-header">
-        <img src="https://dl.dropbox.com/scl/fi/fdp8d8ehhvodn8vzh0djl/imgonline-com-ua-Resize-KX7T7JI5m1WY.png?rlkey=jj7zs8cw8j7lbqjcaka94hawq" alt="">
-        <div class="tournament-name">Прімейра</div>
-      </div>
-
-      <!-- Бенфіка vs Каса Піа -->
-      <button class="stream-btn"
-        onclick="setStream('https://kasta-sports.vercel.app/test.html', this,
-        'https://s8.vcdn.biz/static/f/10541328551/image.jpg','Бенфіка','vs','Каса Піа',
-        'https://s1.vcdn.biz/static/f/5709860371/image.jpg')">
-        <span class="team">
-          <img src="https://s8.vcdn.biz/static/f/10541328551/image.jpg" alt="">
-          Бенфіка
-        </span>
-        <span class="match-time">22:30</span>
-        <span class="team">
-          Каса Піа
-          <img src="https://s1.vcdn.biz/static/f/5709860371/image.jpg" alt="">
-        </span>
-      </button>
-
-    </div>
-
-    <div class="player-section">
-      <div class="player-container">
-        <iframe id="mainPlayer"
-          src=""
-          allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
-          allowfullscreen
-          allow-same-origin allow-scripts allow-forms allow-pointer-lock
-        ></iframe>
-      </div>
-
-      <div class="select-text" id="selectText">Оберіть трансляцію</div>
-
-      <div class="match-info" id="matchInfo">
-        <img id="team1Img" src="">
-        <span id="team1Name"></span>
-        <span id="matchTime"></span>
-        <span id="team2Name"></span>
-        <img id="team2Img" src="">
-          
-      </div>
-    </div>
+  <div class="player-container">
+    <div id="hola-player"></div>
   </div>
+
   <script>
-    function setStream(url, btn, img1, t1, time, t2, img2) {
-      const iframe = document.getElementById('mainPlayer');
-      const matchInfo = document.getElementById('matchInfo');
-      const selectText = document.getElementById('selectText');
-
-      document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      iframe.src = url;
-      selectText.style.display = 'none';
-
-      document.getElementById('team1Img').src = img1;
-      document.getElementById('team2Img').src = img2;
-      document.getElementById('team1Name').innerText = t1;
-      document.getElementById('team2Name').innerText = t2;
-      document.getElementById('matchTime').innerText = time;
-      matchInfo.classList.add('active');
-    }
-
-    document.addEventListener('fullscreenchange', async () => {
-      if (document.fullscreenElement) {
-        try { await screen.orientation.lock('landscape'); } catch {}
-      } else {
-        try { await screen.orientation.unlock(); } catch {}
-      }
+    hola_player({
+      target: '#hola-player',
+      source: 'https://v5on.site/proxy4.php?url=https://mfvideo246.top/hls/ms1.m3u8&header_Referer=https://myfootball.life/',
+      width: '100%',
+      height: '100%',
+      autoplay: false,
+      controls: true
     });
   </script>
 </body>
-</html> 
+</html>
