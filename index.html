@@ -3,46 +3,443 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="//player2.h-cdn.com/hola_player.js?customer=demo"></script>
-  <title>Hola Player 16:9</title>
+  <title>Kasta Sports</title>
   <style>
     body {
+      background: url('https://bogatyr.club/uploads/posts/2023-01/400/1674742150_bogatyr-club-p-fon-dlya-saita-fon-2.jpg') no-repeat center center fixed;
+      background-size: cover;
+      background-color: black;
+      font-family: Arial, sans-serif;
       margin: 0;
-      background: #000;
+      padding: 0;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .layout {
       display: flex;
-      justify-content: center;
-      align-items: center;
       height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 28%;
+      min-width: 180px;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 10px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    /* новий стиль для заголовка турніру (логотип + назва поруч) */
+    .tournament-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 12px 0 6px;
+    }
+
+    .tournament-header img {
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .tournament-name {
+      color: #00A8E8; /* колір такий як рамка контейнера */
+      font-weight: 700;
+      font-size: 18px;
+      white-space: nowrap;
+    }
+
+    .player-section {
+      width: 72%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 10px;
+      overflow: hidden;
     }
 
     .player-container {
       position: relative;
       width: 100%;
-      max-width: 900px; /* можна змінити */
-      aspect-ratio: 16 / 9;
-      background: #000;
+      padding-bottom: 56.25%;
+      background-color: black;
+      border-radius: 12px;
+      border: 3px solid #00A8E8;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
-    #hola-player {
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      border: none;
+    }
+
+    .select-text {
+      margin-top: 12px;
+      font-size: 18px;
+      text-align: center;
+      opacity: 0.9;
+    }
+
+    .match-info {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      font-size: 22px;
+      text-align: center;
+      font-weight: bold;
+      max-width: 100%;
+      flex-wrap: nowrap;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .match-info img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .match-info.active {
+      display: flex;
+    }
+
+    .stream-btn {
+      width: 100%;
+      background-color: rgba(41, 52, 64, 0.7);
+      color: white;
+      border: 2px solid #00A8E8;
+      padding: 12px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .stream-btn:hover {
+      background-color: rgba(0, 200, 232, 0.25);
+      transform: scale(1.04);
+    }
+
+    .stream-btn.active {
+      background-color: rgba(0, 200, 232, 0.4);
+      border-color: cyan;
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 15px;
+      flex: 1;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .team img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    .match-time {
+      width: 55px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        overflow-x: hidden;
+      }
+
+      .layout {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+      }
+
+      .sidebar {
+        width: 95%;
+        max-height: 350px;
+        order: 2;
+        display: flex;
+        flex-direction: column;
+        border-right: none;
+        overflow-y: auto;
+        background: rgba(0,0,0,0.55);
+      }
+
+      .player-section {
+        width: 95%;
+        order: 1;
+      }
+
+      .stream-btn {
+        justify-content: center;
+      }
+
+      .match-info {
+        font-size: 16px;
+      }
+
+      .tournament-header {
+        gap: 8px;
+      }
+
+      .tournament-header img {
+        width: 34px;
+        height: 34px;
+      }
+
+      .tournament-name {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="player-container">
-    <div id="hola-player"></div>
-  </div>
+  <div class="layout">
+    <div class="sidebar" id="streamButtons">
 
+      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
+      <div class="tournament-header">
+        <img src="https://png.klev.club/uploads/posts/2024-04/png-klev-club-w1mk-p-liga-chempionov-png-29.png" alt="">
+        <div class="tournament-name">Ліга Чемпіонів</div>
+      </div>
+
+      <!-- Карабах vs Челсі -->
+      <button class="stream-btn"
+        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
+        'https://s4.vcdn.biz/static/f/10542293941/image.jpg','Карабах','vs','Челсі',
+        'https://s7.vcdn.biz/static/f/10541151331/image.jpg')">
+        <span class="team">
+          <img src="https://s4.vcdn.biz/static/f/10542293941/image.jpg" alt="">
+          Карабах
+        </span>
+        <span class="match-time">19:45</span>
+        <span class="team">
+          Челсі
+          <img src="https://s7.vcdn.biz/static/f/10541151331/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Пафос vs Вільярреал -->
+      <button class="stream-btn"
+        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
+        'https://s2.vcdn.biz/static/f/8266400021/image.jpg','Пафос','vs','Вільярреал',
+        'https://s3.vcdn.biz/static/f/6411971091/image.jpg')">
+        <span class="team">
+          <img src="https://s2.vcdn.biz/static/f/8266400021/image.jpg" alt="">
+          Пафос
+        </span>
+        <span class="match-time">19:45</span>
+        <span class="team">
+          Вільярреал
+          <img src="https://s3.vcdn.biz/static/f/6411971091/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Ньюкасл vs Атлетік -->
+      <button class="stream-btn"
+        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
+        'https://s8.vcdn.biz/static/f/10540964951/image.jpg','Ньюкасл','vs','Атлетік',
+        'https://s9.vcdn.biz/static/f/6411310911/image.jpg')">
+        <span class="team">
+          <img src="https://s8.vcdn.biz/static/f/10540964951/image.jpg" alt="">
+          Ньюкасл
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Атлетік
+          <img src="https://s9.vcdn.biz/static/f/6411310911/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Ман Сіті vs Боруссія Д -->
+      <button class="stream-btn"
+        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
+        'https://s8.vcdn.biz/static/f/10540959731/image.jpg','Ман Сіті','vs','Боруссія Д',
+        'https://s2.vcdn.biz/static/f/10537313501/image.jpg')">
+        <span class="team">
+          <img src="https://s8.vcdn.biz/static/f/10540959731/image.jpg" alt="">
+          Ман Сіті
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Боруссія Д
+          <img src="https://s2.vcdn.biz/static/f/10537313501/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Марсель vs Аталанта -->
+      <button class="stream-btn"
+        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
+        'https://s7.vcdn.biz/static/f/6503122771/image.jpg','Марсель','vs','Аталанта',
+        'https://s1.vcdn.biz/static/f/6502736881/image.jpg')">
+        <span class="team">
+          <img src="https://s7.vcdn.biz/static/f/6503122771/image.jpg" alt="">
+          Марсель
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Аталанта
+          <img src="https://s1.vcdn.biz/static/f/6502736881/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Аякс vs Галатасарай -->
+      <button class="stream-btn"
+        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
+        'https://s3.vcdn.biz/static/f/10541163531/image.jpg','Аякс','vs','Галатасарай',
+        'https://s5.vcdn.biz/static/f/10542877151/image.jpg')">
+        <span class="team">
+          <img src="https://s3.vcdn.biz/static/f/10541163531/image.jpg" alt="">
+          Аякс
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Галатасарай
+          <img src="https://s5.vcdn.biz/static/f/10542877151/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Бенфіка vs Баєр -->
+      <button class="stream-btn"
+        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
+        'https://s8.vcdn.biz/static/f/10541328551/image.jpg','Бенфіка','vs','Баєр',
+        'https://s8.vcdn.biz/static/f/10537309871/image.jpg')">
+        <span class="team">
+          <img src="https://s8.vcdn.biz/static/f/10541328551/image.jpg" alt="">
+          Бенфіка
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Баєр
+          <img src="https://s8.vcdn.biz/static/f/10537309871/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Інтер vs Кайрат -->
+      <button class="stream-btn"
+        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
+        'https://s6.vcdn.biz/static/f/6502749171/image.jpg','Інтер','vs','Кайрат',
+        'https://s3.vcdn.biz/static/f/10543024011/image.jpg')">
+        <span class="team">
+          <img src="https://s6.vcdn.biz/static/f/6502749171/image.jpg" alt="">
+          Інтер
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Кайрат
+          <img src="https://s3.vcdn.biz/static/f/10543024011/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Брюгге vs Барселона -->
+      <button class="stream-btn"
+        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
+        'https://s2.vcdn.biz/static/f/10541413991/image.jpg','Брюгге','vs','Барселона',
+        'https://s7.vcdn.biz/static/f/6411315931/image.jpg')">
+        <span class="team">
+          <img src="https://s2.vcdn.biz/static/f/10541413991/image.jpg" alt="">
+          Брюгге
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Барселона
+          <img src="https://s7.vcdn.biz/static/f/6411315931/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Симулкаст vs Симулкаст -->
+      <button class="stream-btn"
+        onclick="setStream('https://kasta-sports.vercel.app/player1/endplayer.html', this,
+        'https://png.klev.club/uploads/posts/2024-04/png-klev-club-w1mk-p-liga-chempionov-png-29.png','Симулкаст','vs','Симулкаст',
+        'https://png.klev.club/uploads/posts/2024-04/png-klev-club-w1mk-p-liga-chempionov-png-29.png')">
+        <span class="team">
+          <img src="https://png.klev.club/uploads/posts/2024-04/png-klev-club-w1mk-p-liga-chempionov-png-29.png" alt="">
+          Симулкаст
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Симулкаст
+          <img src="https://png.klev.club/uploads/posts/2024-04/png-klev-club-w1mk-p-liga-chempionov-png-29.png" alt="">
+        </span>
+      </button>
+
+    </div>
+
+    <div class="player-section">
+      <div class="player-container">
+        <iframe id="mainPlayer"
+          src=""
+          allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
+          allowfullscreen
+          allow-same-origin allow-scripts allow-forms allow-pointer-lock
+        ></iframe>
+      </div>
+
+      <div class="select-text" id="selectText">Оберіть трансляцію</div>
+
+      <div class="match-info" id="matchInfo">
+        <img id="team1Img" src="">
+        <span id="team1Name"></span>
+        <span id="matchTime"></span>
+        <span id="team2Name"></span>
+        <img id="team2Img" src="">
+          
+      </div>
+    </div>
+  </div>
   <script>
-    hola_player({
-      target: '#hola-player',
-      source: 'https://v5on.site/proxy4.php?url=https://mfvideo246.top/hls/ms1.m3u8&header_Referer=https://myfootball.life/',
-      width: '100%',
-      height: '100%',
-      autoplay: false,
-      controls: true
+    function setStream(url, btn, img1, t1, time, t2, img2) {
+      const iframe = document.getElementById('mainPlayer');
+      const matchInfo = document.getElementById('matchInfo');
+      const selectText = document.getElementById('selectText');
+
+      document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      iframe.src = url;
+      selectText.style.display = 'none';
+
+      document.getElementById('team1Img').src = img1;
+      document.getElementById('team2Img').src = img2;
+      document.getElementById('team1Name').innerText = t1;
+      document.getElementById('team2Name').innerText = t2;
+      document.getElementById('matchTime').innerText = time;
+      matchInfo.classList.add('active');
+    }
+
+    document.addEventListener('fullscreenchange', async () => {
+      if (document.fullscreenElement) {
+        try { await screen.orientation.lock('landscape'); } catch {}
+      } else {
+        try { await screen.orientation.unlock(); } catch {}
+      }
     });
   </script>
 </body>
