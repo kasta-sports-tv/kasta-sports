@@ -1,54 +1,53 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="//player2.h-cdn.com/hola_player.js?customer=demo"></script>
   <title>Hola Player 16:9</title>
   <style>
     body {
       margin: 0;
       background: #000;
-      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-    }
-
-    .player-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
       overflow: hidden;
     }
 
-    .player-wrapper video {
+    .player-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px; /* можеш прибрати, якщо треба на всю ширину */
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+
+    /* ВАЖЛИВО: не чіпаємо відео напряму */
+    .hola_spark_player,
+    .hola_spark_player > div {
       width: 100% !important;
       height: 100% !important;
-      object-fit: contain;
-      display: block;
     }
   </style>
 </head>
 <body>
-  <div class="player-wrapper">
-    <video preload="none" class="video-js vjs-default-skin" controls>
-      <source src="https://amg17560-fcb-amg17560c2-rakuten-es-4889.playouts.now.amagi.tv/playlist_fc18f0fd_2d126755.m3u8" type="application/x-mpegurl">
+  <div class="player-container">
+    <video id="myVideo" preload="none" class="video-js vjs-default-skin" controls>
+      <source src="https://v5on.site/proxy4.php?url=https://mfvideo246.top/hls/ms1.m3u8&header_Referer=https://myfootball.life/" type="application/x-mpegurl">
     </video>
   </div>
 
   <script>
     (function() {
-      // Виклик оригінального Hola плеєра з адаптацією під контейнер
-      const player = window.hola_player();
-      const videoEl = document.querySelector('.player-wrapper video');
-
-      // Примусово робимо плеєр 100% контейнера
-      videoEl.style.width = '100%';
-      videoEl.style.height = '100%';
+      const player = window.hola_player({
+        video: '#myVideo',
+        width: '100%',
+        height: '100%',
+        autoplay: false,
+        controls: true
+      });
     })();
   </script>
 </body>
