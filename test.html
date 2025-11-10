@@ -1,72 +1,55 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="//player2.h-cdn.com/hola_player.js?customer=demo"></script>
-  <title>Hola Player 16:9</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hola Player HLS</title>
+  <script src="https://player2.h-cdn.com/hola_player.js?customer=demo"></script>
+
   <style>
-    body {
+    html, body {
       margin: 0;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: black;
       overflow: hidden;
     }
 
-    .player-container {
+    #player-container {
       position: relative;
       width: 100%;
-      max-width: 900px; /* прибери, якщо треба на всю ширину */
-      aspect-ratio: 16 / 9;
-      background: #000;
+      height: 100vh;
+      max-height: 100%;
       overflow: hidden;
     }
 
-    /* фікс для hola контейнера */
-    .player-container .hola_spark_player,
-    .player-container .hola_spark_player > div,
-    .player-container .hola_spark_player video {
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: contain !important;
+    #hola_player {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* <--- не обрізає відео */
     }
   </style>
 </head>
 <body>
-  <div class="player-container" id="player-box">
-    <video id="myVideo" preload="none" class="video-js vjs-default-skin" controls>
-      <source src="https://amg17560-fcb-amg17560c2-rakuten-es-4889.playouts.now.amagi.tv/playlist_fc18f0fd_2d126755.m3u8" type="application/x-mpegurl">
-    </video>
+  <div id="player-container">
+    <div id="hola_player"></div>
   </div>
 
   <script>
-    const player = window.hola_player({
-      video: '#myVideo',
-      autoplay: false,
-      controls: true
+    hola_player({
+      player: '#hola_player',
+      file: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+      width: '100%',
+      height: '100%',
+      autoplay: true,
+      forceHLS: true,
+      poster: '',
+      playsinline: true,
     });
-
-    // Після ініціалізації — виправляємо Hola стилі
-    const fixHola = () => {
-      const spark = document.querySelector('.hola_spark_player');
-      if (spark) {
-        spark.style.position = 'absolute';
-        spark.style.top = '0';
-        spark.style.left = '0';
-        spark.style.width = '100%';
-        spark.style.height = '100%';
-      }
-    };
-
-    // одразу і ще через секунду (Hola підвантажує стилі з затримкою)
-    fixHola();
-    setTimeout(fixHola, 1000);
   </script>
 </body>
 </html>
