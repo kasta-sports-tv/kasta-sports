@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Auto Proxy HLS Player</title>
+
+  <style>
+    :root { --bg:#000; --fg:#fff; --accent:#ff5a1f; }
+    html,body { height:100%; margin:0; background:var(--bg); color:var(--fg); font-family:system-ui,Segoe UI,Roboto,Arial; }
+    #player-wrap { position:relative; width:100%; height:100vh; display:flex; align-items:center; justify-content:center; }
+    video, #clappr-player { width:100%; height:100%; background: black; }
+    #overlay {
+      position:absolute; left:12px; top:12px; z-index:30;
+      display:flex; gap:8px; align-items:center;
+    }
+    .btn {
+      background:rgba(255,255,255,0.06); color:var(--fg); border:1px solid rgba(255,255,255,0.06);
+      padding:8px 10px; border-radius:6px; font-size:14px; cursor:pointer;
+    }
+    #status {
+      position:absolute; right:12px; top:12px; z-index:30;
+      background:rgba(0,0,0,0.45); padding:8px 10px; border-radius:6px; font-size:13px;
+    }
+    #error {
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      background:rgba(0,0,0,0.75); color:#f66; padding:18px; border-radius:8px; display:none; z-index:40;
+    }
+    a.small { color:var(--accent); text-decoration:none; font-size:13px; }
+  </style>
+
+  <!-- Hls.js v1.x -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@~1/dist/hls.min.js"></script>
+
+  <!-- Clappr fallback -->
+  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+</head>
+<body>
+
+<div id="player-wrap">
+  <!-- video used by Hls.js -->
+  <video id="video" playsinline webkit-playsinline controls></video>
+
+  <!-- clappr container (used as fallback) -->
+  <div id="clappr-player" style="display:none;"></div>
+
+  <div id="overlay">
+    <button id="unmuteBtn" class="btn" style="display:none">Включити звук</button>
+    <button id="reloadBtn" class="btn">Перезавантажити поток</button>
+  </div>
+
+  <div id="status">Підготовка...</div>
+  <div id="error"></div>
+</div>
+
+<script>
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get('url');
+  const statusEl = document.getElementById('status');
+  const errorEl = document.getElementById('error');
+  const video = document.getElementById('video');
+  const clapprContainer = document.getElementById('clappr-player');
+  const unmuteBtn = document.getElementById('unmuteBtn');
+  const reloadBtn = document.getElementById('reloadBtn');
+
+  function showError(msg){
+    errorEl.style.display = 'block';
+    errorEl.textContent = msg;
+    statusEl.textContent = 'Помилка';
+    console.error(msg);
+  }
+
+  if(!raw){
+    showError('Не передано параметр url. Використай ?url=твій_m3u8');
+    throw new Error('url param missing');
+  }
+
+  // Якщо в raw вже є проксі або містить header_Referer — використовуємо як є
+  let stream = raw;
+  try {
+    const u = new URL(decodeURIComponent(raw));
+    const isProxy = u.hostname.includes('v5on.site') || u.pathname.includes('proxy4.php') || u.search.includes('header_Referer=');
+    if(!isProxy){
+      // будуємо проксі-запит
+      stream = 'https://v5on.site/proxy4.php?url=' + encodeURIComponent(raw) + '&header_Referer=' + encodeURIComponent('https://myfootball.life/');
+    } // інакше залишаємо stream = raw
+  } catch(e){
+    // якщо raw не валідний URL (але може бути вже-екодований), намагаємось будувати проксі все одно
+    stream = 'https://v5on.site/proxy4.php?url=' + encodeURIComponent(raw) + '&header_Referer=' + encodeURIComponent('https://myfootball.life/');
+  }
+
+  console.log('Using stream:', stream);
+  statusEl.textContent = 'Підключення до потоку...';
+
+  // Автоматичний mute для дозволу автоплей (мобілки)
+  video.muted = true;
+  video.autoplay = true;
+
+  function setupHls(){
+    if (window.Hls && Hls.isSupported()) {
+      const hls = new Hls({
+        maxBufferLength: 30,
+        maxMaxBufferLength: 60,
+        lowLatencyMode: false
+      });
+
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        statusEl.textContent = 'Маніфест завантажено — відтворення';
+        // показуємо кнопку розблокувати звук після початку
+        setTimeout(()=>{ if(video.muted) unmuteBtn.style.display='inline-block'; }, 800);
+      });
+
+      hls.on(Hls.Events.ERROR, function(event, data){
+        console.warn('Hls.js error', data);
+        if (data && data.fatal) {
+          showError('Hls.js fatal error: ' + (data.type || '') + ' — ' + (data.details || ''));
+          // спробуємо fallback на Clappr
+          tryClapprFallback();
+        }
+      });
+
+      hls.loadSource(stream);
+      hls.attachMedia(video);
+      video.play().catch(()=>{ /* автоплей може блокуватись */ });
+      statusEl.textContent = 'Програвання через HLS.js';
+      return true;
+    }
+    return false;
+  }
+
+  function tryClapprFallback(){
+    // Сховаємо відео, покажемо Clappr контейнер
+    video.style.display = 'none';
+    clapprContainer.style.display = 'block';
+    try {
+      new Clappr.Player({
+        parentId: '#clappr-player',
+        source: stream,
+        autoPlay: true,
+        mute: false,
+        width: '100%',
+        height: '100%',
+        playback: { playInline: true }
+      });
+      statusEl.textContent = 'Fallback: Clappr';
+    } catch(e){
+      showError('Clappr fallback failed: ' + (e.message || e));
+    }
+  }
+
+  // Ініціалізація: спочатку Hls.js, інакше fallback
+  const hlsStarted = setupHls();
+  if(!hlsStarted){
+    // Якщо Hls відсутній/не підтримується (наприклад iPhone) - спробуємо присвоїти src напряму (нативний HLS)
+    video.src = stream;
+    video.addEventListener('loadedmetadata', () => {
+      statusEl.textContent = 'Програвання через нативний HLS';
+    });
+    video.addEventListener('error', (e) => {
+      console.warn('Native video error', e);
+      // тепер спробуємо Clappr
+      tryClapprFallback();
+    });
+    video.play().catch(()=>{ /* автоплей може блокуватись */ });
+  }
+
+  // Кнопки
+  unmuteBtn.addEventListener('click', () => {
+    video.muted = false;
+    unmuteBtn.style.display = 'none';
+  });
+
+  reloadBtn.addEventListener('click', () => {
+    statusEl.textContent = 'Перезавантаження потоку...';
+    // простий перезапуск: якщо Hls.js є, знищимо і пересоздамо
+    try {
+      // кращий спосіб — просто перезавантажити сторінку з тим же параметром
+      location.reload();
+    } catch(e){
+      console.warn('Reload failed', e);
+      showError('Не вдалося перезавантажити — відкрий сторінку заново');
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>
