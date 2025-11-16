@@ -3,188 +3,163 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Auto Proxy HLS Player</title>
+  <title>Auto-Proxy HLS Player</title>
 
   <style>
-    :root { --bg:#000; --fg:#fff; --accent:#ff5a1f; }
-    html,body { height:100%; margin:0; background:var(--bg); color:var(--fg); font-family:system-ui,Segoe UI,Roboto,Arial; }
-    #player-wrap { position:relative; width:100%; height:100vh; display:flex; align-items:center; justify-content:center; }
-    video, #clappr-player { width:100%; height:100%; background: black; }
-    #overlay {
-      position:absolute; left:12px; top:12px; z-index:30;
-      display:flex; gap:8px; align-items:center;
-    }
-    .btn {
-      background:rgba(255,255,255,0.06); color:var(--fg); border:1px solid rgba(255,255,255,0.06);
-      padding:8px 10px; border-radius:6px; font-size:14px; cursor:pointer;
-    }
-    #status {
-      position:absolute; right:12px; top:12px; z-index:30;
-      background:rgba(0,0,0,0.45); padding:8px 10px; border-radius:6px; font-size:13px;
-    }
-    #error {
-      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-      background:rgba(0,0,0,0.75); color:#f66; padding:18px; border-radius:8px; display:none; z-index:40;
-    }
-    a.small { color:var(--accent); text-decoration:none; font-size:13px; }
+    :root { background: #000; color: #fff; }
+    html,body { height:100%; margin:0; }
+    #wrap { display:flex; flex-direction:column; height:100vh; }
+    #player { flex:1; display:flex; align-items:center; justify-content:center; background:#000; }
+    video { width:100%; height:100%; object-fit:contain; background:#000; }
+    #info { padding:8px 12px; font-size:13px; background:#121212; color:#ddd; display:flex; gap:12px; align-items:center; }
+    #error { color: #ff6b6b; }
+    .small { font-size:12px; color:#aaa; }
+    button { background:#233; color:#dff; border:1px solid #2b6; padding:6px 10px; border-radius:6px; cursor:pointer; }
   </style>
-
-  <!-- Hls.js v1.x -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@~1/dist/hls.min.js"></script>
-
-  <!-- Clappr fallback -->
-  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
 </head>
 <body>
+  <div id="wrap">
+    <div id="player">
+      <video id="video" controls playsinline></video>
+    </div>
 
-<div id="player-wrap">
-  <!-- video used by Hls.js -->
-  <video id="video" playsinline webkit-playsinline controls></video>
-
-  <!-- clappr container (used as fallback) -->
-  <div id="clappr-player" style="display:none;"></div>
-
-  <div id="overlay">
-    <button id="unmuteBtn" class="btn" style="display:none">Включити звук</button>
-    <button id="reloadBtn" class="btn">Перезавантажити поток</button>
+    <div id="info">
+      <div id="status">⏳ Ініціалізація...</div>
+      <div class="small" id="srcDisplay"></div>
+      <div style="margin-left:auto">
+        <button id="reloadBtn">Перезавантажити</button>
+      </div>
+    </div>
   </div>
 
-  <div id="status">Підготовка...</div>
-  <div id="error"></div>
-</div>
+  <!-- HLS.js 1.x -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@~1/dist/hls.min.js"></script>
 
-<script>
-(function(){
-  const params = new URLSearchParams(window.location.search);
-  const raw = params.get('url');
-  const statusEl = document.getElementById('status');
-  const errorEl = document.getElementById('error');
-  const video = document.getElementById('video');
-  const clapprContainer = document.getElementById('clappr-player');
-  const unmuteBtn = document.getElementById('unmuteBtn');
-  const reloadBtn = document.getElementById('reloadBtn');
+  <script>
+    (function(){
+      const params = new URLSearchParams(window.location.search);
+      const original = params.get("url");
+      const video = document.getElementById("video");
+      const status = document.getElementById("status");
+      const srcDisplay = document.getElementById("srcDisplay");
+      const reloadBtn = document.getElementById("reloadBtn");
 
-  function showError(msg){
-    errorEl.style.display = 'block';
-    errorEl.textContent = msg;
-    statusEl.textContent = 'Помилка';
-    console.error(msg);
-  }
+      function showStatus(text){
+        status.textContent = text;
+      }
 
-  if(!raw){
-    showError('Не передано параметр url. Використай ?url=твій_m3u8');
-    throw new Error('url param missing');
-  }
+      if (!original) {
+        document.getElementById("player").innerHTML = "<div style='color:white;padding:20px;text-align:center'>❗ Не передано параметр <b>url</b></div>";
+        showStatus("Немає url");
+        throw new Error("url not provided");
+      }
 
-  // Якщо в raw вже є проксі або містить header_Referer — використовуємо як є
-  let stream = raw;
-  try {
-    const u = new URL(decodeURIComponent(raw));
-    const isProxy = u.hostname.includes('v5on.site') || u.pathname.includes('proxy4.php') || u.search.includes('header_Referer=');
-    if(!isProxy){
-      // будуємо проксі-запит
-      stream = 'https://v5on.site/proxy4.php?url=' + encodeURIComponent(raw) + '&header_Referer=' + encodeURIComponent('https://myfootball.life/');
-    } // інакше залишаємо stream = raw
-  } catch(e){
-    // якщо raw не валідний URL (але може бути вже-екодований), намагаємось будувати проксі все одно
-    stream = 'https://v5on.site/proxy4.php?url=' + encodeURIComponent(raw) + '&header_Referer=' + encodeURIComponent('https://myfootball.life/');
-  }
+      // Побудова проксованого URL (той самий формат, який ти використовуєш)
+      const proxied = "https://v5on.site/proxy4.php?url=" + encodeURIComponent(original)
+                    + "&header_Referer=" + encodeURIComponent("https://myfootball.life/");
 
-  console.log('Using stream:', stream);
-  statusEl.textContent = 'Підключення до потоку...';
+      srcDisplay.textContent = proxied;
 
-  // Автоматичний mute для дозволу автоплей (мобілки)
-  video.muted = true;
-  video.autoplay = true;
-
-  function setupHls(){
-    if (window.Hls && Hls.isSupported()) {
-      const hls = new Hls({
-        maxBufferLength: 30,
-        maxMaxBufferLength: 60,
-        lowLatencyMode: false
+      // Можливість перезавантажити вручну
+      reloadBtn.addEventListener("click", () => {
+        showStatus("Перезавантаження потоку...");
+        attachStream();
       });
 
-      hls.on(Hls.Events.MANIFEST_PARSED, function() {
-        statusEl.textContent = 'Маніфест завантажено — відтворення';
-        // показуємо кнопку розблокувати звук після початку
-        setTimeout(()=>{ if(video.muted) unmuteBtn.style.display='inline-block'; }, 800);
-      });
-
-      hls.on(Hls.Events.ERROR, function(event, data){
-        console.warn('Hls.js error', data);
-        if (data && data.fatal) {
-          showError('Hls.js fatal error: ' + (data.type || '') + ' — ' + (data.details || ''));
-          // спробуємо fallback на Clappr
-          tryClapprFallback();
+      // Основна функція: підключаємо Hls.js якщо можливо, інакше fallback на native src
+      function attachStream(){
+        // скидаємо попередній src / hls
+        if (window._hlsInstance) {
+          try { window._hlsInstance.destroy(); } catch(e) { /* ignore */ }
+          window._hlsInstance = null;
         }
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+
+        showStatus("Підготовка відтворення...");
+
+        // Якщо Hls.js підтримується → використовуємо його (більше контролю)
+        if (window.Hls && Hls.isSupported()) {
+          const hls = new Hls({
+            // налаштування буфера — можна підкоригувати за потреби
+            maxBufferLength: 30,
+            maxMaxBufferLength: 120,
+            liveSyncDuration: 10,
+          });
+          window._hlsInstance = hls;
+
+          hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            showStatus("Manifest завантажено — відтворення...");
+            // деякі браузери не дозволяють autoplay зі звуком
+            // video.muted = true; // якщо потрібно авто-старт на мобайлі — розкоментуй
+            video.play().catch(()=>{/* autoplay blocked */});
+          });
+
+          hls.on(Hls.Events.ERROR, function(event, data) {
+            console.error("HLS error", event, data);
+            if (data && data.fatal) {
+              showStatus("HLS помилка (fatal) — спробую перезавантажити...");
+              // простий recovery-паттерн
+              switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                  showStatus("Network error — перезапуск завантаження...");
+                  hls.startLoad();
+                  break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                  showStatus("Media error — відновлюю...");
+                  hls.recoverMediaError();
+                  break;
+                default:
+                  showStatus("Фатальна помилка — пробую destroy і fallback...");
+                  hls.destroy();
+                  fallbackNative();
+              }
+            }
+          });
+
+          hls.on(Hls.Events.LEVEL_SWITCHED, (evt, data) => {
+            // можна показувати поточну якість, якщо треба
+            // console.log('level switched', data);
+          });
+
+          hls.loadSource(proxied);
+          hls.attachMedia(video);
+        } else {
+          // Fallback: використовуємо native video src (наприклад на iPhone)
+          fallbackNative();
+        }
+      }
+
+      function fallbackNative(){
+        showStatus("Використовую нативний плеєр (fallback)...");
+        video.src = proxied;
+        video.addEventListener('loadedmetadata', () => {
+          showStatus("Нативний плеєр готовий — відтворення...");
+          video.play().catch(()=>{/* autoplay blocked */});
+        });
+        video.addEventListener('error', (e) => {
+          console.error('Video element error', e);
+          showStatus("Помилка відтворення. Перевір проксі, CORS і доступність потоку.");
+          const errEl = document.createElement('div');
+          errEl.id = 'error';
+          errEl.textContent = "❌ Не вдалось відтворити поток. Можливі причини: проксі недоступний, CORS або некоректний URL.";
+          document.getElementById('player').appendChild(errEl);
+        }, { once: true });
+      }
+
+      // Запускаємо
+      attachStream();
+
+      // Додатково — зручно: клавіша R = перезавантажити
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'r' || e.key === 'R') attachStream();
       });
 
-      hls.loadSource(stream);
-      hls.attachMedia(video);
-      video.play().catch(()=>{ /* автоплей може блокуватись */ });
-      statusEl.textContent = 'Програвання через HLS.js';
-      return true;
-    }
-    return false;
-  }
-
-  function tryClapprFallback(){
-    // Сховаємо відео, покажемо Clappr контейнер
-    video.style.display = 'none';
-    clapprContainer.style.display = 'block';
-    try {
-      new Clappr.Player({
-        parentId: '#clappr-player',
-        source: stream,
-        autoPlay: true,
-        mute: false,
-        width: '100%',
-        height: '100%',
-        playback: { playInline: true }
-      });
-      statusEl.textContent = 'Fallback: Clappr';
-    } catch(e){
-      showError('Clappr fallback failed: ' + (e.message || e));
-    }
-  }
-
-  // Ініціалізація: спочатку Hls.js, інакше fallback
-  const hlsStarted = setupHls();
-  if(!hlsStarted){
-    // Якщо Hls відсутній/не підтримується (наприклад iPhone) - спробуємо присвоїти src напряму (нативний HLS)
-    video.src = stream;
-    video.addEventListener('loadedmetadata', () => {
-      statusEl.textContent = 'Програвання через нативний HLS';
-    });
-    video.addEventListener('error', (e) => {
-      console.warn('Native video error', e);
-      // тепер спробуємо Clappr
-      tryClapprFallback();
-    });
-    video.play().catch(()=>{ /* автоплей може блокуватись */ });
-  }
-
-  // Кнопки
-  unmuteBtn.addEventListener('click', () => {
-    video.muted = false;
-    unmuteBtn.style.display = 'none';
-  });
-
-  reloadBtn.addEventListener('click', () => {
-    statusEl.textContent = 'Перезавантаження потоку...';
-    // простий перезапуск: якщо Hls.js є, знищимо і пересоздамо
-    try {
-      // кращий спосіб — просто перезавантажити сторінку з тим же параметром
-      location.reload();
-    } catch(e){
-      console.warn('Reload failed', e);
-      showError('Не вдалося перезавантажити — відкрий сторінку заново');
-    }
-  });
-
-})();
-</script>
-
+      // Лог в консолі для діагностики
+      console.log("Original URL:", original);
+      console.log("Proxied URL:", proxied);
+    })();
+  </script>
 </body>
 </html>
