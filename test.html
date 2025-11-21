@@ -1,60 +1,48 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hola Player Full Container Fix</title>
-  <script src="//player2.h-cdn.com/hola_player.js?customer=demo"></script>
+  <meta charset="UTF-8">
+  <title>Bitmovin Player</title>
+
+  <script src="https://cdn.bitmovin.com/player/web/8/bitmovinplayer.js"></script>
+
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
       background: #000;
-      overflow: hidden;
-    }
-
-    /* Контейнер, який симулює твій блок на сайті */
-    .player-wrapper {
-      position: relative;
-      width: 100%;
       height: 100%;
-      background: #000;
     }
-
-    /* Саме відео */
-    video {
-      position: absolute;
-      top: 0; left: 0;
+    #player {
       width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #000;
-    }
-
-    /* Всі Hola-шні елементи поверх */
-    .hola_spark_player,
-    .hola_spark_player > div {
-      width: 100% !important;
-      height: 100% !important;
-      position: absolute !important;
-      top: 0; left: 0;
+      height: 100vh;
     }
   </style>
 </head>
 <body>
-  <div class="player-wrapper">
-    <video preload="none" class="video-js vjs-default-skin" controls>
-      <source src="https://mfvideo246.top/hls/ms6.m3u8&header_Referer=https://myfootball.life/" type="application/x-mpegurl">
-    </video>
-  </div>
 
-  <script>
-    (function() {
-      // Ініціалізація Hola поверх відео
-      window.hola_player();
-    })();
-  </script>
+<div id="player"></div>
+
+<script>
+  const config = {
+    key: "3df53f72-d21c-4f97-b1bd-f2b7a083db23", // безкоштовний демо-ключ bitmovin
+    playback: {
+      autoplay: true,
+      muted: false
+    },
+    ui: true
+  };
+
+  const source = {
+    hls: "https://cors.orestlutij9.workers.dev/?url=https://mfvideo246.top/hls/ms11.m3u8"   // <- ВСТАВ СВІЙ ПОТІК
+  };
+
+  const player = new bitmovin.player.Player(document.getElementById('player'), config);
+
+  player.load(source).catch((e) => {
+    console.error("PLAYER ERROR:", e);
+  });
+</script>
+
 </body>
 </html>
