@@ -12,16 +12,16 @@
     background: #000;
   }
 
-  /* Контейнер 16/9, який плавно тягнеться */
+  /* Контейнер 16/9 */
   .video-container {
     width: 100%;
     height: 100%;
     position: relative;
-    padding-top: 56.25%; /* 16/9 */
-    overflow: hidden; /* щоб не з'являлися скролли */
+    padding-top: 56.25%;
+    overflow: hidden;
   }
 
-  /* Сам плеєр всередині контейнера */
+  /* Плеєр */
   .video-container .video-js {
     position: absolute;
     top: 0;
@@ -30,42 +30,126 @@
     height: 100% !important;
   }
 
-  /* Контролбар всередині, без виступів */
+  /* Контролбар */
   .video-js .vjs-control-bar {
     box-sizing: border-box;
+  }
+
+  /* === ВОДЯНИЙ ЗНАК — 1:1 як у Clappr === */
+  .video-watermark {
+    pointer-events: none;
+    z-index: 9999;
+    position: absolute;
+    filter: drop-shadow(0 0 6px rgba(0,191,255,0.8))
+            drop-shadow(0 0 12px rgba(173,216,230,0.6));
+    transition: all 0.3s ease;
+  }
+
+  /* ПК — НЕ fullscreen */
+  @media (min-width: 768px) {
+    .video-watermark {
+      top: 4%;
+      right: 1%;
+    }
+    .video-watermark img {
+      width: 190px;
+      height: auto;
+    }
+  }
+
+  /* Телефон — НЕ fullscreen */
+  @media (max-width: 767px) {
+    .video-watermark {
+      top: 3%;
+      right: 4%;
+    }
+    .video-watermark img {
+      width: 120px;
+      height: auto;
+    }
   }
 </style>
 </head>
 <body>
 
-<div class="video-container">
-  <video id="videoPlayer" class="video-js vjs-default-skin" controls preload="auto" playsinline>
-    <p class="vjs-no-js">
-      Для перегляду відео увімкніть JavaScript і оновіть браузер.
-    </p>
-  </video>
+<div class="video-container" id="videoContainer">
+  <video id="videoPlayer" class="video-js vjs-default-skin" controls preload="auto" playsinline></video>
+
+  <!-- 🔥 Водяний знак як у Clappr -->
+  <div class="video-watermark" id="wm">
+    <img src="https://imgpx.com/QNw0mYKgAwaA.png">
+  </div>
 </div>
 
 <script src="https://unpkg.com/video.js@7.10.2/dist/video.min.js"></script>
 <script>
-  const nowPlayVideoUrl = 'https://cors.orestlutij9.workers.dev/?url=https://mfvideo246.top/hls/ms7.m3u8';
+  const nowPlayVideoUrl =
+    'https://cors.orestlutij9.workers.dev/?url=https://mfvideo246.top/hls/ms7.m3u8';
 
   const options = {
     autoplay: false,
     muted: true,
     preload: 'auto',
     controls: true
-    // УСЕ! playbackRates видалено повністю
   };
 
-  let player = videojs('videoPlayer', options, function onPlayerReady() {
+  let player = videojs('videoPlayer', options, function() {
     this.src([{ src: nowPlayVideoUrl, type: 'application/x-mpegURL' }]);
-    this.play().catch(()=>{}); 
+    this.play().catch(()=>{});
   });
 
   window.addEventListener('unload', function() {
-    if(player) player.dispose();
+    if (player) player.dispose();
   });
+
+  /* === 🔥 Повна логіка водяного знака як у Clappr === */
+  const wm = document.getElementById("wm");
+  const wmImg = wm.querySelector("img");
+
+  function updateWatermark() {
+    const isFullscreen =
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      player.isFullscreen();
+
+    const isDesktop = window.innerWidth > 768;
+    const baseWidth = 120;
+
+    if (isFullscreen) {
+      if (isDesktop) {
+        // ПК fullscreen
+        wmImg.style.width = (baseWidth * 3.9) + "px";
+        wm.style.top = "9%";
+        wm.style.right = "1%";
+      } else {
+        // Телефон fullscreen
+        wmImg.style.width = (baseWidth * 1.4) + "px";
+        wm.style.top = "4%";
+        wm.style.right = "10%";
+      }
+    } else {
+      if (isDesktop) {
+        // ПК normal
+        wmImg.style.width = (baseWidth * 1.6) + "px";
+        wm.style.top = "4%";
+        wm.style.right = "1%";
+      } else {
+        // Телефон normal
+        wmImg.style.width = baseWidth + "px";
+        wm.style.top = "3%";
+        wm.style.right = "4%";
+      }
+    }
+  }
+
+  // Події як у Clappr
+  player.on("fullscreenchange", updateWatermark);
+  window.addEventListener("resize", updateWatermark);
+  document.addEventListener("fullscreenchange", updateWatermark);
+  document.addEventListener("webkitfullscreenchange", updateWatermark);
+
+  // Перший запуск
+  setTimeout(updateWatermark, 300);
 </script>
 
 </body>
