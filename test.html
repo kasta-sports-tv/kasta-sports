@@ -102,8 +102,11 @@
     if (player) player.dispose();
   });
 
-  /* === 🔥 Повна логіка водяного знака як у Clappr === */
+  /* === 🔥 ГОЛОВНА ПРАВКА — watermark переносимо всередину плеєра === */
   const wm = document.getElementById("wm");
+  const playerEl = document.querySelector(".video-js");
+  playerEl.appendChild(wm); // <<< ОЦЕ ТА ЄДИНА РІЧ! знак тепер не зникає
+
   const wmImg = wm.querySelector("img");
 
   function updateWatermark() {
