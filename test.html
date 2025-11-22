@@ -52,7 +52,7 @@
       right: 1%;
     }
     .video-watermark img {
-      width: 190px;
+      width: 100px;
       height: auto;
     }
   }
@@ -64,7 +64,7 @@
       right: 4%;
     }
     .video-watermark img {
-      width: 120px;
+      width: 60px;
       height: auto;
     }
   }
@@ -121,12 +121,12 @@
     if (isFullscreen) {
       if (isDesktop) {
         // ПК fullscreen
-        wmImg.style.width = (baseWidth * 3.9) + "px";
+        wmImg.style.width = (baseWidth * 2.0) + "px";
         wm.style.top = "9%";
         wm.style.right = "1%";
       } else {
         // Телефон fullscreen
-        wmImg.style.width = (baseWidth * 1.4) + "px";
+        wmImg.style.width = (baseWidth * 0.6) + "px";
         wm.style.top = "4%";
         wm.style.right = "10%";
       }
