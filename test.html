@@ -35,7 +35,7 @@
     box-sizing: border-box;
   }
 
-  /* === ВОДЯНИЙ ЗНАК — 1:1 як у Clappr === */
+  /* === ВОДЯНИЙ ЗНАК */
   .video-watermark {
     pointer-events: none;
     z-index: 9999;
@@ -44,30 +44,6 @@
             drop-shadow(0 0 12px rgba(173,216,230,0.6));
     transition: all 0.3s ease;
   }
-
-  /* ПК — НЕ fullscreen */
-  @media (min-width: 768px) {
-    .video-watermark {
-      top: 4%;
-      right: 1%;
-    }
-    .video-watermark img {
-      width: 100px;
-      height: auto;
-    }
-  }
-
-  /* Телефон — НЕ fullscreen */
-  @media (max-width: 767px) {
-    .video-watermark {
-      top: 3%;
-      right: 4%;
-    }
-    .video-watermark img {
-      width: 60px;
-      height: auto;
-    }
-  }
 </style>
 </head>
 <body>
@@ -75,7 +51,7 @@
 <div class="video-container" id="videoContainer">
   <video id="videoPlayer" class="video-js vjs-default-skin" controls preload="auto" playsinline></video>
 
-  <!-- 🔥 Водяний знак як у Clappr -->
+  <!-- 🔥 Водяний знак -->
   <div class="video-watermark" id="wm">
     <img src="https://imgpx.com/QNw0mYKgAwaA.png">
   </div>
@@ -83,40 +59,37 @@
 
 <script src="https://unpkg.com/video.js@7.10.2/dist/video.min.js"></script>
 <script>
-  const nowPlayVideoUrl =
-    'https://cors.orestlutij9.workers.dev/?url=https://mfvideo246.top/hls/ms7.m3u8';
+  const nowPlayVideoUrl = 'https://cors.orestlutij9.workers.dev/?url=https://mfvideo246.top/hls/ms7.m3u8';
 
   const options = {
-    autoplay: false,
-    muted: true,
+    autoplay: false, // автоплей вимкнено
+    muted: false,    // звук увімкнено одразу
     preload: 'auto',
     controls: true
   };
 
   let player = videojs('videoPlayer', options, function() {
     this.src([{ src: nowPlayVideoUrl, type: 'application/x-mpegURL' }]);
-    this.play().catch(()=>{});
   });
 
   window.addEventListener('unload', function() {
     if (player) player.dispose();
   });
 
-  /* === 🔥 ГОЛОВНА ПРАВКА — watermark переносимо всередину плеєра === */
+  // === Watermark logic ===
   const wm = document.getElementById("wm");
-  const playerEl = document.querySelector(".video-js");
-  playerEl.appendChild(wm); // <<< ОЦЕ ТА ЄДИНА РІЧ! знак тепер не зникає
-
   const wmImg = wm.querySelector("img");
+  const playerEl = document.querySelector(".video-js");
+  playerEl.appendChild(wm);
+
+  const baseWidth = 100; // тут ти можеш змінювати масштаб для всіх режимів
 
   function updateWatermark() {
     const isFullscreen =
       document.fullscreenElement ||
       document.webkitFullscreenElement ||
       player.isFullscreen();
-
     const isDesktop = window.innerWidth > 768;
-    const baseWidth = 100;
 
     if (isFullscreen) {
       if (isDesktop) {
@@ -137,15 +110,15 @@
         wm.style.top = "4%";
         wm.style.right = "1%";
       } else {
-        // Телефон normal
-        wmImg.style.width = baseWidth + "px";
-        wm.style.top = "3%";
-        wm.style.right = "4%";
+        // Телефон normal — масштабування повністю під контролем
+        wmImg.style.width = baseWidth + "px"; // <- можеш змінювати baseWidth
+        wm.style.top = "3%";                  // <- регулюєш положення по вертикалі
+        wm.style.right = "4%";                // <- регулюєш положення по горизонталі
       }
     }
   }
 
-  // Події як у Clappr
+  // Події для оновлення водяного знаку
   player.on("fullscreenchange", updateWatermark);
   window.addEventListener("resize", updateWatermark);
   document.addEventListener("fullscreenchange", updateWatermark);
