@@ -35,7 +35,7 @@
     box-sizing: border-box;
   }
 
-  /* === ВОДЯНИЙ ЗНАК */
+  /* === ВОДЯНИЙ ЗНАК === */
   .video-watermark {
     pointer-events: none;
     z-index: 9999;
@@ -59,7 +59,18 @@
 
 <script src="https://unpkg.com/video.js@7.10.2/dist/video.min.js"></script>
 <script>
-  const nowPlayVideoUrl = 'https://cors.orestlutij9.workers.dev/?url=https://mfvideo246.top/hls/ms11.m3u8';
+  // === Отримання URL з параметру ?url= ===
+  function getQueryVariable(variable) {
+    const query = window.location.search.substring(1);
+    const vars = query.split("&");
+    for (let i = 0; i < vars.length; i++) {
+      const pair = vars[i].split("=");
+      if (pair[0] === variable) return decodeURIComponent(pair[1]);
+    }
+    return null;
+  }
+
+  const nowPlayVideoUrl = getQueryVariable("url") || 'https://cors.orestlutij9.workers.dev/?url=https://mfvideo246.top/hls/ms11.m3u8';
 
   const options = {
     autoplay: false, // автоплей вимкнено
@@ -82,7 +93,7 @@
   const playerEl = document.querySelector(".video-js");
   playerEl.appendChild(wm);
 
-  const baseWidth = 80; // тут ти можеш змінювати масштаб для всіх режимів
+  const baseWidth = 80; // масштаб для всіх режимів
 
   function updateWatermark() {
     const isFullscreen =
@@ -111,9 +122,9 @@
         wm.style.right = "5%";
       } else {
         // Телефон normal — масштабування повністю під контролем
-        wmImg.style.width = baseWidth + "px"; // <- можеш змінювати baseWidth
-        wm.style.top = "3%";                  // <- регулюєш положення по вертикалі
-        wm.style.right = "4%";                // <- регулюєш положення по горизонталі
+        wmImg.style.width = baseWidth + "px"; // <- змінюєш baseWidth для масштабу
+        wm.style.top = "3%";                  // <- вертикальне положення
+        wm.style.right = "4%";                // <- горизонтальне положення
       }
     }
   }
