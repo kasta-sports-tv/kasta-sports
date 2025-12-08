@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Video JS</title>
+<meta name="robots" content="noindex">
+
+<!-- Video.js CSS -->
+<link href="https://darkibox.com/player/videojs7/video-js.css" rel="stylesheet">
+<link rel="stylesheet" href="https://darkibox.com/node_modules/videojs-brand/dist/videojs-brand.css">
+<link href="https://darkibox.com/player/videojs7/videojs-quality-menu.css" rel="stylesheet">
+<link href="https://darkibox.com/player/videojs7/silvermine-videojs-chromecast.css" rel="stylesheet">
+<link href="https://darkibox.com/player/videojs7/silvermine-videojs-airplay.css" rel="stylesheet">
+
+<style>
+  body { margin: 0; background: #000; }
+
+  .player-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    padding-top: 0;
+    background: #000;
+    overflow: hidden;
+  }
+
+  .player-container video,
+  .player-container .video-js {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #000 !important;
+  }
+
+  .vjs-control-bar { background: rgba(0,0,0,0.65) !important; }
+  .vjs-control { color: #fff !important; transition: all 0.2s ease; }
+  .vjs-control:hover { color: #ff0000 !important; }
+  .vjs-play-control, .vjs-fullscreen-control { color: #ff0000 !important; }
+  .vjs-big-play-button { color:#ff0000 !important; border:2px solid #ff0000 !important; }
+
+  .vjs-quality-selector .vjs-menu { width: 12em !important; left: -4.5em !important; }
+  .vjs-menu li { text-transform: none; }
+  .vjs-quality-menu-wrapper .vjs-menu { width: 12em !important; left: -4.5em !important; }
+  .vjs-quality-menu-item-sub-label { display: none; }
+
+  .video-watermark {
+    pointer-events: none;
+    z-index: 9999;
+    position: absolute;
+    filter: drop-shadow(0 0 6px rgba(0,191,255,0.8))
+            drop-shadow(0 0 12px rgba(173,216,230,0.6));
+    transition: all 0.3s ease;
+    opacity: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="player-container" id="videoContainer">
+  <video id="vjsplayer" class="video-js vjs-big-play-centered vjs-16-9" controls preload="auto"></video>
+  <div class="video-watermark" id="wm">
+    <img src="https://imgpx.com/QNw0mYKgAwaA.png" alt="watermark">
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.20.1/video.min.js"></script>
+<script src="https://darkibox.com/player/videojs7/videojs-quality-menu.min.js"></script>
+<script src="https://darkibox.com/player/videojs7/silvermine-videojs-chromecast.min.js"></script>
+<script src="https://darkibox.com/player/videojs7/silvermine-videojs-airplay.min.js"></script>
+<script src="https://darkibox.com/node_modules/videojs-brand/dist/videojs-brand.min.js"></script>
+
+<script>
+function getQueryParam(name) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(name);
+}
+
+const streamUrl = getQueryParam('url') || "";
+
+var player = videojs('vjsplayer', {
+  sources: [{ src: streamUrl, type: "application/x-mpegURL" }],
+  poster: "https://s5.vcdn.biz/static/f/10768519031/image.jpg/pt/r310x174x4",
+  controlBar: {
+    children: [
+      'playToggle','volumePanel','currentTimeDisplay','progressControl','liveDisplay',
+      'seekToLive','durationDisplay','customControlSpacer','audioTrackButton',
+      'pictureInPictureToggle','qualitySelector','fullscreenToggle'
+    ]
+  },
+  plugins: { chromecast: {}, airPlay: {} },
+  techOrder: ['chromecast','html5']
+});
+
+// BRAND - заблоковано перехід
+player.brand({
+  image: "https://imgpx.com/v61srDLWm9ql.gif",
+  title: "Telegram",
+  destination: "javascript:void(0)",
+  destinationTarget: "_self"
+});
+
+player.qualityMenu({resolutionLabelBitrates: false, labels: {'620':'UHD'} });
+
+// WATERMARK
+(function(){
+  const wm = document.getElementById("wm");
+  const wmImg = wm.querySelector("img");
+  const playerEl = document.querySelector(".video-js");
+  if(playerEl && wm) playerEl.appendChild(wm);
+  const baseWidth = 80;
+  function updateWatermark(){
+    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || (player && typeof player.isFullscreen==='function' && player.isFullscreen());
+    const isDesktop = window.innerWidth>768;
+    if(isFullscreen){ if(isDesktop){ wmImg.style.width=(baseWidth*2.8)+"px"; wm.style.top="10%"; wm.style.right="6%"; }
+      else { wmImg.style.width=(baseWidth*1.4)+"px"; wm.style.top="4%"; wm.style.right="10%"; } }
+    else { if(isDesktop){ wmImg.style.width=(baseWidth*1.6)+"px"; wm.style.top="6%"; wm.style.right="5%"; }
+      else { wmImg.style.width=baseWidth+"px"; wm.style.top="3%"; wm.style.right="4%"; } }
+  }
+  player.on("playing",()=>wm.style.opacity="1");
+  player.on("pause",()=>wm.style.opacity="1");
+  player.on("ended",()=>wm.style.opacity="0");
+  window.addEventListener("resize", updateWatermark);
+  document.addEventListener("fullscreenchange", updateWatermark);
+  document.addEventListener("webkitfullscreenchange", updateWatermark);
+  setTimeout(updateWatermark,300);
+})();
+
+document.addEventListener("keydown", e=>{ if(e.code==="Space"){ e.preventDefault(); if(player.paused()) player.play(); else player.pause(); } });
+document.addEventListener("fullscreenchange", ()=>{ const container=document.getElementById("videoContainer"); if(document.fullscreenElement) container.classList.add("fullscreen-mobile"); else container.classList.remove("fullscreen-mobile"); });
+document.addEventListener("webkitfullscreenchange", ()=>{ const container=document.getElementById("videoContainer"); if(document.webkitFullscreenElement) container.classList.add("fullscreen-mobile"); else container.classList.remove("fullscreen-mobile"); });
+</script>
+</body>
+</html>
