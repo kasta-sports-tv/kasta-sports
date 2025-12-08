@@ -45,12 +45,16 @@
 <script src="https://darkibox.com/node_modules/videojs-brand/dist/videojs-brand.min.js"></script>
 
 <script>
-// Отримуємо URL m3u8 з параметра ?url=
+// Отримуємо URL з параметра ?url=
 const params = new URLSearchParams(window.location.search);
-const videoSrc = params.get("url") || "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
+let videoSrc = params.get("url") || "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
+
+// Визначаємо тип відео
+let videoType = "application/x-mpegURL";
+if(videoSrc.endsWith(".mp4")) videoType = "video/mp4";
 
 var player = videojs('vjsplayer', {
-  sources: [{ src: videoSrc, type: "application/x-mpegURL" }],
+  sources: [{ src: videoSrc, type: videoType }],
   poster: "https://s5.vcdn.biz/static/f/10768519031/image.jpg/pt/r310x174x4",
   controlBar: {
     children: ['playToggle','volumePanel','currentTimeDisplay','progressControl','liveDisplay','seekToLive','durationDisplay','customControlSpacer','audioTrackButton','pictureInPictureToggle','qualitySelector','fullscreenToggle']
