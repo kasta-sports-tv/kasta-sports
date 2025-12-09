@@ -31,7 +31,7 @@
 
 <div class="player-container" id="videoContainer">
   <div id="vplayer" style="width:100%;height:100%;text-align:center;">
-    <video id="vjsplayer" class="video-js vjs-big-play-centered vjs-16-9" controls preload="auto" poster="https://s5.vcdn.biz/static/f/10768519031/image.jpg/pt/r310x174x4"></video>
+    <video id="vjsplayer" class="video-js vjs-big-play-centered vjs-16-9" controls preload="auto"></video>
   </div>
   <div class="video-watermark" id="wm">
     <img src="https://imgpx.com/QNw0mYKgAwaA.png" alt="watermark">
@@ -45,17 +45,21 @@
 <script src="https://darkibox.com/node_modules/videojs-brand/dist/videojs-brand.min.js"></script>
 
 <script>
-// Отримуємо URL з параметра ?url=
+// Отримуємо URL
 const params = new URLSearchParams(window.location.search);
-let videoSrc = params.get("url") || "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
+let videoSrc = params.get("url") || "";
+let posterParam = params.get("poster");
 
-// Визначаємо тип відео
+// Тип відео
 let videoType = "application/x-mpegURL";
-if(videoSrc.endsWith(".mp4")) videoType = "video/mp4";
+if (videoSrc.endsWith(".mp4")) videoType = "video/mp4";
+
+// Стандартний постер, якщо poster= не передано
+let finalPoster = posterParam || "https://the-spot-mediafilm.com/wp-content/uploads/2025/11/ucl_branding-e1763667127906-1320x740.jpeg";
 
 var player = videojs('vjsplayer', {
   sources: [{ src: videoSrc, type: videoType }],
-  poster: "https://the-spot-mediafilm.com/wp-content/uploads/2025/11/ucl_branding-e1763667127906-1320x740.jpeg",
+  poster: finalPoster,
   controlBar: {
     children: ['playToggle','volumePanel','currentTimeDisplay','progressControl','liveDisplay','seekToLive','durationDisplay','customControlSpacer','audioTrackButton','pictureInPictureToggle','qualitySelector','fullscreenToggle']
   },
@@ -63,10 +67,10 @@ var player = videojs('vjsplayer', {
   techOrder: ['chromecast','html5']
 });
 
-// BRAND - заблоковано перехід
+// BRAND
 player.brand({ image:"https://imgpx.com/v61srDLWm9ql.gif", title:"Telegram", destination:"javascript:void(0)", destinationTarget:"_self" });
 
-player.qualityMenu({resolutionLabelBitrates:false, labels:{'620':'UHD'}});
+player.qualityMenu({ resolutionLabelBitrates:false, labels:{'620':'UHD'} });
 
 (function(){
   const wm = document.getElementById("wm");
@@ -74,26 +78,64 @@ player.qualityMenu({resolutionLabelBitrates:false, labels:{'620':'UHD'}});
   const playerEl = document.querySelector(".video-js");
   if(playerEl && wm) playerEl.appendChild(wm);
   const baseWidth = 80;
+
   function updateWatermark() {
     const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || (player && typeof player.isFullscreen==='function' && player.isFullscreen());
     const isDesktop = window.innerWidth>768;
-    if(isFullscreen){ if(isDesktop){ wmImg.style.width=(baseWidth*2.8)+"px"; wm.style.top="10%"; wm.style.right="6%"; } 
-      else { wmImg.style.width=(baseWidth*1.4)+"px"; wm.style.top="4%"; wm.style.right="10%"; } }
-    else { if(isDesktop){ wmImg.style.width=(baseWidth*1.6)+"px"; wm.style.top="6%"; wm.style.right="5%"; } 
-      else { wmImg.style.width=baseWidth+"px"; wm.style.top="3%"; wm.style.right="4%"; } }
+
+    if(isFullscreen){
+      if(isDesktop){
+        wmImg.style.width=(baseWidth*2.8)+"px";
+        wm.style.top="10%";
+        wm.style.right="6%";
+      } else {
+        wmImg.style.width=(baseWidth*1.4)+"px";
+        wm.style.top="4%";
+        wm.style.right="10%";
+      }
+    } else {
+      if(isDesktop){
+        wmImg.style.width=(baseWidth*1.6)+"px";
+        wm.style.top="6%";
+        wm.style.right="5%";
+      } else {
+        wmImg.style.width=baseWidth+"px";
+        wm.style.top="3%";
+        wm.style.right="4%";
+      }
+    }
   }
+
   player.on("playing",()=>wm.style.opacity="1");
   player.on("pause",()=>wm.style.opacity="1");
   player.on("ended",()=>wm.style.opacity="0");
+
   window.addEventListener("resize", updateWatermark);
   document.addEventListener("fullscreenchange", updateWatermark);
   document.addEventListener("webkitfullscreenchange", updateWatermark);
+
   setTimeout(updateWatermark,300);
 })();
 
-document.addEventListener("keydown",e=>{ if(e.code==="Space"){ e.preventDefault(); if(player.paused()) player.play(); else player.pause(); } });
-document.addEventListener("fullscreenchange",()=>{ const container=document.getElementById("videoContainer"); if(document.fullscreenElement) container.classList.add("fullscreen-mobile"); else container.classList.remove("fullscreen-mobile"); });
-document.addEventListener("webkitfullscreenchange",()=>{ const container=document.getElementById("videoContainer"); if(document.webkitFullscreenElement) container.classList.add("fullscreen-mobile"); else container.classList.remove("fullscreen-mobile"); });
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){
+    e.preventDefault();
+    if(player.paused()) player.play();
+    else player.pause();
+  }
+});
+
+document.addEventListener("fullscreenchange",()=>{
+  const container=document.getElementById("videoContainer");
+  if(document.fullscreenElement) container.classList.add("fullscreen-mobile");
+  else container.classList.remove("fullscreen-mobile");
+});
+
+document.addEventListener("webkitfullscreenchange",()=>{
+  const container=document.getElementById("videoContainer");
+  if(document.webkitFullscreenElement) container.classList.add("fullscreen-mobile");
+  else container.classList.remove("fullscreen-mobile");
+});
 </script>
 </body>
 </html>
