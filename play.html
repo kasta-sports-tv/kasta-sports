@@ -45,21 +45,23 @@
 <script src="https://darkibox.com/node_modules/videojs-brand/dist/videojs-brand.min.js"></script>
 
 <script>
-// Отримуємо URL
+// Отримуємо параметри
 const params = new URLSearchParams(window.location.search);
-let videoSrc = params.get("url") || "";
-let posterParam = params.get("poster");
+let videoSrc = params.get("url");
+let posterSrc = params.get("poster");
 
-// Тип відео
+// fallback якщо відео не передано
+if (!videoSrc) {
+  videoSrc = "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
+}
+
+// тип відео
 let videoType = "application/x-mpegURL";
 if (videoSrc.endsWith(".mp4")) videoType = "video/mp4";
 
-// Стандартний постер, якщо poster= не передано
-let finalPoster = posterParam || "https://the-spot-mediafilm.com/wp-content/uploads/2025/11/ucl_branding-e1763667127906-1320x740.jpeg";
-
 var player = videojs('vjsplayer', {
   sources: [{ src: videoSrc, type: videoType }],
-  poster: finalPoster,
+  poster: posterSrc ? posterSrc : "https://the-spot-mediafilm.com/wp-content/uploads/2025/11/ucl_branding-e1763667127906-1320x740.jpeg",
   controlBar: {
     children: ['playToggle','volumePanel','currentTimeDisplay','progressControl','liveDisplay','seekToLive','durationDisplay','customControlSpacer','audioTrackButton','pictureInPictureToggle','qualitySelector','fullscreenToggle']
   },
@@ -67,42 +69,35 @@ var player = videojs('vjsplayer', {
   techOrder: ['chromecast','html5']
 });
 
-// BRAND
-player.brand({ image:"https://imgpx.com/v61srDLWm9ql.gif", title:"Telegram", destination:"javascript:void(0)", destinationTarget:"_self" });
+// brand
+player.brand({
+  image: "https://imgpx.com/v61srDLWm9ql.gif",
+  title: "Telegram",
+  destination: "javascript:void(0)",
+  destinationTarget: "_self"
+});
 
-player.qualityMenu({ resolutionLabelBitrates:false, labels:{'620':'UHD'} });
+player.qualityMenu({resolutionLabelBitrates:false, labels:{'620':'UHD'}});
 
+// Водяний знак
 (function(){
   const wm = document.getElementById("wm");
   const wmImg = wm.querySelector("img");
   const playerEl = document.querySelector(".video-js");
   if(playerEl && wm) playerEl.appendChild(wm);
-  const baseWidth = 80;
 
+  const baseWidth = 80;
   function updateWatermark() {
     const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || (player && typeof player.isFullscreen==='function' && player.isFullscreen());
     const isDesktop = window.innerWidth>768;
 
     if(isFullscreen){
-      if(isDesktop){
-        wmImg.style.width=(baseWidth*2.8)+"px";
-        wm.style.top="10%";
-        wm.style.right="6%";
-      } else {
-        wmImg.style.width=(baseWidth*1.4)+"px";
-        wm.style.top="4%";
-        wm.style.right="10%";
-      }
-    } else {
-      if(isDesktop){
-        wmImg.style.width=(baseWidth*1.6)+"px";
-        wm.style.top="6%";
-        wm.style.right="5%";
-      } else {
-        wmImg.style.width=baseWidth+"px";
-        wm.style.top="3%";
-        wm.style.right="4%";
-      }
+      if(isDesktop){ wmImg.style.width=(baseWidth*2.8)+"px"; wm.style.top="10%"; wm.style.right="6%"; }
+      else { wmImg.style.width=(baseWidth*1.4)+"px"; wm.style.top="4%"; wm.style.right="10%"; }
+    }
+    else {
+      if(isDesktop){ wmImg.style.width=(baseWidth*1.6)+"px"; wm.style.top="6%"; wm.style.right="5%"; }
+      else { wmImg.style.width=baseWidth+"px"; wm.style.top="3%"; wm.style.right="4%"; }
     }
   }
 
@@ -117,25 +112,14 @@ player.qualityMenu({ resolutionLabelBitrates:false, labels:{'620':'UHD'} });
   setTimeout(updateWatermark,300);
 })();
 
+// Fix spacebar
 document.addEventListener("keydown",e=>{
   if(e.code==="Space"){
     e.preventDefault();
-    if(player.paused()) player.play();
-    else player.pause();
+    if(player.paused()) player.play(); else player.pause();
   }
 });
-
-document.addEventListener("fullscreenchange",()=>{
-  const container=document.getElementById("videoContainer");
-  if(document.fullscreenElement) container.classList.add("fullscreen-mobile");
-  else container.classList.remove("fullscreen-mobile");
-});
-
-document.addEventListener("webkitfullscreenchange",()=>{
-  const container=document.getElementById("videoContainer");
-  if(document.webkitFullscreenElement) container.classList.add("fullscreen-mobile");
-  else container.classList.remove("fullscreen-mobile");
-});
 </script>
+
 </body>
 </html>
