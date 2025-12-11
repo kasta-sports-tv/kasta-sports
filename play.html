@@ -86,7 +86,7 @@ player.qualityMenu({resolutionLabelBitrates:false, labels:{'620':'UHD'}});
   const playerEl = document.querySelector(".video-js");
   if(playerEl && wm) playerEl.appendChild(wm);
 
-  const baseWidth = 80;
+  const baseWidth = 120;
   function updateWatermark() {
     const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || (player && typeof player.isFullscreen==='function' && player.isFullscreen());
     const isDesktop = window.innerWidth>768;
