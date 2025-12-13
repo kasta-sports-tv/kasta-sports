@@ -61,7 +61,7 @@ if (videoSrc.endsWith(".mp4")) videoType = "video/mp4";
 
 var player = videojs('vjsplayer', {
   sources: [{ src: videoSrc, type: videoType }],
-  poster: posterSrc ? posterSrc : "https://ds-images.bolavip.com/news/image?src=https%3A%2F%2Fimages.bolavip.com%2Fwebp%2Ffull%2FBVP_20230703_BVP_23541_laliiganueva.webp&width=740&height=416",
+  poster: posterSrc ? posterSrc : "",
   controlBar: {
     children: ['playToggle','volumePanel','currentTimeDisplay','progressControl','liveDisplay','seekToLive','durationDisplay','customControlSpacer','audioTrackButton','pictureInPictureToggle','qualitySelector','fullscreenToggle']
   },
