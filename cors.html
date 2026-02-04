@@ -60,7 +60,7 @@ html, body {
 <script src="https://cdn.jsdelivr.net/npm/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-logo@3.0.0/dist/videojs-logo.min.js"></script>
+<script src="https://raw.githubusercontent.com/kasta-sports-tv/kasta-sports/main/videojs-logo-noimage.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@misterben/videojs-poster-time@1.0.0/dist/videojs-poster-time.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
@@ -87,14 +87,10 @@ player.hlsQualitySelector({
 /* Контекст меню */
 player.contextmenuUI();
 
-/* Приховати будь-яке вбудоване “by skin” лого Luxmty */
-player.ready(function() {
-    const logos = document.querySelectorAll('.vjs-logo');
-    logos.forEach(logo => {
-        if (logo.classList.contains('vjs-logo-luxmty')) {
-            logo.style.display = 'none';
-        }
-    });
+/* Логотип приклад */
+player.logo({
+    image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
+    url: "https://google.com"
 });
 </script>
 
