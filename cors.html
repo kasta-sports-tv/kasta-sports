@@ -17,7 +17,6 @@ html,body{
     background:#000;
 }
 
-/* Контейнер 16:9 */
 .player-container{
     position:relative;
     width:100%;
@@ -25,7 +24,6 @@ html,body{
     overflow:hidden;
 }
 
-/* Плеєр заповнює контейнер */
 .video-js{
     position:absolute !important;
     width:100% !important;
@@ -41,7 +39,7 @@ html,body{
     display:none !important;
 }
 
-/* Наш watermark */
+/* Наш логотип */
 .video-watermark{
     position:absolute;
     pointer-events:none;
@@ -68,12 +66,10 @@ html,body{
     playsinline
     poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg"
 >
-
-<source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
-
+    <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
 </video-js>
 
-<!-- Custom Logo -->
+<!-- Логотип -->
 <div class="video-watermark" id="wm">
     <img src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png">
 </div>
@@ -83,15 +79,12 @@ html,body{
 <!-- VideoJS -->
 <script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
 
-<!-- Plugins -->
+<!-- Plugins Luxmty -->
 <script src="https://cdn.jsdelivr.net/npm/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@misterben/videojs-poster-time@1.0.0/dist/videojs-poster-time.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
-
-<!-- Luxmty -->
 <script src="https://dl.dropbox.com/scl/fi/v0ulq6iiu152blz4h4vt9/luxmtyadv.min.js?rlkey=o1bzgv7mh6oa6gamnfwrjz"></script>
 <script src="https://dl.dropbox.com/scl/fi/ogug37z70m3c93xmcbo2j/demo-luxmty-advanced.js?rlkey=p122gt64kciuh2ufa9h9gvnkn"></script>
 
@@ -102,18 +95,16 @@ const player = videojs("video-player", {
     fluid: false
 });
 
-/* Mobile UI */
+// Mobile UI
 player.mobileUi();
 
-/* Селектор якості */
-player.hlsQualitySelector({
-    displayCurrentQuality:true
-});
+// Luxmty кнопка якості
+player.hlsQualitySelector({displayCurrentQuality:true});
 
-/* Контекст меню */
+// Контекст меню
 player.contextmenuUI();
 
-/* ===== CUSTOM LOGO / WATERMARK ===== */
+// ===== Custom logo / watermark =====
 player.ready(function(){
 
     const wm = document.getElementById("wm");
@@ -121,14 +112,8 @@ player.ready(function(){
     player.el().appendChild(wm);
 
     const settings = {
-        desktop: {
-            normal: { width:120, top:"6%", right:"2%" },
-            fullscreen: { width:120*2.5, top:"8%", right:"1%" }
-        },
-        mobile: {
-            normal: { width:80, top:"3%", right:"4%" },
-            fullscreen: { width:80*2.5, top:"5%", right:"7%" }
-        }
+        desktop: { normal:{width:120, top:"6%", right:"2%"}, fullscreen:{width:120*2.5, top:"8%", right:"1%"} },
+        mobile: { normal:{width:80, top:"3%", right:"4%"}, fullscreen:{width:80*2.5, top:"5%", right:"7%"} }
     };
 
     function isMobile(){ return window.innerWidth <= 768; }
@@ -138,21 +123,18 @@ player.ready(function(){
         let device = isMobile() ? "mobile" : "desktop";
         let mode = isFullscreen() ? "fullscreen" : "normal";
         let cfg = settings[device][mode];
-
-        wmImg.style.width = cfg.width + "px";
+        wmImg.style.width = cfg.width+"px";
         wm.style.top = cfg.top;
         wm.style.right = cfg.right;
     }
 
-    // Показ після старту відео
     player.on("playing", ()=> wm.style.opacity="1");
     player.on("pause", ()=> wm.style.opacity="1");
     player.on("ended", ()=> wm.style.opacity="0");
-
     player.on("fullscreenchange", updateWatermark);
     window.addEventListener("resize", updateWatermark);
-    updateWatermark();
 
+    updateWatermark();
 });
 </script>
 
