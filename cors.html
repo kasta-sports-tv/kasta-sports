@@ -15,7 +15,6 @@ html, body {
     background: #000;
 }
 
-/* Контейнер 16:9 */
 .player-container {
     position: relative;
     width: 100%;
@@ -23,7 +22,6 @@ html, body {
     overflow: hidden;
 }
 
-/* Плеєр заповнює контейнер */
 .video-js {
     position: absolute !important;
     width: 100% !important;
@@ -32,7 +30,6 @@ html, body {
     left: 0;
 }
 
-/* Водяний знак поверх плеєра */
 .player-watermark {
     position: absolute;
     z-index: 9999;
@@ -41,17 +38,20 @@ html, body {
     transition: all 0.3s ease;
 }
 
-/* ────────────────────────────────────────────── */
-/* Приховуємо логотип від плагіна videojs-logo     */
-/* ────────────────────────────────────────────── */
-.vjs-logo,
+/* Приховуємо логотип безпечно */
 .vjs-logo-display,
 .vjs-logo-content,
-.vjs-control-bar .vjs-logo-button,
-.vjs-logo-button {
+.video-js .vjs-logo {
     display: none !important;
 }
-/* ────────────────────────────────────────────── */
+
+.vjs-control-bar .vjs-logo-button {
+    visibility: hidden !important;
+    width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    pointer-events: none;
+}
 </style>
 </head>
 
@@ -75,7 +75,7 @@ html, body {
     </div>
 </div>
 
-<!-- VideoJS -->
+<!-- Скрипти -->
 <script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
@@ -94,22 +94,16 @@ const player = videojs("video-player", {
     fluid: false
 });
 
-/* Mobile UI */
 player.mobileUi();
-
-/* Селектор якості */
 player.hlsQualitySelector({ displayCurrentQuality: true });
-
-/* Контекст меню */
 player.contextmenuUI();
 
-/* Логотип Luxmty (залишаємо виклик, щоб не ламалися інші плагіни/скін) */
 player.logo({
     image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
     url: "https://google.com"
 });
 
-/* Водяний знак поверх плеєра */
+/* Водяний знак */
 (function(){
     const wm = document.getElementById("wm");
     const wmImg = wm.querySelector("img");
@@ -117,9 +111,9 @@ player.logo({
     if (playerEl && wm) playerEl.appendChild(wm);
 
     const sizes = {
-        desktop:          { width: 120, top: 10, left: 10 },
-        mobile:           { width: 80,  top: 5,  left: 5  },
-        fullscreenDesktop:{ width: 160, top: 15, left: 15 },
+        desktop: { width: 120, top: 10, left: 10 },
+        mobile: { width: 80, top: 5, left: 5 },
+        fullscreenDesktop: { width: 160, top: 15, left: 15 },
         fullscreenMobile: { width: 100, top: 10, left: 10 }
     };
 
@@ -127,20 +121,19 @@ player.logo({
         const isFullscreen = player.isFullscreen();
         const isDesktop = window.innerWidth > 768;
 
-        let sz;
-        if      (isFullscreen && isDesktop)    sz = sizes.fullscreenDesktop;
-        else if (isFullscreen && !isDesktop)   sz = sizes.fullscreenMobile;
-        else if (!isFullscreen && isDesktop)   sz = sizes.desktop;
-        else                                   sz = sizes.mobile;
+        let sz = isFullscreen && isDesktop ? sizes.fullscreenDesktop :
+                 isFullscreen && !isDesktop ? sizes.fullscreenMobile :
+                 !isFullscreen && isDesktop ? sizes.desktop :
+                 sizes.mobile;
 
         wmImg.style.width = sz.width + "px";
-        wm.style.top  = sz.top  + "px";
+        wm.style.top = sz.top + "px";
         wm.style.left = sz.left + "px";
     }
 
-    player.on("play",   () => wm.style.opacity = "1");
-    player.on("pause",  () => wm.style.opacity = "1");
-    player.on("ended",  () => wm.style.opacity = "0");
+    player.on("play", () => wm.style.opacity = "1");
+    player.on("pause", () => wm.style.opacity = "1");
+    player.on("ended", () => wm.style.opacity = "0");
 
     window.addEventListener("resize", updateWatermark);
     player.on("fullscreenchange", updateWatermark);
