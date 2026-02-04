@@ -8,11 +8,7 @@
 <link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet"/>
 
 <style>
-html,body{
-margin:0;
-padding:0;
-background:#000;
-}
+html,body{margin:0;padding:0;background:#000;}
 
 .player-container{
 position:relative;
@@ -29,14 +25,14 @@ top:0;
 left:0;
 }
 
-/* ===== Ховаємо by skin і contact ===== */
+/* Ховаємо luxmty рекламу */
 .vjs-luxmty .luxmty-watermark,
 .vjs-luxmty .luxmty-contact,
 .vjs-luxmty .luxmty-brand{
 display:none!important;
 }
 
-/* ===== Наш watermark ===== */
+/* WATERMARK */
 .video-watermark{
 position:absolute;
 pointer-events:none;
@@ -58,7 +54,7 @@ height:auto;
 
 <video-js
 id="video-player"
-class="vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
+class="vjs-luxmty vjs-16-9"
 controls
 preload="auto"
 playsinline
@@ -79,6 +75,7 @@ playsinline
 <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
 
 <script src="https://dl.dropbox.com/scl/fi/v0ulq6iiu152blz4h4vt9/luxmtyadv.min.js?rlkey=o1bzgv7mh6oa6gamnfwr2fljz"></script>
 <script src="https://dl.dropbox.com/scl/fi/ogug37z70m3c93xmcbo2j/demo-luxmty-advanced.js?rlkey=p122gt64kciuh2ufa9h9gvnkn"></script>
@@ -92,37 +89,27 @@ fluid:false
 });
 
 player.mobileUi();
-
-player.hlsQualitySelector({
-displayCurrentQuality:true
-});
-
+player.hlsQualitySelector({displayCurrentQuality:true});
 player.contextmenuUI();
 
 /* ===== WATERMARK ===== */
 
-(function(){
+player.ready(function(){
 
 const wm=document.getElementById("wm");
 const wmImg=wm.querySelector("img");
-const playerEl=document.querySelector(".video-js");
 
-playerEl.appendChild(wm);
-
-/* Налаштування */
+player.el().appendChild(wm);
 
 const settings={
-
 desktop:{
 normal:{width:120,top:"6%",right:"2%"},
 fullscreen:{width:120*2.5,top:"8%",right:"1%"}
 },
-
 mobile:{
 normal:{width:80,top:"3%",right:"4%"},
 fullscreen:{width:80*2.5,top:"5%",right:"7%"}
 }
-
 };
 
 function isMobile(){return window.innerWidth<=768;}
@@ -147,9 +134,9 @@ player.on("ended",()=>wm.style.opacity="0");
 player.on("fullscreenchange",updateWatermark);
 window.addEventListener("resize",updateWatermark);
 
-setTimeout(updateWatermark,300);
+updateWatermark();
 
-})();
+});
 
 </script>
 
