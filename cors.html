@@ -38,19 +38,17 @@ html, body {
     transition: all 0.3s ease;
 }
 
-/* Приховуємо логотип безпечно */
+/* Приховуємо ТІЛЬКИ вміст логотипу від videojs-logo плагіна */
 .vjs-logo-display,
 .vjs-logo-content,
-.video-js .vjs-logo {
+.vjs-logo {
     display: none !important;
 }
 
-.vjs-control-bar .vjs-logo-button {
-    visibility: hidden !important;
-    width: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    pointer-events: none;
+/* Якщо потрібно ще сильніше приховати (але без ламання бару) */
+.vjs-logo img,
+.vjs-logo a {
+    display: none !important;
 }
 </style>
 </head>
