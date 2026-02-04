@@ -1,61 +1,32 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet"/>
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: #000;
-      height: 100%;
-      overflow: hidden;
-    }
+<style>
+html, body { margin:0; padding:0; background:#000; height:100%; overflow:hidden; }
+.player-container { position: relative; width:100%; height:100vh; background:#000; }
+.video-js { position:absolute; top:0; left:0; width:100% !important; height:100% !important; }
 
-    .player-container {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      background: #000;
-    }
-
-    .video-js {
-      position: absolute;
-      inset: 0;
-      width: 100% !important;
-      height: 100% !important;
-    }
-
-    /* Водяний знак завжди всередині плеєра */
-    .player-watermark {
-      position: absolute;
-      top: 1.5%;
-      right: 1.5%;
-      z-index: 999999;
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .player-watermark img {
-      width: clamp(80px, 14vw, 220px);
-      height: auto;
-      filter: 
-        drop-shadow(0 0 4px rgba(0,0,0,0.9)) 
-        drop-shadow(0 0 8px rgba(0, 140, 255, 0.6));
-      opacity: 0.9;
-      pointer-events: none;
-    }
-
-    @media (max-width: 640px) {
-      .player-watermark img {
-        width: clamp(70px, 20vw, 160px);
-      }
-    }
-  </style>
+.player-watermark {
+  position: absolute;
+  pointer-events:none;
+  z-index:999999;
+  opacity:0;
+  transition: all 0.3s ease;
+}
+.player-watermark img {
+  display:block;
+  width:90px;
+  height:auto;
+  filter: drop-shadow(0 0 6px rgba(0,191,255,0.8)) drop-shadow(0 0 12px rgba(173,216,230,0.6));
+  pointer-events:none;
+}
+</style>
 </head>
 
 <body>
@@ -73,11 +44,7 @@
   </video-js>
 
   <div class="player-watermark" id="wm">
-    <img 
-      src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o" 
-      alt="watermark"
-      draggable="false"
-    >
+    <img src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o" alt="watermark">
   </div>
 </div>
 
@@ -104,31 +71,40 @@ player.logo({
   url: "https://google.com"
 });
 
-// Водяний знак завжди зверху справа
+// Водяний знак з логікою з твого прикладу, щоб не зникав
 (function(){
   const wm = document.getElementById("wm");
+  const wmImg = wm.querySelector("img");
   const playerEl = player.el();
-  if (playerEl && wm && wm.parentNode !== playerEl) {
-    playerEl.appendChild(wm);
-  }
-  wm.style.display = "block";
-  wm.style.opacity = "1";
+  if(playerEl && wm) playerEl.appendChild(wm);
 
-  // Автоповорот на мобільних Android
-  function handleFullscreenChange() {
-    if (player.isFullscreen()) {
-      // Android дозволяє lock orientation після взаємодії
-      if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock("landscape").catch(()=>{});
-      }
-    } else {
-      if (screen.orientation && screen.orientation.unlock) {
-        screen.orientation.unlock();
-      }
+  const baseWidth = 90;
+
+  function updateWatermark() {
+    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || (player && typeof player.isFullscreen==='function' && player.isFullscreen());
+    const isDesktop = window.innerWidth > 768;
+
+    if(isFullscreen){
+      if(isDesktop){ wmImg.style.width=(baseWidth*3.4)+"px"; wm.style.top="9%"; wm.style.right="1%"; }
+      else { wmImg.style.width=(baseWidth*1.2)+"px"; wm.style.top="4%"; wm.style.right="10%"; }
     }
+    else {
+      if(isDesktop){ wmImg.style.width=(baseWidth*2.4)+"px"; wm.style.top="6%"; wm.style.right="2%"; }
+      else { wmImg.style.width=baseWidth+"px"; wm.style.top="3%"; wm.style.right="4%"; }
+    }
+
+    wm.style.opacity = "1";
   }
 
-  player.on("fullscreenchange", handleFullscreenChange);
+  player.on("playing",()=>wm.style.opacity="1");
+  player.on("pause",()=>wm.style.opacity="1");
+  player.on("ended",()=>wm.style.opacity="0");
+
+  window.addEventListener("resize", updateWatermark);
+  document.addEventListener("fullscreenchange", updateWatermark);
+  document.addEventListener("webkitfullscreenchange", updateWatermark);
+
+  setTimeout(updateWatermark, 300);
 })();
 </script>
 
