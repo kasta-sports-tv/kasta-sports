@@ -37,7 +37,7 @@ html, body {
     pointer-events: none;
     z-index: 9999;
     position: absolute;
-    opacity: 0;
+    opacity: 1; /* завжди видно */
     transition: all 0.3s ease;
 }
 </style>
@@ -87,7 +87,7 @@ player.hlsQualitySelector({ displayCurrentQuality: true });
 /* Контекст меню */
 player.contextmenuUI();
 
-/* Логотип Luxmty (залишається, щоб не ламати плагіни) */
+/* Логотип (залишається для сумісності) */
 player.logo({
     image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
     url: "https://google.com"
@@ -107,22 +107,38 @@ player.logo({
         const isDesktop = window.innerWidth > 768;
 
         if(isFullscreen){
-            if(isDesktop){ wmImg.style.width = (baseWidth*2)+"px"; wm.style.top = "10px"; wm.style.left = "10px"; }
-            else { wmImg.style.width = (baseWidth*1.5)+"px"; wm.style.top = "8px"; wm.style.left = "8px"; }
+            if(isDesktop){
+                wmImg.style.width = (baseWidth*3.4) + "px";
+                wm.style.top = "9%";
+                wm.style.right = "1%";
+            } else {
+                wmImg.style.width = (baseWidth*1.2) + "px";
+                wm.style.top = "4%";
+                wm.style.right = "10%";
+            }
         } else {
-            if(isDesktop){ wmImg.style.width = (baseWidth*1.5)+"px"; wm.style.top = "10px"; wm.style.left = "10px"; }
-            else { wmImg.style.width = baseWidth+"px"; wm.style.top = "8px"; wm.style.left = "8px"; }
+            if(isDesktop){
+                wmImg.style.width = (baseWidth*2.4) + "px";
+                wm.style.top = "6%";
+                wm.style.right = "2%";
+            } else {
+                wmImg.style.width = baseWidth + "px";
+                wm.style.top = "3%";
+                wm.style.right = "4%";
+            }
         }
+        wm.style.opacity = "1"; // завжди видно
     }
 
-    player.on("play",()=>wm.style.opacity="1");
-    player.on("pause",()=>wm.style.opacity="1");
-    player.on("ended",()=>wm.style.opacity="0");
-
+    /* Постійне відображення водяного знаку */
+    player.on("play", updateWatermark);
+    player.on("pause", updateWatermark);
+    player.on("ended", updateWatermark);
     window.addEventListener("resize", updateWatermark);
     player.on("fullscreenchange", updateWatermark);
 
-    setTimeout(updateWatermark, 300);
+    /* Початкове оновлення */
+    player.ready(() => updateWatermark());
 })();
 </script>
 
