@@ -1,133 +1,91 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet"/>
-
-<style>
-html, body { margin:0; padding:0; background:#000; height:100%; overflow:hidden; }
-.player-container { position: relative; width:100%; height:100vh; background:#000; }
-.video-js { position:absolute; top:0; left:0; width:100% !important; height:100% !important; object-fit:contain !important; background:#000 !important; }
-
-.vjs-control-bar { background: rgba(0,0,0,0.65) !important; }
-.vjs-control { color:#fff !important; transition: all 0.2s ease; }
-.vjs-control:hover { color:#ff0000 !important; }
-.vjs-play-control, .vjs-fullscreen-control { color:#ff0000 !important; }
-.vjs-big-play-button { color:#ff0000 !important; border:2px solid #ff0000 !important; }
-.vjs-quality-selector .vjs-menu { width:12em !important; left:-4.5em !important; }
-.vjs-menu li { text-transform:none; }
-.vjs-quality-menu-wrapper .vjs-menu { width:12em !important; left:-4.5em !important; }
-.vjs-quality-menu-item-sub-label { display:none; }
-
-/* Водяний знак */
-.player-watermark {
-  pointer-events:none;
-  z-index:9999;
-  position:absolute;
-  filter: drop-shadow(0 0 6px rgba(0,191,255,0.8)) drop-shadow(0 0 12px rgba(173,216,230,0.6));
-  transition: all 0.3s ease;
-  opacity:0;
-}
-.player-watermark img { display:block; width:90px; height:auto; pointer-events:none; }
-</style>
-</head>
-
-<body>
-
-<div class="player-container" id="videoContainer">
-  <video-js
-    id="video-player"
-    class="vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
-    controls
-    preload="auto"
-    playsinline
-  >
-    <source src="https://cors.orestlutij9.workers.dev/?url=https://playertv.xyz/site3/video.m3u8" type="application/x-mpegURL" />
-  </video-js>
-
-  <div class="player-watermark" id="wm">
-    <img src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o" alt="watermark">
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-logo@3.0.0/dist/videojs-logo.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
-
-<script>
-// Ініціалізація плеєра
-const player = videojs("video-player", {
-  liveui: true,
-  responsive: true,
-  fluid: false,
-  controlBar: {
-    children: [
-      'playToggle','volumePanel','currentTimeDisplay','progressControl',
-      'liveDisplay','seekToLive','durationDisplay','customControlSpacer',
-      'audioTrackButton','pictureInPictureToggle','qualitySelector','fullscreenToggle'
-    ]
-  }
-});
-
-player.mobileUi();
-player.hlsQualitySelector({ displayCurrentQuality: true });
-player.contextmenuUI();
-
-player.logo({
-  image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
-  url: "https://google.com"
-});
-
-// Водяний знак з твоєї логіки
-(function(){
-  const wm = document.getElementById("wm");
-  const wmImg = wm.querySelector("img");
-
-  player.ready(() => {
-    const techEl = player.el().querySelector('.vjs-tech') || player.el();
-    techEl.parentNode.appendChild(wm);
-
-    const baseWidth = 90;
-
-    function updateWatermark() {
-      const isFullscreen = player.isFullscreen && player.isFullscreen();
-      const isDesktop = window.innerWidth > 768;
-
-      if(isFullscreen){
-        if(isDesktop){ wmImg.style.width=(baseWidth*3.4)+"px"; wm.style.top="9%"; wm.style.right="1%"; }
-        else { wmImg.style.width=(baseWidth*1.2)+"px"; wm.style.top="4%"; wm.style.right="10%"; }
-      } else {
-        if(isDesktop){ wmImg.style.width=(baseWidth*2.4)+"px"; wm.style.top="6%"; wm.style.right="2%"; }
-        else { wmImg.style.width=baseWidth+"px"; wm.style.top="3%"; wm.style.right="4%"; }
-      }
-
-      wm.style.opacity = "1";
+  <meta charset="UTF-8">
+  <title>Video.js HLS Player</title>
+  
+  <!-- Video.js CSS -->
+  <link href="https://vjs.zencdn.net/7.24.0/video-js.css" rel="stylesheet" />
+  
+  <style>
+    /* Контейнер для 16/9 */
+    .video-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: black;
     }
 
-    player.on("fullscreenchange", updateWatermark);
-    window.addEventListener("resize", updateWatermark);
-    document.addEventListener("fullscreenchange", updateWatermark);
-    document.addEventListener("webkitfullscreenchange", updateWatermark);
+    /* Плеєр заповнює контейнер */
+    .video-js {
+      width: 100% !important;
+      height: 100% !important;
+    }
 
-    player.on("playing", ()=> wm.style.opacity="1");
-    player.on("pause", ()=> wm.style.opacity="1");
-    player.on("ended", ()=> wm.style.opacity="0");
+    /* BigPlayButton */
+    .video-js .vjs-big-play-button {
+      color: #FF0000;
+      background: linear-gradient(to bottom, #fcf532 0%,#b9c625 16%,#5a5b0e 100%,#7db9e8 100%);
+      opacity: .7;
+      border-width: .1rem;
+      border-color: #FF0000;
+      border-style: solid;
+    }
 
-    setTimeout(updateWatermark, 300);
-  });
-})();
+    /* ControlBar */
+    .video-js .vjs-control-bar {
+      color: #FFFF00;
+      background-color: #666666;
+    }
 
-// Fix spacebar для паузи/відтворення
-document.addEventListener("keydown", e=>{
-  if(e.code==="Space"){ e.preventDefault(); if(player.paused()) player.play(); else player.pause(); }
-});
-</script>
+    .video-js .vjs-play-control { color: #FFCC00; }
+    .video-js .vjs-volume-menu-button { color: #FF00CC; }
+    .vjs-volume-bar.vjs-slider-bar.vjs-slider.vjs-slider-horizontal { color: #FF0000; }
+    .video-js .vjs-volume-level { color: #FFFF00; }
+    .video-js .vjs-current-time { color: #00CCCC; }
+    .video-js .vjs-time-divider { color: #FFFF00; font-weight: bold; font-size: .9em; }
+    .video-js .vjs-duration { text-decoration: italic; color: #00CCCC; }
+    .video-js .vjs-progress-control.vjs-control { color: #FF00FF; height: 1em; }
+    .video-js .vjs-play-progress.vjs-slider-bar { color: #00FFFF; height: 1em; }
+    .video-js .vjs-chapters-button.vjs-menu-button { color: #CCFF00; }
+    .video-js .vjs-captions-button.vjs-menu-button { color: #FFFFFF; background-color: #333333; }
+    .video-js .vjs-fullscreen-control.vjs-control { color: #FFFF00; font-weight: bold; }
 
+    /* DockText */
+    .vjs-dock-text { 
+      color: #3300FF;
+      font-weight: lighter;
+      background: linear-gradient(to bottom, rgba(194,194,41,.7) 0%, rgba(133,131,125,0.5) 100%);
+      opacity: .7;
+    }
+
+    .vjs-dock-title { font-size: 1em; font-family: sans-serif; }
+    .vjs-dock-description { color: #FFFFFF; font-size: .8em; }
+  </style>
+</head>
+<body>
+  <div class="video-container">
+    <video
+      id="my-video"
+      class="video-js vjs-big-play-centered"
+      controls
+      preload="auto"
+      data-setup='{}'
+    >
+      <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL">
+    </video>
+  </div>
+
+  <!-- Video.js JS -->
+  <script src="https://vjs.zencdn.net/7.24.0/video.min.js"></script>
+  <script>
+    const player = videojs('my-video', {
+      fluid: true, // Адаптивний розмір
+      aspectRatio: '16:9',
+      autoplay: false,
+      controls: true,
+      preload: 'auto'
+    });
+  </script>
 </body>
 </html>
