@@ -15,7 +15,6 @@ html, body {
     background: #000;
 }
 
-/* Контейнер 16:9 */
 .player-container {
     position: relative;
     width: 100%;
@@ -23,7 +22,6 @@ html, body {
     overflow: hidden;
 }
 
-/* Плеєр заповнює контейнер */
 .video-js {
     position: absolute !important;
     width: 100% !important;
@@ -32,13 +30,18 @@ html, body {
     left: 0;
 }
 
-/* Водяний знак поверх плеєра */
+/* Водяний знак — завжди поверх усього */
 .player-watermark {
     position: absolute;
-    z-index: 9999;
-    pointer-events: none;
-    opacity: 0;
-    transition: all 0.3s ease;
+    z-index: 99999;          /* дуже високий, щоб перекрити навіть control-bar якщо треба */
+    pointer-events: none;    /* не заважає клікам по плеєру */
+    opacity: 1;              /* завжди видимий */
+    transition: none;        /* без анімації */
+}
+
+/* Опціонально: легка тінь для кращої видимості на темному фоні */
+.player-watermark img {
+    box-shadow: 0 0 8px rgba(0,0,0,0.6);
 }
 </style>
 </head>
@@ -46,24 +49,24 @@ html, body {
 <body>
 
 <div class="player-container">
-    <video-js
+    <video
         id="video-player"
-        class="vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
+        class="video-js vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
         controls
         preload="auto"
         playsinline
         poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg"
     >
         <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
-    </video-js>
+    </video>
 
-    <!-- Водяний знак -->
+    <!-- Водяний знак (твій логотип) -->
     <div class="player-watermark" id="wm">
         <img src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o" alt="watermark">
     </div>
 </div>
 
-<!-- VideoJS -->
+<!-- Скрипти -->
 <script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
@@ -82,72 +85,58 @@ const player = videojs("video-player", {
     fluid: false
 });
 
-/* Mobile UI */
 player.mobileUi();
-
-/* Селектор якості */
 player.hlsQualitySelector({ displayCurrentQuality: true });
-
-/* Контекст меню */
 player.contextmenuUI();
 
-/* Логотип Luxmty (залишається, щоб не ламати плагіни, але приховуємо динамічно) */
+// Залишаємо logo-плагін, бо без нього ламається скін, але тепер він буде перекритий
 player.logo({
     image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
     url: "https://google.com"
 });
 
-// Нова логіка: Приховуємо логотип після ініціалізації плеєра
-player.on('ready', function() {
-    // Використовуємо вбудований метод hide() плагіна videojs-logo
-    if (player.logo && typeof player.logo.hide === 'function') {
-        player.logo().hide();
-    } else {
-        // Якщо метод hide() недоступний, приховуємо елемент вручну
-        const logoElements = document.querySelectorAll('.vjs-logo, .vjs-logo-display, .vjs-logo-content');
-        logoElements.forEach(el => {
-            el.style.display = 'none';
-        });
-    }
-});
-
-/* Водяний знак поверх плеєра */
+/* Водяний знак — завжди видимий + адаптивні розміри/позиції */
 (function(){
     const wm = document.getElementById("wm");
     const wmImg = wm.querySelector("img");
     const playerEl = player.el();
-    if(playerEl && wm) playerEl.appendChild(wm);
 
-    const sizes = {
-        desktop: { width: 120, top: 10, left: 10 },
-        mobile: { width: 80, top: 5, left: 5 },
-        fullscreenDesktop: { width: 160, top: 15, left: 15 },
-        fullscreenMobile: { width: 100, top: 10, left: 10 }
+    if (playerEl && wm) {
+        playerEl.appendChild(wm);  // додаємо в плеєр
+    }
+
+    // Окремі налаштування для режимів
+    const positions = {
+        // Звичайний режим (не fullscreen)
+        normal: {
+            desktop: { width: 140, top: 15, left: 15 },   // ← тут міняй розмір і відступи для ПК
+            mobile:  { width: 90,  top: 8,  left: 8  }    // ← для мобілки
+        },
+        // Повноекранний режим
+        fullscreen: {
+            desktop: { width: 220, top: 25, left: 25 },   // ← більший розмір у fullscreen на ПК
+            mobile:  { width: 140, top: 15, left: 15 }    // ← для мобілки в fullscreen
+        }
     };
 
-    function updateWatermark() {
+    function updateWatermarkPosition() {
         const isFullscreen = player.isFullscreen();
-        const isDesktop = window.innerWidth > 768;
+        const isDesktop   = window.innerWidth > 768;
 
-        let sz;
-        if(isFullscreen && isDesktop) sz = sizes.fullscreenDesktop;
-        else if(isFullscreen && !isDesktop) sz = sizes.fullscreenMobile;
-        else if(!isFullscreen && isDesktop) sz = sizes.desktop;
-        else sz = sizes.mobile;
+        const mode = isFullscreen ? 'fullscreen' : 'normal';
+        const sz = isDesktop ? positions[mode].desktop : positions[mode].mobile;
 
         wmImg.style.width = sz.width + "px";
-        wm.style.top = sz.top + "px";
+        wm.style.top  = sz.top  + "px";
         wm.style.left = sz.left + "px";
     }
 
-    player.on("play", ()=> wm.style.opacity="1");
-    player.on("pause", ()=> wm.style.opacity="1");
-    player.on("ended", ()=> wm.style.opacity="0");
+    // Оновлюємо при змінах
+    player.on("fullscreenchange", updateWatermarkPosition);
+    window.addEventListener("resize", updateWatermarkPosition);
 
-    window.addEventListener("resize", updateWatermark);
-    player.on("fullscreenchange", updateWatermark);
-
-    setTimeout(updateWatermark, 300);
+    // Перше оновлення (з затримкою, бо плеєр ще ініціалізується)
+    setTimeout(updateWatermarkPosition, 400);
 })();
 </script>
 
