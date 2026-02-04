@@ -2,13 +2,12 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <title>Video.js HLS Player</title>
+  <title>Brightcove HLS Player</title>
   
-  <!-- Video.js CSS -->
-  <link href="https://vjs.zencdn.net/7.24.0/video-js.css" rel="stylesheet" />
+  <!-- Brightcove Video.js CSS -->
+  <link href="https://players.brightcove.net/1752604059001/default_default/video-js.css" rel="stylesheet">
   
   <style>
-    /* Контейнер для 16/9 */
     .video-container {
       position: relative;
       width: 100%;
@@ -16,7 +15,6 @@
       background: black;
     }
 
-    /* Плеєр заповнює контейнер */
     .video-js {
       width: 100% !important;
       height: 100% !important;
@@ -33,11 +31,7 @@
     }
 
     /* ControlBar */
-    .video-js .vjs-control-bar {
-      color: #FFFF00;
-      background-color: #666666;
-    }
-
+    .video-js .vjs-control-bar { color: #FFFF00; background-color: #666666; }
     .video-js .vjs-play-control { color: #FFCC00; }
     .video-js .vjs-volume-menu-button { color: #FF00CC; }
     .vjs-volume-bar.vjs-slider-bar.vjs-slider.vjs-slider-horizontal { color: #FF0000; }
@@ -65,26 +59,29 @@
 </head>
 <body>
   <div class="video-container">
-    <video
-      id="my-video"
+    <video-js
+      id="my-brightcove"
+      data-account="1752604059001"
+      data-player="default"
+      data-embed="default"
       class="video-js vjs-big-play-centered"
       controls
-      preload="auto"
-      data-setup='{}'
     >
-      <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL">
-    </video>
+    </video-js>
   </div>
 
-  <!-- Video.js JS -->
-  <script src="https://vjs.zencdn.net/7.24.0/video.min.js"></script>
+  <!-- Brightcove Player JS -->
+  <script src="https://players.brightcove.net/1752604059001/default_default/index.min.js"></script>
+
   <script>
-    const player = videojs('my-video', {
-      fluid: true, // Адаптивний розмір
-      aspectRatio: '16:9',
-      autoplay: false,
-      controls: true,
-      preload: 'auto'
+    // Після завантаження плеєра додаємо джерело HLS
+    videojs.getPlayer('my-brightcove').ready(function() {
+      const player = this;
+      player.src({
+        src: 'https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8',
+        type: 'application/x-mpegURL'
+      });
+      player.play(); // якщо хочеш автозапуск
     });
   </script>
 </body>
