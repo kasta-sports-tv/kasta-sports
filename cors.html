@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- VideoJS -->
   <link href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet"/>
 
@@ -17,78 +16,65 @@
       overflow: hidden;
     }
 
-    /* Контейнер 16:9 */
     .player-container {
       position: relative;
       width: 100%;
-      height: 100vh;           /* ← повна висота екрану */
-      max-width: 100vw;
-      aspect-ratio: 16 / 9;
-      margin: 0 auto;
+      height: 100vh;
       background: #000;
-      overflow: hidden;
     }
 
-    /* Плеєр заповнює контейнер */
     .video-js {
-      position: absolute !important;
-      inset: 0 !important;
+      position: absolute;
+      inset: 0;
       width: 100% !important;
       height: 100% !important;
     }
 
-    /* Водяний знак – основні стилі */
+    /* Водяний знак */
     .player-watermark {
       position: absolute;
-      inset: 0;                     /* заповнює весь плеєр */
+      top: 1.5%;
+      right: 1.5%;
       pointer-events: none;
-      z-index: 9999;
       user-select: none;
-      -webkit-user-select: none;
-      opacity: 0.75;                /* завжди видно, але не надто яскраво */
-      transition: opacity 0.4s ease;
+      z-index: 999999;
+      opacity: 0.85;
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     .player-watermark img {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      width: clamp(70px, 11vw, 180px);
+      width: clamp(80px, 14vw, 220px);
       height: auto;
-      filter: drop-shadow(0 0 4px #000) drop-shadow(0 0 7px rgba(0,140,255,0.5));
-      opacity: 0.88;
+      filter: 
+        drop-shadow(0 0 4px rgba(0,0,0,0.9)) 
+        drop-shadow(0 0 8px rgba(0, 140, 255, 0.6));
+      opacity: 0.9;
+      pointer-events: none;
     }
 
-    /* Повноекранний режим – примусово перевизначаємо */
+    /* Повноекранний режим */
     :fullscreen .player-watermark,
     :-webkit-full-screen .player-watermark,
     .vjs-fullscreen .player-watermark {
-      position: fixed !important;     /* ← ключовий момент */
-      inset: 0 !important;
+      position: fixed !important;
+      top: 1.2% !important;
+      right: 1.5% !important;
       z-index: 2147483640 !important;
-      opacity: 0.92 !important;
     }
 
     :fullscreen .player-watermark img,
     :-webkit-full-screen .player-watermark img,
     .vjs-fullscreen .player-watermark img {
-      top: 1.2% !important;
-      left: 1.2% !important;
-      width: clamp(90px, 14vw, 240px) !important;
-      filter: drop-shadow(0 0 5px #000) drop-shadow(0 0 9px rgba(0,160,255,0.7)) !important;
+      width: clamp(100px, 16vw, 280px) !important;
+      filter: 
+        drop-shadow(0 0 6px rgba(0,0,0,0.95)) 
+        drop-shadow(0 0 10px rgba(0, 160, 255, 0.7)) !important;
     }
 
     @media (max-width: 640px) {
       .player-watermark img {
-        top: 8px;
-        left: 8px;
-        width: clamp(60px, 16vw, 130px);
-      }
-      :fullscreen .player-watermark img,
-      :-webkit-full-screen .player-watermark img {
-        top: 1% !important;
-        left: 2% !important;
-        width: clamp(80px, 18vw, 160px) !important;
+        width: clamp(70px, 20vw, 160px);
       }
     }
   </style>
@@ -108,7 +94,6 @@
     <source src="https://cors.orestlutij9.workers.dev/?url=https://playertv.xyz/site3/video.m3u8" type="application/x-mpegURL" />
   </video-js>
 
-  <!-- Водяний знак -->
   <div class="player-watermark" id="wm">
     <img 
       src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o" 
@@ -118,7 +103,6 @@
   </div>
 </div>
 
-<!-- VideoJS та плагіни -->
 <script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
@@ -142,28 +126,29 @@ player.logo({
   url: "https://google.com"
 });
 
-// Водяний знак – переміщуємо в плеєр та робимо стійким
-(function initWatermark() {
+// Водяний знак — завжди зверху справа
+(function(){
   const wm = document.getElementById("wm");
-  const playerEl = player.el();   // .video-js елемент
-
+  const playerEl = player.el();
   if (playerEl && wm && wm.parentNode !== playerEl) {
     playerEl.appendChild(wm);
   }
-
-  // Показуємо відразу (можна залишити opacity=0 за замовчуванням і вмикати тільки на play)
+  wm.style.display = "block";
   wm.style.opacity = "1";
 
-  function updateWatermarkPosition() {
-    // Можна додати додаткову логіку, якщо потрібно
-    // наразі головне — position: fixed у :fullscreen
+  // Автоповорот для мобільних у fullscreen
+  function lockOrientation() {
+    if(screen.orientation && screen.orientation.lock) {
+      if(player.isFullscreen()) {
+        screen.orientation.lock("landscape").catch(()=>{});
+      } else {
+        screen.orientation.unlock && screen.orientation.unlock();
+      }
+    }
   }
 
-  player.on("fullscreenchange", updateWatermarkPosition);
-  window.addEventListener("resize", updateWatermarkPosition);
-
-  // Початкове оновлення
-  setTimeout(updateWatermarkPosition, 400);
+  player.on("fullscreenchange", lockOrientation);
+  window.addEventListener("resize", lockOrientation);
 })();
 </script>
 
