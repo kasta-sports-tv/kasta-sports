@@ -32,11 +32,11 @@ html, body {
     left: 0;
 }
 
-/* Водяний знак */
+/* Водяний знак поверх плеєра */
 .player-watermark {
-    pointer-events: none;
-    z-index: 9999;
     position: absolute;
+    z-index: 9999;
+    pointer-events: none;
     opacity: 0;
     transition: all 0.3s ease;
 }
@@ -71,6 +71,10 @@ html, body {
 <script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
 
+<!-- Luxmty -->
+<script src="https://dl.dropbox.com/scl/fi/v0ulq6iiu152blz4h4vt9/luxmtyadv.min.js?rlkey=o1bzgv7mh6oa6gamnfwr2fljz"></script>
+<script src="https://dl.dropbox.com/scl/fi/ogug37z70m3c93xmcbo2j/demo-luxmty-advanced.js?rlkey=p122gt64kciuh2ufa9h9gvnkn"></script>
+
 <script>
 const player = videojs("video-player", {
     liveui: true,
@@ -100,24 +104,31 @@ player.logo({
     const playerEl = player.el();
     if(playerEl && wm) playerEl.appendChild(wm);
 
-    const baseWidth = 90;
+    const sizes = {
+        desktop: { width: 120, top: 10, left: 10 },
+        mobile: { width: 80, top: 5, left: 5 },
+        fullscreenDesktop: { width: 160, top: 15, left: 15 },
+        fullscreenMobile: { width: 100, top: 10, left: 10 }
+    };
 
     function updateWatermark() {
         const isFullscreen = player.isFullscreen();
         const isDesktop = window.innerWidth > 768;
 
-        if(isFullscreen){
-            if(isDesktop){ wmImg.style.width = (baseWidth*2)+"px"; wm.style.top = "10px"; wm.style.left = "10px"; }
-            else { wmImg.style.width = (baseWidth*1.5)+"px"; wm.style.top = "8px"; wm.style.left = "8px"; }
-        } else {
-            if(isDesktop){ wmImg.style.width = (baseWidth*1.5)+"px"; wm.style.top = "10px"; wm.style.left = "10px"; }
-            else { wmImg.style.width = baseWidth+"px"; wm.style.top = "8px"; wm.style.left = "8px"; }
-        }
+        let sz;
+        if(isFullscreen && isDesktop) sz = sizes.fullscreenDesktop;
+        else if(isFullscreen && !isDesktop) sz = sizes.fullscreenMobile;
+        else if(!isFullscreen && isDesktop) sz = sizes.desktop;
+        else sz = sizes.mobile;
+
+        wmImg.style.width = sz.width + "px";
+        wm.style.top = sz.top + "px";
+        wm.style.left = sz.left + "px";
     }
 
-    player.on("play",()=>wm.style.opacity="1");
-    player.on("pause",()=>wm.style.opacity="1");
-    player.on("ended",()=>wm.style.opacity="0");
+    player.on("play", ()=> wm.style.opacity="1");
+    player.on("pause", ()=> wm.style.opacity="1");
+    player.on("ended", ()=> wm.style.opacity="0");
 
     window.addEventListener("resize", updateWatermark);
     player.on("fullscreenchange", updateWatermark);
