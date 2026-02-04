@@ -2,167 +2,384 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
+  <meta name="google-site-verification" content="-SWuspthxR-vXpOxIoqwNKlsa9nYdTpoo6OfBlKECr4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet"/>
-
+  <title>Kasta Sports</title>
   <style>
-    html, body {
+    body {
+      background: url('https://abrakadabra.fun/uploads/posts/2022-02/1644388958_2-abrakadabra-fun-p-zadnii-fon-dlya-saita-2.jpg') no-repeat center center fixed;
+      background-size: cover;
+      background-color: black;
+      font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #000;
-      height: 100%;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .layout {
+      display: flex;
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 28%;
+      min-width: 180px;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 10px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    /* новий стиль для заголовка турніру (логотип + назва поруч) */
+    .tournament-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 12px 0 6px;
+    }
+
+    .tournament-header img {
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .tournament-name {
+      color: #00A8E8; /* колір такий як рамка контейнера */
+      font-weight: 700;
+      font-size: 18px;
+      white-space: nowrap;
+    }
+
+    .player-section {
+      width: 72%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 10px;
       overflow: hidden;
     }
 
     .player-container {
       position: relative;
       width: 100%;
-      height: 100vh;
-      background: #000;
+      padding-bottom: 56.25%;
+      background-color: black;
+      border-radius: 12px;
+      border: 3px solid #00A8E8;
+      overflow: hidden;
+      flex-shrink: 0;
     }
 
-    .video-js {
+    iframe {
       position: absolute;
-      inset: 0;
-      width: 100% !important;
-      height: 100% !important;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
     }
 
-    /* Водяний знак */
-    .player-watermark {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      user-select: none;
-      z-index: 999999;           /* дуже високий */
-      opacity: 0.85;
-    }
-
-    .player-watermark img {
-      position: absolute;
-      top: 1.5%;
-      right: 1.5%;
-      width: clamp(80px, 14vw, 220px);
-      height: auto;
-      filter: 
-        drop-shadow(0 0 4px rgba(0,0,0,0.9)) 
-        drop-shadow(0 0 8px rgba(0, 140, 255, 0.6));
+    .select-text {
+      margin-top: 12px;
+      font-size: 18px;
+      text-align: center;
       opacity: 0.9;
-      pointer-events: none;
     }
 
-    /* ───── Повноекранний режим ───── */
-    :fullscreen .player-watermark,
-    :-webkit-full-screen .player-watermark,
-    .vjs-fullscreen .player-watermark {
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: 2147483640 !important;
-      pointer-events: none !important;
+    .match-info {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      font-size: 22px;
+      text-align: center;
+      font-weight: bold;
+      max-width: 100%;
+      flex-wrap: nowrap;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
-    :fullscreen .player-watermark img,
-    :-webkit-full-screen .player-watermark img,
-    .vjs-fullscreen .player-watermark img {
-      top: 1.2% !important;
-      right: 1.5% !important;
-      width: clamp(100px, 16vw, 280px) !important;
-      filter: 
-        drop-shadow(0 0 6px rgba(0,0,0,0.95)) 
-        drop-shadow(0 0 10px rgba(0, 160, 255, 0.7)) !important;
+    .match-info img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
     }
 
-    @media (max-width: 640px) {
-      .player-watermark img {
-        top: 1%;
-        right: 2%;
-        width: clamp(70px, 20vw, 160px);
+    .match-info.active {
+      display: flex;
+    }
+
+    .stream-btn {
+      width: 100%;
+      background-color: rgba(41, 52, 64, 0.7);
+      color: white;
+      border: 2px solid #00A8E8;
+      padding: 12px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .stream-btn:hover {
+      background-color: rgba(0, 200, 232, 0.25);
+      transform: scale(1.04);
+    }
+
+    .stream-btn.active {
+      background-color: rgba(0, 200, 232, 0.4);
+      border-color: cyan;
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 15px;
+      flex: 1;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .team img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    .match-time {
+      width: 55px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        overflow-x: hidden;
       }
-    }
 
-    /* Додатковий захист для деяких браузерів */
-    .player-watermark {
-      will-change: transform;
-      transform: translateZ(0);
+      .layout {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+      }
+
+      .sidebar {
+        width: 95%;
+        max-height: 350px;
+        order: 2;
+        display: flex;
+        flex-direction: column;
+        border-right: none;
+        overflow-y: auto;
+        background: rgba(0,0,0,0.55);
+      }
+
+      .player-section {
+        width: 95%;
+        order: 1;
+      }
+
+      .stream-btn {
+        justify-content: center;
+      }
+
+      .match-info {
+        font-size: 16px;
+      }
+
+      .tournament-header {
+        gap: 8px;
+      }
+
+      .tournament-header img {
+        width: 34px;
+        height: 34px;
+      }
+
+      .tournament-name {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
-
 <body>
+  <div class="layout">
+    <div class="sidebar" id="streamButtons">
 
-<div class="player-container">
-  <video-js
-    id="video-player"
-    class="vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
-    controls
-    preload="auto"
-    playsinline
-    poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg"
-  >
-    <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
-  </video-js>
+      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
+      <div class="tournament-header">
+        <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/0/0c/EFL_%28Carabao%29_Cup_Logo.svg/1280px-EFL_%28Carabao%29_Cup_Logo.svg.png" alt="">
+        <div class="tournament-name">Кубок Англійської Ліги</div>
+      </div>
 
-  <div class="player-watermark" id="wm">
-    <img 
-      src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o" 
-      alt="watermark"
-      draggable="false"
-    >
+      <!-- Команда 1 vs Команда 2 -->
+      <button class="stream-btn"
+        onclick="setStream('https://bolaloca.my/player/4/3', this,
+        'https://s7.vcdn.biz/static/f/10537579141/image.jpg','Арсенал','vs','Челсі',
+        'https://s7.vcdn.biz/static/f/10541151331/image.jpg')">
+        <span class="team">
+          <img src="https://s7.vcdn.biz/static/f/10537579141/image.jpg" alt="">
+          Арсенал
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Челсі
+          <img src="https://s7.vcdn.biz/static/f/10541151331/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
+      <div class="tournament-header">
+        <img src="https://static.flashscore.com/res/image/data/QexI2ehD-dOluB62Q.png" alt="">
+        <div class="tournament-name">Кубок Туреччини</div>
+      </div>
+
+      <!-- Команда 1 vs Команда 2 -->
+      <button class="stream-btn"
+        onclick="setStream('https://live-maincast-srt02.cosmonova-broadcast.tv/player', this,
+        'https://static.flashscore.com/res/image/data/AmS7XBYA-MobtE80i.png','Трабзонспор','vs','Фетхієспор',
+        'https://static.flashscore.com/res/image/data/SGjBVoDa-zw0lLOtc.png')">
+        <span class="team">
+          <img src="https://static.flashscore.com/res/image/data/AmS7XBYA-MobtE80i.png" alt="">
+          Трабзонспор
+        </span>
+        <span class="match-time">19:30</span>
+        <span class="team">
+          Фетхієспор
+          <img src="https://static.flashscore.com/res/image/data/SGjBVoDa-zw0lLOtc.png" alt="">
+        </span>
+      </button>
+
+      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
+      <div class="tournament-header">
+        <img src="https://upload.wikimedia.org/wikipedia/uk/0/00/CoupeDeFrance_logo.png" alt="">
+        <div class="tournament-name">Кубок Франції</div>
+      </div>
+
+      <!-- Команда 1 vs Команда 2 -->
+      <button class="stream-btn"
+        onclick="setStream('https://bolaloca.my/player/4/2', this,
+        'https://s4.vcdn.biz/static/f/6503171881/image.jpg','Реймс','vs','Ле-Ман',
+        'https://s6.vcdn.biz/static/f/10552803081/image.jpg')">
+        <span class="team">
+          <img src="https://s4.vcdn.biz/static/f/6503171881/image.jpg" alt="">
+          Реймс
+        </span>
+        <span class="match-time">21:30</span>
+        <span class="team">
+          Ле-Ман
+          <img src="https://s6.vcdn.biz/static/f/10552803081/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Команда 1 vs Команда 2 -->
+      <button class="stream-btn"
+        onclick="setStream('https://bolaloca.my/player/4/1', this,
+        'https://s7.vcdn.biz/static/f/6503122771/image.jpg','Марсель','vs','Ренн',
+        'https://s2.vcdn.biz/static/f/6503179061/image.jpg')">
+        <span class="team">
+          <img src="https://s7.vcdn.biz/static/f/6503122771/image.jpg" alt="">
+          Марсель
+        </span>
+        <span class="match-time">22:10</span>
+        <span class="team">
+          Ренн
+          <img src="https://s2.vcdn.biz/static/f/6503179061/image.jpg" alt="">
+        </span>
+      </button>
+
+      <!-- Заголовок турніру 1 (логотип + назва поруч) -->
+      <div class="tournament-header">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Serie_A.png/250px-Serie_A.png" alt="">
+        <div class="tournament-name">Серія А</div>
+      </div>
+
+      <!-- Команда 1 vs Команда 2 -->
+      <button class="stream-btn"
+        onclick="setStream('https://bolaloca.my/player/4/137', this,
+        'https://s7.vcdn.biz/static/f/6502740721/image.jpg','Болонья','vs','Мілан',
+        'https://s2.vcdn.biz/static/f/6502769291/image.jpg')">
+        <span class="team">
+          <img src="https://s7.vcdn.biz/static/f/6502740721/image.jpg" alt="">
+          Болонья
+        </span>
+        <span class="match-time">21:45</span>
+        <span class="team">
+          Мілан
+          <img src="https://s2.vcdn.biz/static/f/6502769291/image.jpg" alt="">
+        </span>
+      </button>
+
+    </div>
+
+    <div class="player-section">
+      <div class="player-container">
+        <iframe id="mainPlayer"
+          src=""
+          allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
+          allowfullscreen
+          sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock"
+        ></iframe>
+      </div>
+
+      <div class="select-text" id="selectText">Оберіть трансляцію</div>
+
+      <div class="match-info" id="matchInfo">
+        <img id="team1Img" src="">
+        <span id="team1Name"></span>
+        <span id="matchTime"></span>
+        <span id="team2Name"></span>
+        <img id="team2Img" src="">
+
+      </div>
+    </div>
   </div>
-</div>
+  <script>
+    function setStream(url, btn, img1, t1, time, t2, img2) {
+      const iframe = document.getElementById('mainPlayer');
+      const matchInfo = document.getElementById('matchInfo');
+      const selectText = document.getElementById('selectText');
 
-<script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-logo@3.0.0/dist/videojs-logo.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
+      document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-<script>
-const player = videojs("video-player", {
-  liveui: true,
-  responsive: true,
-  fluid: false
-});
+      iframe.src = url;
+      selectText.style.display = 'none';
 
-player.mobileUi();
-player.hlsQualitySelector({ displayCurrentQuality: true });
-player.contextmenuUI();
+      document.getElementById('team1Img').src = img1;
+      document.getElementById('team2Img').src = img2;
+      document.getElementById('team1Name').innerText = t1;
+      document.getElementById('team2Name').innerText = t2;
+      document.getElementById('matchTime').innerText = time;
+      matchInfo.classList.add('active');
+    }
 
-player.logo({
-  image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
-  url: "https://google.com"
-});
-
-// Водяний знак — критична частина
-(function(){
-  const wm = document.getElementById("wm");
-  const playerEl = player.el();  // це .video-js
-
-  // Переміщуємо водяний знак всередину плеєра (дуже важливо!)
-  if (playerEl && wm && wm.parentNode !== playerEl) {
-    playerEl.appendChild(wm);
-  }
-
-  // Показуємо відразу
-  wm.style.display = "block";
-  wm.style.opacity = "1";
-
-  // Оновлюємо позицію при зміні стану
-  function adjustWatermark() {
-    // можна додати додаткову логіку за потребою
-  }
-
-  player.on("fullscreenchange", adjustWatermark);
-  window.addEventListener("resize", adjustWatermark);
-  document.addEventListener("fullscreenchange", adjustWatermark);
-  document.addEventListener("webkitfullscreenchange", adjustWatermark);
-
-  setTimeout(adjustWatermark, 500);
-})();
-</script>
-
+    document.addEventListener('fullscreenchange', async () => {
+      if (document.fullscreenElement) {
+        try { await screen.orientation.lock('landscape'); } catch {}
+      } else {
+        try { await screen.orientation.unlock(); } catch {}
+      }
+    });
+  </script>
 </body>
 </html>
