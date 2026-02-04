@@ -44,7 +44,7 @@ html,body{
 
 <video-js
     id="video-player"
-    class="vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
+    class="vjs-16-9 vjs-show-big-play-button-on-pause"
     controls
     preload="auto"
     playsinline
@@ -69,7 +69,7 @@ html,body{
 <script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
 
-<!-- Luxmty -->
+<!-- Luxmty (залишила для роботи плагінів, але лого вимкнено) -->
 <script src="https://dl.dropbox.com/scl/fi/v0ulq6iiu152blz4h4vt9/luxmtyadv.min.js?rlkey=o1bzgv7mh6oa6gamnfwr2fljz"></script>
 <script src="https://dl.dropbox.com/scl/fi/ogug37z70m3c93xmcbo2j/demo-luxmty-advanced.js?rlkey=p122gt64kciuh2ufa9h9gvnkn"></script>
 
@@ -80,7 +80,6 @@ const player = videojs("video-player",{
     responsive:true,
     fluid:false
 });
-
 
 /* Mobile UI */
 player.mobileUi();
@@ -93,7 +92,7 @@ player.hlsQualitySelector({
 /* Контекст меню */
 player.contextmenuUI();
 
-/* Логотип приклад */
+/* Твоє лого */
 player.logo({
     image:"https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
     url:"https://google.com"
