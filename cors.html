@@ -33,11 +33,6 @@ html, body {
     top: 0;
     left: 0;
 }
-
-/* Сховати всі лого від videojs-logo, але зберегти плеєр */
-.vjs-logo {
-    display: none !important;
-}
 </style>
 </head>
 
@@ -98,12 +93,15 @@ player.logo({
     url: "https://google.com"
 });
 
-/* Додатково: сховати будь-які залишкові лого від videojs-logo */
+/* Сховати вбудоване лого "by skin" після повної ініціалізації Luxmty */
 player.ready(function() {
-    const logos = document.querySelectorAll('.vjs-logo, .vjs-logo-content');
-    logos.forEach(logo => {
-        logo.style.display = 'none';
-    });
+    setTimeout(() => {
+        const logos = document.querySelectorAll('.vjs-logo, .vjs-logo-content');
+        logos.forEach(logo => {
+            logo.style.opacity = '0';        // сховати візуально
+            logo.style.pointerEvents = 'none'; // не можна клікати
+        });
+    }, 600); // 600ms затримки, Luxmty встигає все створити
 });
 </script>
 
