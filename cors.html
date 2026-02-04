@@ -32,7 +32,7 @@ html,body{
     pointer-events:none;
     z-index:9999999999;
     opacity:0;
-    transition:.3s;
+    transition:opacity .3s;
 }
 
 .watermark img{
@@ -95,6 +95,7 @@ const player = videojs("video-player",{
     fluid:false
 });
 
+// Mobile UI та плагіни
 player.mobileUi();
 player.hlsQualitySelector({displayCurrentQuality:true});
 player.contextmenuUI();
@@ -103,25 +104,24 @@ const wm = document.getElementById("wm");
 
 /* ВСТАВЛЯЄМО watermark прямо в videojs root */
 player.ready(()=>{
-
     player.el().appendChild(wm);
-
 });
 
-/* ПОКАЗ */
-player.on("playing",()=> wm.style.opacity="1");
-player.on("pause",()=> wm.style.opacity="1");
-player.on("ended",()=> wm.style.opacity="0");
-
-/* FULLSCREEN */
-player.on("fullscreenchange",()=>{
-
-    if(player.isFullscreen()){
-        player.el().appendChild(wm);
-    }else{
-        player.el().appendChild(wm);
+/* ПОКАЗ watermark тільки коли панель зникає */
+function checkControlBar(){
+    const controlBar = player.el().querySelector('.vjs-control-bar');
+    if(controlBar){
+        const isVisible = window.getComputedStyle(controlBar).opacity !== "0";
+        wm.style.opacity = isVisible ? "0" : "1";
     }
+}
 
+/* Запуск перевірки кожні 200мс */
+setInterval(checkControlBar,200);
+
+/* Для fullscreen завжди на videojs root */
+player.on("fullscreenchange",()=>{
+    player.el().appendChild(wm);
 });
 </script>
 
