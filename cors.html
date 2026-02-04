@@ -1,88 +1,108 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <title>Brightcove HLS Player</title>
-  
-  <!-- Brightcove Video.js CSS -->
-  <link href="https://players.brightcove.net/1752604059001/default_default/video-js.css" rel="stylesheet">
-  
-  <style>
-    .video-container {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: black;
-    }
+<meta charset="UTF-8">
+<title>Brightcove HLS Player</title>
 
-    .video-js {
-      width: 100% !important;
-      height: 100% !important;
-    }
+<link href="https://players.brightcove.net/1752604059001/default_default/video-js.css" rel="stylesheet">
 
-    /* BigPlayButton */
-    .video-js .vjs-big-play-button {
-      color: #FF0000;
-      background: linear-gradient(to bottom, #fcf532 0%,#b9c625 16%,#5a5b0e 100%,#7db9e8 100%);
-      opacity: .7;
-      border-width: .1rem;
-      border-color: #FF0000;
-      border-style: solid;
-    }
+<style>
+/* Контейнер 16/9 */
+.video-container{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: black;
+  overflow: hidden; /* прибирає скрол */
+}
 
-    /* ControlBar */
-    .video-js .vjs-control-bar { color: #FFFF00; background-color: #666666; }
-    .video-js .vjs-play-control { color: #FFCC00; }
-    .video-js .vjs-volume-menu-button { color: #FF00CC; }
-    .vjs-volume-bar.vjs-slider-bar.vjs-slider.vjs-slider-horizontal { color: #FF0000; }
-    .video-js .vjs-volume-level { color: #FFFF00; }
-    .video-js .vjs-current-time { color: #00CCCC; }
-    .video-js .vjs-time-divider { color: #FFFF00; font-weight: bold; font-size: .9em; }
-    .video-js .vjs-duration { text-decoration: italic; color: #00CCCC; }
-    .video-js .vjs-progress-control.vjs-control { color: #FF00FF; height: 1em; }
-    .video-js .vjs-play-progress.vjs-slider-bar { color: #00FFFF; height: 1em; }
-    .video-js .vjs-chapters-button.vjs-menu-button { color: #CCFF00; }
-    .video-js .vjs-captions-button.vjs-menu-button { color: #FFFFFF; background-color: #333333; }
-    .video-js .vjs-fullscreen-control.vjs-control { color: #FFFF00; font-weight: bold; }
+/* Brightcove wrapper */
+.video-container .video-js{
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
 
-    /* DockText */
-    .vjs-dock-text { 
-      color: #3300FF;
-      font-weight: lighter;
-      background: linear-gradient(to bottom, rgba(194,194,41,.7) 0%, rgba(133,131,125,0.5) 100%);
-      opacity: .7;
-    }
+/* ВНУТРІШНІ brightcove елементи */
+.video-container .vjs-tech,
+.video-container .vjs-poster{
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+}
 
-    .vjs-dock-title { font-size: 1em; font-family: sans-serif; }
-    .vjs-dock-description { color: #FFFFFF; font-size: .8em; }
-  </style>
+
+/* ===== ТВОЇ СТИЛІ ===== */
+
+/* BigPlayButton */
+.video-js .vjs-big-play-button{
+  color:#FF0000;
+  background:linear-gradient(to bottom,#fcf532 0%,#b9c625 16%,#5a5b0e 100%,#7db9e8 100%);
+  opacity:.7;
+  border-width:.1rem;
+  border-color:#FF0000;
+  border-style:solid;
+}
+
+/* ControlBar */
+.video-js .vjs-control-bar{color:#FFFF00;background-color:#666666;}
+.video-js .vjs-play-control{color:#FFCC00;}
+.video-js .vjs-volume-menu-button{color:#FF00CC;}
+.vjs-volume-bar.vjs-slider-bar.vjs-slider.vjs-slider-horizontal{color:#FF0000;}
+.video-js .vjs-volume-level{color:#FFFF00;}
+.video-js .vjs-current-time{color:#00CCCC;}
+.video-js .vjs-time-divider{color:#FFFF00;font-weight:bold;font-size:.9em;}
+.video-js .vjs-duration{text-decoration:italic;color:#00CCCC;}
+.video-js .vjs-progress-control.vjs-control{color:#FF00FF;height:1em;}
+.video-js .vjs-play-progress.vjs-slider-bar{color:#00FFFF;height:1em;}
+.video-js .vjs-chapters-button.vjs-menu-button{color:#CCFF00;}
+.video-js .vjs-captions-button.vjs-menu-button{color:#FFFFFF;background-color:#333333;}
+.video-js .vjs-fullscreen-control.vjs-control{color:#FFFF00;font-weight:bold;}
+
+.vjs-dock-text{
+  color:#3300FF;
+  font-weight:lighter;
+  background:linear-gradient(to bottom,rgba(194,194,41,.7) 0%,rgba(133,131,125,0.5) 100%);
+  opacity:.7;
+}
+
+.vjs-dock-title{font-size:1em;font-family:sans-serif;}
+.vjs-dock-description{color:#FFFFFF;font-size:.8em;}
+
+</style>
 </head>
+
 <body>
-  <div class="video-container">
-    <video-js
-      id="my-brightcove"
-      data-account="1752604059001"
-      data-player="default"
-      data-embed="default"
-      class="video-js vjs-big-play-centered"
-      controls
-    >
-    </video-js>
-  </div>
 
-  <!-- Brightcove Player JS -->
-  <script src="https://players.brightcove.net/1752604059001/default_default/index.min.js"></script>
+<div class="video-container">
 
-  <script>
-    // Після завантаження плеєра додаємо джерело HLS
-    videojs.getPlayer('my-brightcove').ready(function() {
-      const player = this;
-      player.src({
-        src: 'https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8',
-        type: 'application/x-mpegURL'
-      });
-      player.play(); // якщо хочеш автозапуск
-    });
-  </script>
+<video-js
+  id="my-brightcove"
+  data-account="1752604059001"
+  data-player="default"
+  data-embed="default"
+  class="video-js vjs-fill"
+  controls>
+</video-js>
+
+</div>
+
+<script src="https://players.brightcove.net/1752604059001/default_default/index.min.js"></script>
+
+<script>
+videojs.getPlayer('my-brightcove').ready(function(){
+  const player=this;
+
+  // ВАЖЛИВО — вимикаємо internal fluid
+  player.fluid(false);
+
+  player.src({
+    src:'https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8',
+    type:'application/x-mpegURL'
+  });
+});
+</script>
+
 </body>
 </html>
