@@ -30,17 +30,14 @@
       height: 100% !important;
     }
 
-    /* Водяний знак */
+    /* Водяний знак завжди всередині плеєра */
     .player-watermark {
       position: absolute;
       top: 1.5%;
       right: 1.5%;
+      z-index: 999999;
       pointer-events: none;
       user-select: none;
-      z-index: 999999;
-      opacity: 0.85;
-      will-change: transform;
-      transform: translateZ(0);
     }
 
     .player-watermark img {
@@ -51,25 +48,6 @@
         drop-shadow(0 0 8px rgba(0, 140, 255, 0.6));
       opacity: 0.9;
       pointer-events: none;
-    }
-
-    /* Повноекранний режим */
-    :fullscreen .player-watermark,
-    :-webkit-full-screen .player-watermark,
-    .vjs-fullscreen .player-watermark {
-      position: fixed !important;
-      top: 1.2% !important;
-      right: 1.5% !important;
-      z-index: 2147483640 !important;
-    }
-
-    :fullscreen .player-watermark img,
-    :-webkit-full-screen .player-watermark img,
-    .vjs-fullscreen .player-watermark img {
-      width: clamp(100px, 16vw, 280px) !important;
-      filter: 
-        drop-shadow(0 0 6px rgba(0,0,0,0.95)) 
-        drop-shadow(0 0 10px rgba(0, 160, 255, 0.7)) !important;
     }
 
     @media (max-width: 640px) {
@@ -126,7 +104,7 @@ player.logo({
   url: "https://google.com"
 });
 
-// Водяний знак — завжди зверху справа
+// Водяний знак завжди зверху справа
 (function(){
   const wm = document.getElementById("wm");
   const playerEl = player.el();
@@ -136,19 +114,21 @@ player.logo({
   wm.style.display = "block";
   wm.style.opacity = "1";
 
-  // Автоповорот для мобільних у fullscreen
-  function lockOrientation() {
-    if(screen.orientation && screen.orientation.lock) {
-      if(player.isFullscreen()) {
+  // Автоповорот на мобільних Android
+  function handleFullscreenChange() {
+    if (player.isFullscreen()) {
+      // Android дозволяє lock orientation після взаємодії
+      if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock("landscape").catch(()=>{});
-      } else {
-        screen.orientation.unlock && screen.orientation.unlock();
+      }
+    } else {
+      if (screen.orientation && screen.orientation.unlock) {
+        screen.orientation.unlock();
       }
     }
   }
 
-  player.on("fullscreenchange", lockOrientation);
-  window.addEventListener("resize", lockOrientation);
+  player.on("fullscreenchange", handleFullscreenChange);
 })();
 </script>
 
