@@ -34,37 +34,10 @@ html, body {
     left: 0;
 }
 
-/* Водяний знак */
-.watermark {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 100px;
-    opacity: 0.8;
-    pointer-events: none;
-    display: none; /* приховано до старту відео */
-    z-index: 9999; /* поверх всього */
-}
-
-/* При повноекрані (desktop/PC) */
-.video-js.vjs-fullscreen .watermark {
-    top: 20px;
-    left: 20px;
-    width: 150px;
-}
-
-/* При мобільному повноекрані */
-@media (max-width: 768px) {
-    .watermark {
-        top: 8px;
-        left: 8px;
-        width: 80px;
-    }
-    .video-js.vjs-fullscreen .watermark {
-        top: 12px;
-        left: 12px;
-        width: 120px;
-    }
+/* Мобільні */
+@media (max-width:768px){
+    .player-watermark { top:8px !important; left:8px !important; width:80px !important; }
+    .vjs-fullscreen .player-watermark { top:12px !important; left:12px !important; width:120px !important; }
 }
 </style>
 </head>
@@ -84,10 +57,6 @@ html, body {
         <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
     </video-js>
 
-    <!-- Водяний знак поверх плеєра -->
-    <img src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o" 
-         class="watermark" 
-         alt="Водяний знак">
 </div>
 
 <!-- VideoJS -->
@@ -117,23 +86,50 @@ const player = videojs("video-player", {
 player.mobileUi();
 
 /* Селектор якості */
-player.hlsQualitySelector({
-    displayCurrentQuality: true
-});
+player.hlsQualitySelector({ displayCurrentQuality: true });
 
 /* Контекст меню */
 player.contextmenuUI();
 
-/* Логотип Luxmty (можна залишити або замінити) */
+/* Логотип Luxmty (залишається, щоб не ламати плагіни) */
 player.logo({
     image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
     url: "https://google.com"
 });
 
-/* Показати водяний знак при початку відтворення */
-player.on('play', function() {
-    const wm = document.querySelector('.watermark');
-    if (wm) wm.style.display = 'block';
+/* Додаємо водяний знак поверх плеєра */
+player.ready(function() {
+    const wm = document.createElement('img');
+    wm.src = "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o";
+    wm.className = 'player-watermark';
+    wm.style.position = 'absolute';
+    wm.style.top = '10px';
+    wm.style.left = '10px';
+    wm.style.width = '100px';
+    wm.style.opacity = '0.8';
+    wm.style.pointerEvents = 'none';
+    wm.style.zIndex = '9999';
+    wm.style.display = 'none';
+    
+    player.el().appendChild(wm);
+
+    /* Показати при старті відео */
+    player.on('play', function() {
+        wm.style.display = 'block';
+    });
+
+    /* Оновлювати позицію і розмір при fullscreen */
+    player.on('fullscreenchange', function() {
+        if (player.isFullscreen()) {
+            wm.style.top = '20px';
+            wm.style.left = '20px';
+            wm.style.width = '150px';
+        } else {
+            wm.style.top = '10px';
+            wm.style.left = '10px';
+            wm.style.width = '100px';
+        }
+    });
 });
 </script>
 
