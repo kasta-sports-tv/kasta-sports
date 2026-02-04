@@ -9,87 +9,70 @@
 
 <style>
 html,body{
-    margin:0;
-    background:#000;
+margin:0;
+background:#000;
 }
 
-/* OUTER WRAPPER */
-.player-outer{
-    position:relative;
-    width:100%;
-    aspect-ratio:16/9;
+.player-container{
+position:relative;
+width:100%;
+aspect-ratio:16/9;
 }
 
-/* INNER WRAPPER */
-.player-inner{
-    position:absolute;
-    inset:0;
-}
-
-/* VIDEOJS */
 .video-js{
-    width:100% !important;
-    height:100% !important;
+width:100%!important;
+height:100%!important;
 }
 
 /* WATERMARK */
 .watermark{
-    position:absolute;
-    pointer-events:none;
-    z-index:99999999;
-    opacity:0;
-    transition:.3s;
+position:absolute;
+z-index:999999999;
+pointer-events:none;
+opacity:0;
+transition:.3s;
 }
 
 .watermark img{
-    width:110px;
+width:120px;
 }
 
 /* ПК */
 @media(min-width:769px){
-    .watermark{
-        top:6%;
-        right:2%;
-    }
+.watermark{
+top:6%;
+right:2%;
+}
 }
 
-/* Телефон */
+/* телефон */
 @media(max-width:768px){
-    .watermark{
-        top:4%;
-        right:4%;
-    }
+.watermark{
+top:4%;
+right:4%;
+}
 }
 </style>
 </head>
 
 <body>
 
-<div class="player-outer" id="outer">
+<div class="player-container">
 
-    <div class="player-inner" id="inner">
+<video-js
+id="video-player"
+class="vjs-luxmty vjs-16-9"
+controls
+preload="auto"
+playsinline
+poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg"
+>
+<source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL"/>
+</video-js>
 
-        <video-js
-            id="video-player"
-            class="vjs-luxmty vjs-16-9"
-            controls
-            preload="auto"
-            playsinline
-            poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg"
-        >
-            <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL"/>
-        </video-js>
-
-        <!-- WATERMARK -->
-        <div class="watermark" id="wm">
-            <img src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o">
-        </div>
-
-    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-logo@3.0.0/dist/videojs-logo.min.js"></script>
@@ -100,33 +83,49 @@ html,body{
 
 <script>
 const player = videojs("video-player",{
-    liveui:true,
-    responsive:true,
-    fluid:false
+liveui:true,
+responsive:true,
+fluid:false
 });
 
 player.mobileUi();
 player.hlsQualitySelector({displayCurrentQuality:true});
 player.contextmenuUI();
 
-const wm = document.getElementById("wm");
-const inner = document.getElementById("inner");
+/* ===== WATERMARK SYSTEM ===== */
+
+const wm = document.createElement("div");
+wm.className="watermark";
+wm.innerHTML=`<img src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o">`;
+
+function attachWatermark(){
+
+const target = player.el();
+
+if(!target.contains(wm)){
+target.appendChild(wm);
+}
+
+}
+
+/* Чекаємо поки Luxmty дорендерить DOM */
+const observer = new MutationObserver(()=>{
+attachWatermark();
+});
+
+observer.observe(player.el(),{
+childList:true,
+subtree:true
+});
 
 /* показ watermark */
 player.on("playing",()=>wm.style.opacity="1");
 player.on("pause",()=>wm.style.opacity="1");
 player.on("ended",()=>wm.style.opacity="0");
 
-/* FULLSCREEN SYNC */
-player.on("fullscreenchange",()=>{
+/* fullscreen */
+player.on("fullscreenchange",()=>attachWatermark());
 
-    if(player.isFullscreen()){
-        player.el().appendChild(wm);
-    }else{
-        inner.appendChild(wm);
-    }
-
-});
 </script>
 
 </body>
