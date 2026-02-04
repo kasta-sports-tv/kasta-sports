@@ -7,35 +7,41 @@
 <link href="https://players.brightcove.net/1752604059001/default_default/video-js.css" rel="stylesheet">
 
 <style>
+
 /* Контейнер 16/9 */
 .video-container{
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: black;
-  overflow: hidden; /* прибирає скрол */
+  width:100%;
+  aspect-ratio:16/9;
+  background:black;
+  overflow:hidden;
+  position:relative;
 }
 
-/* Brightcove wrapper */
+/* Вбиваємо fluid brightcove */
+.video-container .vjs-fluid{
+  padding-top:0 !important;
+  height:100% !important;
+}
+
+/* Розтягуємо плеєр */
 .video-container .video-js{
-  position: absolute !important;
-  inset: 0;
-  width: 100% !important;
-  height: 100% !important;
+  position:absolute !important;
+  inset:0;
+  width:100% !important;
+  height:100% !important;
 }
 
-/* ВНУТРІШНІ brightcove елементи */
+/* Само відео */
 .video-container .vjs-tech,
 .video-container .vjs-poster{
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain;
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain;
 }
 
 
 /* ===== ТВОЇ СТИЛІ ===== */
 
-/* BigPlayButton */
 .video-js .vjs-big-play-button{
   color:#FF0000;
   background:linear-gradient(to bottom,#fcf532 0%,#b9c625 16%,#5a5b0e 100%,#7db9e8 100%);
@@ -45,7 +51,6 @@
   border-style:solid;
 }
 
-/* ControlBar */
 .video-js .vjs-control-bar{color:#FFFF00;background-color:#666666;}
 .video-js .vjs-play-control{color:#FFCC00;}
 .video-js .vjs-volume-menu-button{color:#FF00CC;}
@@ -82,7 +87,7 @@
   data-account="1752604059001"
   data-player="default"
   data-embed="default"
-  class="video-js vjs-fill"
+  class="video-js"
   controls>
 </video-js>
 
@@ -94,8 +99,7 @@
 videojs.getPlayer('my-brightcove').ready(function(){
   const player=this;
 
-  // ВАЖЛИВО — вимикаємо internal fluid
-  player.fluid(false);
+  player.fluid(false); // вимикаємо адаптив Brightcove
 
   player.src({
     src:'https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8',
