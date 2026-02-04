@@ -19,7 +19,7 @@ html, body {
     width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    background: #000; /* на випадок чорного фону */
+    background: #000;
 }
 
 .video-js {
@@ -30,20 +30,30 @@ html, body {
     left: 0;
 }
 
-/* Водяний знак — завжди поверх, не заважає */
+/* Робимо вбудований логотип практично невидимим (але елемент залишається) */
+.vjs-logo-content,
+.vjs-logo-display,
+.vjs-logo img,
+.vjs-logo a {
+    opacity: 0 !important;          /* повністю прозорий */
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden;
+}
+
+/* Водяний знак — завжди поверх, завжди видимий */
 .player-watermark {
     position: absolute;
-    z-index: 10000;               /* вище за все в плеєрі */
+    z-index: 10001;                 /* вище за control-bar і logo */
     pointer-events: none;
-    opacity: 1 !important;        /* завжди 100% видимий */
-    transition: none;
+    opacity: 1 !important;
 }
 
 .player-watermark img {
     display: block;
     max-width: 100%;
     height: auto;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5); /* легка тінь для видимості */
+    box-shadow: 0 1px 6px rgba(0,0,0,0.7);
 }
 </style>
 </head>
@@ -62,7 +72,6 @@ html, body {
         <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
     </video>
 
-    <!-- Твій водяний знак (перекриє вбудований логотип) -->
     <div class="player-watermark" id="wm">
         <img src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o" alt="watermark">
     </div>
@@ -89,60 +98,54 @@ player.mobileUi();
 player.hlsQualitySelector({ displayCurrentQuality: true });
 player.contextmenuUI();
 
-// Залишаємо logo(), бо без нього часто ламається Luxmty-скін
 player.logo({
     image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
     url: "https://google.com"
 });
 
-// Логіка водяного знаку — перекриває вбудований логотип
+// Водяний знак — адаптивний, завжди видимий
 (function(){
     const wm = document.getElementById("wm");
     const img = wm.querySelector("img");
-    const playerEl = player.el();
 
-    if (playerEl && wm && !playerEl.contains(wm)) {
-        playerEl.appendChild(wm);
+    if (player.el() && wm) {
+        player.el().appendChild(wm);
     }
 
-    // Розміри та позиції — міняй тут під себе!
     const config = {
         normal: {
-            desktop: { width: 160, top: 20, right: 20 },   // ← ПК, звичайний режим
-            mobile:  { width: 100, top: 12, right: 12 }    // ← мобілка, звичайний
+            desktop: { width: 130, top: 15, right: 15 },
+            mobile:  { width: 90,  top: 10, right: 10 }
         },
         fullscreen: {
-            desktop: { width: 240, top: 30, right: 30 },   // ← ПК, fullscreen
-            mobile:  { width: 160, top: 20, right: 20 }    // ← мобілка, fullscreen
+            desktop: { width: 200, top: 25, right: 25 },
+            mobile:  { width: 140, top: 15, right: 15 }
         }
     };
 
-    function updateWM() {
-        const isFS = player.isFullscreen();
-        const isDesktop = window.innerWidth > 768;
-        const mode = isFS ? 'fullscreen' : 'normal';
-        const sizeSet = isDesktop ? config[mode].desktop : config[mode].mobile;
+    function update() {
+        const fs = player.isFullscreen();
+        const desk = window.innerWidth > 768;
+        const mode = fs ? 'fullscreen' : 'normal';
+        const sz = desk ? config[mode].desktop : config[mode].mobile;
 
-        img.style.width = sizeSet.width + 'px';
+        img.style.width = sz.width + 'px';
         img.style.height = 'auto';
 
-        wm.style.top = '';
-        wm.style.bottom = '';
-        wm.style.left = '';
-        wm.style.right = '';
-
-        wm.style.top = sizeSet.top + 'px';
-        wm.style.right = sizeSet.right + 'px';
+        wm.style.top = sz.top + 'px';
+        wm.style.right = sz.right + 'px';
+        wm.style.left = 'auto';
+        wm.style.bottom = 'auto';
     }
 
-    player.on('ready', updateWM);
-    player.on('fullscreenchange', updateWM);
-    window.addEventListener('resize', updateWM);
+    player.on('ready', update);
+    player.on('fullscreenchange', update);
+    window.addEventListener('resize', update);
 
-    // Запускаємо кілька разів, бо плеєр іноді повільно рендериться
-    setTimeout(updateWM, 300);
-    setTimeout(updateWM, 800);
-    setTimeout(updateWM, 1500);
+    // Багаторазовий запуск, бо плеєр іноді рендерить з затримкою
+    setTimeout(update, 200);
+    setTimeout(update, 600);
+    setTimeout(update, 1200);
 })();
 </script>
 
