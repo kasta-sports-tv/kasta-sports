@@ -86,10 +86,12 @@ player.hlsQualitySelector({
 /* Контекст меню */
 player.contextmenuUI();
 
-/* Логотип приклад */
-player.logo({
-    image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
-    url: "https://google.com"
+/* Приховати будь-яке вбудоване “by skin” лого Luxmty */
+player.ready(function() {
+    const skinLogo = document.querySelector('.vjs-luxmty .vjs-logo-luxmty');
+    if (skinLogo) {
+        skinLogo.style.display = 'none';
+    }
 });
 </script>
 
