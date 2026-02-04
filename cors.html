@@ -8,7 +8,7 @@
 
 <style>
 
-/* ✅ Прибирає скрол */
+/* Прибирає скрол */
 html, body {
   margin: 0;
   padding: 0;
@@ -22,7 +22,7 @@ html, body {
   position:relative;
 }
 
-/* Плеєр заповнює контейнер */
+/* Плеєр */
 .video-container .video-js{
   position:absolute !important;
   inset:0;
@@ -36,40 +36,93 @@ html, body {
 }
 
 
-/* ===== ТВОЇ СТИЛІ ===== */
+/* ===============================
+   CENTRAL PLAY BUTTON
+================================= */
 
 .video-js .vjs-big-play-button{
-  color:#FF0000;
-  background:linear-gradient(to bottom,#fcf532 0%,#b9c625 16%,#5a5b0e 100%,#7db9e8 100%);
-  opacity:.7;
-  border-width:.1rem;
-  border-color:#FF0000;
-  border-style:solid;
+  width:4.5em;
+  height:4.5em;
+  line-height:4.5em;
+  border-radius:50%;
+  background:transparent;
+  border:3px solid #ffffff;
+  opacity:1;
 }
 
-.video-js .vjs-control-bar{color:#FFFF00;background-color:#666666;}
-.video-js .vjs-play-control{color:#FFCC00;}
-.video-js .vjs-volume-menu-button{color:#FF00CC;}
-.vjs-volume-bar.vjs-slider-bar.vjs-slider.vjs-slider-horizontal{color:#FF0000;}
-.video-js .vjs-volume-level{color:#FFFF00;}
-.video-js .vjs-current-time{color:#00CCCC;}
-.video-js .vjs-time-divider{color:#FFFF00;font-weight:bold;font-size:.9em;}
-.video-js .vjs-duration{text-decoration:italic;color:#00CCCC;}
-.video-js .vjs-progress-control.vjs-control{color:#FF00FF;height:1em;}
-.video-js .vjs-play-progress.vjs-slider-bar{color:#00FFFF;height:1em;}
-.video-js .vjs-chapters-button.vjs-menu-button{color:#CCFF00;}
-.video-js .vjs-captions-button.vjs-menu-button{color:#FFFFFF;background-color:#333333;}
-.video-js .vjs-fullscreen-control.vjs-control{color:#FFFF00;font-weight:bold;}
-
-.vjs-dock-text{
-  color:#3300FF;
-  font-weight:lighter;
-  background:linear-gradient(to bottom,rgba(194,194,41,.7) 0%,rgba(133,131,125,0.5) 100%);
-  opacity:.7;
+.video-js .vjs-big-play-button .vjs-icon-placeholder:before{
+  color:#E50914;
+  font-size:2em;
 }
 
-.vjs-dock-title{font-size:1em;font-family:sans-serif;}
-.vjs-dock-description{color:#FFFFFF;font-size:.8em;}
+
+/* ===============================
+   CONTROL BAR
+================================= */
+
+.video-js .vjs-control-bar{
+  background:rgba(0,0,0,0.65);
+  height:4em;
+  font-size:14px;
+}
+
+
+/* Кнопки */
+.video-js .vjs-control{
+  color:#E50914;
+}
+
+.video-js .vjs-control:hover{
+  color:white;
+}
+
+
+/* ===============================
+   PROGRESS BAR
+================================= */
+
+/* Загальна зона */
+.video-js .vjs-progress-control{
+  height:0.6em;
+  top:-0.6em;
+}
+
+/* Сіра полоска */
+.video-js .vjs-load-progress{
+  background:#d9d9d9;
+  height:0.6em;
+}
+
+/* Програний сегмент */
+.video-js .vjs-play-progress{
+  background:#E50914;
+  height:0.6em;
+}
+
+/* Бігунок */
+.video-js .vjs-slider-handle{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:#E50914;
+  top:-4px;
+}
+
+
+/* ===============================
+   TIME + LIVE
+================================= */
+
+.video-js .vjs-current-time,
+.video-js .vjs-duration,
+.video-js .vjs-time-divider{
+  color:white;
+}
+
+.video-js .vjs-live-display{
+  color:white;
+  font-weight:600;
+}
 
 </style>
 </head>
