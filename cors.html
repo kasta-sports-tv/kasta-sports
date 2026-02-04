@@ -100,37 +100,39 @@ player.logo({
     const playerEl = player.el();
     if(playerEl && wm) playerEl.appendChild(wm);
 
-    const baseWidth = 90;
+    const baseWidth = 90; // базовий розмір для мобільних
 
     function updateWatermark() {
         const isFullscreen = player.isFullscreen();
         const isDesktop = window.innerWidth > 768;
 
+        // Розмір та позиція водяного знаку
         if(isFullscreen){
             if(isDesktop){
-                wmImg.style.width = (baseWidth*3.4) + "px";
-                wm.style.top = "9%";
-                wm.style.right = "1%";
+                wmImg.style.width = (baseWidth*2.5) + "px";
+                wm.style.top = "10px";
+                wm.style.right = "10px";
             } else {
                 wmImg.style.width = (baseWidth*1.2) + "px";
-                wm.style.top = "4%";
-                wm.style.right = "10%";
+                wm.style.top = "5px";
+                wm.style.right = "5px";
             }
         } else {
             if(isDesktop){
-                wmImg.style.width = (baseWidth*2.4) + "px";
-                wm.style.top = "6%";
-                wm.style.right = "2%";
+                wmImg.style.width = (baseWidth*1.5) + "px";
+                wm.style.top = "10px";
+                wm.style.right = "10px";
             } else {
                 wmImg.style.width = baseWidth + "px";
-                wm.style.top = "3%";
-                wm.style.right = "4%";
+                wm.style.top = "5px";
+                wm.style.right = "5px";
             }
         }
+
         wm.style.opacity = "1"; // завжди видно
     }
 
-    /* Постійне відображення водяного знаку */
+    /* Завжди показувати водяний знак */
     player.on("play", updateWatermark);
     player.on("pause", updateWatermark);
     player.on("ended", updateWatermark);
