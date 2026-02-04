@@ -40,22 +40,34 @@ html, body {
     opacity: 0;
     transition: all 0.3s ease;
 }
+
+/* ────────────────────────────────────────────── */
+/* Приховуємо логотип від плагіна videojs-logo     */
+/* ────────────────────────────────────────────── */
+.vjs-logo,
+.vjs-logo-display,
+.vjs-logo-content,
+.vjs-control-bar .vjs-logo-button,
+.vjs-logo-button {
+    display: none !important;
+}
+/* ────────────────────────────────────────────── */
 </style>
 </head>
 
 <body>
 
 <div class="player-container">
-    <video-js
+    <video
         id="video-player"
-        class="vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
+        class="video-js vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
         controls
         preload="auto"
         playsinline
         poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg"
     >
         <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
-    </video-js>
+    </video>
 
     <!-- Водяний знак -->
     <div class="player-watermark" id="wm">
@@ -91,7 +103,7 @@ player.hlsQualitySelector({ displayCurrentQuality: true });
 /* Контекст меню */
 player.contextmenuUI();
 
-/* Логотип Luxmty (залишається, щоб не ламати плагіни) */
+/* Логотип Luxmty (залишаємо виклик, щоб не ламалися інші плагіни/скін) */
 player.logo({
     image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
     url: "https://google.com"
@@ -102,12 +114,12 @@ player.logo({
     const wm = document.getElementById("wm");
     const wmImg = wm.querySelector("img");
     const playerEl = player.el();
-    if(playerEl && wm) playerEl.appendChild(wm);
+    if (playerEl && wm) playerEl.appendChild(wm);
 
     const sizes = {
-        desktop: { width: 120, top: 10, left: 10 },
-        mobile: { width: 80, top: 5, left: 5 },
-        fullscreenDesktop: { width: 160, top: 15, left: 15 },
+        desktop:          { width: 120, top: 10, left: 10 },
+        mobile:           { width: 80,  top: 5,  left: 5  },
+        fullscreenDesktop:{ width: 160, top: 15, left: 15 },
         fullscreenMobile: { width: 100, top: 10, left: 10 }
     };
 
@@ -116,19 +128,19 @@ player.logo({
         const isDesktop = window.innerWidth > 768;
 
         let sz;
-        if(isFullscreen && isDesktop) sz = sizes.fullscreenDesktop;
-        else if(isFullscreen && !isDesktop) sz = sizes.fullscreenMobile;
-        else if(!isFullscreen && isDesktop) sz = sizes.desktop;
-        else sz = sizes.mobile;
+        if      (isFullscreen && isDesktop)    sz = sizes.fullscreenDesktop;
+        else if (isFullscreen && !isDesktop)   sz = sizes.fullscreenMobile;
+        else if (!isFullscreen && isDesktop)   sz = sizes.desktop;
+        else                                   sz = sizes.mobile;
 
         wmImg.style.width = sz.width + "px";
-        wm.style.top = sz.top + "px";
+        wm.style.top  = sz.top  + "px";
         wm.style.left = sz.left + "px";
     }
 
-    player.on("play", ()=> wm.style.opacity="1");
-    player.on("pause", ()=> wm.style.opacity="1");
-    player.on("ended", ()=> wm.style.opacity="0");
+    player.on("play",   () => wm.style.opacity = "1");
+    player.on("pause",  () => wm.style.opacity = "1");
+    player.on("ended",  () => wm.style.opacity = "0");
 
     window.addEventListener("resize", updateWatermark);
     player.on("fullscreenchange", updateWatermark);
