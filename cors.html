@@ -1,171 +1,101 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Netflix-style Brightcove Player</title>
-
-<link href="https://players.brightcove.net/1752604059001/default_default/video-js.css" rel="stylesheet">
-
-<style>
-/* ===============================
-   Загальне
-================================= */
-html, body {
-  margin:0;
-  padding:0;
-  background:black;
-}
-
-.video-container {
-  width:100%;
-  aspect-ratio:16/9;
-  position:relative;
-  background:black;
-  overflow:hidden;
-}
-
-.video-container .video-js {
-  position:absolute !important;
-  inset:0;
-  width:100% !important;
-  height:100% !important;
-}
-
-.video-container .vjs-tech {
-  width:100% !important;
-  height:100% !important;
-  object-fit:contain;
-}
-
-/* ===============================
-   Центральна кнопка Play
-================================= */
-.video-js .vjs-big-play-button {
-  width:5em;
-  height:5em;
-  line-height:5em;
-  border-radius:50%;
-  background:rgba(0,0,0,0.6);
-  border:3px solid white;
-  opacity:1;
-  transition: all 0.3s;
-}
-
-.video-js .vjs-big-play-button:hover {
-  background:rgba(0,0,0,0.8);
-}
-
-.video-js .vjs-big-play-button .vjs-icon-placeholder:before {
-  color:#E50914;
-  font-size:2em;
-}
-
-/* ===============================
-   Нижня панель (Control Bar)
-================================= */
-.video-js .vjs-control-bar {
-  background:rgba(0,0,0,0.7);
-  height:4em;
-  font-size:14px;
-  opacity:0;
-  transition: opacity 0.3s;
-}
-
-.video-js:hover .vjs-control-bar,
-.video-js.vjs-user-active .vjs-control-bar {
-  opacity:1;
-}
-
-/* Кнопки */
-.video-js .vjs-control {
-  color:white;
-}
-
-.video-js .vjs-control:hover {
-  color:#E50914;
-}
-
-/* ===============================
-   Progress Bar
-================================= */
-.video-js .vjs-progress-control {
-  height:0.5em;
-  top:-0.5em;
-}
-
-.video-js .vjs-load-progress {
-  background:#555;
-  height:0.5em;
-}
-
-.video-js .vjs-play-progress {
-  background:#E50914;
-  height:0.5em;
-}
-
-.video-js .vjs-slider-handle {
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  background:#E50914;
-  top:-4px;
-}
-
-/* ===============================
-   Time, LIVE, HD
-================================= */
-.video-js .vjs-current-time,
-.video-js .vjs-duration,
-.video-js .vjs-time-divider,
-.video-js .vjs-live-display {
-  color:white;
-  font-weight:600;
-}
-.video-js .vjs-menu-button {
-  color:white;
-}
-
-/* ===============================
-   Hover та скриття панелі
-================================= */
-.video-js.vjs-user-inactive .vjs-control-bar {
-  opacity:0 !important;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>BHAGYA LAKSHMI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Adlidziliqram/Adlidziliqram.github.io@main/test/style.css">
+    <script src='https://cdn.jsdelivr.net/gh/Adlidziliqram/Adlidziliqram.github.io@main/test/Jq6HIbgz.js'></script>
 </head>
-
+  
 <body>
-<div class="video-container">
-
-<video-js
-  id="my-brightcove"
-  data-account="1752604059001"
-  data-player="default"
-  data-embed="default"
-  class="video-js"
-  controls>
-</video-js>
-
-</div>
-
-<script src="https://players.brightcove.net/1752604059001/default_default/index.min.js"></script>
-
+    <style>
+        #player {
+            position: absolute;
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+    
+    <!-- Player -->
+    <div id="player"></div>
+    
 <script>
-videojs.getPlayer('my-brightcove').ready(function(){
-  const player = this;
+    const playerInstance = jwplayer("player").setup({
+        controls: true,
+        sharing: false,
+        displaytitle: true,
+        displaydescription: true,
+        abouttext: "",
+        aboutlink: "",
+          
+        skin: {
+            name: "netflix"
+        },
 
-  player.fluid(false);
+        logo: {
+            file: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
+        },
+          
+        captions: {
+            color: "#FFF",
+            fontSize: 14,
+            backgroundOpacity: 0,
+            edgeStyle: "raised"
+        },
 
-  player.src({
-    src:'https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8',
-    type:'application/x-mpegURL'
-  });
+        playlist: [{
+            title: "BHAGYA LAKSHMI EPISODE 110 SUBTITLE",
+            description: "BUDAYAKAN KLIK IKLAN SEBELUM DAN SESUDAH NONTON",
+            image: "https://akamaividz2.zee5.com/image/upload/w_528,h_298,c_scale,f_webp,q_auto:eco/resources/0-1-6z5376464/list/00000189b438a7fd7a70470480355f035f552e5d.jpg",
+            sources: [
+                {
+                    file: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8",
+                    type: "hls"
+                }
+            ],
+            tracks:[
+                {
+                    file: "https://adlidziliqram.github.io/bk/110.id.vtt",
+                    label: "INDONESIA",
+                    kind: "captions",
+                    default: true,
+                }
+            ],
+        }],
+    });
+      
+    playerInstance.on("ready", function() {
+        // Move the timeslider in-line with other controls
+        const playerContainer = playerInstance.getContainer();
+        const buttonContainer = playerContainer.querySelector(".jw-button-container");
+        const spacer = buttonContainer.querySelector(".jw-spacer");
+        const timeSlider = playerContainer.querySelector(".jw-slider-time");
+        buttonContainer.replaceChild(timeSlider, spacer);
 
-  // Автоскриття панелі (як Netflix)
-  player.userActive(true);
-  player.on('mousemove', () => player.userActive(true));
-  player.on('touchstart', () => player.userActive(true));
-});
+        // Forward 10 seconds
+        const rewindContainer = playerContainer.querySelector(".jw-display-icon-rewind");
+        const forwardContainer = rewindContainer.cloneNode(true);
+        const forwardDisplayButton = forwardContainer.querySelector(".jw-icon-rewind");
+        forwardDisplayButton.style.transform = "scaleX(-1)";
+        forwardDisplayButton.ariaLabel = "Forward 10 Seconds";
+        const nextContainer = playerContainer.querySelector(".jw-display-icon-next");
+        nextContainer.parentNode.insertBefore(forwardContainer, nextContainer);
+
+        // control bar icon
+        playerContainer.querySelector(".jw-display-icon-next").style.display = "none"; // hide next button
+        const rewindControlBarButton = buttonContainer.querySelector(".jw-icon-rewind");
+        const forwardControlBarButton = rewindControlBarButton.cloneNode(true);
+        forwardControlBarButton.style.transform = "scaleX(-1)";
+        forwardControlBarButton.ariaLabel = "Forward 10 Seconds";
+        rewindControlBarButton.parentNode.insertBefore(forwardControlBarButton, rewindControlBarButton.nextElementSibling);
+        
+        // add onclick handlers
+        [forwardDisplayButton, forwardControlBarButton].forEach((button) => {
+            button.onclick = () => {
+                playerInstance.seek(playerInstance.getPosition() + 10);
+            };
+        });
+    });
 </script>
 </body>
 </html>
