@@ -33,6 +33,39 @@ html, body {
     top: 0;
     left: 0;
 }
+
+/* Водяний знак */
+.watermark {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 100px;
+    opacity: 0.8;
+    pointer-events: none;
+    display: none; /* приховано до старту відео */
+    z-index: 9999; /* поверх всього */
+}
+
+/* При повноекрані (desktop/PC) */
+.video-js.vjs-fullscreen .watermark {
+    top: 20px;
+    left: 20px;
+    width: 150px;
+}
+
+/* При мобільному повноекрані */
+@media (max-width: 768px) {
+    .watermark {
+        top: 8px;
+        left: 8px;
+        width: 80px;
+    }
+    .video-js.vjs-fullscreen .watermark {
+        top: 12px;
+        left: 12px;
+        width: 120px;
+    }
+}
 </style>
 </head>
 
@@ -51,6 +84,10 @@ html, body {
         <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
     </video-js>
 
+    <!-- Водяний знак поверх плеєра -->
+    <img src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o" 
+         class="watermark" 
+         alt="Водяний знак">
 </div>
 
 <!-- VideoJS -->
@@ -87,21 +124,16 @@ player.hlsQualitySelector({
 /* Контекст меню */
 player.contextmenuUI();
 
-/* Логотип приклад (можна замінити на своє) */
+/* Логотип Luxmty (можна залишити або замінити) */
 player.logo({
     image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
     url: "https://google.com"
 });
 
-/* Сховати вбудоване лого "by skin" після повної ініціалізації Luxmty */
-player.ready(function() {
-    setTimeout(() => {
-        const logos = document.querySelectorAll('.vjs-logo, .vjs-logo-content');
-        logos.forEach(logo => {
-            logo.style.opacity = '0';        // сховати візуально
-            logo.style.pointerEvents = 'none'; // не можна клікати
-        });
-    }, 600); // 600ms затримки, Luxmty встигає все створити
+/* Показати водяний знак при початку відтворення */
+player.on('play', function() {
+    const wm = document.querySelector('.watermark');
+    if (wm) wm.style.display = 'block';
 });
 </script>
 
