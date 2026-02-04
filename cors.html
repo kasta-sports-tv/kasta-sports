@@ -11,30 +11,28 @@
 <link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet"/>
 
 <style>
-
-html,body{
-    margin:0;
-    padding:0;
-    background:#000;
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
 }
 
 /* Контейнер 16:9 */
-.player-container{
-    position:relative;
-    width:100%;
-    aspect-ratio:16/9;
-    overflow:hidden;
+.player-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
 }
 
 /* Плеєр заповнює контейнер */
-.video-js{
-    position:absolute !important;
-    width:100% !important;
-    height:100% !important;
-    top:0;
-    left:0;
+.video-js {
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0;
+    left: 0;
 }
-
 </style>
 </head>
 
@@ -42,18 +40,16 @@ html,body{
 
 <div class="player-container">
 
-<video-js
-    id="video-player"
-    class="vjs-16-9 vjs-show-big-play-button-on-pause"
-    controls
-    preload="auto"
-    playsinline
-    poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg"
->
-
-<source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
-
-</video-js>
+    <video-js
+        id="video-player"
+        class="vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
+        controls
+        preload="auto"
+        playsinline
+        poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg"
+    >
+        <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
+    </video-js>
 
 </div>
 
@@ -69,16 +65,15 @@ html,body{
 <script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
 
-<!-- Luxmty (для плагінів, але лого вимкнено) -->
+<!-- Luxmty -->
 <script src="https://dl.dropbox.com/scl/fi/v0ulq6iiu152blz4h4vt9/luxmtyadv.min.js?rlkey=o1bzgv7mh6oa6gamnfwr2fljz"></script>
 <script src="https://dl.dropbox.com/scl/fi/ogug37z70m3c93xmcbo2j/demo-luxmty-advanced.js?rlkey=p122gt64kciuh2ufa9h9gvnkn"></script>
 
 <script>
-
-const player = videojs("video-player",{
-    liveui:true,
-    responsive:true,
-    fluid:false
+const player = videojs("video-player", {
+    liveui: true,
+    responsive: true,
+    fluid: false
 });
 
 /* Mobile UI */
@@ -86,18 +81,17 @@ player.mobileUi();
 
 /* Селектор якості */
 player.hlsQualitySelector({
-    displayCurrentQuality:true
+    displayCurrentQuality: true
 });
 
 /* Контекст меню */
 player.contextmenuUI();
 
-/* Твоє лого */
+/* Логотип приклад */
 player.logo({
-    image:"https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
-    url:"https://google.com"
+    image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
+    url: "https://google.com"
 });
-
 </script>
 
 </body>
