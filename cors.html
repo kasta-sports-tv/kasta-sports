@@ -1,147 +1,225 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Video JS з водяним знаком</title>
+  <meta name="robots" content="noindex">
+  
+  <link href="https://darkibox.com/player/videojs7/video-js.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://darkibox.com/node_modules/videojs-brand/dist/videojs-brand.css">
+  <link href="https://darkibox.com/player/videojs7/videojs-quality-menu.css" rel="stylesheet">
+  <link href="https://darkibox.com/player/videojs7/silvermine-videojs-chromecast.css" rel="stylesheet">
+  <link href="https://darkibox.com/player/videojs7/silvermine-videojs-airplay.css" rel="stylesheet">
 
-<!-- VideoJS -->
-<link href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet"/>
-
-<style>
-html, body {
-    margin: 0;
-    padding: 0;
-    background: #000;
-}
-
-/* Контейнер 16:9 */
-.player-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16/9;
-    overflow: hidden;
-}
-
-/* Плеєр заповнює контейнер */
-.video-js {
-    position: absolute !important;
-    width: 100% !important;
-    height: 100% !important;
-    top: 0;
-    left: 0;
-}
-
-/* Водяний знак */
-.player-watermark {
-    pointer-events: none;
-    z-index: 9999;
-    position: absolute;
-    opacity: 1; /* завжди видно */
-    transition: all 0.3s ease;
-}
-</style>
-</head>
-
-<body>
-
-<div class="player-container">
-    <video-js
-        id="video-player"
-        class="vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
-        controls
-        preload="auto"
-        playsinline
-        poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg"
-    >
-        <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="application/x-mpegURL" />
-    </video-js>
-
-    <!-- Водяний знак -->
-    <div class="player-watermark" id="wm">
-        <img src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o" alt="watermark">
-    </div>
-</div>
-
-<!-- VideoJS -->
-<script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-logo@3.0.0/dist/videojs-logo.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
-
-<script>
-const player = videojs("video-player", {
-    liveui: true,
-    responsive: true,
-    fluid: false
-});
-
-/* Mobile UI */
-player.mobileUi();
-
-/* Селектор якості */
-player.hlsQualitySelector({ displayCurrentQuality: true });
-
-/* Контекст меню */
-player.contextmenuUI();
-
-/* Логотип (залишається для сумісності) */
-player.logo({
-    image: "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o",
-    url: "https://google.com"
-});
-
-/* Водяний знак поверх плеєра */
-(function(){
-    const wm = document.getElementById("wm");
-    const wmImg = wm.querySelector("img");
-    const playerEl = player.el();
-    if(playerEl && wm) playerEl.appendChild(wm);
-
-    const baseWidth = 30; // базовий розмір для мобільних
-
-    function updateWatermark() {
-        const isFullscreen = player.isFullscreen();
-        const isDesktop = window.innerWidth > 768;
-
-        // Розмір та позиція водяного знаку
-        if(isFullscreen){
-            if(isDesktop){
-                wmImg.style.width = (baseWidth*1.5) + "px";
-                wm.style.top = "10px";
-                wm.style.right = "4px";
-            } else {
-                wmImg.style.width = (baseWidth*1.2) + "px";
-                wm.style.top = "5px";
-                wm.style.right = "5px";
-            }
-        } else {
-            if(isDesktop){
-                wmImg.style.width = (baseWidth*1.5) + "px";
-                wm.style.top = "10px";
-                wm.style.right = "4px";
-            } else {
-                wmImg.style.width = baseWidth + "px";
-                wm.style.top = "5px";
-                wm.style.right = "5px";
-            }
-        }
-
-        wm.style.opacity = "1"; // завжди видно
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      overflow: hidden;
     }
 
-    /* Завжди показувати водяний знак */
-    player.on("play", updateWatermark);
-    player.on("pause", updateWatermark);
-    player.on("ended", updateWatermark);
-    window.addEventListener("resize", updateWatermark);
-    player.on("fullscreenchange", updateWatermark);
+    .player-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: #000;
+    }
 
-    /* Початкове оновлення */
-    player.ready(() => updateWatermark());
+    .video-js {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .player-container video,
+    .player-container .video-js {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
+      background: #000 !important;
+    }
+
+    .vjs-control-bar {
+      background: rgba(0,0,0,0.65) !important;
+    }
+
+    .vjs-control {
+      color: #fff !important;
+      transition: all 0.2s ease;
+    }
+
+    .vjs-control:hover {
+      color: #ff0000 !important;
+    }
+
+    .vjs-play-control,
+    .vjs-fullscreen-control {
+      color: #ff0000 !important;
+    }
+
+    .vjs-big-play-button {
+      color: #ff0000 !important;
+      border: 2px solid #ff0000 !important;
+    }
+
+    /* ────────────── Водяний знак ────────────── */
+    .video-watermark {
+      position: absolute;
+      top: 3%;
+      right: 3%;
+      z-index: 9999;
+      pointer-events: none;
+      user-select: none;
+      filter: drop-shadow(0 0 4px rgba(0,0,0,0.9)) 
+              drop-shadow(0 0 8px rgba(0, 180, 255, 0.7));
+      transition: all 0.4s ease;
+    }
+
+    .video-watermark img {
+      width: clamp(80px, 11vw, 220px);
+      height: auto;
+      display: block;
+      opacity: 0.78;
+    }
+
+    /* Повноекранний режим */
+    .video-js:fullscreen .video-watermark,
+    .video-js:-webkit-full-screen .video-watermark,
+    .video-js:fullscreen img,
+    .video-js:-webkit-full-screen img {
+      top: 1.5% !important;
+      right: 1.5% !important;
+      filter: drop-shadow(0 0 5px rgba(0,0,0,0.95)) 
+              drop-shadow(0 0 10px rgba(100, 200, 255, 0.6)) !important;
+    }
+
+    .video-js:-webkit-full-screen .video-watermark img {
+      width: clamp(90px, 13vw, 280px) !important;
+    }
+
+    @media (max-width: 768px) {
+      .video-watermark {
+        top: 2%;
+        right: 4%;
+      }
+      .video-watermark img {
+        width: clamp(60px, 18vw, 140px);
+      }
+      .video-js:fullscreen .video-watermark,
+      .video-js:-webkit-full-screen .video-watermark {
+        top: 1% !important;
+        right: 3% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="player-container" id="videoContainer">
+  <video
+    id="vjsplayer"
+    class="video-js vjs-big-play-centered vjs-16-9"
+    controls
+    preload="auto"
+  ></video>
+
+  <!-- Водяний знак -->
+  <div class="video-watermark" id="wm">
+    <img 
+      src="https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o"
+      alt="watermark"
+      draggable="false"
+    >
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.20.1/video.min.js"></script>
+<script src="https://darkibox.com/player/videojs7/videojs-quality-menu.min.js"></script>
+<script src="https://darkibox.com/player/videojs7/silvermine-videojs-chromecast.min.js"></script>
+<script src="https://darkibox.com/player/videojs7/silvermine-videojs-airplay.min.js"></script>
+<script src="https://darkibox.com/node_modules/videojs-brand/dist/videojs-brand.min.js"></script>
+
+<script>
+// Отримуємо параметри
+const params = new URLSearchParams(window.location.search);
+let videoSrc  = params.get("url");
+let posterSrc = params.get("poster");
+
+// fallback
+if (!videoSrc) {
+  videoSrc = "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
+}
+
+let videoType = "application/x-mpegURL";
+if (videoSrc.endsWith(".mp4")) videoType = "video/mp4";
+
+const player = videojs('vjsplayer', {
+  sources: [{ src: videoSrc, type: videoType }],
+  poster: posterSrc || "",
+  controlBar: {
+    children: [
+      'playToggle',
+      'volumePanel',
+      'currentTimeDisplay',
+      'progressControl',
+      'liveDisplay',
+      'seekToLive',
+      'durationDisplay',
+      'customControlSpacer',
+      'audioTrackButton',
+      'pictureInPictureToggle',
+      'qualitySelector',
+      'fullscreenToggle'
+    ]
+  },
+  plugins: { chromecast: {}, airPlay: {} },
+  techOrder: ['chromecast', 'html5']
+});
+
+// brand
+player.brand({
+  image: "https://dl.dropbox.com/scl/fi/6xr4maks63unfiafrhibt/v61srDLWm9ql.gif?rlkey=vuzs4sguck250rg614flfpusi",
+  title: "Telegram",
+  destination: "javascript:void(0)",
+  destinationTarget: "_self"
+});
+
+player.qualityMenu({ resolutionLabelBitrates: false, labels: {'620':'UHD'} });
+
+// Водяний знак — переміщуємо в плеєр (на всяк випадок)
+(function initWatermark() {
+  const wm = document.getElementById("wm");
+  const playerEl = document.querySelector(".video-js");
+
+  if (playerEl && wm && wm.parentElement !== playerEl) {
+    playerEl.appendChild(wm);
+  }
+
+  // Показуємо відразу (можна прибрати, якщо хочете тільки під час відтворення)
+  wm.style.opacity = "1";
+
+  // Оновлення позиції при зміні розміру / fullscreen
+  function updateWM() {
+    // можна додати додаткову логіку за потреби
+  }
+
+  window.addEventListener("resize", updateWM);
+  document.addEventListener("fullscreenchange", updateWM);
+  document.addEventListener("webkitfullscreenchange", updateWM);
+
+  setTimeout(updateWM, 400);
 })();
+
+// Fix spacebar
+document.addEventListener("keydown", e => {
+  if (e.code === "Space" && !e.target.matches("input, textarea, button")) {
+    e.preventDefault();
+    if (player.paused()) player.play();
+    else player.pause();
+  }
+});
 </script>
 
 </body>
