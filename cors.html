@@ -8,22 +8,21 @@
 
 <style>
 
-/* Контейнер 16/9 */
+/* ✅ Прибирає скрол */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Контейнер 16:9 */
 .video-container{
   width:100%;
   aspect-ratio:16/9;
   background:black;
-  overflow:hidden;
   position:relative;
 }
 
-/* Вбиваємо fluid brightcove */
-.video-container .vjs-fluid{
-  padding-top:0 !important;
-  height:100% !important;
-}
-
-/* Розтягуємо плеєр */
+/* Плеєр заповнює контейнер */
 .video-container .video-js{
   position:absolute !important;
   inset:0;
@@ -31,12 +30,9 @@
   height:100% !important;
 }
 
-/* Само відео */
-.video-container .vjs-tech,
-.video-container .vjs-poster{
+.video-container .vjs-tech{
   width:100% !important;
   height:100% !important;
-  object-fit:contain;
 }
 
 
@@ -99,7 +95,7 @@
 videojs.getPlayer('my-brightcove').ready(function(){
   const player=this;
 
-  player.fluid(false); // вимикаємо адаптив Brightcove
+  player.fluid(false);
 
   player.src({
     src:'https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8',
