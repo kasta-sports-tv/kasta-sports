@@ -4,146 +4,120 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Olympic Streams</title>
+
 <style>
-html, body {
-  margin: 0;
-  height: 100%;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-  background: #0b0f1a;
-  color: white;
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0b0f1a;
+  color:white;
 }
 
 /* HEADER */
-header {
-  text-align: center;
-  padding: 15px;
-  font-size: 22px;
-  font-weight: bold;
-  background: linear-gradient(90deg,#0085C7,#F4C300,#000,#009F3D,#DF0024);
+header{
+  text-align:center;
+  padding:15px;
+  font-size:22px;
+  font-weight:bold;
+  background:linear-gradient(90deg,#0085C7,#F4C300,#000,#009F3D,#DF0024);
 }
 
 /* MAIN LAYOUT */
-.container {
-  display: flex;
-  height: calc(100% - 60px);
-  padding: 15px;
-  gap: 15px;
+.container{
+  display:flex;
+  padding:15px;
+  gap:15px;
 }
 
 /* MAIN PLAYER */
-.main-player {
-  flex: 3;
-  display: flex;
-  flex-direction: column;
+.main-player{
+  flex:3;
 }
 
-.main-player .iframe-wrap iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 12px;
+/* Застосовуємо стилі до iframe всередині обгортки */
+.main-player .iframe-wrap iframe{
+  width:100%;
+  height:100%;
+  border:none;
+  border-radius:12px;
+  background:black;
 }
 
 /* SIDE PLAYERS */
-.side-players {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow: auto;
+.side-players{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
-.side-player {
-  cursor: pointer;
-  background: #1b2235;
-  padding: 5px;
-  border-radius: 10px;
-  transition: 0.3s;
-  position: relative;
+.side-player{
+  cursor:pointer;
+  background:#1b2235;
+  padding:5px;
+  border-radius:10px;
+  transition:0.3s;
 }
 
-.side-player:hover {
-  background: #2a3555;
+.side-player:hover{
+  background:#2a3555;
 }
 
-/* overlay для кліків на iframe */
-.side-player .click-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
+.side-player .iframe-wrap iframe{
+  width:100%;
+  height:100%;
+  border:none;
+  border-radius:8px;
 }
 
 /* INFO */
-.info {
-  margin-top: 10px;
-  padding: 10px;
-  background: #151c2e;
-  border-radius: 10px;
-  flex: none; /* щоб не змінювало головний плеєр */
-  display: flex;
-  flex-direction: column;
-  max-height: 180px; /* ← регулюєш висоту блоку програми */
-  overflow-y: auto; /* скрол, якщо не влазить */
+.info{
+  margin-top:10px;
+  padding:10px;
+  background:#151c2e;
+  border-radius:10px;
 }
 
-.schedule {
-  margin-top: 8px;
-  color: #ccc;
-  line-height: 1.6;
-  overflow: auto;
-  flex: 1;
+.schedule{
+  margin-top:8px;
+  color:#ccc;
+  line-height:1.6;
 }
 
 /* MOBILE */
-@media(max-width:900px) {
-  .container {
-    flex-direction: column;
-    height: auto;
-    padding: 10px;
+@media(max-width:900px){
+
+  .container{
+    flex-direction:column;
   }
 
-  .main-player {
-    flex: none;
+  .side-players{
+    flex-direction:row;
+    overflow-x:auto;
   }
 
-  .main-player .iframe-wrap {
-    padding-bottom: 56.25%;
+  .side-player{
+    min-width:200px;
   }
 
-  .info {
-    height: auto;
-    margin-top: 10px;
-    overflow-y: auto;
-  }
-
-  .side-players {
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 10px;
-    margin-top: 10px; /* плеєри одразу під info */
-  }
-
-  .side-player {
-    min-width: 200px;
-    flex: none;
-  }
 }
 
-/* 16:9 wrapper */
-.iframe-wrap {
-  position: relative;
-  height: 0;
-  padding-bottom: 56.25%;
+/* Обгортка 16:9 як у робочому embed */
+.iframe-wrap{
+  position:relative;
+  height:0;
+  padding-bottom:56.25%;
 }
 
-.iframe-wrap iframe {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+.iframe-wrap iframe{
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
 }
+
 </style>
 </head>
 <body>
@@ -154,6 +128,7 @@ header {
 
   <!-- MAIN PLAYER -->
   <div class="main-player">
+
     <div class="iframe-wrap">
       <iframe 
         id="mainFrame"
@@ -176,52 +151,128 @@ header {
 </div>
 
 <script>
+
+/* ----- ВСТАВЛЯЄШ СЮДИ СВОЇ ПЛЕЄРИ ----- */
+
 const players = [
-  { title:"24/7 | 6 лютого", src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player", schedule:["18:00 Фехтування","21:00 Плавання"] },
-  { title:"Плеєр 1 | 6 лютого", src:"https://live-nstu-cam01.cosmonova-broadcast.tv/player", schedule:["17:30 Біатлон","20:00 Хокей"] },
-  { title:"Плеєр 2 | 6 лютого", src:"https://live-nstu-cam02.cosmonova-broadcast.tv/player", schedule:["19:00 Фігурне катання"] },
-  { title:"Плеєр 3 | 6 лютого", src:"https://live-nstu-cam03.cosmonova-broadcast.tv/player", schedule:["16:00 Керлінг"] },
-  { title:"Плеєр 4 | 6 лютого", src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player", schedule:["22:00 Лижні гонки"] }
+
+{
+  title:"24/7 | 6 лютого",
+  src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player",
+  schedule:[
+    "18:00 Фехтування",
+    "21:00 Плавання"
+  ]
+},
+
+{
+  title:"Плеєр 1 | 6 лютого",
+  src:"https://live-nstu-cam01.cosmonova-broadcast.tv/player",
+  schedule:[
+    "17:30 Біатлон",
+    "20:00 Хокей"
+  ]
+},
+
+{
+  title:"Плеєр 2 | 6 лютого",
+  src:"https://live-nstu-cam02.cosmonova-broadcast.tv/player",
+  schedule:[
+    "19:00 Фігурне катання"
+  ]
+},
+
+{
+  title:"Плеєр 3 | 6 лютого",
+  src:"https://live-nstu-cam03.cosmonova-broadcast.tv/player",
+  schedule:[
+    "16:00 Керлінг"
+  ]
+},
+
+{
+  title:"Плеєр 4 | 6 лютого",
+  src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player",
+  schedule:[
+    "22:00 Лижні гонки"
+  ]
+}
+
 ];
 
 let mainIndex = 0;
+
 const mainFrame = document.getElementById("mainFrame");
 const sideContainer = document.getElementById("sidePlayers");
 
-function render() {
+function render(){
+
+  // MAIN
   mainFrame.src = players[mainIndex].src;
   document.getElementById("playerTitle").innerText = players[mainIndex].title;
-  document.getElementById("scheduleBox").innerHTML = players[mainIndex].schedule.join("<br>");
-  
+
+  document.getElementById("scheduleBox").innerHTML =
+    players[mainIndex].schedule.join("<br>");
+
+  // SIDE
   sideContainer.innerHTML = "";
-  
+
   players.forEach((p,index)=>{
+
     if(index === mainIndex) return;
+
     const div = document.createElement("div");
-    div.className = "side-player";
+    div.className="side-player";
+
     div.innerHTML = `
       <div class="iframe-wrap">
-        <iframe src="${p.src}" frameborder="0" scrolling="no" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation" allowfullscreen></iframe>
+        <iframe
+          src="${p.src}"
+          frameborder="0"
+          scrolling="no"
+          sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
+          allowfullscreen="allowfullscreen">
+        </iframe>
       </div>
       <div style="padding:5px">${p.title}</div>
-      <div class="click-layer"></div>
     `;
-    div.onclick = () => { mainIndex = index; render(); };
+
+    div.onclick = ()=>{
+      mainIndex = index;
+      render();
+    };
+
     sideContainer.appendChild(div);
+
   });
+
 }
 
 render();
 
-/* авто поворот */
+/* ⭐ Авто поворот екрана при fullscreen */
+
 document.addEventListener("fullscreenchange", handleFullscreen);
-function handleFullscreen() {
+document.addEventListener("webkitfullscreenchange", handleFullscreen);
+
+function handleFullscreen(){
+
   if(document.fullscreenElement){
-    if(screen.orientation?.lock) screen.orientation.lock("landscape").catch(()=>{});
+
+    if(screen.orientation && screen.orientation.lock){
+      screen.orientation.lock("landscape").catch(()=>{});
+    }
+
   } else {
-    if(screen.orientation?.unlock) screen.orientation.unlock();
+
+    if(screen.orientation && screen.orientation.unlock){
+      screen.orientation.unlock();
+    }
+
   }
+
 }
+
 </script>
 
 </body>
