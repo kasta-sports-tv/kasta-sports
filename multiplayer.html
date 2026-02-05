@@ -94,21 +94,20 @@ header .title{
   pointer-events:none; /* клік проходить до батька */
 }
 
-/* ПРОГРАМА (логіка sidebar) */
+/* ПРОГРАМА */
 .program-container{
   margin-top:10px;
-  background: rgba(0,0,0,0.55); /* як sidebar */
+  background: rgba(0,0,0,0.55);
   border-radius:10px;
   padding:10px;
   flex-shrink:0;
-  overflow-y:auto;
-  max-height:200px; /* ПК */
+  overflow-y:auto;     /* вертикальний скрол */
+  max-height:200px;    /* ПК */
 }
 
-/* schedule */
-.schedule{
-  color:#ccc;
-  line-height:1.6;
+/* Кожен рядок програми окремий div */
+.program-container .schedule div {
+  margin-bottom:4px;
 }
 
 /* MOBILE */
@@ -129,7 +128,7 @@ header .title{
   }
 
   .program-container{
-    max-height:none; /* мобільний auto */
+    max-height:150px; /* мобільний скрол */
   }
 }
 
@@ -146,6 +145,7 @@ header .title{
   top:0;
   width:100%;
   height:100%;
+  border:none;
 }
 
 </style>
@@ -194,11 +194,14 @@ const players = [
   title:"24/7 | 6 лютого",
   src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player",
   schedule:[
-    "11:00 | Фігурне катання. Команди. Танці на льоду. Ритм-танець",
-    "12:40 | Фігурне катання. Команди. Пари. Коротка програма",
-    "14:40 | Фігурне катання. Команди. Жінки. Коротка програма",
-    "16:00 | Хокей. Європейський Кубок націй. Україна - Польща",
-    "21:00 | Зимова Олімпіада 2026. Церемонія відкриття"
+    "18:00 Фехтування",
+    "21:00 Плавання",
+    "22:00 Лижні гонки",
+    "23:00 Стрільба",
+    "00:00 Біатлон",
+    "01:00 Хокей",
+    "02:00 Керлінг",
+    "03:00 Стрибки"
   ]
 },
 
@@ -207,7 +210,9 @@ const players = [
   src:"https://live-nstu-cam01.cosmonova-broadcast.tv/player",
   schedule:[
     "17:30 Біатлон",
-    "20:00 Хокей"
+    "20:00 Хокей",
+    "21:30 Фехтування",
+    "23:00 Плавання"
   ]
 },
 
@@ -215,7 +220,8 @@ const players = [
   title:"Плеєр 2 | 6 лютого",
   src:"https://live-nstu-cam02.cosmonova-broadcast.tv/player",
   schedule:[
-    "19:00 Фігурне катання"
+    "19:00 Фігурне катання",
+    "21:00 Стрибки"
   ]
 },
 
@@ -223,7 +229,8 @@ const players = [
   title:"Плеєр 3 | 6 лютого",
   src:"https://live-nstu-cam03.cosmonova-broadcast.tv/player",
   schedule:[
-    "16:00 Керлінг"
+    "16:00 Керлінг",
+    "18:00 Лижні гонки"
   ]
 },
 
@@ -241,15 +248,22 @@ let mainIndex = 0;
 
 const mainFrame = document.getElementById("mainFrame");
 const sideContainer = document.getElementById("sidePlayers");
+const scheduleBox = document.getElementById("scheduleBox");
+const playerTitle = document.getElementById("playerTitle");
 
 function render(){
 
   // MAIN
   mainFrame.src = players[mainIndex].src;
-  document.getElementById("playerTitle").innerText = players[mainIndex].title;
+  playerTitle.innerText = players[mainIndex].title;
 
-  document.getElementById("scheduleBox").innerHTML =
-    players[mainIndex].schedule.join("<br>");
+  // очищаємо schedule і додаємо кожен рядок в div
+  scheduleBox.innerHTML = "";
+  players[mainIndex].schedule.forEach(line => {
+    const div = document.createElement("div");
+    div.innerText = line;
+    scheduleBox.appendChild(div);
+  });
 
   // SIDE
   sideContainer.innerHTML = "";
