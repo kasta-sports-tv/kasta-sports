@@ -112,7 +112,11 @@ header{
 
   <!-- MAIN PLAYER -->
   <div class="main-player">
-    <iframe id="mainFrame"></iframe>
+    <iframe 
+      id="mainFrame"
+      allowfullscreen
+      allow="fullscreen; autoplay; encrypted-media; picture-in-picture">
+    </iframe>
 
     <div class="info">
       <div id="playerTitle">Плеєр 1</div>
@@ -132,7 +136,7 @@ header{
 const players = [
 
 {
-  title:"24/7",
+  title:"Плеєр 1",
   src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player",
   schedule:[
     "18:00 Фехтування",
@@ -200,7 +204,11 @@ function render(){
     div.className="side-player";
 
     div.innerHTML = `
-      <iframe src="${p.src}"></iframe>
+      <iframe 
+        src="${p.src}" 
+        allowfullscreen
+        allow="fullscreen; autoplay; encrypted-media; picture-in-picture">
+      </iframe>
       <div style="padding:5px">${p.title}</div>
     `;
 
@@ -216,6 +224,29 @@ function render(){
 }
 
 render();
+
+/* ⭐ Авто поворот екрана при fullscreen */
+
+document.addEventListener("fullscreenchange", handleFullscreen);
+document.addEventListener("webkitfullscreenchange", handleFullscreen);
+
+function handleFullscreen(){
+
+  if(document.fullscreenElement){
+
+    if(screen.orientation && screen.orientation.lock){
+      screen.orientation.lock("landscape").catch(()=>{});
+    }
+
+  } else {
+
+    if(screen.orientation && screen.orientation.unlock){
+      screen.orientation.unlock();
+    }
+
+  }
+
+}
 
 </script>
 
