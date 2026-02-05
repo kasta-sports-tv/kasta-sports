@@ -12,8 +12,8 @@ body{
   font-family:Arial, sans-serif;
   background:#0b0f1a;
   color:white;
-  overflow:hidden; /* Сторінка не скролиться */
-  height: 100vh;   /* Фіксуємо висоту сторінки */
+  overflow:hidden; /* сторінка не скролиться */
+  height:100vh;
 }
 
 /* HEADER */
@@ -23,23 +23,20 @@ header{
   text-align:center;
 }
 
-/* Контейнер всередині шапки для картинок */
 .header-content{
   display:flex;
-  justify-content:center; /* горизонтальне центрування */
-  align-items:center;     /* вертикальне центрування */
-  gap:10px; /* відстань між логотипом та назвою */
+  justify-content:center;
+  align-items:center;
+  gap:10px;
 }
 
-/* Логотип */
 header .logo{
-  width:124px;  /* масштабування для гармонії */
+  width:124px;
   height:auto;
 }
 
-/* Назва */
 header .title{
-  width:124px; /* масштабування для гармонії */
+  width:124px;
   height:auto;
 }
 
@@ -48,7 +45,7 @@ header .title{
   display:flex;
   padding:15px;
   gap:15px;
-  height: calc(100vh - 60px); /* Висота контейнера = екран мінус header на ПК */
+  height:calc(100vh - 60px); /* висота контейнера мінус header */
 }
 
 /* MAIN PLAYER */
@@ -58,7 +55,6 @@ header .title{
   flex-direction:column;
 }
 
-/* Застосовуємо стилі до iframe всередині обгортки */
 .main-player .iframe-wrap iframe{
   width:100%;
   height:100%;
@@ -73,7 +69,7 @@ header .title{
   display:flex;
   flex-direction:column;
   gap:10px;
-  overflow-y:auto; /* вертикальний скрол для бічних плеєрів на ПК */
+  overflow-y:auto; /* вертикальний скрол */
 }
 
 .side-player{
@@ -95,37 +91,36 @@ header .title{
   height:100%;
   border:none;
   border-radius:8px;
-  pointer-events: none; /* iframe пропускає клік на батька */
+  pointer-events:none; /* клік проходить до батька */
 }
 
-/* PROGRAM CONTAINER (назва + schedule) */
+/* ПРОГРАМА (логіка sidebar) */
 .program-container{
   margin-top:10px;
-  background:#151c2e;
+  background: rgba(0,0,0,0.55); /* як sidebar */
   border-radius:10px;
   padding:10px;
-  max-height:200px; /* на ПК обмежена висота */
-  overflow-y:auto;  /* вертикальний скрол для довгого тексту */
+  flex-shrink:0;
+  overflow-y:auto;
+  max-height:200px; /* ПК */
 }
 
-/* Текст schedule */
+/* schedule */
 .schedule{
-  margin-top:8px;
   color:#ccc;
   line-height:1.6;
 }
 
 /* MOBILE */
 @media(max-width:900px){
-
   .container{
     flex-direction:column;
-    height:auto; /* 🔹 висота автоматична на мобільному */
+    height:auto;
   }
 
   .side-players{
     flex-direction:row;
-    overflow-x:auto; /* горизонтальний скрол на мобільному */
+    overflow-x:auto;
     height:auto;
   }
 
@@ -134,13 +129,11 @@ header .title{
   }
 
   .program-container{
-    max-height:none; /* висота автоматична на мобільному */
-    overflow-y:auto; /* скрол працює, якщо текст великий */
+    max-height:none; /* мобільний auto */
   }
-
 }
 
-/* Обгортка 16:9 як у робочому embed */
+/* Обгортка 16:9 */
 .iframe-wrap{
   position:relative;
   height:0;
@@ -161,8 +154,8 @@ header .title{
 
 <header>
   <div class="header-content">
-    <img src="https://imgpx.com/pac5ubK1RSvf.png" alt="Логотип змагань" class="logo">
-    <img src="https://imgpx.com/l5sFEQqt3mz0.png" alt="Назва змагань" class="title">
+    <img src="https://imgpx.com/pac5ubK1RSvf.png" alt="Логотип" class="logo">
+    <img src="https://imgpx.com/l5sFEQqt3mz0.png" alt="Назва" class="title">
   </div>
 </header>
 
@@ -182,7 +175,7 @@ header .title{
     </div>
 
     <!-- ПРОГРАМА -->
-    <div class="program-container">
+    <div class="program-container" id="programContainer">
       <div id="playerTitle">Плеєр 1</div>
       <div class="schedule" id="scheduleBox"></div>
     </div>
@@ -195,19 +188,14 @@ header .title{
 
 <script>
 
-/* ----- ВСТАВЛЯЄШ СЮДИ СВОЇ ПЛЕЄРИ ----- */
-
 const players = [
 
 {
   title:"24/7 | 6 лютого",
   src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player",
   schedule:[
-    "11:00 | Фігурне катання. Команди. Танці на льоду. Ритм-танець",
-    "12:40 | Фігурне катання. Команди. Пари. Коротка програма",
-    "14:40 | Фігурне катання. Команди. Жінки. Коротка програма",
-    "16:00 | Хокей. Європейський Кубок націй. Україна - Польща",
-    "21:00 | Зимова Олімпіада 2026. Церемонія відкриття"
+    "18:00 Фехтування",
+    "21:00 Плавання"
   ]
 },
 
@@ -296,25 +284,20 @@ function render(){
 
 render();
 
-/* ⭐ Авто поворот екрана при fullscreen */
-
+/* Авто поворот fullscreen */
 document.addEventListener("fullscreenchange", handleFullscreen);
 document.addEventListener("webkitfullscreenchange", handleFullscreen);
 
 function handleFullscreen(){
 
   if(document.fullscreenElement){
-
     if(screen.orientation && screen.orientation.lock){
       screen.orientation.lock("landscape").catch(()=>{});
     }
-
   } else {
-
     if(screen.orientation && screen.orientation.unlock){
       screen.orientation.unlock();
     }
-
   }
 
 }
