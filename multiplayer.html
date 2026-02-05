@@ -35,9 +35,10 @@ header{
   flex:3;
 }
 
-.main-player iframe{
+/* Застосовуємо стилі до iframe всередині обгортки */
+.main-player .iframe-wrap iframe{
   width:100%;
-  aspect-ratio:16/9;
+  height:100%;
   border:none;
   border-radius:12px;
   background:black;
@@ -63,9 +64,9 @@ header{
   background:#2a3555;
 }
 
-.side-player iframe{
+.side-player .iframe-wrap iframe{
   width:100%;
-  aspect-ratio:16/9;
+  height:100%;
   border:none;
   border-radius:8px;
 }
@@ -102,6 +103,21 @@ header{
 
 }
 
+/* Обгортка 16:9 як у робочому embed */
+.iframe-wrap{
+  position:relative;
+  height:0;
+  padding-bottom:56.25%;
+}
+
+.iframe-wrap iframe{
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+}
+
 </style>
 </head>
 <body>
@@ -112,11 +128,16 @@ header{
 
   <!-- MAIN PLAYER -->
   <div class="main-player">
-    <iframe 
-      id="mainFrame"
-      allowfullscreen
-      allow="fullscreen; autoplay; encrypted-media; picture-in-picture">
-    </iframe>
+
+    <div class="iframe-wrap">
+      <iframe 
+        id="mainFrame"
+        frameborder="0"
+        scrolling="no"
+        sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
+        allowfullscreen="allowfullscreen">
+      </iframe>
+    </div>
 
     <div class="info">
       <div id="playerTitle">Плеєр 1</div>
@@ -204,11 +225,15 @@ function render(){
     div.className="side-player";
 
     div.innerHTML = `
-      <iframe 
-        src="${p.src}" 
-        allowfullscreen
-        allow="fullscreen; autoplay; encrypted-media; picture-in-picture">
-      </iframe>
+      <div class="iframe-wrap">
+        <iframe
+          src="${p.src}"
+          frameborder="0"
+          scrolling="no"
+          sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
+          allowfullscreen="allowfullscreen">
+        </iframe>
+      </div>
       <div style="padding:5px">${p.title}</div>
     `;
 
