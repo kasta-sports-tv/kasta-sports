@@ -31,7 +31,6 @@ header{
   height:calc(100% - 60px);
   padding:15px;
   gap:15px;
-  align-items:flex-start; /* нижні плеєри піднімаються до блоку програми */
 }
 
 /* MAIN PLAYER */
@@ -83,11 +82,12 @@ header{
   padding:10px;
   background:#151c2e;
   border-radius:10px;
-  flex:0 0 auto; /* тепер висота залежить від max-height */
-  max-height:250px; /* ← трохи збільшена висота */
-  overflow-y:auto; /* скрол при необхідності */
+  flex:1;
   display:flex;
   flex-direction:column;
+  overflow:hidden;
+
+  max-height:220px; /* ← трохи збільшена висота */
 }
 
 .schedule{
