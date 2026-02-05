@@ -12,6 +12,7 @@ body{
   font-family:Arial, sans-serif;
   background:#0b0f1a;
   color:white;
+  overflow:hidden; /* Сторінка не скролиться */
 }
 
 /* HEADER */
@@ -28,6 +29,8 @@ header{
   display:flex;
   padding:15px;
   gap:15px;
+  overflow:auto; /* Контейнер можна скролити */
+  max-height: calc(100vh - 60px); /* Враховує header */
 }
 
 /* MAIN PLAYER */
@@ -58,6 +61,8 @@ header{
   padding:5px;
   border-radius:10px;
   transition:0.3s;
+  display:flex;
+  flex-direction:column;
 }
 
 .side-player:hover{
@@ -69,12 +74,13 @@ header{
   height:100%;
   border:none;
   border-radius:8px;
+  pointer-events: none; /* 🔹 iframe пропускає клік на батька */
 }
 
 /* INFO */
 .info{
   margin-top:10px;
-  padding:40px;
+  padding:10px;
   background:#151c2e;
   border-radius:10px;
 }
