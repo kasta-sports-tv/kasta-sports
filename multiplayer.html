@@ -5,136 +5,144 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Olympic Streams</title>
 <style>
-html,body{
-  margin:0;
-  height:100%;
-  overflow:hidden;
-  font-family:Arial, sans-serif;
-  background:#0b0f1a;
-  color:white;
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #0b0f1a;
+  color: white;
 }
 
 /* HEADER */
-header{
-  text-align:center;
-  padding:15px;
-  font-size:22px;
-  font-weight:bold;
-  background:linear-gradient(90deg,#0085C7,#F4C300,#000,#009F3D,#DF0024);
+header {
+  text-align: center;
+  padding: 15px;
+  font-size: 22px;
+  font-weight: bold;
+  background: linear-gradient(90deg,#0085C7,#F4C300,#000,#009F3D,#DF0024);
 }
 
 /* MAIN LAYOUT */
-.container{
-  display:flex;
-  flex-direction:column;
-  height:calc(100% - 60px);
-  padding:15px;
-  gap:15px;
+.container {
+  display: flex;
+  height: calc(100% - 60px);
+  padding: 15px;
+  gap: 15px;
 }
 
 /* MAIN PLAYER */
-.main-player{
-  display:flex;
-  flex-direction:column;
+.main-player {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Головний плеєр 16:9 */
-.main-player .iframe-wrap{
-  position:relative;
-  height:0;
-  padding-bottom:56.25%;
-}
-
-.main-player .iframe-wrap iframe{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  border:none;
-  border-radius:12px;
-}
-
-/* Блок програми */
-.info{
-  margin-top:10px;
-  padding:10px;
-  background:#151c2e;
-  border-radius:10px;
-  flex:none;            /* щоб не тягнувся */
-  max-height:180px;     /* регулюєш висоту блоку */
-  overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-}
-
-.schedule{
-  margin-top:8px;
-  color:#ccc;
-  line-height:1.6;
-  overflow:auto;
-  flex:1;
+.main-player .iframe-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px;
 }
 
 /* SIDE PLAYERS */
-.side-players{
-  display:flex;
-  flex-direction:row; /* на мобільних горизонтально */
-  gap:10px;
-  overflow-x:auto;
-  margin-top:10px;
+.side-players {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: auto;
 }
 
-.side-player{
-  cursor:pointer;
-  background:#1b2235;
-  padding:5px;
-  border-radius:10px;
-  transition:0.3s;
-  position:relative;
-  flex:none;
+.side-player {
+  cursor: pointer;
+  background: #1b2235;
+  padding: 5px;
+  border-radius: 10px;
+  transition: 0.3s;
+  position: relative;
 }
 
-.side-player:hover{
-  background:#2a3555;
+.side-player:hover {
+  background: #2a3555;
 }
 
-.side-player .iframe-wrap{
-  position:relative;
-  height:0;
-  padding-bottom:56.25%;
+/* overlay для кліків на iframe */
+.side-player .click-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
 }
 
-.side-player .iframe-wrap iframe{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  border:none;
-  border-radius:8px;
+/* INFO */
+.info {
+  margin-top: 10px;
+  padding: 10px;
+  background: #151c2e;
+  border-radius: 10px;
+  flex: none; /* щоб не змінювало головний плеєр */
+  display: flex;
+  flex-direction: column;
+  max-height: 260px; /* ← регулюєш висоту блоку програми */
+  overflow-y: auto; /* скрол, якщо не влазить */
 }
 
-.side-player .click-layer{
-  position:absolute;
-  inset:0;
-  z-index:5;
+.schedule {
+  margin-top: 8px;
+  color: #ccc;
+  line-height: 1.6;
+  overflow: auto;
+  flex: 1;
 }
 
 /* MOBILE */
-@media(max-width:900px){
-  .container{
-    padding:10px;
+@media(max-width:900px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
   }
 
-  .side-players{
-    flex-direction:row;
-    overflow-x:auto;
+  .main-player {
+    flex: none;
   }
 
-  .side-player{
-    min-width:200px;
+  .main-player .iframe-wrap {
+    padding-bottom: 56.25%;
   }
+
+  .info {
+    height: auto;
+    margin-top: 10px;
+    overflow-y: auto;
+  }
+
+  .side-players {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 10px;
+    margin-top: 10px; /* плеєри одразу під info */
+  }
+
+  .side-player {
+    min-width: 200px;
+    flex: none;
+  }
+}
+
+/* 16:9 wrapper */
+.iframe-wrap {
+  position: relative;
+  height: 0;
+  padding-bottom: 56.25%;
+}
+
+.iframe-wrap iframe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>
 </head>
@@ -152,7 +160,7 @@ header{
         frameborder="0"
         scrolling="no"
         sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
-        allowfullscreen>
+        allowfullscreen="allowfullscreen">
       </iframe>
     </div>
 
@@ -180,24 +188,25 @@ let mainIndex = 0;
 const mainFrame = document.getElementById("mainFrame");
 const sideContainer = document.getElementById("sidePlayers");
 
-function render(){
+function render() {
   mainFrame.src = players[mainIndex].src;
   document.getElementById("playerTitle").innerText = players[mainIndex].title;
   document.getElementById("scheduleBox").innerHTML = players[mainIndex].schedule.join("<br>");
   
   sideContainer.innerHTML = "";
+  
   players.forEach((p,index)=>{
     if(index === mainIndex) return;
     const div = document.createElement("div");
-    div.className="side-player";
+    div.className = "side-player";
     div.innerHTML = `
       <div class="iframe-wrap">
-        <iframe src="${p.src}" frameborder="0" scrolling="no" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>
+        <iframe src="${p.src}" frameborder="0" scrolling="no" sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation" allowfullscreen></iframe>
       </div>
       <div style="padding:5px">${p.title}</div>
       <div class="click-layer"></div>
     `;
-    div.onclick = ()=>{ mainIndex = index; render(); };
+    div.onclick = () => { mainIndex = index; render(); };
     sideContainer.appendChild(div);
   });
 }
@@ -206,11 +215,11 @@ render();
 
 /* авто поворот */
 document.addEventListener("fullscreenchange", handleFullscreen);
-function handleFullscreen(){
+function handleFullscreen() {
   if(document.fullscreenElement){
-    if(screen.orientation?.lock){ screen.orientation.lock("landscape").catch(()=>{}); }
+    if(screen.orientation?.lock) screen.orientation.lock("landscape").catch(()=>{});
   } else {
-    if(screen.orientation?.unlock){ screen.orientation.unlock(); }
+    if(screen.orientation?.unlock) screen.orientation.unlock();
   }
 }
 </script>
