@@ -18,11 +18,29 @@ body{
 
 /* HEADER */
 header{
+  background:#070917; /* темніше за фон сайту */
+  padding:15px 0;
   text-align:center;
-  padding:15px;
-  font-size:22px;
-  font-weight:bold;
-  background:linear-gradient(90deg,#0085C7,#F4C300,#000,#009F3D,#DF0024);
+}
+
+/* Контейнер всередині шапки для картинок */
+.header-content{
+  display:flex;
+  justify-content:center; /* горизонтальне центрування */
+  align-items:center;     /* вертикальне центрування */
+  gap:10px; /* відстань між логотипом та назвою */
+}
+
+/* Логотип */
+header .logo{
+  width:124px;  /* масштабування для гармонії */
+  height:auto;
+}
+
+/* Назва */
+header .title{
+  width:124px; /* масштабування для гармонії */
+  height:auto;
 }
 
 /* MAIN LAYOUT */
@@ -131,7 +149,12 @@ header{
 </head>
 <body>
 
-<header>🏅 Olympic Live Streams</header>
+<header>
+  <div class="header-content">
+    <img src="https://imgpx.com/pac5ubK1RSvf.png" alt="Логотип змагань" class="logo">
+    <img src="https://imgpx.com/l5sFEQqt3mz0.png" alt="Назва змагань" class="title">
+  </div>
+</header>
 
 <div class="container">
 
