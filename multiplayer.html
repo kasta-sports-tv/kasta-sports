@@ -30,7 +30,7 @@ header{
   display:flex;
   padding:15px;
   gap:15px;
-  height: calc(100vh - 60px); /* Висота контейнера = екран мінус header */
+  height: calc(100vh - 60px); /* Висота контейнера = екран мінус header на ПК */
 }
 
 /* MAIN PLAYER */
@@ -53,7 +53,7 @@ header{
   display:flex;
   flex-direction:column;
   gap:10px;
-  overflow-y:auto; /* 🔹 скрол тільки для бічних плеєрів */
+  overflow-y:auto; /* вертикальний скрол для бічних плеєрів на ПК */
 }
 
 .side-player{
@@ -75,7 +75,7 @@ header{
   height:100%;
   border:none;
   border-radius:8px;
-  pointer-events: none; /* 🔹 iframe пропускає клік на батька */
+  pointer-events: none; /* iframe пропускає клік на батька */
 }
 
 /* INFO */
@@ -97,12 +97,13 @@ header{
 
   .container{
     flex-direction:column;
+    height:auto; /* 🔹 висота автоматична на мобільному */
   }
 
   .side-players{
     flex-direction:row;
     overflow-x:auto; /* горизонтальний скрол на мобільному */
-    height:auto;
+    height:auto; /* 🔹 висота автоматична на мобільному */
   }
 
   .side-player{
