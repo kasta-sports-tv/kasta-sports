@@ -38,6 +38,12 @@ header{
   flex:3;
   display:flex;
   flex-direction:column;
+  gap:10px;
+}
+
+/* ⭐ відео займає залишок місця */
+.main-player .iframe-wrap{
+  flex:1;
 }
 
 .main-player .iframe-wrap iframe{
@@ -78,22 +84,19 @@ header{
 
 /* INFO */
 .info{
-  margin-top:10px;
   padding:10px;
   background:#151c2e;
   border-radius:10px;
 
-  max-height:180px; /* ← ОТУТ регулюєш висоту */
+  height:260px; /* ⭐ ЗБІЛЬШИЛА ~в 1.5 рази */
 
-  overflow-y:auto; /* автоматичний скрол */
+  overflow-y:auto;
 }
 
 .schedule{
   margin-top:8px;
   color:#ccc;
   line-height:1.6;
-  overflow:auto;
-  flex:1;
 }
 
 /* MOBILE */
@@ -137,7 +140,6 @@ header{
 
 <div class="container">
 
-  <!-- MAIN PLAYER -->
   <div class="main-player">
 
     <div class="iframe-wrap">
@@ -154,9 +156,9 @@ header{
       <div id="playerTitle">Плеєр 1</div>
       <div class="schedule" id="scheduleBox"></div>
     </div>
+
   </div>
 
-  <!-- SIDE PLAYERS -->
   <div class="side-players" id="sidePlayers"></div>
 
 </div>
@@ -258,24 +260,14 @@ function render(){
 
 render();
 
-/* авто поворот */
-
 document.addEventListener("fullscreenchange", handleFullscreen);
 
 function handleFullscreen(){
 
   if(document.fullscreenElement){
-
-    if(screen.orientation?.lock){
-      screen.orientation.lock("landscape").catch(()=>{});
-    }
-
+    screen.orientation?.lock?.("landscape").catch(()=>{});
   } else {
-
-    if(screen.orientation?.unlock){
-      screen.orientation.unlock();
-    }
-
+    screen.orientation?.unlock?.();
   }
 
 }
