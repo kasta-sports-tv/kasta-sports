@@ -13,6 +13,7 @@ body{
   background:#0b0f1a;
   color:white;
   overflow:hidden; /* Сторінка не скролиться */
+  height: 100vh;   /* Фіксуємо висоту сторінки */
 }
 
 /* HEADER */
@@ -29,8 +30,7 @@ header{
   display:flex;
   padding:15px;
   gap:15px;
-  overflow:auto; /* Контейнер можна скролити */
-  max-height: calc(100vh - 60px); /* Враховує header */
+  height: calc(100vh - 60px); /* Висота контейнера = екран мінус header */
 }
 
 /* MAIN PLAYER */
@@ -53,6 +53,7 @@ header{
   display:flex;
   flex-direction:column;
   gap:10px;
+  overflow-y:auto; /* 🔹 скрол тільки для бічних плеєрів */
 }
 
 .side-player{
@@ -100,7 +101,8 @@ header{
 
   .side-players{
     flex-direction:row;
-    overflow-x:auto;
+    overflow-x:auto; /* горизонтальний скрол на мобільному */
+    height:auto;
   }
 
   .side-player{
