@@ -6,7 +6,6 @@
 <title>Olympic Streams</title>
 
 <style>
-
 html,body{
   margin:0;
   height:100%;
@@ -47,28 +46,6 @@ header{
   border-radius:12px;
 }
 
-/* INFO */
-.info{
-  margin-top:10px;
-  padding:10px;
-  background:#151c2e;
-  border-radius:10px;
-
-  height:180px;      /* трохи більша висота блоку програми */
-  flex:0 0 auto;     /* не стискає головний плеєр */
-  display:flex;
-  flex-direction:column;
-  overflow-y:auto;   /* скрол при переповненні */
-}
-
-.schedule{
-  margin-top:8px;
-  color:#ccc;
-  line-height:1.6;
-  overflow:auto;
-  flex:1;
-}
-
 /* SIDE PLAYERS */
 .side-players{
   flex:1;
@@ -98,20 +75,60 @@ header{
   z-index:5;
 }
 
+/* INFO */
+.info{
+  margin-top:10px;
+  padding:10px;
+  background:#151c2e;
+  border-radius:10px;
+  flex:none;
+  display:flex;
+  flex-direction:column;
+  max-height:220px; /* трішки збільшена висота */
+  overflow-y:auto; /* скрол якщо не влазить */
+}
+
+.schedule{
+  margin-top:8px;
+  color:#ccc;
+  line-height:1.6;
+  overflow:auto;
+  flex:1;
+}
+
 /* MOBILE */
 @media(max-width:900px){
 
   .container{
     flex-direction:column;
+    height:auto;
+    padding:10px;
+  }
+
+  .main-player{
+    flex:none;
+  }
+
+  .main-player .iframe-wrap{
+    padding-bottom:56.25%;
+  }
+
+  .info{
+    height:auto;
+    margin-top:10px;
+    overflow-y:auto;
   }
 
   .side-players{
     flex-direction:row;
     overflow-x:auto;
+    gap:10px;
+    margin-top:10px;
   }
 
   .side-player{
     min-width:200px;
+    flex:none;
   }
 
 }
@@ -164,7 +181,6 @@ header{
 </div>
 
 <script>
-
 const players = [
 
 {
@@ -212,7 +228,6 @@ const players = [
 ];
 
 let mainIndex = 0;
-
 const mainFrame = document.getElementById("mainFrame");
 const sideContainer = document.getElementById("sidePlayers");
 
@@ -261,27 +276,19 @@ function render(){
 render();
 
 /* авто поворот */
-
 document.addEventListener("fullscreenchange", handleFullscreen);
 
 function handleFullscreen(){
-
   if(document.fullscreenElement){
-
     if(screen.orientation?.lock){
       screen.orientation.lock("landscape").catch(()=>{});
     }
-
   } else {
-
     if(screen.orientation?.unlock){
       screen.orientation.unlock();
     }
-
   }
-
 }
-
 </script>
 
 </body>
