@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Olympic Streams</title>
-
 <style>
 
 html,body{
@@ -38,12 +37,6 @@ header{
   flex:3;
   display:flex;
   flex-direction:column;
-  gap:10px;
-}
-
-/* ⭐ відео займає залишок місця */
-.main-player .iframe-wrap{
-  flex:1;
 }
 
 .main-player .iframe-wrap iframe{
@@ -84,19 +77,22 @@ header{
 
 /* INFO */
 .info{
+  margin-top:10px;
   padding:10px;
   background:#151c2e;
   border-radius:10px;
 
-  height:180px; /* ⭐ ЗБІЛЬШИЛА ~в 1.5 рази */
+  max-height:270px; /* ← Збільшено з 180px до 270px */
 
-  overflow-y:auto;
+  overflow-y:auto; /* автоматичний скрол */
 }
 
 .schedule{
   margin-top:8px;
   color:#ccc;
   line-height:1.6;
+  overflow:auto;
+  flex:1;
 }
 
 /* MOBILE */
@@ -135,11 +131,10 @@ header{
 </style>
 </head>
 <body>
-
 <header>🏅 Olympic Live Streams</header>
-
 <div class="container">
 
+  <!-- MAIN PLAYER -->
   <div class="main-player">
 
     <div class="iframe-wrap">
@@ -159,6 +154,7 @@ header{
 
   </div>
 
+  <!-- SIDE PLAYERS -->
   <div class="side-players" id="sidePlayers"></div>
 
 </div>
@@ -260,19 +256,28 @@ function render(){
 
 render();
 
+/* авто поворот */
+
 document.addEventListener("fullscreenchange", handleFullscreen);
 
 function handleFullscreen(){
 
   if(document.fullscreenElement){
-    screen.orientation?.lock?.("landscape").catch(()=>{});
+
+    if(screen.orientation?.lock){
+      screen.orientation.lock("landscape").catch(()=>{});
+    }
+
   } else {
-    screen.orientation?.unlock?.();
+
+    if(screen.orientation?.unlock){
+      screen.orientation.unlock();
+    }
+
   }
 
 }
 
 </script>
-
 </body>
 </html>
