@@ -47,6 +47,28 @@ header{
   border-radius:12px;
 }
 
+/* INFO */
+.info{
+  margin-top:10px;
+  padding:10px;
+  background:#151c2e;
+  border-radius:10px;
+
+  height:180px;      /* трохи більша висота блоку програми */
+  flex:0 0 auto;     /* не стискає головний плеєр */
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;   /* скрол при переповненні */
+}
+
+.schedule{
+  margin-top:8px;
+  color:#ccc;
+  line-height:1.6;
+  overflow:auto;
+  flex:1;
+}
+
 /* SIDE PLAYERS */
 .side-players{
   flex:1;
@@ -74,28 +96,6 @@ header{
   position:absolute;
   inset:0;
   z-index:5;
-}
-
-/* INFO */
-.info{
-  margin-top:10px;
-  padding:10px;
-  background:#151c2e;
-  border-radius:10px;
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-
-  max-height:180px; /* ← трохи збільшена висота */
-}
-
-.schedule{
-  margin-top:8px;
-  color:#ccc;
-  line-height:1.6;
-  overflow:auto;
-  flex:1;
 }
 
 /* MOBILE */
