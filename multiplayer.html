@@ -7,8 +7,10 @@
 
 <style>
 
-body{
+html,body{
   margin:0;
+  height:100%;
+  overflow:hidden;
   font-family:Arial, sans-serif;
   background:#0b0f1a;
   color:white;
@@ -26,6 +28,7 @@ header{
 /* MAIN LAYOUT */
 .container{
   display:flex;
+  height:calc(100% - 60px);
   padding:15px;
   gap:15px;
 }
@@ -33,15 +36,15 @@ header{
 /* MAIN PLAYER */
 .main-player{
   flex:3;
+  display:flex;
+  flex-direction:column;
 }
 
-/* Застосовуємо стилі до iframe всередині обгортки */
 .main-player .iframe-wrap iframe{
   width:100%;
   height:100%;
   border:none;
   border-radius:12px;
-  background:black;
 }
 
 /* SIDE PLAYERS */
@@ -50,6 +53,7 @@ header{
   display:flex;
   flex-direction:column;
   gap:10px;
+  overflow:auto;
 }
 
 .side-player{
@@ -58,17 +62,18 @@ header{
   padding:5px;
   border-radius:10px;
   transition:0.3s;
+  position:relative;
 }
 
 .side-player:hover{
   background:#2a3555;
 }
 
-.side-player .iframe-wrap iframe{
-  width:100%;
-  height:100%;
-  border:none;
-  border-radius:8px;
+/* overlay щоб ловити кліки поверх iframe */
+.side-player .click-layer{
+  position:absolute;
+  inset:0;
+  z-index:5;
 }
 
 /* INFO */
@@ -77,12 +82,18 @@ header{
   padding:10px;
   background:#151c2e;
   border-radius:10px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
 }
 
 .schedule{
   margin-top:8px;
   color:#ccc;
   line-height:1.6;
+  overflow:auto;
+  flex:1;
 }
 
 /* MOBILE */
@@ -103,7 +114,7 @@ header{
 
 }
 
-/* Обгортка 16:9 як у робочому embed */
+/* 16:9 wrapper */
 .iframe-wrap{
   position:relative;
   height:0;
@@ -151,8 +162,6 @@ header{
 </div>
 
 <script>
-
-/* ----- ВСТАВЛЯЄШ СЮДИ СВОЇ ПЛЕЄРИ ----- */
 
 const players = [
 
@@ -207,14 +216,12 @@ const sideContainer = document.getElementById("sidePlayers");
 
 function render(){
 
-  // MAIN
   mainFrame.src = players[mainIndex].src;
   document.getElementById("playerTitle").innerText = players[mainIndex].title;
 
   document.getElementById("scheduleBox").innerHTML =
     players[mainIndex].schedule.join("<br>");
 
-  // SIDE
   sideContainer.innerHTML = "";
 
   players.forEach((p,index)=>{
@@ -235,6 +242,7 @@ function render(){
         </iframe>
       </div>
       <div style="padding:5px">${p.title}</div>
+      <div class="click-layer"></div>
     `;
 
     div.onclick = ()=>{
@@ -250,22 +258,21 @@ function render(){
 
 render();
 
-/* ⭐ Авто поворот екрана при fullscreen */
+/* авто поворот */
 
 document.addEventListener("fullscreenchange", handleFullscreen);
-document.addEventListener("webkitfullscreenchange", handleFullscreen);
 
 function handleFullscreen(){
 
   if(document.fullscreenElement){
 
-    if(screen.orientation && screen.orientation.lock){
+    if(screen.orientation?.lock){
       screen.orientation.lock("landscape").catch(()=>{});
     }
 
   } else {
 
-    if(screen.orientation && screen.orientation.unlock){
+    if(screen.orientation?.unlock){
       screen.orientation.unlock();
     }
 
