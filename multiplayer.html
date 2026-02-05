@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olympic Streams</title>
+
+<style>
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0b0f1a;
+  color:white;
+}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:15px;
+  font-size:22px;
+  font-weight:bold;
+  background:linear-gradient(90deg,#0085C7,#F4C300,#000,#009F3D,#DF0024);
+}
+
+/* MAIN LAYOUT */
+.container{
+  display:flex;
+  padding:15px;
+  gap:15px;
+}
+
+/* MAIN PLAYER */
+.main-player{
+  flex:3;
+}
+
+.main-player iframe{
+  width:100%;
+  aspect-ratio:16/9;
+  border:none;
+  border-radius:12px;
+  background:black;
+}
+
+/* SIDE PLAYERS */
+.side-players{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.side-player{
+  cursor:pointer;
+  background:#1b2235;
+  padding:5px;
+  border-radius:10px;
+  transition:0.3s;
+}
+
+.side-player:hover{
+  background:#2a3555;
+}
+
+.side-player iframe{
+  width:100%;
+  aspect-ratio:16/9;
+  border:none;
+  border-radius:8px;
+}
+
+/* INFO */
+.info{
+  margin-top:10px;
+  padding:10px;
+  background:#151c2e;
+  border-radius:10px;
+}
+
+.schedule{
+  margin-top:8px;
+  color:#ccc;
+  line-height:1.6;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+
+  .container{
+    flex-direction:column;
+  }
+
+  .side-players{
+    flex-direction:row;
+    overflow-x:auto;
+  }
+
+  .side-player{
+    min-width:200px;
+  }
+
+}
+
+</style>
+</head>
+<body>
+
+<header>🏅 Olympic Live Streams</header>
+
+<div class="container">
+
+  <!-- MAIN PLAYER -->
+  <div class="main-player">
+    <iframe id="mainFrame"></iframe>
+
+    <div class="info">
+      <div id="playerTitle">Плеєр 1</div>
+      <div class="schedule" id="scheduleBox"></div>
+    </div>
+  </div>
+
+  <!-- SIDE PLAYERS -->
+  <div class="side-players" id="sidePlayers"></div>
+
+</div>
+
+<script>
+
+/* ----- ВСТАВЛЯЄШ СЮДИ СВОЇ ПЛЕЄРИ ----- */
+
+const players = [
+
+{
+  title:"Плеєр 1",
+  src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player",
+  schedule:[
+    "18:00 Фехтування",
+    "21:00 Плавання"
+  ]
+},
+
+{
+  title:"Плеєр 1",
+  src:"https://live-nstu-cam01.cosmonova-broadcast.tv/player",
+  schedule:[
+    "17:30 Біатлон",
+    "20:00 Хокей"
+  ]
+},
+
+{
+  title:"Плеєр 2",
+  src:"https://live-nstu-cam02.cosmonova-broadcast.tv/player",
+  schedule:[
+    "19:00 Фігурне катання"
+  ]
+},
+
+{
+  title:"Плеєр 3",
+  src:"https://live-nstu-cam03.cosmonova-broadcast.tv/player",
+  schedule:[
+    "16:00 Керлінг"
+  ]
+},
+
+{
+  title:"Плеєр 4",
+  src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player",
+  schedule:[
+    "22:00 Лижні гонки"
+  ]
+}
+
+];
+
+let mainIndex = 0;
+
+const mainFrame = document.getElementById("mainFrame");
+const sideContainer = document.getElementById("sidePlayers");
+
+function render(){
+
+  // MAIN
+  mainFrame.src = players[mainIndex].src;
+  document.getElementById("playerTitle").innerText = players[mainIndex].title;
+
+  document.getElementById("scheduleBox").innerHTML =
+    players[mainIndex].schedule.join("<br>");
+
+  // SIDE
+  sideContainer.innerHTML = "";
+
+  players.forEach((p,index)=>{
+
+    if(index === mainIndex) return;
+
+    const div = document.createElement("div");
+    div.className="side-player";
+
+    div.innerHTML = `
+      <iframe src="${p.src}"></iframe>
+      <div style="padding:5px">${p.title}</div>
+    `;
+
+    div.onclick = ()=>{
+      mainIndex = index;
+      render();
+    };
+
+    sideContainer.appendChild(div);
+
+  });
+
+}
+
+render();
+
+</script>
+
+</body>
+</html>
