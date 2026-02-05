@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Olympic Streams</title>
-
 <style>
 html,body{
   margin:0;
@@ -27,6 +26,7 @@ header{
 /* MAIN LAYOUT */
 .container{
   display:flex;
+  flex-direction:column;
   height:calc(100% - 60px);
   padding:15px;
   gap:15px;
@@ -34,58 +34,38 @@ header{
 
 /* MAIN PLAYER */
 .main-player{
-  flex:3;
   display:flex;
   flex-direction:column;
 }
 
+/* Головний плеєр 16:9 */
+.main-player .iframe-wrap{
+  position:relative;
+  height:0;
+  padding-bottom:56.25%;
+}
+
 .main-player .iframe-wrap iframe{
+  position:absolute;
+  top:0;
+  left:0;
   width:100%;
   height:100%;
   border:none;
   border-radius:12px;
 }
 
-/* SIDE PLAYERS */
-.side-players{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  overflow:auto;
-}
-
-.side-player{
-  cursor:pointer;
-  background:#1b2235;
-  padding:5px;
-  border-radius:10px;
-  transition:0.3s;
-  position:relative;
-}
-
-.side-player:hover{
-  background:#2a3555;
-}
-
-/* overlay щоб ловити кліки поверх iframe */
-.side-player .click-layer{
-  position:absolute;
-  inset:0;
-  z-index:5;
-}
-
-/* INFO */
+/* Блок програми */
 .info{
   margin-top:10px;
   padding:10px;
   background:#151c2e;
   border-radius:10px;
-  flex:0 0 auto;
+  flex:none;            /* щоб не тягнувся */
+  max-height:260px;     /* регулюєш висоту блоку */
+  overflow-y:auto;
   display:flex;
   flex-direction:column;
-  max-height:260px; /* трішки збільшена висота */
-  overflow-y:auto; /* скрол якщо не влазить */
 }
 
 .schedule{
@@ -96,58 +76,66 @@ header{
   flex:1;
 }
 
-/* MOBILE */
-@media(max-width:900px){
-
-  .container{
-    flex-direction:column;
-    height:auto;
-    padding:10px;
-  }
-
-  .main-player{
-    flex:none;
-  }
-
-  .main-player .iframe-wrap{
-    padding-bottom:56.25%;
-  }
-
-  .info{
-    height:auto;
-    margin-top:10px;
-    overflow-y:auto;
-  }
-
-  .side-players{
-    flex-direction:row;
-    overflow-x:auto;
-    gap:10px;
-    margin-top:10px;
-  }
-
-  .side-player{
-    min-width:200px;
-    flex:none;
-  }
-
+/* SIDE PLAYERS */
+.side-players{
+  display:flex;
+  flex-direction:row; /* на мобільних горизонтально */
+  gap:10px;
+  overflow-x:auto;
+  margin-top:10px;
 }
 
-/* 16:9 wrapper */
-.iframe-wrap{
+.side-player{
+  cursor:pointer;
+  background:#1b2235;
+  padding:5px;
+  border-radius:10px;
+  transition:0.3s;
+  position:relative;
+  flex:none;
+}
+
+.side-player:hover{
+  background:#2a3555;
+}
+
+.side-player .iframe-wrap{
   position:relative;
   height:0;
   padding-bottom:56.25%;
 }
 
-.iframe-wrap iframe{
+.side-player .iframe-wrap iframe{
   position:absolute;
-  left:0;
   top:0;
+  left:0;
   width:100%;
   height:100%;
+  border:none;
+  border-radius:8px;
 }
 
+.side-player .click-layer{
+  position:absolute;
+  inset:0;
+  z-index:5;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+  .container{
+    padding:10px;
+  }
+
+  .side-players{
+    flex-direction:row;
+    overflow-x:auto;
+  }
+
+  .side-player{
+    min-width:200px;
+  }
+}
 </style>
 </head>
 <body>
@@ -158,14 +146,13 @@ header{
 
   <!-- MAIN PLAYER -->
   <div class="main-player">
-
     <div class="iframe-wrap">
       <iframe 
         id="mainFrame"
         frameborder="0"
         scrolling="no"
         sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
-        allowfullscreen="allowfullscreen">
+        allowfullscreen>
       </iframe>
     </div>
 
@@ -182,49 +169,11 @@ header{
 
 <script>
 const players = [
-
-{
-  title:"24/7 | 6 лютого",
-  src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player",
-  schedule:[
-    "18:00 Фехтування",
-    "21:00 Плавання"
-  ]
-},
-
-{
-  title:"Плеєр 1 | 6 лютого",
-  src:"https://live-nstu-cam01.cosmonova-broadcast.tv/player",
-  schedule:[
-    "17:30 Біатлон",
-    "20:00 Хокей"
-  ]
-},
-
-{
-  title:"Плеєр 2 | 6 лютого",
-  src:"https://live-nstu-cam02.cosmonova-broadcast.tv/player",
-  schedule:[
-    "19:00 Фігурне катання"
-  ]
-},
-
-{
-  title:"Плеєр 3 | 6 лютого",
-  src:"https://live-nstu-cam03.cosmonova-broadcast.tv/player",
-  schedule:[
-    "16:00 Керлінг"
-  ]
-},
-
-{
-  title:"Плеєр 4 | 6 лютого",
-  src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player",
-  schedule:[
-    "22:00 Лижні гонки"
-  ]
-}
-
+  { title:"24/7 | 6 лютого", src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player", schedule:["18:00 Фехтування","21:00 Плавання"] },
+  { title:"Плеєр 1 | 6 лютого", src:"https://live-nstu-cam01.cosmonova-broadcast.tv/player", schedule:["17:30 Біатлон","20:00 Хокей"] },
+  { title:"Плеєр 2 | 6 лютого", src:"https://live-nstu-cam02.cosmonova-broadcast.tv/player", schedule:["19:00 Фігурне катання"] },
+  { title:"Плеєр 3 | 6 лютого", src:"https://live-nstu-cam03.cosmonova-broadcast.tv/player", schedule:["16:00 Керлінг"] },
+  { title:"Плеєр 4 | 6 лютого", src:"https://live-nstu-cam04.cosmonova-broadcast.tv/player", schedule:["22:00 Лижні гонки"] }
 ];
 
 let mainIndex = 0;
@@ -232,61 +181,36 @@ const mainFrame = document.getElementById("mainFrame");
 const sideContainer = document.getElementById("sidePlayers");
 
 function render(){
-
   mainFrame.src = players[mainIndex].src;
   document.getElementById("playerTitle").innerText = players[mainIndex].title;
-
-  document.getElementById("scheduleBox").innerHTML =
-    players[mainIndex].schedule.join("<br>");
-
+  document.getElementById("scheduleBox").innerHTML = players[mainIndex].schedule.join("<br>");
+  
   sideContainer.innerHTML = "";
-
   players.forEach((p,index)=>{
-
     if(index === mainIndex) return;
-
     const div = document.createElement("div");
     div.className="side-player";
-
     div.innerHTML = `
       <div class="iframe-wrap">
-        <iframe
-          src="${p.src}"
-          frameborder="0"
-          scrolling="no"
-          sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
-          allowfullscreen="allowfullscreen">
-        </iframe>
+        <iframe src="${p.src}" frameborder="0" scrolling="no" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>
       </div>
       <div style="padding:5px">${p.title}</div>
       <div class="click-layer"></div>
     `;
-
-    div.onclick = ()=>{
-      mainIndex = index;
-      render();
-    };
-
+    div.onclick = ()=>{ mainIndex = index; render(); };
     sideContainer.appendChild(div);
-
   });
-
 }
 
 render();
 
 /* авто поворот */
 document.addEventListener("fullscreenchange", handleFullscreen);
-
 function handleFullscreen(){
   if(document.fullscreenElement){
-    if(screen.orientation?.lock){
-      screen.orientation.lock("landscape").catch(()=>{});
-    }
+    if(screen.orientation?.lock){ screen.orientation.lock("landscape").catch(()=>{}); }
   } else {
-    if(screen.orientation?.unlock){
-      screen.orientation.unlock();
-    }
+    if(screen.orientation?.unlock){ screen.orientation.unlock(); }
   }
 }
 </script>
