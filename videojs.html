@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video.js Player з Watermark</title>
+
+<link href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet"/>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    height: 100%;
+    overflow: hidden;
+}
+
+.player-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+}
+
+.video-js {
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0;
+    left: 0;
+}
+
+/* Стиль водяного знаку */
+.player-watermark {
+    position: absolute;
+    pointer-events: none;
+    z-index: 9999;
+}
+.player-watermark img {
+    display: block;
+}
+</style>
+</head>
+<body>
+
+<div class="player-container">
+    <video-js
+        id="video-player"
+        class="vjs-16-9 vjs-big-play-centered"
+        controls
+        preload="auto"
+        playsinline
+    >
+        <!-- source буде додано через JS -->
+    </video-js>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
+
+<script>
+// ✅ Функція для отримання параметрів з URL
+function getQueryParams() {
+    const params = {};
+    window.location.search.substring(1).split("&").forEach(function(pair) {
+        const [key, value] = pair.split("=");
+        if(key) params[key] = decodeURIComponent(value);
+    });
+    return params;
+}
+
+const params = getQueryParams();
+const videoURL = params.url || "";
+const posterURL = params.poster || "";
+
+const player = videojs("video-player", {
+    liveui: true,
+    responsive: true,
+    fluid: false,
+    poster: posterURL
+});
+
+// Mobile UI
+player.mobileUi();
+
+// HLS якість
+player.hlsQualitySelector({ displayCurrentQuality: true });
+
+// Додаємо джерело, якщо передано
+if(videoURL) {
+    player.src({ src: videoURL, type: "application/x-mpegURL" });
+}
+
+// 🔥 Watermark
+player.ready(function() {
+    const playerEl = player.el();
+
+    const wmContainer = document.createElement('div');
+    wmContainer.className = 'player-watermark';
+    const wmImg = document.createElement('img');
+    wmImg.src = "https://dl.dropbox.com/scl/fi/5f91hwjnaxeduve9dpsmv/IMG_20251101_134848.png?rlkey=zp6loeqvic2bsve388qei887o";
+    wmContainer.appendChild(wmImg);
+    playerEl.appendChild(wmContainer);
+
+    const baseWidth = 90;
+
+    function updateWatermark() {
+        const isFullscreen = player.isFullscreen();
+        const isDesktop = window.innerWidth > 768;
+
+        if(isFullscreen) {
+            if(isDesktop){
+                wmImg.style.width = (baseWidth * 3) + "px";
+                wmContainer.style.top = "8%";
+                wmContainer.style.right = "1%";
+            } else {
+                wmImg.style.width = (baseWidth * 1.2) + "px";
+                wmContainer.style.top = "4%";
+                wmContainer.style.right = "10%";
+            }
+        } else {
+            if(isDesktop){
+                wmImg.style.width = (baseWidth * 2.4) + "px";
+                wmContainer.style.top = "6%";
+                wmContainer.style.right = "2%";
+            } else {
+                wmImg.style.width = baseWidth + "px";
+                wmContainer.style.top = "3%";
+                wmContainer.style.right = "4%";
+            }
+        }
+    }
+
+    player.on("fullscreenchange", updateWatermark);
+    window.addEventListener("resize", updateWatermark);
+    setTimeout(updateWatermark, 300);
+});
+</script>
+
+</body>
+</html>
