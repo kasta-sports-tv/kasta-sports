@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Olympic Streams</title>
+
 <style>
 
 html,body{
@@ -30,6 +31,7 @@ header{
   height:calc(100% - 60px);
   padding:15px;
   gap:15px;
+  align-items:flex-start; /* нижні плеєри піднімаються до блоку програми */
 }
 
 /* MAIN PLAYER */
@@ -81,10 +83,11 @@ header{
   padding:10px;
   background:#151c2e;
   border-radius:10px;
-
-  max-height:270px; /* ← Збільшено з 180px до 270px */
-
-  overflow-y:auto; /* автоматичний скрол */
+  flex:0 0 auto; /* тепер висота залежить від max-height */
+  max-height:250px; /* ← трохи збільшена висота */
+  overflow-y:auto; /* скрол при необхідності */
+  display:flex;
+  flex-direction:column;
 }
 
 .schedule{
@@ -131,7 +134,9 @@ header{
 </style>
 </head>
 <body>
+
 <header>🏅 Olympic Live Streams</header>
+
 <div class="container">
 
   <!-- MAIN PLAYER -->
@@ -151,7 +156,6 @@ header{
       <div id="playerTitle">Плеєр 1</div>
       <div class="schedule" id="scheduleBox"></div>
     </div>
-
   </div>
 
   <!-- SIDE PLAYERS -->
@@ -279,5 +283,6 @@ function handleFullscreen(){
 }
 
 </script>
+
 </body>
 </html>
