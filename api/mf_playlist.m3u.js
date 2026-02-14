@@ -12,22 +12,40 @@ let lastUpdate = 0;
 const CACHE_TIME = 10 * 60 * 1000; // 10 хв
 
 export default async function handler(req, res) {
-  try {
+  let browser = null;
 
+  try {
     // Якщо кеш актуальний — віддаємо його
     if (cachedPlaylist && Date.now() - lastUpdate < CACHE_TIME) {
       res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
       return res.status(200).send(cachedPlaylist);
     }
 
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
+    // 👇 ВАЖЛИВИЙ правильний запуск для Vercel Free
+    browser = await puppeteer.launch({
+      args: [
+        ...chromium.args,
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--single-process"
+      ],
       executablePath: await chromium.executablePath(),
-      headless: chromium.headless
+      headless: true,
     });
 
     const page = await browser.newPage();
+
+    // анти-детект мінімальний
+    await page.setUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+    );
+
+    await page.evaluateOnNewDocument(() => {
+      Object.defineProperty(navigator, 'webdriver', {
+        get: () => false,
+      });
+    });
 
     // 1️⃣ Відкриваємо головну
     await page.goto("https://myfootball.pw/", {
@@ -39,12 +57,11 @@ export default async function handler(req, res) {
     const matchLinks = await page.evaluate(() => {
       return Array.from(document.querySelectorAll("a"))
         .map(a => a.href)
-        .filter(href =>
-          href.includes("smotret-onlayn.html")
-        );
+        .filter(href => href.includes("smotret-onlayn.html"));
     });
 
-    const uniqueLinks = [...new Set(matchLinks)].slice(0, 20); // максимум 20 щоб не вбити Vercel
+    const uniqueLinks = [...new Set(matchLinks)].slice(0, 15); 
+    // 15 безпечніше для free плану
 
     let playlist = "#EXTM3U\n\n";
 
@@ -88,6 +105,7 @@ export default async function handler(req, res) {
     res.status(200).send(playlist);
 
   } catch (error) {
+    if (browser) await browser.close();
     res.status(500).send("Error: " + error.message);
   }
 }
