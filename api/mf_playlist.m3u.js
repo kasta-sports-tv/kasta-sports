@@ -21,6 +21,7 @@ export default async function handler(req, res) {
       return res.status(200).send(cachedPlaylist);
     }
 
+    // 🔹 Запуск браузера
     browser = await puppeteer.launch({
       args: [
         ...chromium.args,
@@ -35,36 +36,36 @@ export default async function handler(req, res) {
 
     const page = await browser.newPage();
 
+    // 👀 User-Agent і мінімальний анти-детект
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     );
 
     await page.evaluateOnNewDocument(() => {
-      Object.defineProperty(navigator, "webdriver", {
-        get: () => false,
-      });
+      Object.defineProperty(navigator, "webdriver", { get: () => false });
     });
 
-    // 1️⃣ Відкриваємо головну
+    // 1️⃣ Відкриваємо головну сторінку
     await page.goto("https://myfootball.pw/", {
       waitUntil: "networkidle0",
       timeout: 60000
     });
 
-    // Даємо JS доробити DOM
+    // Даємо час на JS
     await page.waitForTimeout(3000);
 
-    // 2️⃣ Забираємо всі посилання на матчі
+    // 2️⃣ Збираємо всі посилання на матчі
     const matchLinks = await page.evaluate(() => {
       return Array.from(document.querySelectorAll("a[href*='smotret-onlayn.html']"))
         .map(a => a.href);
     });
 
+    // ✅ Унікальні посилання
     const uniqueLinks = [...new Set(matchLinks)];
 
     let playlist = "#EXTM3U\n\n";
 
-    // 3️⃣ Заходимо в кожен матч
+    // 3️⃣ Проходимо по кожному посиланню
     for (const link of uniqueLinks) {
       try {
         const matchPage = await browser.newPage();
@@ -78,14 +79,14 @@ export default async function handler(req, res) {
 
         const html = await matchPage.content();
 
-        // 🔥 Витягуємо ВСІ m3u8 з HTML
+        // 🔹 Збираємо всі m3u8 на сторінці
         const matches = [...html.matchAll(/https?:\/\/[^"'\\s]+\.m3u8[^"'\\s]*/g)];
         const uniqueStreams = [...new Set(matches.map(m => m[0]))];
 
         if (uniqueStreams.length > 0) {
           for (const streamUrl of uniqueStreams) {
+            // Назва беремо з URL матчу
             const title = link.split("/").pop().replace(".html", "");
-
             playlist += `#EXTINF:-1,${title}\n`;
             playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
             playlist += `#EXTVLCOPT:http-referrer=https://myfootball.pw/\n`;
@@ -94,15 +95,15 @@ export default async function handler(req, res) {
         }
 
         await matchPage.close();
-
       } catch (e) {
+        // Якщо одна сторінка не працює — продовжуємо
         continue;
       }
     }
 
     await browser.close();
 
-    // Оновлюємо кеш
+    // 🔹 Оновлюємо кеш
     cachedPlaylist = playlist;
     lastUpdate = Date.now();
 
