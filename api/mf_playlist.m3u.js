@@ -47,18 +47,20 @@ export default async function handler(req, res) {
 
     // 1️⃣ Відкриваємо головну
     await page.goto("https://myfootball.pw/", {
-      waitUntil: "networkidle2",
+      waitUntil: "networkidle0",
       timeout: 60000
     });
 
+    // Даємо JS доробити DOM
+    await page.waitForTimeout(3000);
+
     // 2️⃣ Забираємо всі посилання на матчі
     const matchLinks = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll("a"))
-        .map(a => a.href)
-        .filter(href => href.includes("smotret-onlayn.html"));
+      return Array.from(document.querySelectorAll("a[href*='smotret-onlayn.html']"))
+        .map(a => a.href);
     });
 
-    const uniqueLinks = [...new Set(matchLinks)].slice(0, 15);
+    const uniqueLinks = [...new Set(matchLinks)];
 
     let playlist = "#EXTM3U\n\n";
 
@@ -68,9 +70,11 @@ export default async function handler(req, res) {
         const matchPage = await browser.newPage();
 
         await matchPage.goto(link, {
-          waitUntil: "networkidle2",
+          waitUntil: "networkidle0",
           timeout: 60000
         });
+
+        await matchPage.waitForTimeout(2000);
 
         const html = await matchPage.content();
 
