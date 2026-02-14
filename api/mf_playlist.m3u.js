@@ -43,7 +43,7 @@ export default async function handler(req, res) {
       Object.defineProperty(navigator, "webdriver", { get: () => false });
     });
 
-    // 1️⃣ Головна сторінка
+    // 1️⃣ Відкриваємо головну
     await page.goto("https://myfootball.pw/", {
       waitUntil: "networkidle0",
       timeout: 60000
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
 
     await page.waitForTimeout(4000);
 
-    // 2️⃣ Збираємо ВСІ посилання на матчі
+    // 2️⃣ Збираємо всі посилання на матчі
     const matchLinks = await page.evaluate(() => {
       return Array.from(document.querySelectorAll("a[href*='smotret-onlayn.html']"))
         .map(a => a.href);
@@ -61,25 +61,23 @@ export default async function handler(req, res) {
 
     let playlist = "#EXTM3U\n\n";
 
-    // 3️⃣ Проходимо по кожному матчу
+    // 3️⃣ Проходимо по кожному матчу В ТІЙ ЖЕ вкладці
     for (const link of uniqueLinks) {
       try {
-        const matchPage = await browser.newPage();
 
-        await matchPage.goto(link, {
+        await page.goto(link, {
           waitUntil: "networkidle0",
           timeout: 60000
         });
 
-        await matchPage.waitForTimeout(4000);
+        await page.waitForTimeout(4000);
 
-        const html = await matchPage.content();
+        const html = await page.content();
 
         // 🔥 Збираємо всі прямі m3u8
         const matches = [...html.matchAll(/https?:\/\/[^"'\\s]+\.m3u8[^"'\\s]*/g)];
 
         if (matches.length === 0) {
-          await matchPage.close();
           continue; // якщо сторінка пуста — пропускаємо
         }
 
@@ -97,8 +95,6 @@ export default async function handler(req, res) {
           playlist += `${streamUrl}\n\n`;
         }
 
-        await matchPage.close();
-
       } catch (e) {
         continue;
       }
@@ -108,6 +104,7 @@ export default async function handler(req, res) {
 
     // Якщо нічого не знайдено — не кешуємо пустоту
     if (playlist.trim() === "#EXTM3U") {
+      res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
       res.status(200).send("#EXTM3U\n");
       return;
     }
