@@ -21,7 +21,6 @@ export default async function handler(req, res) {
       return res.status(200).send(cachedPlaylist);
     }
 
-    // 👇 ВАЖЛИВИЙ правильний запуск для Vercel Free
     browser = await puppeteer.launch({
       args: [
         ...chromium.args,
@@ -36,7 +35,6 @@ export default async function handler(req, res) {
 
     const page = await browser.newPage();
 
-    // анти-детект мінімальний
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     );
@@ -61,7 +59,6 @@ export default async function handler(req, res) {
     });
 
     const uniqueLinks = [...new Set(matchLinks)].slice(0, 15); 
-    // 15 безпечніше для free плану
 
     let playlist = "#EXTM3U\n\n";
 
@@ -76,16 +73,20 @@ export default async function handler(req, res) {
         });
 
         const html = await matchPage.content();
-        const match = html.match(/const\s+sourceUrl\s*=\s*"([^"]+)"/);
 
-        if (match) {
-          const streamUrl = match[1];
-          const title = link.split("/").pop().replace(".html", "");
+        // 🔹 Витягуємо ВСІ sourceUrl на сторінці
+        const matches = [...html.matchAll(/const\s+sourceUrl\s*=\s*"([^"]+)"/g)];
 
-          playlist += `#EXTINF:-1,${title}\n`;
-          playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
-          playlist += `#EXTVLCOPT:http-referrer=https://myfootball.pw/\n`;
-          playlist += `${streamUrl}\n\n`;
+        if (matches.length > 0) {
+          for (const m of matches) {
+            const streamUrl = m[1];
+            const title = link.split("/").pop().replace(".html", "");
+
+            playlist += `#EXTINF:-1,${title}\n`;
+            playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
+            playlist += `#EXTVLCOPT:http-referrer=https://myfootball.pw/\n`;
+            playlist += `${streamUrl}\n\n`;
+          }
         }
 
         await matchPage.close();
