@@ -2,7 +2,7 @@ import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 
 export const config = {
-  runtime: "nodejs18.x",
+  runtime: "nodejs",
   maxDuration: 60
 };
 
