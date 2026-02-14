@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     );
 
     await page.evaluateOnNewDocument(() => {
-      Object.defineProperty(navigator, 'webdriver', {
+      Object.defineProperty(navigator, "webdriver", {
         get: () => false,
       });
     });
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
         .filter(href => href.includes("smotret-onlayn.html"));
     });
 
-    const uniqueLinks = [...new Set(matchLinks)].slice(0, 15); 
+    const uniqueLinks = [...new Set(matchLinks)].slice(0, 15);
 
     let playlist = "#EXTM3U\n\n";
 
@@ -74,12 +74,12 @@ export default async function handler(req, res) {
 
         const html = await matchPage.content();
 
-        // 🔹 Витягуємо ВСІ sourceUrl на сторінці
-        const matches = [...html.matchAll(/const\s+sourceUrl\s*=\s*"([^"]+)"/g)];
+        // 🔥 Витягуємо ВСІ m3u8 з HTML
+        const matches = [...html.matchAll(/https?:\/\/[^"'\\s]+\.m3u8[^"'\\s]*/g)];
+        const uniqueStreams = [...new Set(matches.map(m => m[0]))];
 
-        if (matches.length > 0) {
-          for (const m of matches) {
-            const streamUrl = m[1];
+        if (uniqueStreams.length > 0) {
+          for (const streamUrl of uniqueStreams) {
             const title = link.split("/").pop().replace(".html", "");
 
             playlist += `#EXTINF:-1,${title}\n`;
