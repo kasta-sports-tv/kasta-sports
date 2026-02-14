@@ -6,17 +6,21 @@ export const config = {
   maxDuration: 60
 };
 
+// Кеш
+let cachedPlaylist = null;
+let lastUpdate = 0;
+const CACHE_TIME = 10 * 60 * 1000; // 10 хв
+
 export default async function handler(req, res) {
-  let browser = null;
-
   try {
-    const matchUrl = req.query.url;
 
-    if (!matchUrl) {
-      return res.status(400).send("Match URL missing");
+    // Якщо кеш актуальний — віддаємо його
+    if (cachedPlaylist && Date.now() - lastUpdate < CACHE_TIME) {
+      res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+      return res.status(200).send(cachedPlaylist);
     }
 
-    browser = await puppeteer.launch({
+    const browser = await puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
@@ -25,42 +29,65 @@ export default async function handler(req, res) {
 
     const page = await browser.newPage();
 
-    await page.goto(matchUrl, {
+    // 1️⃣ Відкриваємо головну
+    await page.goto("https://myfootball.pw/", {
       waitUntil: "networkidle2",
       timeout: 60000
     });
 
-    // Чекаємо поки з’явиться sourceUrl
-    await page.waitForFunction(() =>
-      document.body.innerHTML.includes("sourceUrl"),
-      { timeout: 20000 }
-    );
+    // 2️⃣ Забираємо всі посилання на матчі
+    const matchLinks = await page.evaluate(() => {
+      return Array.from(document.querySelectorAll("a"))
+        .map(a => a.href)
+        .filter(href =>
+          href.includes("smotret-onlayn.html")
+        );
+    });
 
-    const html = await page.content();
+    const uniqueLinks = [...new Set(matchLinks)].slice(0, 20); // максимум 20 щоб не вбити Vercel
 
-    const match = html.match(/const\s+sourceUrl\s*=\s*"([^"]+)"/);
+    let playlist = "#EXTM3U\n\n";
 
-    if (!match) {
-      throw new Error("sourceUrl not found");
+    // 3️⃣ Заходимо в кожен матч
+    for (const link of uniqueLinks) {
+      try {
+        const matchPage = await browser.newPage();
+
+        await matchPage.goto(link, {
+          waitUntil: "networkidle2",
+          timeout: 60000
+        });
+
+        const html = await matchPage.content();
+        const match = html.match(/const\s+sourceUrl\s*=\s*"([^"]+)"/);
+
+        if (match) {
+          const streamUrl = match[1];
+          const title = link.split("/").pop().replace(".html", "");
+
+          playlist += `#EXTINF:-1,${title}\n`;
+          playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
+          playlist += `#EXTVLCOPT:http-referrer=https://myfootball.pw/\n`;
+          playlist += `${streamUrl}\n\n`;
+        }
+
+        await matchPage.close();
+
+      } catch (e) {
+        continue;
+      }
     }
 
-    const streamUrl = match[1];
+    await browser.close();
 
-    const playlist = `#EXTM3U
-
-#EXTINF:-1,MyFootball
-#EXTVLCOPT:http-origin=https://myfootball.pw
-#EXTVLCOPT:http-referrer=https://myfootball.pw/
-#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)
-${streamUrl}
-`;
+    // Оновлюємо кеш
+    cachedPlaylist = playlist;
+    lastUpdate = Date.now();
 
     res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
     res.status(200).send(playlist);
 
   } catch (error) {
     res.status(500).send("Error: " + error.message);
-  } finally {
-    if (browser) await browser.close();
   }
 }
