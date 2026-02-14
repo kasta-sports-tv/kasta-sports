@@ -61,7 +61,7 @@ export default async function handler(req, res) {
         .map(a => a.href);
     });
 
-    // ✅ Унікальні посилання
+    // ✅ Унікальні посилання (щоб не заходити на одну сторінку двічі)
     const uniqueLinks = [...new Set(matchLinks)];
 
     let playlist = "#EXTM3U\n\n";
@@ -77,7 +77,7 @@ export default async function handler(req, res) {
 
         const html = await page.content();
 
-        // 🔥 Збираємо всі прямі m3u8
+        // 🔥 Збираємо всі прямі m3u8 (без new Set)
         const matches = [...html.matchAll(/https?:\/\/[^"'\\s]+\.m3u8[^"'\\s]*/g)];
         if (matches.length === 0) continue;
 
