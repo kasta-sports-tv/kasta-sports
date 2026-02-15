@@ -48,27 +48,24 @@ export default async function handler(req, res) {
       timeout: 60000
     });
 
-    // Чекаємо або href або data-link
-    await page.waitForTimeout(3000);
+    // Чекаємо поки з'явиться блок з матчами
+    await page.waitForSelector("#main_h2", { timeout: 15000 });
+    await page.waitForSelector(".rewievs_tab1", { timeout: 15000 });
 
-    // 2️⃣ Збираємо ВСІ матчі (href + data-link)
+    // 2️⃣ Беремо ТІЛЬКИ матчі після "ФУТБОЛЬНЫЕ ТРАНСЛЯЦИИ"
     const matchLinks = await page.evaluate(() => {
       const links = [];
 
-      // Звичайні <a>
-      document.querySelectorAll("a[href*='smotret-onlayn.html']")
-        .forEach(a => links.push(a.href));
+      const h2 = document.querySelector("#main_h2");
+      if (!h2) return links;
 
-      // Top-match через data-link
-      document.querySelectorAll("[data-link*='smotret-onlayn.html']")
-        .forEach(el => {
-          const raw = el.getAttribute("data-link");
-          if (raw) {
-            const absolute = raw.startsWith("http")
-              ? raw
-              : window.location.origin + raw;
-            links.push(absolute);
-          }
+      // Беремо весь блок після H2
+      const container = h2.closest("#main-body-bg");
+      if (!container) return links;
+
+      container.querySelectorAll(".rewievs_tab1 a[href*='smotret-onlayn.html']")
+        .forEach(a => {
+          if (a.href) links.push(a.href);
         });
 
       return links;
