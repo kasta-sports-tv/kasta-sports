@@ -15,11 +15,13 @@ export default async function handler(req, res) {
   let browser = null;
 
   try {
+    // Віддаємо кеш, якщо він актуальний
     if (cachedPlaylist && Date.now() - lastUpdate < CACHE_TIME) {
       res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
       return res.status(200).send(cachedPlaylist);
     }
 
+    // 🔹 Запуск браузера
     browser = await puppeteer.launch({
       args: [
         ...chromium.args,
@@ -34,6 +36,7 @@ export default async function handler(req, res) {
 
     const page = await browser.newPage();
 
+    // 👀 User-Agent і мінімальний анти-детект
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     );
@@ -48,18 +51,16 @@ export default async function handler(req, res) {
       timeout: 60000
     });
 
-    // Чекаємо поки з'явиться блок з матчами
+    // Чекаємо появи H2 і блоку трансляцій
     await page.waitForSelector("#main_h2", { timeout: 15000 });
-    await page.waitForSelector(".rewievs_tab1", { timeout: 15000 });
+    await page.waitForSelector(".rewievs_tab1 a[href*='smotret-onlayn.html']", { timeout: 15000 });
 
-    // 2️⃣ Беремо ТІЛЬКИ матчі після "ФУТБОЛЬНЫЕ ТРАНСЛЯЦИИ"
+    // 2️⃣ Беремо всі матчі після "ФУТБОЛЬНЫЕ ТРАНСЛЯЦИИ"
     const matchLinks = await page.evaluate(() => {
       const links = [];
-
       const h2 = document.querySelector("#main_h2");
       if (!h2) return links;
 
-      // Беремо весь блок після H2
       const container = h2.closest("#main-body-bg");
       if (!container) return links;
 
@@ -71,12 +72,10 @@ export default async function handler(req, res) {
       return links;
     });
 
-    const uniqueLinks = [...new Set(matchLinks)];
-
     let playlist = "#EXTM3U\n\n";
 
-    // 3️⃣ Заходимо в кожен матч
-    for (const link of uniqueLinks) {
+    // 3️⃣ Проходимо по кожному матчу
+    for (const link of matchLinks) {
       try {
         await page.goto(link, {
           waitUntil: "networkidle0",
@@ -92,11 +91,8 @@ export default async function handler(req, res) {
 
         for (let i = 0; i < matches.length; i++) {
           const streamUrl = matches[i][0];
-
           const baseTitle = link.split("/").pop().replace(".html", "");
-          const title = matches.length > 1
-            ? `${baseTitle} [${i + 1}]`
-            : baseTitle;
+          const title = matches.length > 1 ? `${baseTitle} [${i + 1}]` : baseTitle;
 
           playlist += `#EXTINF:-1,${title}\n`;
           playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
@@ -116,6 +112,7 @@ export default async function handler(req, res) {
       return res.status(200).send("#EXTM3U\n");
     }
 
+    // Оновлюємо кеш
     cachedPlaylist = playlist;
     lastUpdate = Date.now();
 
