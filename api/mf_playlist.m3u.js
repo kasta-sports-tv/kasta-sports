@@ -3,12 +3,12 @@ import puppeteer from "puppeteer-core";
 
 export const config = {
   runtime: "nodejs",
-  maxDuration: 120 // Збільшила час на 2 хв для скролу
+  maxDuration: 120
 };
 
 let cachedPlaylist = null;
 let lastUpdate = 0;
-const CACHE_TIME = 10 * 60 * 1000; // 10 хв
+const CACHE_TIME = 10 * 60 * 1000;
 
 export default async function handler(req, res) {
   let browser = null;
@@ -32,24 +32,26 @@ export default async function handler(req, res) {
     });
 
     const page = await browser.newPage();
+
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     );
+
     await page.evaluateOnNewDocument(() => {
       Object.defineProperty(navigator, "webdriver", { get: () => false });
     });
 
-    // Відкриваємо головну
-    await page.goto("https://myfootball.pw/", { waitUntil: "networkidle0", timeout: 60000 });
+    // 🔹 Відкриваємо головну
+    await page.goto("https://myfootball.pw/", {
+      waitUntil: "networkidle0",
+      timeout: 60000
+    });
 
-    // Чекаємо H2 та блоків трансляцій
     await page.waitForSelector("#main_h2", { timeout: 15000 });
     await page.waitForSelector(".rewievs_tab1 a[href*='smotret-onlayn.html']", { timeout: 15000 });
 
-    // 🔹 Автоскрол до кінця сторінки, щоб підвантажились всі матчі
     await autoScroll(page);
 
-    // 2️⃣ Беремо всі посилання після H2 "ФУТБОЛЬНЫЕ ТРАНСЛЯЦИИ"
     const matchLinks = await page.evaluate(() => {
       const links = [];
       const h2 = document.querySelector("#main_h2");
@@ -68,20 +70,35 @@ export default async function handler(req, res) {
 
     let playlist = "#EXTM3U\n\n";
 
-    // 3️⃣ Проходимо по кожному матчу
+    // 🔥 Головна магія — перехоплення мережі
+    page.on("response", response => {
+      const url = response.url();
+      if (url.includes(".m3u8")) {
+        page.__streams = page.__streams || [];
+        page.__streams.push(url);
+      }
+    });
+
     for (const link of matchLinks) {
       try {
-        await page.goto(link, { waitUntil: "networkidle0", timeout: 60000 });
-        await page.waitForTimeout(3000);
+        page.__streams = [];
 
-        const html = await page.content();
-        const matches = [...html.matchAll(/https?:\/\/[^"'\\s]+\.m3u8[^"'\\s]*/g)];
-        if (matches.length === 0) continue;
+        await page.goto(link, {
+          waitUntil: "networkidle0",
+          timeout: 60000
+        });
 
-        for (let i = 0; i < matches.length; i++) {
-          const streamUrl = matches[i][0];
+        await page.waitForTimeout(5000);
+
+        const streams = page.__streams || [];
+        if (streams.length === 0) continue;
+
+        for (let i = 0; i < streams.length; i++) {
+          const streamUrl = streams[i];
           const baseTitle = link.split("/").pop().replace(".html", "");
-          const title = matches.length > 1 ? `${baseTitle} [${i + 1}]` : baseTitle;
+          const title = streams.length > 1
+            ? `${baseTitle} [${i + 1}]`
+            : baseTitle;
 
           playlist += `#EXTINF:-1,${title}\n`;
           playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
@@ -113,7 +130,6 @@ export default async function handler(req, res) {
   }
 }
 
-// 🔹 Функція автоскролу
 async function autoScroll(page) {
   await page.evaluate(async () => {
     await new Promise(resolve => {
@@ -124,7 +140,7 @@ async function autoScroll(page) {
         window.scrollBy(0, distance);
         totalHeight += distance;
 
-        if(totalHeight >= scrollHeight){
+        if (totalHeight >= scrollHeight) {
           clearInterval(timer);
           resolve();
         }
