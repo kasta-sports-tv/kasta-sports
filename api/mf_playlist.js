@@ -27,6 +27,11 @@ export default async function handler(req, res) {
     const mainResp = await fetch(BASE, { headers: CUSTOM_HEADERS });
     const html = await mainResp.text();
 
+    // 🔥 DEBUG — дивимось що реально приходить
+    console.log("===== MAIN PAGE HTML START =====");
+    console.log(html.slice(0, 2000));
+    console.log("===== MAIN PAGE HTML END =====");
+
     const rawLinks = Array.from(
       html.matchAll(/href="(\/\d+[^"]*smotret-onlayn\.html)"/gi)
     ).map(m => BASE + m[1]);
@@ -44,7 +49,11 @@ export default async function handler(req, res) {
         const matchResp = await fetch(link, { headers: CUSTOM_HEADERS });
         const matchHtml = await matchResp.text();
 
-        // 🔥 ЛОВИМО sourceUrl
+        // 🔥 DEBUG матчу
+        console.log("===== MATCH PAGE START =====");
+        console.log(matchHtml.slice(0, 2000));
+        console.log("===== MATCH PAGE END =====");
+
         const m3uMatch = matchHtml.match(
           /sourceUrl\s*=\s*["'](https?:\/\/[^"']+\.m3u8\?[^"']+)["']/i
         );
