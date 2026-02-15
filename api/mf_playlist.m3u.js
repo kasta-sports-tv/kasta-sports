@@ -41,26 +41,26 @@ export default async function handler(req, res) {
       Object.defineProperty(navigator, "webdriver", { get: () => false });
     });
 
-    // 🔹 Відкриваємо головну
+    // 1️⃣ Відкриваємо головну
     await page.goto("https://myfootball.pw/", {
       waitUntil: "networkidle0",
       timeout: 60000
     });
 
-    await page.waitForSelector("#main_h2", { timeout: 15000 });
-    await page.waitForSelector(".rewievs_tab1 a[href*='smotret-onlayn.html']", { timeout: 15000 });
+    // 2️⃣ Чекаємо саме блок матчів
+    await page.waitForSelector("#main-body-bg", { timeout: 20000 });
 
-    await autoScroll(page);
+    // Додатково даємо час DOM стабілізуватися
+    await page.waitForTimeout(4000);
 
+    // 3️⃣ Беремо посилання ТІЛЬКИ з match--row
     const matchLinks = await page.evaluate(() => {
       const links = [];
-      const h2 = document.querySelector("#main_h2");
-      if (!h2) return links;
 
-      const container = h2.closest("#main-body-bg");
-      if (!container) return links;
+      const mainBlock = document.querySelector("#main-body-bg.match--row");
+      if (!mainBlock) return links;
 
-      container.querySelectorAll(".rewievs_tab1 a[href*='smotret-onlayn.html']")
+      mainBlock.querySelectorAll("a[href*='smotret-onlayn.html']")
         .forEach(a => {
           if (a.href) links.push(a.href);
         });
@@ -70,35 +70,25 @@ export default async function handler(req, res) {
 
     let playlist = "#EXTM3U\n\n";
 
-    // 🔥 Головна магія — перехоплення мережі
-    page.on("response", response => {
-      const url = response.url();
-      if (url.includes(".m3u8")) {
-        page.__streams = page.__streams || [];
-        page.__streams.push(url);
-      }
-    });
-
+    // 4️⃣ Заходимо в кожен матч
     for (const link of matchLinks) {
       try {
-        page.__streams = [];
-
         await page.goto(link, {
           waitUntil: "networkidle0",
           timeout: 60000
         });
 
-        await page.waitForTimeout(5000);
+        await page.waitForTimeout(3000);
 
-        const streams = page.__streams || [];
-        if (streams.length === 0) continue;
+        const html = await page.content();
+        const matches = [...html.matchAll(/https?:\/\/[^"'\\s]+\.m3u8[^"'\\s]*/g)];
 
-        for (let i = 0; i < streams.length; i++) {
-          const streamUrl = streams[i];
+        if (matches.length === 0) continue;
+
+        for (let i = 0; i < matches.length; i++) {
+          const streamUrl = matches[i][0];
           const baseTitle = link.split("/").pop().replace(".html", "");
-          const title = streams.length > 1
-            ? `${baseTitle} [${i + 1}]`
-            : baseTitle;
+          const title = matches.length > 1 ? `${baseTitle} [${i + 1}]` : baseTitle;
 
           playlist += `#EXTINF:-1,${title}\n`;
           playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
@@ -128,23 +118,4 @@ export default async function handler(req, res) {
     if (browser) await browser.close();
     res.status(500).send("Error: " + error.message);
   }
-}
-
-async function autoScroll(page) {
-  await page.evaluate(async () => {
-    await new Promise(resolve => {
-      let totalHeight = 0;
-      const distance = 200;
-      const timer = setInterval(() => {
-        const scrollHeight = document.body.scrollHeight;
-        window.scrollBy(0, distance);
-        totalHeight += distance;
-
-        if (totalHeight >= scrollHeight) {
-          clearInterval(timer);
-          resolve();
-        }
-      }, 300);
-    });
-  });
 }
