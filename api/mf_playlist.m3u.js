@@ -41,59 +41,64 @@ export default async function handler(req, res) {
       Object.defineProperty(navigator, "webdriver", { get: () => false });
     });
 
-    // 1️⃣ Відкриваємо головну
-    await page.goto("https://myfootball.pw/", {
+    let playlist = "#EXTM3U\n\n";
+
+    // 1️⃣ Відкриваємо головний sitemap
+    await page.goto("https://myfootball.pw/sitemap.xml", {
       waitUntil: "networkidle0",
       timeout: 60000
     });
 
-    // 2️⃣ Чекаємо саме блок матчів
-    await page.waitForSelector("#main-body-bg", { timeout: 20000 });
+    const sitemapXml = await page.content();
 
-    // Додатково даємо час DOM стабілізуватися
-    await page.waitForTimeout(4000);
+    // 2️⃣ Витягуємо всі sitemap-файли
+    const sitemapMatches = [...sitemapXml.matchAll(/https?:\/\/[^<]+sitemap\d+\.xml/g)];
+    const sitemapLinks = sitemapMatches.map(m => m[0]);
 
-    // 3️⃣ Беремо посилання ТІЛЬКИ з match--row
-    const matchLinks = await page.evaluate(() => {
-      const links = [];
-
-      const mainBlock = document.querySelector("#main-body-bg.match--row");
-      if (!mainBlock) return links;
-
-      mainBlock.querySelectorAll("a[href*='smotret-onlayn.html']")
-        .forEach(a => {
-          if (a.href) links.push(a.href);
-        });
-
-      return links;
-    });
-
-    let playlist = "#EXTM3U\n\n";
-
-    // 4️⃣ Заходимо в кожен матч
-    for (const link of matchLinks) {
+    // 3️⃣ Проходимо по кожному sitemap
+    for (const sitemapUrl of sitemapLinks) {
       try {
-        await page.goto(link, {
+        await page.goto(sitemapUrl, {
           waitUntil: "networkidle0",
           timeout: 60000
         });
 
-        await page.waitForTimeout(3000);
+        const subXml = await page.content();
 
-        const html = await page.content();
-        const matches = [...html.matchAll(/https?:\/\/[^"'\\s]+\.m3u8[^"'\\s]*/g)];
+        // Беремо тільки сторінки матчів
+        const pageMatches = [...subXml.matchAll(/https?:\/\/[^<]+smotret-onlayn\.html/g)];
+        const matchLinks = pageMatches.map(m => m[0]);
 
-        if (matches.length === 0) continue;
+        for (const link of matchLinks) {
+          try {
+            await page.goto(link, {
+              waitUntil: "networkidle0",
+              timeout: 60000
+            });
 
-        for (let i = 0; i < matches.length; i++) {
-          const streamUrl = matches[i][0];
-          const baseTitle = link.split("/").pop().replace(".html", "");
-          const title = matches.length > 1 ? `${baseTitle} [${i + 1}]` : baseTitle;
+            await page.waitForTimeout(2000);
 
-          playlist += `#EXTINF:-1,${title}\n`;
-          playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
-          playlist += `#EXTVLCOPT:http-referrer=https://myfootball.pw/\n`;
-          playlist += `${streamUrl}\n\n`;
+            const html = await page.content();
+            const streamMatches = [...html.matchAll(/https?:\/\/[^"'\\s]+\.m3u8[^"'\\s]*/g)];
+
+            if (streamMatches.length === 0) continue;
+
+            for (let i = 0; i < streamMatches.length; i++) {
+              const streamUrl = streamMatches[i][0];
+              const baseTitle = link.split("/").pop().replace(".html", "");
+              const title = streamMatches.length > 1
+                ? `${baseTitle} [${i + 1}]`
+                : baseTitle;
+
+              playlist += `#EXTINF:-1,${title}\n`;
+              playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
+              playlist += `#EXTVLCOPT:http-referrer=https://myfootball.pw/\n`;
+              playlist += `${streamUrl}\n\n`;
+            }
+
+          } catch (e) {
+            continue;
+          }
         }
 
       } catch (e) {
