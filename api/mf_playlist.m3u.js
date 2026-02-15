@@ -37,68 +37,57 @@ export default async function handler(req, res) {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
     );
 
-    await page.evaluateOnNewDocument(() => {
-      Object.defineProperty(navigator, "webdriver", { get: () => false });
-    });
+    // 🧠 Формуємо сьогоднішню дату в форматі DDMMYYYY
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const yyyy = today.getFullYear();
+    const todayString = `${dd}${mm}${yyyy}`;
 
-    let playlist = "#EXTM3U\n\n";
-
-    // 1️⃣ Відкриваємо головний sitemap
+    // 1️⃣ Беремо sitemap
     await page.goto("https://myfootball.pw/sitemap.xml", {
       waitUntil: "networkidle0",
       timeout: 60000
     });
 
-    const sitemapXml = await page.content();
+    const sitemap = await page.content();
 
-    // 2️⃣ Витягуємо всі sitemap-файли
-    const sitemapMatches = [...sitemapXml.matchAll(/https?:\/\/[^<]+sitemap\d+\.xml/g)];
-    const sitemapLinks = sitemapMatches.map(m => m[0]);
+    // 2️⃣ Витягуємо тільки матчі сьогоднішньої дати
+    const matchLinks = [...sitemap.matchAll(
+      new RegExp(`https://myfootball\\.pw/[^"]*${todayString}-smotret-onlayn\\.html`, "g")
+    )].map(m => m[0]);
 
-    // 3️⃣ Проходимо по кожному sitemap
-    for (const sitemapUrl of sitemapLinks) {
+    if (matchLinks.length === 0) {
+      await browser.close();
+      return res.status(200).send("#EXTM3U\n");
+    }
+
+    let playlist = "#EXTM3U\n\n";
+
+    // 3️⃣ Заходимо в кожен матч
+    for (const link of matchLinks) {
       try {
-        await page.goto(sitemapUrl, {
+        await page.goto(link, {
           waitUntil: "networkidle0",
           timeout: 60000
         });
 
-        const subXml = await page.content();
+        await page.waitForTimeout(2000);
 
-        // Беремо тільки сторінки матчів
-        const pageMatches = [...subXml.matchAll(/https?:\/\/[^<]+smotret-onlayn\.html/g)];
-        const matchLinks = pageMatches.map(m => m[0]);
+        const html = await page.content();
+        const streams = [...html.matchAll(/https?:\/\/[^"'\\s]+\.m3u8[^"'\\s]*/g)];
 
-        for (const link of matchLinks) {
-          try {
-            await page.goto(link, {
-              waitUntil: "networkidle0",
-              timeout: 60000
-            });
+        if (streams.length === 0) continue;
 
-            await page.waitForTimeout(2000);
+        for (let i = 0; i < streams.length; i++) {
+          const streamUrl = streams[i][0];
+          const baseTitle = link.split("/").pop().replace(".html", "");
+          const title = streams.length > 1 ? `${baseTitle} [${i + 1}]` : baseTitle;
 
-            const html = await page.content();
-            const streamMatches = [...html.matchAll(/https?:\/\/[^"'\\s]+\.m3u8[^"'\\s]*/g)];
-
-            if (streamMatches.length === 0) continue;
-
-            for (let i = 0; i < streamMatches.length; i++) {
-              const streamUrl = streamMatches[i][0];
-              const baseTitle = link.split("/").pop().replace(".html", "");
-              const title = streamMatches.length > 1
-                ? `${baseTitle} [${i + 1}]`
-                : baseTitle;
-
-              playlist += `#EXTINF:-1,${title}\n`;
-              playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
-              playlist += `#EXTVLCOPT:http-referrer=https://myfootball.pw/\n`;
-              playlist += `${streamUrl}\n\n`;
-            }
-
-          } catch (e) {
-            continue;
-          }
+          playlist += `#EXTINF:-1,${title}\n`;
+          playlist += `#EXTVLCOPT:http-origin=https://myfootball.pw\n`;
+          playlist += `#EXTVLCOPT:http-referrer=https://myfootball.pw/\n`;
+          playlist += `${streamUrl}\n\n`;
         }
 
       } catch (e) {
@@ -107,11 +96,6 @@ export default async function handler(req, res) {
     }
 
     await browser.close();
-
-    if (playlist.trim() === "#EXTM3U") {
-      res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-      return res.status(200).send("#EXTM3U\n");
-    }
 
     cachedPlaylist = playlist;
     lastUpdate = Date.now();
