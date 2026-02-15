@@ -2,14 +2,16 @@
   "name": "myfootball-m3u-generator",
   "version": "1.0.0",
   "type": "module",
+  "private": true,
   "scripts": {
     "dev": "vercel dev",
     "deploy": "vercel --prod"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "@sparticuz/chromium": "^123.0.0",
+    "puppeteer-core": "^22.0.0"
   },
-  "devDependencies": {
-    "vercel": "^37.0.0"
+  "engines": {
+    "node": ">=18"
   }
 }
