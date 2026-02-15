@@ -27,10 +27,10 @@ export default async function handler(req, res) {
     const mainResp = await fetch(BASE, { headers: CUSTOM_HEADERS });
     const html = await mainResp.text();
 
-    // 🔥 ЛОВИМО І ВІДНОСНІ І ПОВНІ ПОСИЛАННЯ
+    // 🔥 ЛОВИМО ВІДНОСНІ І ПОВНІ ПОСИЛАННЯ на матчі
     const rawLinks = Array.from(
       html.matchAll(
-        /href="(\/[\d\-]+-smotret-onlayn\.html|https:\/\/myfootball\.pw\/[\d\-]+-smotret-onlayn\.html)"/g
+        /href="(https?:\/\/myfootball\.pw\/\d+[^"]*smotret-onlayn\.html|\/\d+[^"]*smotret-onlayn\.html)"/gi
       )
     ).map(m => m[1]);
 
@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         const matchResp = await fetch(link, { headers: CUSTOM_HEADERS });
         const matchHtml = await matchResp.text();
 
-        // Шукаємо перше .m3u8
+        // Шукаємо перше .m3u8 посилання
         const m3uMatch = matchHtml.match(
           /https?:\/\/[^"']+\.m3u8\?[^"']+/i
         );
@@ -82,7 +82,7 @@ export default async function handler(req, res) {
         .send("#EXTM3U\n# No live matches found");
     }
 
-    // Формуємо M3U
+    // Формуємо M3U плейлист
     let m3u = "#EXTM3U\n\n";
 
     for (const s of streams) {
