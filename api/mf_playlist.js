@@ -1,3 +1,5 @@
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 import fetch from "node-fetch";
 
 const BASE = "https://myfootball.pw";
@@ -13,9 +15,15 @@ const CACHE_TTL = 5 * 60 * 1000;
 let cachedPlaylist = null;
 let cacheTimestamp = null;
 
-export default async function handler(req, res) {
-  try {
+export const config = {
+  runtime: "nodejs",
+  maxDuration: 60
+};
 
+export default async function handler(req, res) {
+  let browser;
+
+  try {
     if (cachedPlaylist && Date.now() - cacheTimestamp < CACHE_TTL) {
       return res
         .status(200)
@@ -23,14 +31,22 @@ export default async function handler(req, res) {
         .send(cachedPlaylist);
     }
 
-    console.log("[*] Fetching main page...");
-    const mainResp = await fetch(BASE, { headers: CUSTOM_HEADERS });
-    const html = await mainResp.text();
+    console.log("[*] Launching Chromium...");
 
-    // 🔥 DEBUG — дивимось що реально приходить
-    console.log("===== MAIN PAGE HTML START =====");
-    console.log(html.slice(0, 2000));
-    console.log("===== MAIN PAGE HTML END =====");
+    browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless
+    });
+
+    const page = await browser.newPage();
+    await page.setUserAgent(CUSTOM_HEADERS["user-agent"]);
+    await page.goto(BASE, { waitUntil: "networkidle2", timeout: 30000 });
+
+    const html = await page.content();
+
+    console.log("[*] Main page loaded");
 
     const rawLinks = Array.from(
       html.matchAll(/href="(\/\d+[^"]*smotret-onlayn\.html)"/gi)
@@ -49,11 +65,6 @@ export default async function handler(req, res) {
         const matchResp = await fetch(link, { headers: CUSTOM_HEADERS });
         const matchHtml = await matchResp.text();
 
-        // 🔥 DEBUG матчу
-        console.log("===== MATCH PAGE START =====");
-        console.log(matchHtml.slice(0, 2000));
-        console.log("===== MATCH PAGE END =====");
-
         const m3uMatch = matchHtml.match(
           /sourceUrl\s*=\s*["'](https?:\/\/[^"']+\.m3u8\?[^"']+)["']/i
         );
@@ -71,14 +82,14 @@ export default async function handler(req, res) {
           });
 
           console.log("[+] FOUND:", m3uMatch[1]);
-        } else {
-          console.log("[-] No sourceUrl found");
         }
 
       } catch (err) {
-        console.log("[!] Error:", err.message);
+        console.log("[!] Match error:", err.message);
       }
     }
+
+    await browser.close();
 
     if (!streams.length) {
       return res
@@ -108,6 +119,7 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error("[!] ERROR:", error.message);
+    if (browser) await browser.close();
     return res.status(500).send("Error: " + error.message);
   }
 }
