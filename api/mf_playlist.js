@@ -9,13 +9,13 @@ const CUSTOM_HEADERS = {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
 };
 
-const CACHE_TTL = 5 * 60 * 1000; // 5 хвилин
+const CACHE_TTL = 5 * 60 * 1000;
 let cachedPlaylist = null;
 let cacheTimestamp = null;
 
 export default async function handler(req, res) {
   try {
-    // Повертаємо кеш якщо ще дійсний
+
     if (cachedPlaylist && Date.now() - cacheTimestamp < CACHE_TTL) {
       return res
         .status(200)
@@ -27,31 +27,26 @@ export default async function handler(req, res) {
     const mainResp = await fetch(BASE, { headers: CUSTOM_HEADERS });
     const html = await mainResp.text();
 
-    // 🔥 ЛОВИМО ВІДНОСНІ І ПОВНІ ПОСИЛАННЯ на матчі
     const rawLinks = Array.from(
-      html.matchAll(
-        /href="(https?:\/\/myfootball\.pw\/\d+[^"]*smotret-onlayn\.html|\/\d+[^"]*smotret-onlayn\.html)"/gi
-      )
-    ).map(m => m[1]);
+      html.matchAll(/href="(\/\d+[^"]*smotret-onlayn\.html)"/gi)
+    ).map(m => BASE + m[1]);
 
-    const matchLinks = rawLinks
-      .map(link => (link.startsWith("http") ? link : BASE + link))
-      .filter((v, i, a) => a.indexOf(v) === i);
+    const matchLinks = [...new Set(rawLinks)];
 
-    console.log("[*] Found match pages:", matchLinks.length);
+    console.log("[*] Found matches:", matchLinks.length);
 
     const streams = [];
 
     for (const link of matchLinks) {
       try {
-        console.log("[*] Checking match:", link);
+        console.log("[*] Checking:", link);
 
         const matchResp = await fetch(link, { headers: CUSTOM_HEADERS });
         const matchHtml = await matchResp.text();
 
-        // Шукаємо перше .m3u8 посилання
+        // 🔥 ЛОВИМО sourceUrl
         const m3uMatch = matchHtml.match(
-          /https?:\/\/[^"']+\.m3u8\?[^"']+/i
+          /sourceUrl\s*=\s*["'](https?:\/\/[^"']+\.m3u8\?[^"']+)["']/i
         );
 
         if (m3uMatch) {
@@ -63,32 +58,33 @@ export default async function handler(req, res) {
 
           streams.push({
             title,
-            url: m3uMatch[0]
+            url: m3uMatch[1]
           });
 
-          console.log("[+] Found stream:", m3uMatch[0]);
+          console.log("[+] FOUND:", m3uMatch[1]);
         } else {
-          console.log("[-] No stream found for", link);
+          console.log("[-] No sourceUrl found");
         }
+
       } catch (err) {
-        console.log("[!] Error fetching match page:", err.message);
+        console.log("[!] Error:", err.message);
       }
     }
 
-    if (streams.length === 0) {
+    if (!streams.length) {
       return res
         .status(200)
         .setHeader("Content-Type", "application/vnd.apple.mpegurl")
-        .send("#EXTM3U\n# No live matches found");
+        .send("#EXTM3U\n# No streams found");
     }
 
-    // Формуємо M3U плейлист
     let m3u = "#EXTM3U\n\n";
 
     for (const s of streams) {
       m3u += `#EXTINF:-1 group-title="MyFootball",${s.title}\n`;
+      m3u += `#EXTVLCOPT:http-origin=${CUSTOM_HEADERS.origin}\n`;
+      m3u += `#EXTVLCOPT:http-referrer=${CUSTOM_HEADERS.referer}\n`;
       m3u += `#EXTVLCOPT:http-user-agent=${CUSTOM_HEADERS["user-agent"]}\n`;
-      m3u += `#EXTVLCOPT:http-referrer=${CUSTOM_HEADERS["referer"]}\n`;
       m3u += `${s.url}\n\n`;
     }
 
@@ -103,8 +99,6 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error("[!] ERROR:", error.message);
-    return res
-      .status(500)
-      .send("Error generating playlist: " + error.message);
+    return res.status(500).send("Error: " + error.message);
   }
 }
