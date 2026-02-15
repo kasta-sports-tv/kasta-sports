@@ -1,12 +1,11 @@
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
-import fetch from "node-fetch";
 
 const BASE = "https://myfootball.pw";
 
 const CUSTOM_HEADERS = {
-  "origin": BASE,
-  "referer": BASE + "/",
+  origin: BASE,
+  referer: BASE + "/",
   "user-agent":
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
 };
@@ -35,7 +34,6 @@ export default async function handler(req, res) {
 
     browser = await puppeteer.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
       headless: chromium.headless
     });
@@ -45,8 +43,6 @@ export default async function handler(req, res) {
     await page.goto(BASE, { waitUntil: "networkidle2", timeout: 30000 });
 
     const html = await page.content();
-
-    console.log("[*] Main page loaded");
 
     const rawLinks = Array.from(
       html.matchAll(/href="(\/\d+[^"]*smotret-onlayn\.html)"/gi)
@@ -62,7 +58,14 @@ export default async function handler(req, res) {
       try {
         console.log("[*] Checking:", link);
 
-        const matchResp = await fetch(link, { headers: CUSTOM_HEADERS });
+        const matchResp = await fetch(link, {
+          headers: {
+            "user-agent": CUSTOM_HEADERS["user-agent"],
+            referer: CUSTOM_HEADERS.referer,
+            origin: CUSTOM_HEADERS.origin
+          }
+        });
+
         const matchHtml = await matchResp.text();
 
         const m3uMatch = matchHtml.match(
