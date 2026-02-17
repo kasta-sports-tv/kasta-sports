@@ -53,7 +53,7 @@ html, body {
         preload="auto"
         playsinline
     >
-        <source id="video-source" src=""/>
+        <source id="video-source" src="" type="application/x-mpegURL"/>
     </video-js>
 </div>
 
@@ -69,17 +69,13 @@ const streamUrl = params.get("url");
 const posterUrl = params.get("poster");
 
 const videoEl = document.getElementById("video-player");
+const sourceEl = document.getElementById("video-source");
 
-const player = videojs("video-player", {
-    liveui: true,
-    responsive: true,
-    fluid: false
-});
-
-// 🔥 Автоматичне визначення формату
+// якщо передали url
 if(streamUrl){
 
-    let videoType;
+    // 🔥 визначаємо формат
+    let videoType = "application/x-mpegURL";
 
     if(streamUrl.includes(".mp4")){
         videoType = "video/mp4";
@@ -88,16 +84,20 @@ if(streamUrl){
         videoType = "application/x-mpegURL";
     }
 
-    player.src({
-        src: streamUrl,
-        type: videoType
-    });
+    sourceEl.src = streamUrl;
+    sourceEl.type = videoType;
 }
 
 // якщо передали постер
 if(posterUrl){
     videoEl.setAttribute("poster", posterUrl);
 }
+
+const player = videojs("video-player", {
+    liveui: true,
+    responsive: true,
+    fluid: false
+});
 
 // Mobile UI
 player.mobileUi();
