@@ -59,28 +59,65 @@ body{
     object-fit:contain;
 }
 
-/* ЗМЕНШЕНА НИЖНЯ ПАНЕЛЬ */
-.video-js .vjs-control-bar{
-    font-size:12px;
-    height:38px !important;
-}
-
-.video-js .vjs-button{
-    width:38px;
-}
-
-.video-js .vjs-time-control{
-    line-height:38px;
-}
-
-.video-js .vjs-progress-control{
-    height:38px;
-}
-
-/* Велика кнопка */
+/* BIG PLAY */
 .video-js .vjs-big-play-button{
     border:none;
     border-radius:100px;
+}
+
+/* ========================= */
+/* FIX ПАНЕЛІ (ГОЛОВНЕ) */
+/* ========================= */
+
+.video-js .vjs-control-bar{
+    height:44px !important;
+    display:flex;
+    align-items:center;
+    padding:0 6px;
+}
+
+/* іконки не роздуваються */
+.video-js .vjs-button{
+    width:38px;
+    height:100%;
+}
+
+/* тайм */
+.video-js .vjs-time-control{
+    display:flex;
+    align-items:center;
+    padding:0 4px;
+}
+
+/* прогрес бар */
+.video-js .vjs-progress-control{
+    height:44px !important;
+    display:flex;
+    align-items:center;
+}
+
+/* quality / HD FIX (щоб не став вертикально) */
+.video-js .vjs-menu-button{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+
+.video-js .vjs-icon-hd{
+    line-height:44px !important;
+    display:flex !important;
+    align-items:center;
+}
+
+/* mobile трохи компактніше */
+@media (max-width:768px){
+    .video-js .vjs-control-bar{
+        height:40px !important;
+    }
+
+    .video-js .vjs-progress-control{
+        height:40px !important;
+    }
 }
 </style>
 </head>
@@ -99,7 +136,7 @@ playsinline
 preload="auto"
 poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg">
 
-<source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="">
+<source src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" type="">
 
 </video-js>
 
@@ -129,102 +166,11 @@ const player = videojs('video-player',{
     inactivityTimeout:2000,
     playbackRates:[0.5,1,1.25,1.5,2],
     html5:{
-        vhs:{
-            overrideNative:true
-        },
+        vhs:{ overrideNative:true },
         nativeAudioTracks:false,
         nativeVideoTracks:false
     }
 });
-
-if(player.mobileUi){
-player.mobileUi({
-    touchControls:{
-        seekSeconds:10
-    }
-});
-}
-
-if(player.hlsQualitySelector){
-player.hlsQualitySelector({
-    displayCurrentQuality:true
-});
-}
-
-if(player.qualityMenu){
-player.qualityMenu();
-}
-
-if(player.logo){
-player.logo({
-    image:"https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
-    url:"#",
-    width:60,
-    fadeDelay:0
-});
-}
-
-if(player.contextmenuUI){
-player.contextmenuUI({
-    content:[
-        {
-            label:"Luxmty Player"
-        }
-    ]
-});
-}
-
-if(player.posterTime){
-player.posterTime();
-}
-
-document.addEventListener("keydown",function(e){
-
-if(e.code==="Space"){
-e.preventDefault();
-if(player.paused()){player.play();}
-else{player.pause();}
-}
-
-if(e.code==="ArrowRight"){
-player.currentTime(player.currentTime()+10);
-}
-
-if(e.code==="ArrowLeft"){
-player.currentTime(player.currentTime()-10);
-}
-
-if(e.code==="ArrowUp"){
-player.volume(Math.min(1,player.volume()+0.1));
-}
-
-if(e.code==="ArrowDown"){
-player.volume(Math.max(0,player.volume()-0.1));
-}
-
-if(e.key==="m"){
-player.muted(!player.muted());
-}
-
-if(e.key==="f"){
-player.requestFullscreen();
-}
-
-});
-
-player.on("error",function(){
-setTimeout(function(){
-player.src({
-src:"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-type:""
-});
-player.play();
-},3000);
-});
-
-document.body.addEventListener("click",function(){
-player.play().catch(()=>{});
-},{once:true});
 </script>
 
 </body>
