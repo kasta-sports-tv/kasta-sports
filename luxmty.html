@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>CodePen Luxmty Player</title>
+<title>Luxmty Video Player</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css">
 
@@ -21,76 +21,89 @@ body{
     background:#222;
     background:radial-gradient(#000,hsl(200deg,30%,6%));
     color:#aaa;
-    font-family:Questrial,Arial,Helvetica,Sans Serif;
-    margin-top:8px;
+    font-family:Questrial,Arial,Helvetica,Sans-Serif;
 }
 
-.player-container{
-    position:relative;
+/* Головний контейнер */
+.page-wrap{
     width:100%;
-    aspect-ratio:16/9;
-    max-width:100%;
-    overflow:hidden;
-    background:#000;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    margin:0;
 }
 
+/* Контейнер плеєра */
+.player-wrap{
+    width:100%;
+    max-width:100%;
+    aspect-ratio:16/9;
+    background:#000;
+    position:relative;
+    overflow:hidden;
+}
+
+/* Сам плеєр */
 #video-player,
 .video-js{
     width:100% !important;
     height:100% !important;
 }
 
-/* Оригінальні компактні розміри CodePen */
+/* Відео */
+.video-js .vjs-tech{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+/* ЗМЕНШЕНА НИЖНЯ ПАНЕЛЬ */
 .video-js .vjs-control-bar{
-    height:3em !important;
-    font-size:12px !important;
+    font-size:12px;
+    height:38px !important;
 }
 
 .video-js .vjs-button{
-    width:2.8em !important;
+    width:38px;
 }
 
 .video-js .vjs-time-control{
-    min-width:auto !important;
-    padding:0 .4em !important;
+    line-height:38px;
 }
 
 .video-js .vjs-progress-control{
-    min-width:2em !important;
+    height:38px;
 }
 
-/* MOBILE EXACT */
-@media (max-width:768px){
-
-.video-js .vjs-control-bar{
-    height:2.8em !important;
-    font-size:10px !important;
-}
-
-.video-js .vjs-button{
-    width:2.4em !important;
-}
-
-.video-js .vjs-volume-panel{
-    display:none !important;
-}
-
+/* Велика кнопка */
+.video-js .vjs-big-play-button{
+    border:none;
+    border-radius:100px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="player-container">
+<div class="page-wrap">
+
+<div class="player-wrap">
 
 <video-js
 id="video-player"
-class="vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
+class="video-js vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
+controls
+playsinline
+preload="auto"
 poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg">
 
 <source src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" type="">
 
 </video-js>
+
+</div>
 
 </div>
 
@@ -106,24 +119,112 @@ poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/im
 <script src="https://dl.dropbox.com/scl/fi/ogug37z70m3c93xmcbo2j/demo-luxmty-advanced.js?rlkey=p122gt64kciuh2ufa9h9gvnkn"></script>
 
 <script>
-var player = videojs('video-player');
+const player = videojs('video-player',{
+    controls:true,
+    autoplay:false,
+    preload:'auto',
+    responsive:true,
+    fluid:false,
+    liveui:true,
+    inactivityTimeout:2000,
+    playbackRates:[0.5,1,1.25,1.5,2],
+    html5:{
+        vhs:{
+            overrideNative:true
+        },
+        nativeAudioTracks:false,
+        nativeVideoTracks:false
+    }
+});
 
-player.mobileUi();
+if(player.mobileUi){
+player.mobileUi({
+    touchControls:{
+        seekSeconds:10
+    }
+});
+}
 
+if(player.hlsQualitySelector){
 player.hlsQualitySelector({
     displayCurrentQuality:true
 });
+}
 
+if(player.qualityMenu){
 player.qualityMenu();
+}
 
-player.posterTime();
-
-player.contextmenuUI();
-
+if(player.logo){
 player.logo({
-    image:"",
-    url:"#"
+    image:"https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
+    url:"#",
+    width:60,
+    fadeDelay:0
 });
+}
+
+if(player.contextmenuUI){
+player.contextmenuUI({
+    content:[
+        {
+            label:"Luxmty Player"
+        }
+    ]
+});
+}
+
+if(player.posterTime){
+player.posterTime();
+}
+
+document.addEventListener("keydown",function(e){
+
+if(e.code==="Space"){
+e.preventDefault();
+if(player.paused()){player.play();}
+else{player.pause();}
+}
+
+if(e.code==="ArrowRight"){
+player.currentTime(player.currentTime()+10);
+}
+
+if(e.code==="ArrowLeft"){
+player.currentTime(player.currentTime()-10);
+}
+
+if(e.code==="ArrowUp"){
+player.volume(Math.min(1,player.volume()+0.1));
+}
+
+if(e.code==="ArrowDown"){
+player.volume(Math.max(0,player.volume()-0.1));
+}
+
+if(e.key==="m"){
+player.muted(!player.muted());
+}
+
+if(e.key==="f"){
+player.requestFullscreen();
+}
+
+});
+
+player.on("error",function(){
+setTimeout(function(){
+player.src({
+src:"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+type:""
+});
+player.play();
+},3000);
+});
+
+document.body.addEventListener("click",function(){
+player.play().catch(()=>{});
+},{once:true});
 </script>
 
 </body>
