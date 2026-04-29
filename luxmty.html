@@ -59,6 +59,12 @@ body{
     object-fit:contain;
 }
 
+/* ПОСТЕР ЗАВЖДИ НА ВЕСЬ РОЗМІР */
+.video-js .vjs-poster{
+    background-size:cover !important;
+    background-position:center center !important;
+}
+
 /* ЗМЕНШЕНА НИЖНЯ ПАНЕЛЬ */
 .video-js .vjs-control-bar{
     font-size:11px;
@@ -82,6 +88,18 @@ body{
     border:none;
     border-radius:100px;
 }
+
+/* Watermark */
+.player-watermark{
+    position:absolute;
+    pointer-events:none;
+    z-index:9999;
+    display:none;
+}
+
+.player-watermark img{
+    display:block;
+}
 </style>
 </head>
 
@@ -97,7 +115,7 @@ class="video-js vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
 controls
 playsinline
 preload="auto"
-poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg">
+poster="https://www.betaura.com.ua/wp-content/uploads/2026/04/atletico_arsenal-1536x864.webp">
 
 <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="">
 
@@ -155,15 +173,6 @@ if(player.qualityMenu){
 player.qualityMenu();
 }
 
-if(player.logo){
-player.logo({
-    image:"https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
-    url:"#",
-    width:60,
-    fadeDelay:0
-});
-}
-
 if(player.contextmenuUI){
 player.contextmenuUI({
     content:[
@@ -177,6 +186,55 @@ player.contextmenuUI({
 if(player.posterTime){
 player.posterTime();
 }
+
+/* Watermark */
+const playerEl = player.el();
+const wmContainer = document.createElement('div');
+wmContainer.className = 'player-watermark';
+
+const wmImg = document.createElement('img');
+wmImg.src = "https://dl.dropbox.com/scl/fi/217ixl1mo86cz478fhogr/imgonline-com-ua-Resize-OWRTEtjW2KRyxbk.png?rlkey=snz3xno1firj88jpwk8vpy3kx";
+
+wmContainer.appendChild(wmImg);
+playerEl.appendChild(wmContainer);
+
+const baseWidth = 100;
+
+function updateWatermark(){
+    const isFullscreen = player.isFullscreen();
+    const isDesktop = window.innerWidth > 768;
+
+    if(isFullscreen){
+        if(isDesktop){
+            wmImg.style.width = (baseWidth * 3) + "px";
+            wmContainer.style.top = "5%";
+            wmContainer.style.right = "1%";
+        } else {
+            wmImg.style.width = (baseWidth * 1.2) + "px";
+            wmContainer.style.top = "0.5%";
+            wmContainer.style.right = "8%";
+        }
+    } else {
+        if(isDesktop){
+            wmImg.style.width = (baseWidth * 2.4) + "px";
+            wmContainer.style.top = "0.5%";
+            wmContainer.style.right = "0.3%";
+        } else {
+            wmImg.style.width = (baseWidth * 0.8) + "px";
+            wmContainer.style.top = "1%";
+            wmContainer.style.right = "1%";
+        }
+    }
+}
+
+player.one("playing", () => {
+    wmContainer.style.display = "block";
+    updateWatermark();
+});
+
+player.on("fullscreenchange", updateWatermark);
+window.addEventListener("resize", updateWatermark);
+setTimeout(updateWatermark,300);
 
 document.addEventListener("keydown",function(e){
 
