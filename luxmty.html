@@ -55,11 +55,7 @@ body{
     object-fit:contain;
 }
 
-.video-js .vjs-poster{
-    background-size:cover !important;
-    background-position:center center !important;
-}
-
+/* control bar */
 .video-js .vjs-control-bar{
     font-size:11px;
     height:34px !important;
@@ -82,22 +78,46 @@ body{
     border-radius:100px;
 }
 
-/* WATERMARK (ВАЖЛИВО) */
-.player-watermark{
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    z-index:999999;
-    pointer-events:none;
+/* =========================
+   LOGO CONTROL SYSTEM
+========================= */
+
+/* базовий вигляд */
+.vjs-logo{
+    top:10px !important;
+    right:10px !important;
+    left:auto !important;
+    transition: all 0.3s ease;
 }
 
-.player-watermark img{
-    position:absolute;
-    top:1%;
-    right:1%;
-    display:block;
+.vjs-logo img{
+    transition: all 0.3s ease;
+    transform: scale(1);
+}
+
+/* ПК fullscreen */
+.vjs-fullscreen.pc-fullscreen .vjs-logo{
+    top:5% !important;
+    right:1% !important;
+}
+
+.vjs-fullscreen.pc-fullscreen .vjs-logo img{
+    transform: scale(2.5);
+}
+
+/* мобілка normal */
+.mobile-mode .vjs-logo img{
+    transform: scale(0.7);
+}
+
+/* мобілка fullscreen */
+.vjs-fullscreen.mobile-fullscreen .vjs-logo{
+    top:2% !important;
+    right:3% !important;
+}
+
+.vjs-fullscreen.mobile-fullscreen .vjs-logo img{
+    transform: scale(1.3);
 }
 </style>
 </head>
@@ -113,7 +133,7 @@ class="video-js vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
 controls
 playsinline
 preload="auto"
-poster="https://www.betaura.com.ua/wp-content/uploads/2026/04/atletico_arsenal-1536x864.webp">
+poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg">
 
 <source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="">
 
@@ -152,15 +172,28 @@ const player = videojs('video-player',{
 });
 
 if(player.mobileUi){
-player.mobileUi({ touchControls:{ seekSeconds:10 }});
+player.mobileUi({
+    touchControls:{ seekSeconds:10 }
+});
 }
 
 if(player.hlsQualitySelector){
-player.hlsQualitySelector({ displayCurrentQuality:true });
+player.hlsQualitySelector({
+    displayCurrentQuality:true
+});
 }
 
 if(player.qualityMenu){
 player.qualityMenu();
+}
+
+if(player.logo){
+player.logo({
+    image:"https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
+    url:"#",
+    width:60,
+    fadeDelay:0
+});
 }
 
 if(player.contextmenuUI){
@@ -174,57 +207,82 @@ player.posterTime();
 }
 
 /* =========================
-   WATERMARK FIXED VERSION
+   LOGO STATE CONTROLLER
 ========================= */
 
-const playerEl = player.el(); // ВАЖЛИВО: саме video-js контейнер
+function updateLogoMode(){
 
-const wm = document.createElement('div');
-wm.className = 'player-watermark';
+    const el = player.el();
+    const isFS = player.isFullscreen();
+    const isMobile = window.innerWidth <= 768;
 
-const wmImg = document.createElement('img');
-wmImg.src = "https://dl.dropbox.com/scl/fi/217ixl1mo86cz478fhogr/imgonline-com-ua-Resize-OWRTEtjW2KRyxbk.png?rlkey=snz3xno1firj88jpwk8vpy3kx";
+    // reset
+    el.classList.remove("pc-fullscreen","mobile-fullscreen","mobile-mode");
 
-wm.appendChild(wmImg);
-playerEl.appendChild(wm);
-
-const baseWidth = 100;
-
-function updateWatermark(){
-    const fs = player.isFullscreen();
-    const desktop = window.innerWidth > 768;
-
-    if(fs){
-        if(desktop){
-            wmImg.style.width = (baseWidth * 3) + "px";
-            wmImg.style.top = "5%";
-            wmImg.style.right = "1%";
-        } else {
-            wmImg.style.width = (baseWidth * 1.2) + "px";
-            wmImg.style.top = "0.5%";
-            wmImg.style.right = "8%";
-        }
-    } else {
-        if(desktop){
-            wmImg.style.width = (baseWidth * 2.4) + "px";
-            wmImg.style.top = "0.5%";
-            wmImg.style.right = "0.3%";
-        } else {
-            wmImg.style.width = (baseWidth * 0.8) + "px";
-            wmImg.style.top = "1%";
-            wmImg.style.right = "1%";
-        }
+    if(isMobile && isFS){
+        el.classList.add("mobile-fullscreen");
     }
-
-    wm.style.display = "block";
+    else if(isMobile){
+        el.classList.add("mobile-mode");
+    }
+    else if(isFS){
+        el.classList.add("pc-fullscreen");
+    }
 }
 
-player.on("play", updateWatermark);
-player.on("playing", updateWatermark);
-player.on("fullscreenchange", updateWatermark);
-window.addEventListener("resize", updateWatermark);
+player.on("fullscreenchange", updateLogoMode);
+player.on("play", updateLogoMode);
+player.on("ready", updateLogoMode);
+window.addEventListener("resize", updateLogoMode);
 
-setTimeout(updateWatermark, 500);
+/* controls */
+document.addEventListener("keydown",function(e){
+
+if(e.code==="Space"){
+e.preventDefault();
+if(player.paused()){player.play();}
+else{player.pause();}
+}
+
+if(e.code==="ArrowRight"){
+player.currentTime(player.currentTime()+10);
+}
+
+if(e.code==="ArrowLeft"){
+player.currentTime(player.currentTime()-10);
+}
+
+if(e.code==="ArrowUp"){
+player.volume(Math.min(1,player.volume()+0.1));
+}
+
+if(e.code==="ArrowDown"){
+player.volume(Math.max(0,player.volume()-0.1));
+}
+
+if(e.key==="m"){
+player.muted(!player.muted());
+}
+
+if(e.key==="f"){
+player.requestFullscreen();
+}
+
+});
+
+player.on("error",function(){
+setTimeout(function(){
+player.src({
+src:"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+type:""
+});
+player.play();
+},3000);
+});
+
+document.body.addEventListener("click",function(){
+player.play().catch(()=>{});
+},{once:true});
 
 </script>
 
