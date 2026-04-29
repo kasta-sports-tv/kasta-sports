@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Luxmty Video Player</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css">
+
+<style>
+html,
+body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+
+body{
+    background:#222;
+    background:radial-gradient(#000,hsl(200deg,30%,6%));
+    color:#aaa;
+    font-family:Questrial,Arial,Helvetica,Sans-Serif;
+}
+
+/* Головний контейнер */
+.page-wrap{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    margin:0;
+}
+
+/* Контейнер плеєра */
+.player-wrap{
+    width:100%;
+    max-width:100%;
+    aspect-ratio:16/9;
+    background:#000;
+    position:relative;
+    overflow:hidden;
+}
+
+/* Сам плеєр */
+#video-player,
+.video-js{
+    width:100% !important;
+    height:100% !important;
+}
+
+/* Відео */
+.video-js .vjs-tech{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+/* ЗМЕНШЕНА НИЖНЯ ПАНЕЛЬ */
+.video-js .vjs-control-bar{
+    font-size:11px;
+    height:34px !important;
+}
+
+.video-js .vjs-button{
+    width:34px;
+}
+
+.video-js .vjs-time-control{
+    line-height:34px;
+}
+
+.video-js .vjs-progress-control{
+    height:34px;
+}
+
+/* Велика кнопка */
+.video-js .vjs-big-play-button{
+    border:none;
+    border-radius:100px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-wrap">
+
+<div class="player-wrap">
+
+<video-js
+id="video-player"
+class="video-js vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
+controls
+playsinline
+preload="auto"
+poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg">
+
+<source src="https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" type="">
+
+</video-js>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-logo@3.0.0/dist/videojs-logo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@misterben/videojs-poster-time@1.0.0/dist/videojs-poster-time.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
+<script src="https://dl.dropbox.com/scl/fi/v0ulq6iiu152blz4h4vt9/luxmtyadv.min.js?rlkey=o1bzgv7mh6oa6gamnfwr2fljz"></script>
+<script src="https://kasta-sports-tv.github.io/iptv/luxmty/demo-luxmty-advanced.js"></script>
+
+<script>
+const player = videojs('video-player',{
+    controls:true,
+    autoplay:false,
+    preload:'auto',
+    responsive:true,
+    fluid:false,
+    liveui:true,
+    inactivityTimeout:2000,
+    playbackRates:[0.5,1,1.25,1.5,2],
+    html5:{
+        vhs:{
+            overrideNative:true
+        },
+        nativeAudioTracks:false,
+        nativeVideoTracks:false
+    }
+});
+
+if(player.mobileUi){
+player.mobileUi({
+    touchControls:{
+        seekSeconds:10
+    }
+});
+}
+
+if(player.hlsQualitySelector){
+player.hlsQualitySelector({
+    displayCurrentQuality:true
+});
+}
+
+if(player.qualityMenu){
+player.qualityMenu();
+}
+
+if(player.logo){
+player.logo({
+    image:"https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
+    url:"#",
+    width:60,
+    fadeDelay:0
+});
+}
+
+if(player.contextmenuUI){
+player.contextmenuUI({
+    content:[
+        {
+            label:"Luxmty Player"
+        }
+    ]
+});
+}
+
+if(player.posterTime){
+player.posterTime();
+}
+
+document.addEventListener("keydown",function(e){
+
+if(e.code==="Space"){
+e.preventDefault();
+if(player.paused()){player.play();}
+else{player.pause();}
+}
+
+if(e.code==="ArrowRight"){
+player.currentTime(player.currentTime()+10);
+}
+
+if(e.code==="ArrowLeft"){
+player.currentTime(player.currentTime()-10);
+}
+
+if(e.code==="ArrowUp"){
+player.volume(Math.min(1,player.volume()+0.1));
+}
+
+if(e.code==="ArrowDown"){
+player.volume(Math.max(0,player.volume()-0.1));
+}
+
+if(e.key==="m"){
+player.muted(!player.muted());
+}
+
+if(e.key==="f"){
+player.requestFullscreen();
+}
+
+});
+
+player.on("error",function(){
+setTimeout(function(){
+player.src({
+src:"https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+type:""
+});
+player.play();
+},3000);
+});
+
+document.body.addEventListener("click",function(){
+player.play().catch(()=>{});
+},{once:true});
+</script>
+
+</body>
+</html>
