@@ -82,15 +82,21 @@ body{
     border-radius:100px;
 }
 
-/* WATERMARK */
+/* WATERMARK (ВАЖЛИВО) */
 .player-watermark{
     position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
     z-index:999999;
     pointer-events:none;
-    display:none;
 }
 
 .player-watermark img{
+    position:absolute;
+    top:1%;
+    right:1%;
     display:block;
 }
 </style>
@@ -125,7 +131,6 @@ poster="https://www.betaura.com.ua/wp-content/uploads/2026/04/atletico_arsenal-1
 <script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
 
-<!-- 🔥 ТВОЇ ОРИГІНАЛЬНІ СКРИПТИ (НЕ ТОРКАЛАСЯ) -->
 <script src="https://dl.dropbox.com/scl/fi/v0ulq6iiu152blz4h4vt9/luxmtyadv.min.js?rlkey=o1bzgv7mh6oa6gamnfwr2fljz"></script>
 <script src="https://kasta-sports-tv.github.io/iptv/luxmty/demo-luxmty-advanced.js"></script>
 
@@ -147,15 +152,11 @@ const player = videojs('video-player',{
 });
 
 if(player.mobileUi){
-player.mobileUi({
-    touchControls:{ seekSeconds:10 }
-});
+player.mobileUi({ touchControls:{ seekSeconds:10 }});
 }
 
 if(player.hlsQualitySelector){
-player.hlsQualitySelector({
-    displayCurrentQuality:true
-});
+player.hlsQualitySelector({ displayCurrentQuality:true });
 }
 
 if(player.qualityMenu){
@@ -173,25 +174,19 @@ player.posterTime();
 }
 
 /* =========================
-   WATERMARK FIX (ROBUST)
+   WATERMARK FIXED VERSION
 ========================= */
+
+const playerEl = player.el(); // ВАЖЛИВО: саме video-js контейнер
 
 const wm = document.createElement('div');
 wm.className = 'player-watermark';
-
-wm.style.position = "absolute";
-wm.style.top = "0";
-wm.style.left = "0";
-wm.style.width = "100%";
-wm.style.height = "100%";
-wm.style.zIndex = "999999";
-wm.style.pointerEvents = "none";
 
 const wmImg = document.createElement('img');
 wmImg.src = "https://dl.dropbox.com/scl/fi/217ixl1mo86cz478fhogr/imgonline-com-ua-Resize-OWRTEtjW2KRyxbk.png?rlkey=snz3xno1firj88jpwk8vpy3kx";
 
 wm.appendChild(wmImg);
-document.querySelector(".player-wrap").appendChild(wm);
+playerEl.appendChild(wm);
 
 const baseWidth = 100;
 
@@ -202,42 +197,35 @@ function updateWatermark(){
     if(fs){
         if(desktop){
             wmImg.style.width = (baseWidth * 3) + "px";
-            wm.style.top = "5%";
-            wm.style.right = "1%";
-            wm.style.left = "auto";
+            wmImg.style.top = "5%";
+            wmImg.style.right = "1%";
         } else {
             wmImg.style.width = (baseWidth * 1.2) + "px";
-            wm.style.top = "0.5%";
-            wm.style.right = "8%";
-            wm.style.left = "auto";
+            wmImg.style.top = "0.5%";
+            wmImg.style.right = "8%";
         }
     } else {
         if(desktop){
             wmImg.style.width = (baseWidth * 2.4) + "px";
-            wm.style.top = "0.5%";
-            wm.style.right = "0.3%";
-            wm.style.left = "auto";
+            wmImg.style.top = "0.5%";
+            wmImg.style.right = "0.3%";
         } else {
             wmImg.style.width = (baseWidth * 0.8) + "px";
-            wm.style.top = "1%";
-            wm.style.right = "1%";
-            wm.style.left = "auto";
+            wmImg.style.top = "1%";
+            wmImg.style.right = "1%";
         }
     }
-}
 
-function showWM(){
     wm.style.display = "block";
-    updateWatermark();
 }
 
-player.on("play", showWM);
-player.on("playing", showWM);
-player.on("loadedmetadata", showWM);
+player.on("play", updateWatermark);
+player.on("playing", updateWatermark);
 player.on("fullscreenchange", updateWatermark);
-
 window.addEventListener("resize", updateWatermark);
+
 setTimeout(updateWatermark, 500);
+
 </script>
 
 </body>
