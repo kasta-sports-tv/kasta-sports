@@ -227,12 +227,15 @@ function updateWatermark(){
     }
 }
 
-player.one("playing", () => {
+function showWatermark(){
     wmContainer.style.display = "block";
     updateWatermark();
-});
+}
 
+player.on("playing", showWatermark);
+player.on("play", showWatermark);
 player.on("fullscreenchange", updateWatermark);
+
 window.addEventListener("resize", updateWatermark);
 setTimeout(updateWatermark,300);
 
