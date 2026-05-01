@@ -20,84 +20,68 @@
 
     #player-wrapper {
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: black;
     }
 
     #player {
       width: 100%;
       height: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
+      position: relative;
+    }
+
+    #player video,
+    #player iframe {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
+      background: black;
+    }
+
+    #player img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
     }
 
     #myImage {
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
       z-index: 9999;
       opacity: 1;
-      transition: opacity 1s ease;
+      transition: opacity 1s ease-out;
+      object-fit: cover;
     }
 
-    /* 🔥 COMET LOADER FIX */
     #spinner {
       position: fixed;
       top: 50%;
       left: 50%;
-      width: 64px;
-      height: 64px;
-      margin: -32px 0 0 -32px;
+      width: 50px;
+      height: 50px;
+      margin: -25px 0 0 -25px;
+      border: 6px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
       z-index: 10000;
-      display: block;
+      animation: spin 1s linear infinite;
+      transition: opacity 1s ease;
     }
 
-    #spinner svg {
-      width: 100%;
-      height: 100%;
-      transform: rotate(-90deg);
-      animation: rotate 2.8s linear infinite; /* повільніше */
-    }
-
-    .track {
-      fill: none;
-      stroke: rgba(255,0,0,0.15);
-      stroke-width: 4;
-    }
-
-    .loader {
-      fill: none;
-      stroke: red;
-      stroke-width: 4;
-      stroke-linecap: round;
-
-      /* 🔥 ключ до “комети” */
-      stroke-dasharray: 20 140;
-      stroke-dashoffset: 0;
-
-      filter: drop-shadow(0 0 6px red);
-      animation: dash 2.6s ease-in-out infinite;
-    }
-
-    @keyframes rotate {
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
-    }
-
-    @keyframes dash {
-      0% {
-        stroke-dasharray: 10 150;
-        stroke-dashoffset: 0;
-        opacity: 0.5;
-      }
-      50% {
-        stroke-dasharray: 90 70;
-        stroke-dashoffset: -25;
-        opacity: 1;
-      }
-      100% {
-        stroke-dasharray: 10 150;
-        stroke-dashoffset: -160;
-        opacity: 0.5;
-      }
     }
   </style>
 </head>
@@ -105,13 +89,7 @@
 <body>
 
 <img id="myImage" src="https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp">
-
-<div id="spinner">
-  <svg viewBox="0 0 50 50">
-    <circle class="track" cx="25" cy="25" r="20"></circle>
-    <circle class="loader" cx="25" cy="25" r="20"></circle>
-  </svg>
-</div>
+<div id="spinner"></div>
 
 <div id="player-wrapper">
   <div id="player"></div>
@@ -121,31 +99,30 @@
   const image = document.getElementById("myImage");
   const spinner = document.getElementById("spinner");
 
-  spinner.style.display = "block";
-
-  // 🔥 заставка 4 сек
   setTimeout(() => {
     image.style.opacity = 0;
-    setTimeout(() => image.style.display = "none", 1000);
-  }, 4000);
-
-  // 🔥 fallback щоб НЕ висів вічно
-  setTimeout(() => {
     spinner.style.opacity = 0;
-    setTimeout(() => spinner.style.display = "none", 500);
-  }, 8000);
+
+    setTimeout(() => {
+      image.style.display = "none";
+      spinner.style.display = "none";
+    }, 1000);
+
+  }, 5000); // 🔥 ЗМІНЕНО НА 5 СЕКУНДИ
 </script>
 
 <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
 
 <script>
-  var player = new Playerjs({
+  var vs = {
     id: "player",
     file: "https://live-embed.supertennix.hiway.media/restreamer/supertennix_client/gpu-a-c0-16/restreamer/outgest/aa3673f1-e178-44a9-a947-ef41db73211a/manifest.m3u8",
     poster: "",
     autoplay: 0,
     lang: "en"
-  });
+  };
+
+  var player = new Playerjs(vs);
 </script>
 
 </body>
