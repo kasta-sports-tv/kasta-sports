@@ -25,6 +25,9 @@
       align-items: flex-start;
       justify-content: center;
       background: black;
+
+      /* 🔥 ВАЖЛИВО: щоб overlay всередині працював */
+      overflow: hidden;
     }
 
     #player {
@@ -99,12 +102,15 @@
       100% { transform: rotate(360deg) scale(0.85); opacity: 0.6; }
     }
 
-    /* 🔴 LIVE INDICATOR */
+    /* 🔴 LIVE (ТЕПЕР ВНУТРІ ПЛЕЄРА) */
     #live-indicator {
-      position: fixed;
+      position: absolute;
+
+      /* 👇 ТУТ ТИ САМ РЕГУЛЮЄШ */
       bottom: 80px;
       left: 12px;
-      z-index: 999999;
+
+      z-index: 5;
 
       display: flex;
       align-items: center;
@@ -141,17 +147,19 @@
 
 <body>
 
-<img id="myImage" src="https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp">
-<div id="spinner"></div>
-
 <div id="player-wrapper">
-  <div id="player"></div>
-</div>
 
-<!-- 🔴 LIVE OVERLAY -->
-<div id="live-indicator">
-  <div id="live-dot"></div>
-  LIVE
+  <img id="myImage" src="https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp">
+  <div id="spinner"></div>
+
+  <div id="player"></div>
+
+  <!-- 🔴 LIVE всередині wrapper -->
+  <div id="live-indicator">
+    <div id="live-dot"></div>
+    LIVE
+  </div>
+
 </div>
 
 <script>
