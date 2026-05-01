@@ -64,7 +64,7 @@
       object-fit: cover;
     }
 
-    /* 🔥 NETFLIX STYLE RED COMET SPINNER */
+    /* 🔥 СПІНЕР (повільніше + червоний) */
     #spinner {
       position: fixed;
       top: 50%;
@@ -73,10 +73,12 @@
       height: 56px;
       margin: -28px 0 0 -28px;
       z-index: 10000;
+
       border-radius: 50%;
-      border: 4px solid rgba(255, 0, 0, 0.15);
-      border-top-color: transparent;
-      animation: spin 0.9s linear infinite;
+      border: 4px solid rgba(255, 0, 0, 0.2);
+      border-top-color: red;
+
+      animation: spin 1.6s linear infinite; /* 🔥 повільніше */
       transition: opacity 1s ease;
     }
 
@@ -87,9 +89,9 @@
       border-radius: 50%;
       border: 4px solid transparent;
       border-top-color: red;
-      border-right-color: rgba(255,0,0,0.7);
+      border-right-color: rgba(255,0,0,0.6);
       filter: drop-shadow(0 0 6px red);
-      animation: dash 1.2s ease-in-out infinite;
+      animation: dash 1.6s ease-in-out infinite;
     }
 
     @keyframes spin {
@@ -126,7 +128,7 @@
       spinner.style.display = "none";
     }, 1000);
 
-  }, 4000); // ✅ 4 секунди як ти просив
+  }, 3000); // 🔥 ЗМІНЕНО НА 3 СЕКУНДИ
 </script>
 
 <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
