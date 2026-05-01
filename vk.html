@@ -52,8 +52,9 @@
       object-fit: contain !important;
     }
 
+    /* 🔥 FIX: заставка тепер в межах плеєра */
     #myImage {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
@@ -64,7 +65,7 @@
       object-fit: cover;
     }
 
-    /* 🔥 СПІНЕР (повільніше + червоний) */
+    /* 🔥 СПІНЕР (як було) */
     #spinner {
       position: fixed;
       top: 50%;
@@ -78,7 +79,7 @@
       border: 4px solid rgba(255, 0, 0, 0.2);
       border-top-color: red;
 
-      animation: spin 1.6s linear infinite; /* 🔥 повільніше */
+      animation: spin 1.6s linear infinite;
       transition: opacity 1s ease;
     }
 
@@ -108,10 +109,9 @@
 
 <body>
 
-<img id="myImage" src="https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp">
-<div id="spinner"></div>
-
 <div id="player-wrapper">
+  <img id="myImage" src="https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp">
+  <div id="spinner"></div>
   <div id="player"></div>
 </div>
 
@@ -128,7 +128,7 @@
       spinner.style.display = "none";
     }, 1000);
 
-  }, 3000); // 🔥 ЗМІНЕНО НА 3 СЕКУНДИ
+  }, 3000);
 </script>
 
 <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
