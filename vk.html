@@ -20,11 +20,12 @@ html, body {
   position: relative;
 }
 
-/* PlayerJS постер НЕ чіпаємо — він сам */
+/* PlayerJS відео */
 #player video {
   width: 100% !important;
   height: 100% !important;
   object-fit: contain !important;
+  background: black;
 }
 
 /* твій постер */
@@ -34,7 +35,7 @@ html, body {
   background: url('https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp') center/cover no-repeat;
   z-index: 999;
   opacity: 1;
-  transition: opacity 1s ease;
+  transition: opacity 1.2s ease;
   pointer-events: none;
 }
 </style>
@@ -59,40 +60,28 @@ var player = new Playerjs({
 
 const poster = document.getElementById("poster");
 
-function watchPlayer() {
-  const container = document.querySelector("#player");
+function bindClick() {
+  const container = document.getElementById("player");
 
-  if (!container) {
-    setTimeout(watchPlayer, 200);
-    return;
-  }
+  container.addEventListener("click", () => {
 
-  const obs = new MutationObserver(() => {
-    const video = container.querySelector("video");
+    // даємо PlayerJS стартанути
+    setTimeout(() => {
 
-    if (video && video.src) {
+      // плавний fade (НЕ display none!)
+      poster.style.opacity = "0";
 
-      // коли відео реально з’явилось у DOM
-      const check = setInterval(() => {
+      // після fade прибираємо
+      setTimeout(() => {
+        poster.style.display = "none";
+      }, 1200);
 
-        if (video.readyState >= 2 || video.currentTime > 0) {
-          clearInterval(check);
+    }, 300);
 
-          poster.style.opacity = "0";
-
-          setTimeout(() => {
-            poster.style.display = "none";
-          }, 1000);
-        }
-
-      }, 150);
-    }
-  });
-
-  obs.observe(container, { childList: true, subtree: true });
+  }, { once: true }); // тільки перший Play
 }
 
-watchPlayer();
+bindClick();
 </script>
 
 </body>
