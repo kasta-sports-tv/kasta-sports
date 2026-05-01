@@ -18,33 +18,26 @@
       overflow: hidden;
     }
 
-    /* 📺 Контейнер з пропорцією 16:9 */
+    /* 🧠 головний контейнер */
     #player-wrapper {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      max-width: 100vw;
-      max-height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: black;
     }
 
+    /* 📺 правильна пропорція */
     #player {
       width: 100%;
-      height: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
       max-width: 100vw;
       max-height: 100vh;
-    }
-
-    /* 📱 мобільна адаптація */
-    @media (max-width: 768px) {
-      #player {
-        width: 100vw;
-        height: 56.25vw; /* 16:9 */
-        max-height: 100vh;
-      }
     }
 
     /* 🖼 заставка */
