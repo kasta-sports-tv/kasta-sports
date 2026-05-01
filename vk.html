@@ -33,9 +33,8 @@
     #player {
       width: 100%;
       height: 100%;
-      max-width: 100vw;
-      max-height: 100vh;
       position: relative;
+      overflow: hidden; /* 🔥 ВАЖЛИВО */
     }
 
     #player video,
@@ -52,20 +51,18 @@
       object-fit: contain !important;
     }
 
-    /* 🔥 FIX: заставка тепер в межах плеєра */
+    /* 🔥 ТЕПЕР ЗАСТАВКА ПРИВ’ЯЗАНА ДО ПЛЕЄРА */
     #myImage {
       position: absolute;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
+      object-fit: cover;
       z-index: 9999;
       opacity: 1;
       transition: opacity 1s ease-out;
-      object-fit: cover;
     }
 
-    /* 🔥 СПІНЕР (як було) */
     #spinner {
       position: fixed;
       top: 50%;
@@ -110,9 +107,10 @@
 <body>
 
 <div id="player-wrapper">
-  <img id="myImage" src="https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp">
-  <div id="spinner"></div>
-  <div id="player"></div>
+  <div id="player">
+    <img id="myImage" src="https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp">
+    <div id="spinner"></div>
+  </div>
 </div>
 
 <script>
