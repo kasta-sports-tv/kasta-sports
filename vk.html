@@ -18,7 +18,7 @@
       overflow: hidden;
     }
 
-    /* 🧠 головний контейнер */
+    /* 🔲 контейнер по центру */
     #player-wrapper {
       position: fixed;
       top: 0;
@@ -31,13 +31,29 @@
       background: black;
     }
 
-    /* 📺 правильна пропорція */
+    /* 📺 сам плеєр */
     #player {
       width: 100%;
-      height: auto;
-      aspect-ratio: 16 / 9;
+      height: 100%;
       max-width: 100vw;
       max-height: 100vh;
+      position: relative;
+    }
+
+    /* 💀 ОЦЕ ГОЛОВНИЙ ФІКС */
+    #player video,
+    #player iframe {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important; /* ← не обрізає */
+      background: black;
+    }
+
+    /* 🖼 фікс постера */
+    #player img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
     }
 
     /* 🖼 заставка */
@@ -99,7 +115,7 @@
   }, 2000);
 </script>
 
-<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
+<script src="https://ritsatv.ru/PLAYER/playerjs19KINOZAL.js"></script>
 
 <script>
   var vs = {
