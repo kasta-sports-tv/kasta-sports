@@ -18,7 +18,6 @@
       overflow: hidden;
     }
 
-    /* 🔲 контейнер по центру */
     #player-wrapper {
       position: fixed;
       top: 0;
@@ -31,7 +30,6 @@
       background: black;
     }
 
-    /* 📺 сам плеєр */
     #player {
       width: 100%;
       height: 100%;
@@ -40,37 +38,36 @@
       position: relative;
     }
 
-    /* 💀 ОЦЕ ГОЛОВНИЙ ФІКС */
     #player video,
     #player iframe {
       width: 100% !important;
       height: 100% !important;
-      object-fit: contain !important; /* ← не обрізає */
+      object-fit: contain !important;
       background: black;
     }
 
-    /* 🖼 фікс постера */
     #player img {
       width: 100% !important;
       height: 100% !important;
       object-fit: contain !important;
     }
 
-    /* 🖼 заставка */
-    #myImage {
-      position: fixed;
+    /* 🔥 ПОВЕРХ ПЛЕЄРА (але НЕ блокує кнопку Play) */
+    #poster-overlay {
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 9999;
+      background: url('https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp') center/cover no-repeat;
+      z-index: 999;
       opacity: 1;
-      transition: opacity 1s ease-out;
-      object-fit: cover;
+      transition: opacity 1s ease;
+      pointer-events: none;
     }
 
     #spinner {
-      position: fixed;
+      position: absolute;
       top: 50%;
       left: 50%;
       width: 50px;
@@ -79,8 +76,11 @@
       border: 6px solid #fff;
       border-top-color: transparent;
       border-radius: 50%;
-      z-index: 10000;
+      z-index: 1000;
       animation: spin 1s linear infinite;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.5s ease;
     }
 
     @keyframes spin {
@@ -92,28 +92,12 @@
 
 <body>
 
-<img id="myImage" src="">
-<div id="spinner"></div>
-
 <div id="player-wrapper">
-  <div id="player"></div>
+  <div id="player">
+    <div id="poster-overlay"></div>
+    <div id="spinner"></div>
+  </div>
 </div>
-
-<script>
-  const image = document.getElementById("myImage");
-  const spinner = document.getElementById("spinner");
-
-  setTimeout(() => {
-    image.style.opacity = 0;
-    spinner.style.opacity = 0;
-
-    setTimeout(() => {
-      image.style.display = "none";
-      spinner.style.display = "none";
-    }, 1000);
-
-  }, 2000);
-</script>
 
 <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
 
@@ -121,12 +105,47 @@
   var vs = {
     id: "player",
     file: "https://live-embed.supertennix.hiway.media/restreamer/supertennix_client/gpu-a-c0-16/restreamer/outgest/aa3673f1-e178-44a9-a947-ef41db73211a/manifest.m3u8",
-    poster: "https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp",
+    poster: "",
     autoplay: 0,
     lang: "en"
   };
 
   var player = new Playerjs(vs);
+
+  const poster = document.getElementById("poster-overlay");
+  const spinner = document.getElementById("spinner");
+
+  function init() {
+    const video = document.querySelector("#player video");
+
+    if (video) {
+
+      // 🎯 головний момент — клік по play
+      video.addEventListener("play", () => {
+        poster.style.opacity = 0;
+
+        setTimeout(() => {
+          poster.style.display = "none";
+        }, 1000);
+
+        spinner.style.opacity = 0;
+        setTimeout(() => {
+          spinner.style.display = "none";
+        }, 500);
+      });
+
+      // ⏳ буфер
+      video.addEventListener("waiting", () => {
+        spinner.style.display = "block";
+        spinner.style.opacity = 1;
+      });
+
+    } else {
+      setTimeout(init, 300);
+    }
+  }
+
+  init();
 </script>
 
 </body>
