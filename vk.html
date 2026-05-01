@@ -46,12 +46,6 @@
       background: black;
     }
 
-    #player img {
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: contain !important;
-    }
-
     #myImage {
       position: fixed;
       top: 0;
@@ -64,42 +58,51 @@
       object-fit: cover;
     }
 
-    /* 🔥 NETFLIX STYLE RED COMET SPINNER */
+    /* 🔥 JW / Netflix STYLE SPINNER */
     #spinner {
       position: fixed;
       top: 50%;
       left: 50%;
-      width: 56px;
-      height: 56px;
-      margin: -28px 0 0 -28px;
+      width: 60px;
+      height: 60px;
+      margin: -30px 0 0 -30px;
       z-index: 10000;
-      border-radius: 50%;
-      border: 4px solid rgba(255, 0, 0, 0.15);
-      border-top-color: transparent;
-      animation: spin 0.5s linear infinite;
-      transition: opacity 1s ease;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
-    #spinner::after {
-      content: "";
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 4px solid transparent;
-      border-top-color: red;
-      border-right-color: rgba(255,0,0,0.7);
+    #spinner svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+      animation: rotate 2.2s linear infinite; /* 🔥 повільно */
+    }
+
+    .track {
+      fill: none;
+      stroke: rgba(255, 0, 0, 0.15);
+      stroke-width: 4;
+    }
+
+    .loader {
+      fill: none;
+      stroke: red;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 80;
+      stroke-dashoffset: 60;
       filter: drop-shadow(0 0 6px red);
-      animation: dash 1.2s ease-in-out infinite;
+      animation: dash 2.4s ease-in-out infinite;
     }
 
-    @keyframes spin {
+    @keyframes rotate {
       100% { transform: rotate(360deg); }
     }
 
     @keyframes dash {
-      0%   { transform: rotate(0deg) scale(0.85); opacity: 0.6; }
-      50%  { transform: rotate(180deg) scale(1); opacity: 1; }
-      100% { transform: rotate(360deg) scale(0.85); opacity: 0.6; }
+      0%   { stroke-dasharray: 10 120; stroke-dashoffset: 0; opacity: 0.6; }
+      50%  { stroke-dasharray: 70 60;  stroke-dashoffset: -20; opacity: 1; }
+      100% { stroke-dasharray: 10 120; stroke-dashoffset: -120; opacity: 0.6; }
     }
   </style>
 </head>
@@ -107,7 +110,14 @@
 <body>
 
 <img id="myImage" src="https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp">
-<div id="spinner"></div>
+
+<!-- 🔥 SPINNER -->
+<div id="spinner">
+  <svg viewBox="0 0 50 50">
+    <circle class="track" cx="25" cy="25" r="20"></circle>
+    <circle class="loader" cx="25" cy="25" r="20"></circle>
+  </svg>
+</div>
 
 <div id="player-wrapper">
   <div id="player"></div>
@@ -117,6 +127,7 @@
   const image = document.getElementById("myImage");
   const spinner = document.getElementById("spinner");
 
+  // 🔥 стартова заставка 4 сек
   setTimeout(() => {
     image.style.opacity = 0;
     spinner.style.opacity = 0;
@@ -126,21 +137,50 @@
       spinner.style.display = "none";
     }, 1000);
 
-  }, 4000); // ✅ 4 секунди як ти просив
+  }, 4000);
 </script>
 
 <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
 
 <script>
-  var vs = {
+  var player = new Playerjs({
     id: "player",
     file: "https://live-embed.supertennix.hiway.media/restreamer/supertennix_client/gpu-a-c0-16/restreamer/outgest/aa3673f1-e178-44a9-a947-ef41db73211a/manifest.m3u8",
     poster: "",
     autoplay: 0,
     lang: "en"
-  };
+  });
 
-  var player = new Playerjs(vs);
+  const spinner = document.getElementById("spinner");
+
+  function showLoader() {
+    spinner.style.opacity = "1";
+  }
+
+  function hideLoader() {
+    spinner.style.opacity = "0";
+  }
+
+  function bindBufferEvents() {
+    const tryFindVideo = setInterval(() => {
+      const video = document.querySelector("#player video");
+
+      if (video) {
+
+        // 🔥 буфер
+        video.addEventListener("waiting", showLoader);
+        video.addEventListener("stalled", showLoader);
+
+        // 🔥 відновлення
+        video.addEventListener("playing", hideLoader);
+        video.addEventListener("canplay", hideLoader);
+
+        clearInterval(tryFindVideo);
+      }
+    }, 300);
+  }
+
+  bindBufferEvents();
 </script>
 
 </body>
