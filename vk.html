@@ -90,13 +90,12 @@ html, body {
   100% { transform: rotate(360deg) scale(0.85); opacity: 0.6; }
 }
 
-/* 🔴 LIVE WATERMARK */
-.player-watermark {
-  position: absolute;
+/* 🔴 LIVE */
+#live-indicator {
+  position: fixed;
   bottom: 80px;
   left: 12px;
   z-index: 999999;
-  pointer-events: none;
 
   display: flex;
   align-items: center;
@@ -110,9 +109,11 @@ html, body {
 
   font-size: 12px;
   font-family: Arial, sans-serif;
+
+  pointer-events: none;
 }
 
-.live-dot {
+#live-dot {
   width: 8px;
   height: 8px;
   background: red;
@@ -125,7 +126,6 @@ html, body {
   50% { transform: scale(1.6); opacity: 0.5; }
   100% { transform: scale(1); opacity: 1; }
 }
-
 </style>
 </head>
 
@@ -138,6 +138,12 @@ html, body {
 
   <div id="player"></div>
 
+</div>
+
+<!-- 🔴 LIVE -->
+<div id="live-indicator">
+  <div id="live-dot"></div>
+  LIVE
 </div>
 
 <script>
@@ -169,25 +175,27 @@ var vs = {
 
 var player = new Playerjs(vs);
 
-// 🔴 LIVE WATERMARK (FULLSCREEN SAFE)
-player.onready = function () {
+/* 🔥 FULLSCREEN FIX FOR LIVE */
+function keepLiveVisible() {
+  const live = document.getElementById("live-indicator");
 
-  const el = player.el();
+  function move() {
+    const fs = document.fullscreenElement ||
+                document.webkitFullscreenElement ||
+                document.querySelector("#player-wrapper");
 
-  const wm = document.createElement("div");
-  wm.className = "player-watermark";
+    if (fs && live.parentElement !== fs) {
+      fs.appendChild(live);
+    }
+  }
 
-  const dot = document.createElement("div");
-  dot.className = "live-dot";
+  document.addEventListener("fullscreenchange", move);
+  document.addEventListener("webkitfullscreenchange", move);
 
-  const text = document.createElement("div");
-  text.innerText = "LIVE";
+  setInterval(move, 800);
+}
 
-  wm.appendChild(dot);
-  wm.appendChild(text);
-
-  el.appendChild(wm);
-};
+keepLiveVisible();
 </script>
 
 </body>
