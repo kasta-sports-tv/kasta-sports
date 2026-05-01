@@ -45,7 +45,7 @@
     #player iframe {
       width: 100% !important;
       height: 100% !important;
-      object-fit: contain !important; /* ← не обрізає */
+      object-fit: contain !important;
       background: black;
     }
 
@@ -81,6 +81,7 @@
       border-radius: 50%;
       z-index: 10000;
       animation: spin 1s linear infinite;
+      pointer-events: none; /* 👈 щоб не блокував play */
     }
 
     @keyframes spin {
@@ -103,7 +104,10 @@
   const image = document.getElementById("myImage");
   const spinner = document.getElementById("spinner");
 
-  setTimeout(() => {
+  // спінер одразу видно
+  spinner.style.display = "block";
+
+  function fadeOutPoster() {
     image.style.opacity = 0;
     spinner.style.opacity = 0;
 
@@ -111,8 +115,28 @@
       image.style.display = "none";
       spinner.style.display = "none";
     }, 1000);
+  }
 
-  }, 2000);
+  function waitForVideo() {
+    const video = document.querySelector("#player video");
+
+    if (video) {
+
+      // 👇 коли реально пішло відео
+      video.addEventListener("playing", fadeOutPoster);
+
+      // буферизація → показуємо спінер
+      video.addEventListener("waiting", () => {
+        spinner.style.display = "block";
+        spinner.style.opacity = 1;
+      });
+
+    } else {
+      setTimeout(waitForVideo, 300);
+    }
+  }
+
+  waitForVideo();
 </script>
 
 <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
