@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: black;
+    }
+
+    #myImage {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 1s ease-out;
+    }
+
+    #spinner {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 50px;
+      height: 50px;
+      margin: -25px 0 0 -25px;
+      border: 6px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      z-index: 10000;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<img id="myImage" src="https://ritsatv.ru/files/picture/original/1777487956657-sportv-baner.webp">
+<div id="spinner"></div>
+<div id="player" style="width:100%;height:100%;"></div>
+
+<script>
+  const image = document.getElementById("myImage");
+  const spinner = document.getElementById("spinner");
+
+  // показ заставки
+  setTimeout(() => {
+    image.style.opacity = 0;
+    spinner.style.opacity = 0;
+
+    setTimeout(() => {
+      image.style.display = "none";
+      spinner.style.display = "none";
+    }, 1000);
+
+  }, 2000);
+</script>
+
+<script src="https://ritsatv.ru/PLAYER/playerjs19KINOZAL.js"></script>
+
+<script>
+  var vs = {
+    id: "player",
+    file: "https://live-embed.supertennix.hiway.media/restreamer/supertennix_client/gpu-a-c0-16/restreamer/outgest/aa3673f1-e178-44a9-a947-ef41db73211a/manifest.m3u8",
+    poster: ""
+  };
+
+  var player = new Playerjs(vs);
+</script>
+
+</body>
+</html>
