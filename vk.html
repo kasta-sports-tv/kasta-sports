@@ -52,6 +52,7 @@
       object-fit: contain !important;
     }
 
+    /* 🖼 постер */
     #myImage {
       position: fixed;
       top: 0;
@@ -62,6 +63,7 @@
       opacity: 1;
       transition: opacity 1s ease-out;
       object-fit: cover;
+      pointer-events: none; /* 🔥 ГОЛОВНИЙ ФІКС */
     }
 
     #spinner {
@@ -101,7 +103,7 @@
   const image = document.getElementById("myImage");
   const spinner = document.getElementById("spinner");
 
-  // 🔄 стартовий спінер (1 сек)
+  // стартовий спінер
   spinner.style.display = "block";
 
   setTimeout(() => {
@@ -121,14 +123,12 @@
 
     if (video) {
 
-      // ▶️ коли реально стартує відео
       video.addEventListener("playing", () => {
         fadeOutPoster();
         spinner.style.opacity = 0;
         setTimeout(() => spinner.style.display = "none", 500);
       });
 
-      // ⏳ якщо буферизація після play
       video.addEventListener("waiting", () => {
         spinner.style.display = "block";
         spinner.style.opacity = 1;
