@@ -35,7 +35,7 @@
       object-fit: contain !important;
     }
 
-    /* 🔥 СВІЙ ПОСТЕР */
+    /* 🔥 постер */
     #poster-overlay {
       position: absolute;
       top: 0;
@@ -45,8 +45,8 @@
       background: url('https://www.betaura.com.ua/wp-content/uploads/2026/04/shakhtar_crystal_palace-1536x864.webp') center/cover no-repeat;
       z-index: 5;
       opacity: 1;
-      transition: opacity 1s ease;
-      pointer-events: none; /* не блокує кнопку */
+      transition: opacity 1.2s ease;
+      pointer-events: none;
     }
 
     /* 🔄 спінер */
@@ -64,14 +64,14 @@
       z-index: 6;
       pointer-events: none;
       opacity: 1;
-      transition: opacity 0.5s;
+      transition: opacity 0.5s ease;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    /* ❌ Ховаємо панель ДО старту */
+    /* ховаємо контролі ДО старту */
     .hide-controls .pjs-controls {
       opacity: 0 !important;
       pointer-events: none !important;
@@ -94,8 +94,8 @@
   var vs = {
     id: "player",
     file: "https://live-embed.supertennix.hiway.media/restreamer/supertennix_client/gpu-a-c0-16/restreamer/outgest/aa3673f1-e178-44a9-a947-ef41db73211a/manifest.m3u8",
-    autoplay: 0,
     poster: "",
+    autoplay: 0,
     lang: "en"
   };
 
@@ -105,31 +105,27 @@
   const poster = document.getElementById("poster-overlay");
   const playerEl = document.getElementById("player");
 
-  // 🔥 ховаємо панель поки не стартував
-  playerEl.classList.add("hide-controls");
-
-  // стартовий спінер (короткий)
-  setTimeout(() => {
-    spinner.style.opacity = 0;
-    setTimeout(() => spinner.style.display = "none", 500);
-  }, 800);
-
   function waitForVideo() {
     const video = document.querySelector("#player video");
 
     if (video) {
 
-      video.addEventListener("playing", () => {
+      video.addEventListener("canplay", () => {
+
         // показуємо контролі
         playerEl.classList.remove("hide-controls");
 
-        // плавно ховаємо постер
+        // плавний fade постера
         poster.style.opacity = 0;
-        setTimeout(() => poster.style.display = "none", 1000);
+        setTimeout(() => {
+          poster.style.display = "none";
+        }, 1200);
 
-        // ховаємо спінер
+        // спінер ховаємо
         spinner.style.opacity = 0;
-        setTimeout(() => spinner.style.display = "none", 500);
+        setTimeout(() => {
+          spinner.style.display = "none";
+        }, 500);
       });
 
       video.addEventListener("waiting", () => {
