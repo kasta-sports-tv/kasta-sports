@@ -7,10 +7,11 @@
   <meta name="google-site-verification" content="-SWuspthxR-vXpOxIoqwNKlsa9nYdTpoo6OfBlKECr4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kasta Sports</title>
-
   <style>
     body {
       background: #0b0f1a;
+      background-size: cover;
+      background-color: black;
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
@@ -27,13 +28,13 @@
       right: 0;
       height: 68px;
       background: rgba(15,20,35,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,140,42,0.3);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,140,42,0.4);
       display: flex;
       align-items: center;
       padding: 0 15px;
       z-index: 1000;
-      box-shadow: 0 2px 20px rgba(255,140,42,0.15);
+      box-shadow: 0 2px 20px rgba(255,140,42,0.2);
     }
 
     .logo {
@@ -42,14 +43,43 @@
       gap: 6px;
       font-size: 28px;
       font-weight: 900;
+      text-shadow: 0 0 8px rgba(255,255,255,0.4), 0 0 10px rgba(255,140,42,0.5);
+      white-space: nowrap;
     }
 
     .logo .kasta { color: #ffffff; }
-    .logo .sports { color: #ff8c2a; text-shadow: 0 0 10px rgba(255,140,42,0.6); }
+    .logo .sports { color: #ff8c2a; }
+
+    .chat-icon {
+      margin-left: 18px;
+      font-size: 26px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+    .chat-icon:hover {
+      background: rgba(255,140,42,0.2);
+      color: #ffd6a3;
+    }
+
+    .hamburger {
+      display: none;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .match-info span {
+      text-shadow: 0 0 6px #ff8c2a;
+    }
 
     .layout {
       display: flex;
       height: calc(100vh - 68px);
+      max-height: calc(100vh - 68px);
+      overflow: hidden;
       margin-top: 68px;
     }
 
@@ -57,7 +87,7 @@
       width: 28%;
       min-width: 180px;
       background: rgba(20,25,45,0.55);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(10px);
       padding: 10px;
       overflow-y: auto;
     }
@@ -66,12 +96,16 @@
       color: #ff8c2a;
       font-weight: 800;
       font-size: 20px;
-      text-shadow: 0 0 8px rgba(255,140,42,0.5);
+      white-space: nowrap;
     }
 
     .player-section {
       width: 72%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
       padding: 10px;
+      overflow: hidden;
     }
 
     .player-container {
@@ -79,63 +113,83 @@
       width: 100%;
       padding-bottom: 56.25%;
       background-color: black;
-      border-radius: 16px;
-      border: 1px solid rgba(255,140,42,0.3);
+      border-radius: 12px;
+      border: 2px solid rgba(255,140,42,0.4);
       overflow: hidden;
-      box-shadow: 0 0 30px rgba(255,140,42,0.15);
+      box-shadow: 0 0 25px rgba(255,140,42,0.15);
     }
 
     iframe {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       border: none;
       z-index: 2;
     }
 
     .stream-btn {
       width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,140,42,0.2);
+      background-color: rgba(255,255,255,0.05);
+      color: white;
+      border: 1px solid rgba(255,140,42,0.3);
       padding: 12px 8px;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
       transition: all 0.3s;
     }
 
     .stream-btn:hover {
-      background: rgba(255,140,42,0.15);
+      background-color: rgba(255,140,42,0.2);
       transform: scale(1.03);
     }
 
     .stream-btn.active {
       background: linear-gradient(90deg,#ff8c2a,#ff5e00);
-      border: none;
+      border-color: #ff8c2a;
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 15px;
+      flex: 1;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .match-time {
+      width: 55px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
     }
 
     /* ===== SLIDER ===== */
     .slider {
       position: absolute;
+      top:0; left:0;
       width: 100%;
       height: 100%;
-      z-index: 1;
+      z-index:1;
     }
 
     .slide {
       position: absolute;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      opacity: 0;
-      transition: opacity 1s;
+      width:100%;
+      height:100%;
+      background-size:cover;
+      background-position:center;
+      opacity:0;
+      transition:1s;
     }
 
-    .slide.active {
-      opacity: 1;
-    }
+    .slide.active { opacity:1; }
 
     .slide::after {
       content:'';
@@ -151,8 +205,16 @@
       position:absolute;
       bottom:20px;
       left:20px;
-      font-size:24px;
+      font-size:22px;
       font-weight:bold;
+    }
+
+    @media (max-width: 768px) {
+      body { height:auto; overflow-y:auto; }
+      header { height:60px; }
+      .layout { flex-direction: column; margin-top:60px; }
+      .sidebar { width:95%; max-height:280px; order:2; }
+      .player-section { width:95%; order:1; }
     }
   </style>
 </head>
@@ -160,29 +222,33 @@
 <body>
 
 <header>
-  <div class="logo">
-    <span class="kasta">Kasta</span>
-    <span class="sports">Sports</span>
+  <div class="header-content">
+    <div style="display: flex; align-items: center;">
+      <div class="logo">
+        <span class="kasta">Kasta</span>
+        <span class="sports">Sports</span>
+      </div>
+      <div class="chat-icon">💬</div>
+    </div>
   </div>
 </header>
 
 <div class="layout">
 
 <div class="sidebar" id="streamButtons">
-  <!-- ВСЕ ТВОЄ ЗАЛИШЕНО -->
+  <!-- ТУТ ТВОЇ КНОПКИ 1:1 -->
 </div>
 
 <div class="player-section">
 
 <div class="player-container">
 
-<!-- СЛАЙДЕР -->
 <div class="slider" id="slider">
   <div class="slide active" style="background-image:url('https://cdn.football.ua/images/news/640x360/529155.jpg')">
-    <div class="slide-title">Champions League</div>
+    <div class="slide-title">Football Highlights</div>
   </div>
   <div class="slide" style="background-image:url('https://img.uefa.com/imgml/TP/players/2024/2024/324x324/250043268.jpg')">
-    <div class="slide-title">Top Football</div>
+    <div class="slide-title">Top Matches</div>
   </div>
 </div>
 
