@@ -9,7 +9,6 @@
         
         :root {
             --primary: #ff2d55;
-            --dark: #0a0a0a;
         }
         
         * {
@@ -20,7 +19,7 @@
         
         body {
             font-family: 'Inter', system-ui, sans-serif;
-            background: var(--dark);
+            background: #0a0a0a;
             color: #fff;
             height: 100vh;
             overflow: hidden;
@@ -34,12 +33,12 @@
         /* Sidebar */
         .sidebar {
             width: 280px;
-            background: #111;
+            background: #111111;
             border-right: 1px solid #222;
             display: flex;
             flex-direction: column;
-            z-index: 200;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            z-index: 100;
         }
         
         @media (max-width: 768px) {
@@ -55,7 +54,7 @@
         
         .logo {
             padding: 20px;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: var(--primary);
             border-bottom: 1px solid #222;
@@ -75,28 +74,33 @@
         }
         
         .nav-item:hover, .nav-item.active {
-            background: #1a1a1a;
+            background: #1f1f1f;
             color: white;
         }
         
-        .nav-item i {
-            width: 24px;
-        }
-        
-        /* Main Content */
+        /* Main */
         .main {
             flex: 1;
             display: flex;
             flex-direction: column;
         }
         
+        .top-bar {
+            height: 60px;
+            background: rgba(10,10,10,0.95);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+            border-bottom: 1px solid #222;
+            z-index: 50;
+        }
+        
         .player-area {
             flex: 1;
             background: #000;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-height: 300px;
         }
         
         .player {
@@ -115,41 +119,48 @@
             height: 100%;
             background: linear-gradient(135deg, #1a1a1a, #000);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
             text-align: center;
             color: #aaa;
         }
         
         .slides h1 {
-            font-size: 42px;
-            margin-bottom: 10px;
+            font-size: 38px;
             color: var(--primary);
+        }
+        
+        /* Match Info */
+        .match-info {
+            padding: 14px 20px;
+            background: #111;
+            font-size: 18px;
+            font-weight: 600;
+            border-top: 1px solid #222;
+            display: none;
         }
         
         /* Match Bar */
         .match-bar {
-            height: 110px;
             background: #111;
-            border-top: 1px solid #222;
+            padding: 12px 10px;
             overflow-x: auto;
             white-space: nowrap;
-            padding: 12px 10px;
             display: flex;
-            align-items: center;
             gap: 12px;
             scrollbar-width: thin;
+            scrollbar-color: #ff2d55 #222;
         }
         
         .match-card {
             display: inline-flex;
             flex-direction: column;
             align-items: center;
-            min-width: 160px;
-            padding: 8px 12px;
+            min-width: 170px;
+            padding: 10px 14px;
             background: #1a1a1a;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
             border: 2px solid transparent;
@@ -157,79 +168,45 @@
         
         .match-card.active {
             border-color: var(--primary);
-            background: #1f1f1f;
+            background: #222;
         }
         
         .match-card:hover {
-            transform: scale(1.05);
+            transform: scale(1.04);
+        }
+        
+        .league {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 6px;
         }
         
         .teams {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
         }
         
         .team {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             flex: 1;
+            text-align: center;
         }
         
         .team-logo {
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 4px;
         }
         
         .team-name {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
         }
         
-        .time {
+        .vs-time {
             font-size: 15px;
             font-weight: 700;
             color: var(--primary);
-            padding: 0 8px;
-        }
-        
-        /* Match Info */
-        .match-info {
-            padding: 12px 20px;
-            background: #111;
-            border-top: 1px solid #222;
-            font-weight: 600;
-            font-size: 17px;
-            display: none;
-        }
-        
-        /* Top Bar */
-        .top-bar {
-            height: 60px;
-            background: rgba(10,10,10,0.95);
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            justify-content: space-between;
-            border-bottom: 1px solid #222;
-            z-index: 100;
-        }
-        
-        .btn {
-            background: #1f1f1f;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: black;
-            font-weight: 600;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -240,51 +217,32 @@
         <div class="sidebar" id="sidebar">
             <div class="logo">
                 <i class="fas fa-futbol"></i>
-                <span>KASTA</span>
-                <span style="color:#fff;">SPORTS</span>
+                KASTA SPORTS
             </div>
             
-            <div class="nav-item active" onclick="switchSection(0)">
-                <i class="fas fa-tv"></i>
-                <span>Прямі трансляції</span>
-            </div>
-            <div class="nav-item" onclick="switchSection(1)">
-                <i class="fas fa-futbol"></i>
-                <span>Футбол</span>
-            </div>
-            <div class="nav-item" onclick="switchSection(2)">
-                <i class="fas fa-basketball-ball"></i>
-                <span>Баскетбол</span>
-            </div>
-            <div class="nav-item" onclick="switchSection(3)">
-                <i class="fas fa-hockey-puck"></i>
-                <span>Хокей</span>
-            </div>
-            <div class="nav-item" onclick="switchSection(4)">
-                <i class="fas fa-radio"></i>
-                <span>Радіо / Інше</span>
-            </div>
+            <div class="nav-item active"><i class="fas fa-tv"></i><span>Прямі трансляції</span></div>
+            <div class="nav-item"><i class="fas fa-futbol"></i><span>Футбол</span></div>
+            <div class="nav-item"><i class="fas fa-basketball-ball"></i><span>Баскетбол</span></div>
+            <div class="nav-item"><i class="fas fa-hockey-puck"></i><span>Хокей</span></div>
+            <div class="nav-item"><i class="fas fa-tennis-ball"></i><span>Теніс</span></div>
         </div>
         
-        <!-- Main -->
+        <!-- Main Content -->
         <div class="main">
             <div class="top-bar">
-                <button class="btn" onclick="toggleSidebar()">
+                <button onclick="toggleSidebar()" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div style="font-weight:700; font-size:20px; color:var(--primary);">KASTA SPORTS</div>
-                <button class="btn btn-primary" onclick="addCustomStream()">
-                    <i class="fas fa-plus"></i> Свій стрім
-                </button>
+                <div style="font-size:22px; font-weight:700; color:var(--primary);">ПРЯМІ ТРАНСЛЯЦІЇ</div>
+                <div></div>
             </div>
             
             <!-- Player -->
-            <div class="player-area" id="playerArea">
+            <div class="player-area">
                 <div class="player" id="player">
-                    <!-- Slides by default -->
                     <div class="slides" id="slides">
-                        <h1>ГОЛОВНІ ПОДІЇ</h1>
-                        <p style="margin-top:20px; font-size:18px;">Оберіть матч нижче для перегляду</p>
+                        <h1>ГОЛОВНІ МАТЧІ ДНЯ</h1>
+                        <p style="margin-top: 30px; font-size: 18px;">Оберіть трансляцію нижче</p>
                     </div>
                 </div>
             </div>
@@ -292,65 +250,68 @@
             <!-- Match Info -->
             <div class="match-info" id="matchInfo"></div>
             
-            <!-- Match Bar -->
-            <div class="match-bar" id="matchBar">
-                <!-- Заповнюється JS -->
-            </div>
+            <!-- Scrollable Match Bar -->
+            <div class="match-bar" id="matchBar"></div>
         </div>
     </div>
 
     <script>
-        // Приклади матчів
         const matches = [
             {
                 id: 1,
-                league: "УПЛ",
+                league: "УПЛ • 19:30",
                 team1: "Динамо К",
                 logo1: "💙",
                 team2: "Шахтар",
                 logo2: "🟡",
-                time: "19:30",
-                url: "https://www.youtube.com/embed/live_stream?channel=example", // заміни на реальний embed
+                url: "", // ← Встав сюди свій embed URL
                 title: "Динамо Київ — Шахтар Донецьк"
             },
             {
                 id: 2,
-                league: "АПЛ",
+                league: "АПЛ • 22:00",
                 team1: "Арсенал",
                 logo1: "🔴",
                 team2: "Ліверпуль",
                 logo2: "🔴",
-                time: "22:00",
-                url: "",
+                url: "https://www.youtube.com/embed/dQw4w9wgxcq", 
                 title: "Арсенал — Ліверпуль"
             },
             {
                 id: 3,
-                league: "ЛЧ",
+                league: "Ліга Чемпіонів • 21:00",
                 team1: "Реал",
                 logo1: "⚪",
                 team2: "Баварія",
                 logo2: "🔴",
-                time: "21:00",
-                url: "https://www.youtube.com/embed/dQw4w9wgxcq",
-                title: "Реал Мадрид — Баварія Мюнхен"
+                url: "",
+                title: "Реал Мадрид — Баварія"
             },
             {
                 id: 4,
-                league: "NBA",
+                league: "NBA • 02:30",
                 team1: "Лейкерс",
                 logo1: "🟡",
-                team2: "Бостон",
+                team2: "Селтікс",
                 logo2: "🟢",
-                time: "02:30",
                 url: "",
                 title: "Лос-Анджелес Лейкерс — Бостон Селтікс"
+            },
+            {
+                id: 5,
+                league: "Серія A • 20:45",
+                team1: "Ювентус",
+                logo1: "⚫",
+                team2: "Мілан",
+                logo2: "🔴",
+                url: "",
+                title: "Ювентус — Мілан"
             }
         ];
         
         let currentMatch = null;
         
-        function renderMatchBar() {
+        function renderMatches() {
             const bar = document.getElementById('matchBar');
             bar.innerHTML = '';
             
@@ -358,20 +319,20 @@
                 const card = document.createElement('div');
                 card.className = `match-card ${currentMatch && currentMatch.id === match.id ? 'active' : ''}`;
                 card.innerHTML = `
-                    <div style="font-size:12px; color:#888; margin-bottom:6px;">${match.league}</div>
+                    <div class="league">${match.league}</div>
                     <div class="teams">
                         <div class="team">
                             <div class="team-logo">${match.logo1}</div>
                             <div class="team-name">${match.team1}</div>
                         </div>
-                        <div class="time">${match.time}</div>
+                        <div class="vs-time">VS</div>
                         <div class="team">
                             <div class="team-logo">${match.logo2}</div>
                             <div class="team-name">${match.team2}</div>
                         </div>
                     </div>
                 `;
-                card.onclick = () => playMatch(match);
+                card.addEventListener('click', () => playMatch(match));
                 bar.appendChild(card);
             });
         }
@@ -379,83 +340,51 @@
         function playMatch(match) {
             currentMatch = match;
             
-            const player = document.getElementById('player');
             const slides = document.getElementById('slides');
-            const info = document.getElementById('matchInfo');
+            const playerDiv = document.getElementById('player');
+            const infoDiv = document.getElementById('matchInfo');
             
             slides.style.display = 'none';
             
-            if (match.url) {
-                player.innerHTML = `<iframe src="${match.url}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+            if (match.url && match.url.trim() !== '') {
+                playerDiv.innerHTML = `<iframe src="${match.url}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
             } else {
-                player.innerHTML = `
-                    <div style="text-align:center; color:#666; font-size:24px;">
-                        <i class="fas fa-tv" style="font-size:80px; margin-bottom:20px;"></i><br>
-                        Трансляція скоро розпочнеться
+                playerDiv.innerHTML = `
+                    <div style="height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; color:#555;">
+                        <i class="fas fa-tv" style="font-size:90px; margin-bottom:20px; opacity:0.3;"></i>
+                        <h2>Трансляція буде тут</h2>
+                        <p>Вставте embed-посилання в масив matches</p>
                     </div>`;
             }
             
-            info.textContent = match.title;
-            info.style.display = 'block';
+            infoDiv.textContent = match.title;
+            infoDiv.style.display = 'block';
             
-            renderMatchBar();
-        }
-        
-        function addCustomStream() {
-            const url = prompt("Вставте посилання на стрім (iframe src):", "https://www.youtube.com/embed/");
-            if (!url) return;
-            
-            const player = document.getElementById('player');
-            const slides = document.getElementById('slides');
-            const info = document.getElementById('matchInfo');
-            
-            slides.style.display = 'none';
-            player.innerHTML = `<iframe src="${url}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
-            info.textContent = "Кастомна трансляція";
-            info.style.display = 'block';
+            renderMatches();
         }
         
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
         }
         
-        function switchSection(n) {
-            // Можна розширити логіку для різних розділів
-            document.querySelectorAll('.nav-item').forEach((el, i) => {
-                el.classList.toggle('active', i === n);
-            });
-        }
-        
-        // Закриття меню при кліку поза ним на мобілці
-        document.addEventListener('click', function(e) {
+        // Закриття меню при кліку поза ним
+        document.addEventListener('click', (e) => {
             const sidebar = document.getElementById('sidebar');
             if (window.innerWidth <= 768 && 
-                !sidebar.contains(e.target) && 
-                sidebar.classList.contains('open')) {
+                sidebar.classList.contains('open') && 
+                !sidebar.contains(e.target)) {
                 sidebar.classList.remove('open');
             }
         });
         
-        // Ініціалізація
-        window.onload = function() {
-            renderMatchBar();
+        window.onload = () => {
+            renderMatches();
             
-            // Авто-вибір першого матчу через 1 сек
+            // Автозапуск першого матчу
             setTimeout(() => {
                 if (matches.length > 0) playMatch(matches[0]);
-            }, 1200);
-            
-            console.log('%cKasta Sports — готовий клон', 'color:#ff2d55; font-size:18px;');
+            }, 800);
         };
-        
-        // Swipe для мобілки
-        let touchStartX = 0;
-        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
-        document.addEventListener('touchend', e => {
-            const diff = e.changedTouches[0].screenX - touchStartX;
-            if (diff > 120) document.getElementById('sidebar').classList.add('open');
-            if (diff < -120) document.getElementById('sidebar').classList.remove('open');
-        });
     </script>
 </body>
 </html>
