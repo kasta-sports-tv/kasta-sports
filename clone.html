@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUZT TV - Твій IPTV</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #00ff9d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #111111;
+            border-right: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        
+        .logo {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #222;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .nav {
+            padding: 10px;
+        }
+        
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            margin: 4px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #aaa;
+        }
+        
+        .nav-btn:hover, .nav-btn.active {
+            background: #1f1f1f;
+            color: white;
+        }
+        
+        .nav-btn i {
+            font-size: 20px;
+            width: 24px;
+        }
+        
+        .search-container {
+            padding: 16px;
+        }
+        
+        .search {
+            width: 100%;
+            padding: 12px 16px;
+            background: #1f1f1f;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+        }
+        
+        .categories {
+            padding: 0 16px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .section-title {
+            padding: 12px 16px 8px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+        }
+        
+        .channel-list {
+            list-style: none;
+        }
+        
+        .channel-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+        }
+        
+        .channel-item:hover {
+            background: #1f1f1f;
+        }
+        
+        .channel-item.active {
+            background: #00ff9d22;
+            color: var(--primary);
+        }
+        
+        .channel-logo {
+            width: 32px;
+            height: 32px;
+            background: #222;
+            border-radius: 6px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .channel-name {
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .fav-star {
+            margin-left: auto;
+            color: #ffd700;
+            opacity: 0.6;
+        }
+        
+        .fav-star.active {
+            opacity: 1;
+        }
+        
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .player-container {
+            flex: 1;
+            background: #000;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .player {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .placeholder {
+            text-align: center;
+            color: #555;
+        }
+        
+        .placeholder h2 {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+        
+        /* Top Bar */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 50;
+            justify-content: space-between;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: black;
+            font-weight: 600;
+        }
+        
+        /* Channel Info */
+        .channel-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 12px 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            z-index: 40;
+            display: none;
+        }
+        
+        /* Mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                height: 100%;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main {
+                width: 100%;
+            }
+        }
+        
+        /* Fullscreen */
+        .fullscreen .top-bar,
+        .fullscreen .sidebar {
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <i class="fas fa-tv" style="font-size: 28px; color: #00ff9d;"></i>
+                <h1>JUZT TV</h1>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="search" class="search" placeholder="Пошук каналів...">
+            </div>
+            
+            <div class="nav">
+                <div class="nav-btn active" onclick="switchTab(0)">
+                    <i class="fas fa-tv"></i>
+                    <span>ТБ Канали</span>
+                </div>
+                <div class="nav-btn" onclick="switchTab(1)">
+                    <i class="fas fa-radio"></i>
+                    <span>Радіо</span>
+                </div>
+                <div class="nav-btn" onclick="showFavorites()">
+                    <i class="fas fa-star"></i>
+                    <span>Улюблені</span>
+                </div>
+            </div>
+            
+            <div class="section-title">Категорії</div>
+            <div class="categories" id="categories">
+                <!-- Заповнюється JS -->
+            </div>
+        </div>
+        
+        <!-- Main Player -->
+        <div class="main">
+            <div class="top-bar">
+                <div class="controls">
+                    <button class="btn" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <button class="btn" onclick="toggleFullscreen()">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+                
+                <div>
+                    <button onclick="addCustomPlayer()" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Додати свій плеєр
+                    </button>
+                </div>
+            </div>
+            
+            <div class="player-container" id="playerContainer">
+                <div class="player" id="player">
+                    <!-- Тут буде iframe -->
+                    <div class="placeholder" id="placeholder">
+                        <i class="fas fa-tv" style="font-size: 120px; margin-bottom: 20px; opacity: 0.2;"></i>
+                        <h2>Оберіть канал</h2>
+                        <p>Виберіть канал з бічної панелі або вставте свій URL</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Channel Info -->
+            <div class="channel-info" id="channelInfo">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div id="infoLogo" style="width: 48px; height: 48px; background: #222; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px;"></div>
+                    <div>
+                        <div id="infoName" style="font-weight: 600; font-size: 18px;"></div>
+                        <div id="infoCategory" style="color: #aaa; font-size: 14px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Дані для прикладу (змінюй на свої)
+        let channels = [
+            {
+                id: 1,
+                name: "1+1",
+                category: "Україна",
+                logo: "🇺🇦",
+                url: "https://www.youtube.com/embed/live_stream?channel=UC..." // заміни
+            },
+            {
+                id: 2,
+                name: "ICTV",
+                category: "Україна",
+                logo: "📺",
+                url: ""
+            },
+            {
+                id: 3,
+                name: "Netflix Demo",
+                category: "Фільми",
+                logo: "🎥",
+                url: "https://www.youtube.com/embed/dQw4w9wgxcq" // приклад
+            },
+            // Додай більше каналів
+        ];
+        
+        let favorites = [];
+        let currentTab = 0; // 0 - TV, 1 - Radio
+        let currentChannel = null;
+        
+        // Заповнення категорій
+        function renderCategories() {
+            const catsContainer = document.getElementById('categories');
+            catsContainer.innerHTML = `
+                <div class="channel-list" id="channelList"></div>
+            `;
+            renderChannelList();
+        }
+        
+        function renderChannelList(filteredChannels = channels) {
+            const list = document.getElementById('channelList');
+            if (!list) return;
+            
+            list.innerHTML = '';
+            
+            filteredChannels.forEach(ch => {
+                const isFav = favorites.includes(ch.id);
+                
+                const div = document.createElement('div');
+                div.className = `channel-item ${currentChannel && currentChannel.id === ch.id ? 'active' : ''}`;
+                div.innerHTML = `
+                    <div class="channel-logo">${ch.logo}</div>
+                    <div class="channel-name">${ch.name}</div>
+                    <div class="fav-star ${isFav ? 'active' : ''}" onclick="event.stopImmediatePropagation(); toggleFavorite(${ch.id});">
+                        <i class="fas fa-star"></i>
+                    </div>
+                `;
+                div.onclick = () => playChannel(ch);
+                list.appendChild(div);
+            });
+        }
+        
+        function playChannel(channel) {
+            currentChannel = channel;
+            
+            const placeholder = document.getElementById('placeholder');
+            const playerDiv = document.getElementById('player');
+            
+            if (channel.url) {
+                placeholder.style.display = 'none';
+                playerDiv.innerHTML = `
+                    <iframe src="${channel.url}" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                `;
+            } else {
+                placeholder.style.display = 'block';
+                playerDiv.innerHTML = '';
+                alert(`Канал ${channel.name} готовий до підключення. Встав свій iframe URL.`);
+            }
+            
+            // Показуємо інфо
+            const info = document.getElementById('channelInfo');
+            document.getElementById('infoName').textContent = channel.name;
+            document.getElementById('infoCategory').textContent = channel.category;
+            document.getElementById('infoLogo').innerHTML = channel.logo;
+            info.style.display = 'block';
+            
+            renderChannelList();
+        }
+        
+        function toggleFavorite(id) {
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(f => f !== id);
+            } else {
+                favorites.push(id);
+            }
+            renderChannelList();
+        }
+        
+        function showFavorites() {
+            const favChannels = channels.filter(ch => favorites.includes(ch.id));
+            renderChannelList(favChannels.length ? favChannels : channels);
+        }
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            // Тут можна розділити TV / Radio
+            document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === tab);
+            });
+            renderChannelList();
+        }
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        // Додавання свого плеєра
+        function addCustomPlayer() {
+            const url = prompt("Встав URL свого плеєра (iframe src):", "https://www.youtube.com/embed/");
+            if (url) {
+                const placeholder = document.getElementById('placeholder');
+                const playerDiv = document.getElementById('player');
+                
+                placeholder.style.display = 'none';
+                playerDiv.innerHTML = `
+                    <iframe src="${url}" allowfullscreen allow="autoplay; encrypted-media" style="width:100%; height:100%; border:none;"></iframe>
+                `;
+                
+                const info = document.getElementById('channelInfo');
+                document.getElementById('infoName').textContent = "Ваш плеєр";
+                document.getElementById('infoCategory').textContent = "Кастомний";
+                document.getElementById('infoLogo').innerHTML = "🎛️";
+                info.style.display = 'block';
+            }
+        }
+        
+        // Пошук
+        document.getElementById('search').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const filtered = channels.filter(ch => 
+                ch.name.toLowerCase().includes(term) || 
+                ch.category.toLowerCase().includes(term)
+            );
+            renderChannelList(filtered);
+        });
+        
+        // Клавіатурні скорочення
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "f" || e.key === "F") {
+                toggleFullscreen();
+            }
+            if (e.key === "/") {
+                document.getElementById('search').focus();
+                e.preventDefault();
+            }
+        });
+        
+        // Ініціалізація
+        window.onload = function() {
+            renderCategories();
+            
+            // Приклад: автоматично запустити перший канал
+            setTimeout(() => {
+                if (channels.length > 0) {
+                    // playChannel(channels[0]); // розкоментуй якщо треба
+                }
+            }, 800);
+            
+            // Адаптивність
+            console.log('%cJUZT TV клон готовий! Вставляй свої iframe.', 'color: #00ff9d; font-size: 16px;');
+        };
+        
+        // PWA / Mobile swipe support (базовий)
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', e => {
+            const touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX - touchStartX > 150) {
+                document.getElementById('sidebar').classList.add('open');
+            }
+        });
+    </script>
+</body>
+</html>
