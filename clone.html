@@ -3,333 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUZT - Live</title>
+    <title>JUZT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
-        :root {
-            --primary: #ff6200;
-        }
-        
         body {
             font-family: 'Inter', system_ui, sans-serif;
         }
         
-        .hero-bg {
-            background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.85) 85%), 
-                        url('https://picsum.photos/id/1015/1200/600') center/cover no-repeat;
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.75)), 
+                        url('https://picsum.photos/id/1015/1200/620') center/cover;
+            height: 380px;
         }
         
-        .nav-active {
-            background-color: #ff6200;
-            color: white;
-            border-radius: 9999px;
+        .category-card {
+            transition: all 0.2s ease;
         }
-        
-        .match-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .match-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        }
-        
-        .live-dot {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        
-        .scrollbar-none::-webkit-scrollbar {
-            display: none;
+        .category-card:hover {
+            transform: translateY(-3px);
+            background-color: #27272a;
         }
     </style>
 </head>
-<body class="bg-zinc-950 text-white min-h-screen">
-    <!-- Top Status Bar (mobile style) -->
-    <div class="bg-zinc-900 border-b border-zinc-800 px-4 py-2 flex items-center justify-between text-sm md:hidden">
-        <div class="flex items-center gap-2">
-            <span class="font-medium">21:36</span>
-        </div>
-        <div class="flex items-center gap-3 text-zinc-400">
-            <i class="fa-solid fa-signal"></i>
-            <i class="fa-solid fa-wifi"></i>
-            <span>31%</span>
-        </div>
-    </div>
+<body class="bg-zinc-950 text-white">
 
-    <!-- Header -->
-    <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-50">
-        <div class="max-w-screen-2xl mx-auto px-4">
-            <div class="flex items-center justify-between h-14">
-                <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <div onclick="window.location.reload()" 
-                         class="flex items-center gap-2 cursor-pointer">
-                        <div class="w-8 h-8 bg-orange-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">📺</div>
-                        <div>
-                            <span class="text-2xl font-bold tracking-tighter text-orange-500">JUZT</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Navigation -->
-                <div class="flex items-center gap-1 bg-zinc-800 rounded-3xl p-1">
-                    <a href="#" onclick="switchTab(0)" class="nav-item nav-active flex items-center gap-2 px-5 py-2 text-sm font-medium">
-                        <i class="fa-solid fa-tv"></i>
-                        <span class="hidden md:inline">Live</span>
-                    </a>
-                    <a href="#" onclick="switchTab(1)" class="nav-item flex items-center gap-2 px-5 py-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-                        <i class="fa-solid fa-headphones"></i>
-                    </a>
-                    <a href="#" onclick="switchTab(2)" class="nav-item flex items-center gap-2 px-5 py-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-                        <i class="fa-solid fa-th-large"></i>
-                    </a>
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <button class="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white transition-colors">
-                        <i class="fa-solid fa-magnifying-glass text-xl"></i>
-                    </button>
-                    <button class="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white transition-colors">
-                        <i class="fa-solid fa-star text-xl"></i>
-                    </button>
-                    <div class="w-8 h-8 bg-zinc-700 rounded-full overflow-hidden">
-                        <img src="https://picsum.photos/id/64/128/128" alt="User" class="w-full h-full object-cover">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- HERO BANNER -->
-    <div class="hero-bg h-[380px] md:h-[460px] relative">
-        <div class="absolute bottom-8 left-6 md:left-8 max-w-md">
-            <div class="flex items-center gap-3 mb-3">
-                <span class="px-3 py-1 bg-white/20 backdrop-blur-md text-xs font-medium rounded-full">LIVE</span>
-                <span class="text-orange-400 text-sm font-medium flex items-center gap-1">
-                    <span class="w-2 h-2 bg-orange-500 rounded-full live-dot"></span>
-                    ПРЯМИЙ ЕФІР
-                </span>
-            </div>
-            <h1 class="text-5xl md:text-6xl font-bold tracking-tighter mb-2">Динамо — Шахтар</h1>
-            <p class="text-zinc-300 text-lg">УПЛ • 2-й тур • 21:45</p>
-            
-            <button onclick="playMainStream()" 
-                    class="mt-6 bg-white text-black px-8 py-3.5 rounded-2xl font-semibold flex items-center gap-3 hover:bg-orange-500 hover:text-white transition-all">
-                <i class="fa-solid fa-play"></i>
-                <span>Дивитись трансляцію</span>
-            </button>
+    <!-- Top Bar -->
+    <div class="bg-black flex items-center justify-between px-4 py-3 border-b border-zinc-800">
+        <div class="flex items-center gap-3">
+            <div class="text-3xl">📺</div>
+            <span class="text-3xl font-bold tracking-tighter text-orange-500">JUZT</span>
         </div>
         
-        <!-- Right side info -->
-        <div class="absolute bottom-8 right-8 hidden lg:flex flex-col items-end">
-            <div class="bg-black/70 backdrop-blur-md px-5 py-3 rounded-3xl flex items-center gap-8">
-                <div class="text-center">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/FC_Dynamo_Kyiv_logo.svg/1200px-FC_Dynamo_Kyiv_logo.svg.png" 
-                         class="h-12 mx-auto mb-1" alt="Динамо">
-                    <p class="text-sm font-medium">Динамо</p>
-                </div>
-                <div class="text-4xl font-bold text-orange-400">VS</div>
-                <div class="text-center">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/FC_Shakhtar_Donetsk_logo.svg/1200px-FC_Shakhtar_Donetsk_logo.svg.png" 
-                         class="h-12 mx-auto mb-1" alt="Шахтар">
-                    <p class="text-sm font-medium">Шахтар</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TABS -->
-    <div class="max-w-screen-2xl mx-auto px-4 -mt-6 relative z-10">
-        <div class="bg-zinc-900 rounded-3xl shadow-xl border border-zinc-800 p-2 flex gap-2 overflow-x-auto scrollbar-none">
-            <button onclick="filterCategory(this)" class="tab-btn active px-6 py-3 rounded-2xl font-medium whitespace-nowrap bg-orange-600 text-white">Усі матчі</button>
-            <button onclick="filterCategory(this)" class="tab-btn px-6 py-3 rounded-2xl font-medium whitespace-nowrap text-zinc-400 hover:bg-zinc-800">УПЛ</button>
-            <button onclick="filterCategory(this)" class="tab-btn px-6 py-3 rounded-2xl font-medium whitespace-nowrap text-zinc-400 hover:bg-zinc-800">Єврокубки</button>
-            <button onclick="filterCategory(this)" class="tab-btn px-6 py-3 rounded-2xl font-medium whitespace-nowrap text-zinc-400 hover:bg-zinc-800">АПЛ</button>
-            <button onclick="filterCategory(this)" class="tab-btn px-6 py-3 rounded-2xl font-medium whitespace-nowrap text-zinc-400 hover:bg-zinc-800">ЛЧ</button>
-            <button onclick="filterCategory(this)" class="tab-btn px-6 py-3 rounded-2xl font-medium whitespace-nowrap text-zinc-400 hover:bg-zinc-800">Прем'єр Ліга</button>
-        </div>
-    </div>
-
-    <!-- CONTENT -->
-    <div class="max-w-screen-2xl mx-auto px-4 py-8">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold">Трансляції зараз</h2>
-            <div class="text-sm text-zinc-400 flex items-center gap-2">
-                <span class="bg-emerald-500 w-2 h-2 rounded-full live-dot"></span>
-                <span>14 прямих ефірів</span>
-            </div>
-        </div>
-
-        <!-- MATCH GRID -->
-        <div id="match-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-            <!-- Match cards will be generated by JS -->
-        </div>
-    </div>
-
-    <!-- Player Container -->
-    <div id="player-container" class="hidden fixed inset-0 bg-black z-[100] flex flex-col">
-        <div class="bg-zinc-900 p-4 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <button onclick="closePlayer()" class="text-3xl leading-none">&times;</button>
-                <div>
-                    <p class="font-medium" id="player-title">Динамо — Шахтар</p>
-                    <p class="text-sm text-emerald-400">LIVE • УПЛ</p>
-                </div>
-            </div>
-            <button onclick="closePlayer()" 
-                    class="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-sm font-medium">
-                Закрити
+        <div class="flex items-center gap-1 bg-zinc-900 rounded-3xl p-1">
+            <button class="bg-orange-600 text-white px-5 py-2 rounded-3xl flex items-center gap-2">
+                <i class="fa-solid fa-tv"></i>
+            </button>
+            <button class="px-4 py-2 text-zinc-400 hover:text-white">
+                <i class="fa-solid fa-headphones"></i>
+            </button>
+            <button class="px-4 py-2 text-zinc-400 hover:text-white">
+                <i class="fa-solid fa-grip"></i>
             </button>
         </div>
-        <div class="flex-1 flex items-center justify-center bg-black" id="iframe-placeholder">
-            <!-- Тут ви вставляєте свій iframe -->
-            <div class="text-center text-zinc-500">
-                <p class="mb-4 text-xl">Вставте ваш iframe плеєр сюди</p>
-                <p class="text-sm">iframe-placeholder</p>
+
+        <div class="flex items-center gap-4">
+            <i class="fa-solid fa-gear text-xl text-zinc-400"></i>
+            <i class="fa-solid fa-bars text-2xl text-zinc-400"></i>
+        </div>
+    </div>
+
+    <!-- Hero Banner -->
+    <div class="hero relative">
+        <div class="absolute bottom-8 left-6 right-6">
+            <h1 class="text-6xl font-bold tracking-tighter mb-1">DAVID</h1>
+            <p class="text-xl text-white/90">Angel</p>
+            
+            <div class="mt-6 flex items-center gap-4">
+                <button onclick="alert('Плеєр відкрито')" 
+                        class="bg-white text-black px-8 py-3.5 rounded-2xl font-semibold flex items-center gap-3 hover:scale-105 transition">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Click to play</span>
+                </button>
             </div>
+        </div>
+
+        <!-- Carousel dots -->
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+            <div class="w-6 h-1 bg-orange-500 rounded-full"></div>
+            <div class="w-2 h-1 bg-white/50 rounded-full"></div>
+            <div class="w-2 h-1 bg-white/50 rounded-full"></div>
+            <div class="w-2 h-1 bg-white/50 rounded-full"></div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="px-4 pt-4 pb-3 bg-zinc-950 border-b border-zinc-800">
+        <div class="flex items-center gap-4 overflow-x-auto scrollbar-none">
+            <button onclick="this.classList.add('bg-orange-600','text-white')" 
+                    class="bg-orange-600 text-white px-6 py-2.5 rounded-3xl font-medium whitespace-nowrap">
+                All
+            </button>
+            <button class="px-6 py-2.5 text-zinc-400 hover:text-white whitespace-nowrap">Categories</button>
+            <button class="px-6 py-2.5 text-zinc-400 hover:text-white whitespace-nowrap flex items-center gap-2">
+                <i class="fa-solid fa-star"></i>
+                <span>Favorites</span>
+            </button>
+            <button class="ml-auto text-2xl text-zinc-400">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Categories List -->
+    <div class="px-4 py-2 space-y-3">
+        <!-- Item 1 -->
+        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://via.placeholder.com/80x80/111827/ffffff?text=Action" 
+                 class="w-14 h-14 rounded-2xl object-cover" alt="">
+            <div class="flex-1">
+                <h3 class="font-semibold text-lg">Action Hollywood Movies HD</h3>
+                <p class="text-zinc-400 text-sm">Movies</p>
+            </div>
+            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://via.placeholder.com/80x80/991b1b/ffffff?text=AFV" 
+                 class="w-14 h-14 rounded-2xl object-cover" alt="">
+            <div class="flex-1">
+                <h3 class="font-semibold text-lg">AFV</h3>
+                <p class="text-zinc-400 text-sm">Entertainment</p>
+            </div>
+            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://via.placeholder.com/80x80/111827/ffffff?text=Alien" 
+                 class="w-14 h-14 rounded-2xl object-cover" alt="">
+            <div class="flex-1">
+                <h3 class="font-semibold text-lg">Alien Nation</h3>
+                <p class="text-zinc-400 text-sm">Entertainment</p>
+            </div>
+            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
+        </div>
+
+        <!-- Item 4 -->
+        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://via.placeholder.com/80x80/166534/ffffff?text=Wedding" 
+                 class="w-14 h-14 rounded-2xl object-cover" alt="">
+            <div class="flex-1">
+                <h3 class="font-semibold text-lg">All Weddings We TV</h3>
+                <p class="text-zinc-400 text-sm">Entertainment</p>
+            </div>
+            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
+        </div>
+
+        <!-- Item 5 -->
+        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://via.placeholder.com/80x80/7f1d1d/ffffff?text=AMC" 
+                 class="w-14 h-14 rounded-2xl object-cover" alt="">
+            <div class="flex-1">
+                <h3 class="font-semibold text-lg">AMC Thrillers</h3>
+                <p class="text-zinc-400 text-sm">Thriller & Crime</p>
+            </div>
+            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
+        </div>
+
+        <!-- Item 6 -->
+        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
+            <img src="https://via.placeholder.com/80x80/44403c/ffffff?text=Crime" 
+                 class="w-14 h-14 rounded-2xl object-cover" alt="">
+            <div class="flex-1">
+                <h3 class="font-semibold text-lg">American Crimes</h3>
+                <p class="text-zinc-400 text-sm">Documentary</p>
+            </div>
+            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
         </div>
     </div>
 
     <script>
-        // Sample match data
-        const matches = [
-            {
-                home: { name: "Динамо К", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/FC_Dynamo_Kyiv_logo.svg/1200px-FC_Dynamo_Kyiv_logo.svg.png" },
-                away: { name: "Шахтар", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/FC_Shakhtar_Donetsk_logo.svg/1200px-FC_Shakhtar_Donetsk_logo.svg.png" },
-                time: "21:45",
-                league: "УПЛ",
-                live: true
-            },
-            {
-                home: { name: "Реал Мадрид", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Real_Madrid_CF.svg/1200px-Real_Madrid_CF.svg.png" },
-                away: { name: "Барселона", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a1/FC_Barcelona.svg/1200px-FC_Barcelona.svg.png" },
-                time: "22:00",
-                league: "Ла Ліга",
-                live: true
-            },
-            {
-                home: { name: "Ман Сіті", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Manchester_City_FC_badge.svg/1200px-Manchester_City_FC_badge.svg.png" },
-                away: { name: "Арсенал", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/6/63/Arsenal_FC.svg/1200px-Arsenal_FC.svg.png" },
-                time: "23:30",
-                league: "АПЛ",
-                live: false
-            },
-            {
-                home: { name: "Баварія", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/1200px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png" },
-                away: { name: "Боруссія Д", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Borussia_Dortmund_logo.svg/1200px-Borussia_Dortmund_logo.svg.png" },
-                time: "19:30",
-                league: "Бундесліга",
-                live: true
-            }
-        ];
-
-        function createMatchCard(match) {
-            const card = document.createElement('div');
-            card.className = `match-card bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden cursor-pointer`;
-            
-            card.innerHTML = `
-                <div class="p-5">
-                    <div class="flex items-center justify-between text-xs mb-4">
-                        <div class="flex items-center gap-2">
-                            <span class="px-3 py-1 bg-zinc-800 text-zinc-400 rounded-full">${match.league}</span>
-                        </div>
-                        ${match.live ? 
-                            `<span class="flex items-center gap-1.5 text-emerald-400 text-sm font-medium">
-                                <span class="w-2 h-2 bg-emerald-500 rounded-full live-dot"></span>
-                                LIVE
-                            </span>` : 
-                            `<span class="text-zinc-400">${match.time}</span>`
-                        }
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <!-- Home -->
-                        <div class="flex flex-col items-center w-1/3">
-                            <img src="${match.home.logo}" class="h-14 w-14 object-contain mb-2" alt="${match.home.name}">
-                            <p class="text-sm font-medium text-center leading-tight">${match.home.name}</p>
-                        </div>
-                        
-                        <!-- VS -->
-                        <div class="flex flex-col items-center">
-                            <div class="text-3xl font-bold text-orange-400 mb-1">VS</div>
-                            <div class="text-xs text-zinc-500">${match.time}</div>
-                        </div>
-                        
-                        <!-- Away -->
-                        <div class="flex flex-col items-center w-1/3">
-                            <img src="${match.away.logo}" class="h-14 w-14 object-contain mb-2" alt="${match.away.name}">
-                            <p class="text-sm font-medium text-center leading-tight">${match.away.name}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div onclick="playMatch(this)" class="bg-zinc-800 hover:bg-orange-600 transition-colors text-center py-4 text-sm font-medium">
-                    ${match.live ? 'ДИВИТИСЯ LIVE' : 'ДИВИТИСЯ ТРАНСЛЯЦІЮ'}
-                </div>
-            `;
-            return card;
+        // Поки що просто alert, заміни на свій плеєр
+        function openPlayer() {
+            alert("Тут буде ваш iframe плеєр");
         }
-
-        function renderMatches() {
-            const container = document.getElementById('match-grid');
-            container.innerHTML = '';
-            matches.forEach(match => {
-                container.appendChild(createMatchCard(match));
-            });
-        }
-
-        function playMatch(el) {
-            document.getElementById('player-container').classList.remove('hidden');
-            document.getElementById('player-title').textContent = "Динамо — Шахтар";
-            // Тут ви будете вставляти свій iframe
-            console.log("Відкрито плеєр. Вставте свій iframe у #iframe-placeholder");
-        }
-
-        function playMainStream() {
-            document.getElementById('player-container').classList.remove('hidden');
-        }
-
-        function closePlayer() {
-            document.getElementById('player-container').classList.add('hidden');
-        }
-
-        function switchTab(n) {
-            document.querySelectorAll('.nav-item').forEach((el, i) => {
-                if (i === n) {
-                    el.classList.add('nav-active', 'text-white');
-                    el.classList.remove('text-zinc-400');
-                } else {
-                    el.classList.remove('nav-active', 'text-white');
-                    el.classList.add('text-zinc-400');
-                }
-            });
-        }
-
-        function filterCategory(btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'bg-orange-600', 'text-white'));
-            btn.classList.add('active', 'bg-orange-600', 'text-white');
-        }
-
-        // Tailwind script already included
-        window.onload = function() {
-            renderMatches();
-            
-            // Keyboard escape support
-            document.addEventListener('keydown', function(e) {
-                if (e.key === "Escape") {
-                    const player = document.getElementById('player-container');
-                    if (!player.classList.contains('hidden')) closePlayer();
-                }
-            });
-        };
     </script>
 </body>
 </html>
