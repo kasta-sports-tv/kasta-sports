@@ -9,13 +9,13 @@
   <title>Kasta Sports</title>
   <style>
     body {
-      background: #0b0f1a;
+      background: url('https://kasta-sports-tv.github.io/iptv/logo/site-poster.jpg') no-repeat center center fixed;
       background-size: cover;
-      background-color: black;
+      background-color: #0a0a0a;
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      color: white;
+      color: #ffffff;
       overflow-x: hidden;
       height: 100vh;
       overflow-y: hidden;
@@ -28,14 +28,14 @@
       left: 0;
       right: 0;
       height: 68px;
-      background: rgba(15,20,35,0.85);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255,140,42,0.4);
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid #e60000;
       display: flex;
       align-items: center;
       padding: 0 15px;
       z-index: 1000;
-      box-shadow: 0 2px 20px rgba(255,140,42,0.2);
+      box-shadow: 0 2px 15px rgba(230, 0, 0, 0.25);
     }
 
     .header-content {
@@ -53,25 +53,12 @@
       gap: 6px;
       font-size: 28px;
       font-weight: 900;
-      text-shadow: 0 0 8px rgba(255,255,255,0.4), 0 0 10px rgba(255,140,42,0.5);
+      text-shadow: 0 0 8px rgba(255,255,255,0.7), 0 0 14px #e60000;
       white-space: nowrap;
     }
 
     .logo .kasta { color: #ffffff; }
-    .logo .sports { color: #ff8c2a; }
-
-    .chat-icon {
-      margin-left: 18px;
-      font-size: 26px;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 50%;
-      transition: all 0.3s;
-    }
-    .chat-icon:hover {
-      background: rgba(255,140,42,0.2);
-      color: #ffd6a3;
-    }
+    .logo .sports { color: #ff1a1a; }
 
     .hamburger {
       display: none;
@@ -82,10 +69,36 @@
     }
 
     /* ==================== MATCH INFO ==================== */
-    .match-info span {
-      text-shadow: 0 0 6px #ff8c2a;
+    .match-info {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 22px;
+      font-weight: bold;
+      flex-wrap: wrap;
+      text-align: center;
     }
 
+    .match-info.active {
+      display: flex;
+    }
+
+    .match-info span {
+      text-shadow: 0 0 6px #ff1a1a;
+      padding: 0 4px;
+    }
+
+    .match-info img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    /* ==================== ОСНОВНИЙ КОНТЕНТ ==================== */
     .layout {
       display: flex;
       height: calc(100vh - 68px);
@@ -97,10 +110,18 @@
     .sidebar {
       width: 28%;
       min-width: 180px;
-      background: rgba(20,25,45,0.55);
-      backdrop-filter: blur(10px);
-      padding: 10px;
+      background: rgba(15, 15, 15, 0.85);
+      padding: 15px 10px;
       overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .tournament-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0 8px;
     }
 
     .tournament-header img {
@@ -111,7 +132,7 @@
     }
 
     .tournament-name {
-      color: #ff8c2a;
+      color: #ff1a1a;
       font-weight: 800;
       font-size: 20px;
       white-space: nowrap;
@@ -130,11 +151,11 @@
       position: relative;
       width: 100%;
       padding-bottom: 56.25%;
-      background-color: black;
+      background-color: #000;
       border-radius: 12px;
-      border: 2px solid rgba(255,140,42,0.4);
+      border: 3px solid #e60000;
       overflow: hidden;
-      box-shadow: 0 0 25px rgba(255,140,42,0.15);
+      box-shadow: 0 0 20px rgba(230, 0, 0, 0.3);
     }
 
     iframe {
@@ -142,16 +163,24 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       border: none;
-      z-index: 2;
     }
 
+    .select-text {
+      margin-top: 12px;
+      font-size: 18px;
+      text-align: center;
+      opacity: 0.9;
+      text-shadow: 0 0 6px #ff1a1a;
+    }
+
+    /* Кнопки в стилі JUZT */
     .stream-btn {
       width: 100%;
-      background-color: rgba(255,255,255,0.05);
+      background-color: rgba(30, 30, 30, 0.9);
       color: white;
-      border: 1px solid rgba(255,140,42,0.3);
-      padding: 12px 8px;
-      border-radius: 10px;
+      border: 2px solid #333;
+      padding: 14px 12px;
+      border-radius: 12px;
       cursor: pointer;
       font-size: 16px;
       display: flex;
@@ -159,16 +188,19 @@
       justify-content: space-between;
       gap: 10px;
       transition: all 0.3s;
+      margin-bottom: 10px;
     }
 
     .stream-btn:hover {
-      background-color: rgba(255,140,42,0.2);
+      background-color: rgba(230, 0, 0, 0.15);
+      border-color: #ff1a1a;
       transform: scale(1.03);
     }
 
     .stream-btn.active {
-      background: linear-gradient(90deg,#ff8c2a,#ff5e00);
-      border-color: #ff8c2a;
+      background-color: rgba(230, 0, 0, 0.25);
+      border-color: #ff1a1a;
+      box-shadow: 0 0 15px rgba(230, 0, 0, 0.4);
     }
 
     .team {
@@ -179,12 +211,14 @@
       flex: 1;
       justify-content: center;
       text-align: center;
+      text-shadow: 0 0 5px rgba(255, 26, 26, 0.6);
     }
 
     .team img {
       width: 24px;
       height: 24px;
       border-radius: 50%;
+      flex-shrink: 0;
     }
 
     .match-time {
@@ -192,164 +226,194 @@
       text-align: center;
       font-size: 15px;
       font-weight: bold;
+      flex-shrink: 0;
+      color: #ffcccc;
     }
 
-    /* ===== SLIDER ===== */
-    .slider {
-      position: absolute;
-      top:0; left:0;
-      width: 100%;
-      height: 100%;
-      z-index:1;
-    }
-
-    .slide {
-      position: absolute;
-      width:100%;
-      height:100%;
-      background-size:cover;
-      background-position:center;
-      opacity:0;
-      transition:1s;
-    }
-
-    .slide.active { opacity:1; }
-
-    .slide::after {
-      content:'';
-      position:absolute;
-      bottom:0;
-      left:0;
-      right:0;
-      height:40%;
-      background:linear-gradient(transparent, rgba(0,0,0,0.9));
-    }
-
-    .slide-title {
-      position:absolute;
-      bottom:20px;
-      left:20px;
-      font-size:22px;
-      font-weight:bold;
-    }
-
+    /* ==================== АДАПТИВ ==================== */
     @media (max-width: 768px) {
-      body { height:auto; overflow-y:auto; }
-      header { height:60px; }
-      .layout { flex-direction: column; margin-top:60px; }
-      .sidebar { width:95%; max-height:280px; order:2; }
-      .player-section { width:95%; order:1; }
+      body {
+        height: auto;
+        overflow-y: auto;
+      }
+
+      header { height: 60px; }
+
+      .logo { font-size: 24px; }
+
+      .hamburger { display: block; }
+
+      .layout {
+        flex-direction: column;
+        height: auto;
+        margin-top: 60px;
+      }
+
+      .sidebar {
+        width: 95%;
+        max-height: 320px;
+        order: 2;
+      }
+
+      .player-section {
+        width: 95%;
+        order: 1;
+      }
     }
   </style>
 </head>
-
 <body>
 
-<header>
-  <div class="header-content">
-    <div style="display: flex; align-items: center;">
-      <div class="logo">
-        <span class="kasta">Kasta</span>
-        <span class="sports">Sports</span>
-      </div>
-      <div class="chat-icon" title="Чат">💬</div>
-    </div>
-
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <div class="menu"></div>
-      <div class="hamburger" onclick="toggleMenu()">☰</div>
-    </div>
-  </div>
-</header>
-
-<div class="layout">
-  <div class="sidebar" id="streamButtons">
-
-    <div class="tournament-header">
-      <img src="https://storage.livescore.com/images/competition/high/2023-europa-league-1.png">
-      <div class="tournament-name">Ліга Конференцій</div>
-    </div>
-
-    <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
-      'https://s1.vcdn.biz/static/f/6411632851/image.jpg','Райо Вальєкано','vs','Страсбур',
-      'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
-      <span class="team">
-        <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg">
-        Райо Вальєкано
-      </span>
-      <span class="match-time">22:00</span>
-      <span class="team">
-        Страсбур
-        <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg">
-      </span>
-    </button>
-
-    <!-- інші кнопки залишені як були -->
-    
-  </div>
-
-  <div class="player-section">
-
-    <div class="player-container">
-
-      <div class="slider" id="slider">
-        <div class="slide active" style="background-image:url('https://cdn.football.ua/images/news/640x360/529155.jpg')">
-          <div class="slide-title">Football Highlights</div>
-        </div>
-        <div class="slide" style="background-image:url('https://img.uefa.com/imgml/TP/players/2024/2024/324x324/250043268.jpg')">
-          <div class="slide-title">Top Matches</div>
+  <!-- ХЕДЕР -->
+  <header>
+    <div class="header-content">
+      <div style="display: flex; align-items: center;">
+        <div class="logo">
+          <span class="kasta">Kasta</span>
+          <span class="sports">Sports</span>
         </div>
       </div>
 
-      <iframe id="mainPlayer" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-        allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock" allowfullscreen></iframe>
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div class="hamburger" onclick="toggleMenu()">☰</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="sidebar" id="streamButtons">
+      <!-- Контент сайдбару без змін -->
+      <div class="tournament-header">
+        <img src="https://storage.livescore.com/images/competition/high/2023-europa-league-1.png" alt="">
+        <div class="tournament-name">Ліга Конференцій</div>
+      </div>
+
+      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
+        'https://s1.vcdn.biz/static/f/6411632851/image.jpg','Райо Вальєкано','vs','Страсбур',
+        'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
+        <span class="team">
+          <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg" alt="">
+          Райо Вальєкано
+        </span>
+        <span class="match-time">22:00</span>
+        <span class="team">
+          Страсбур
+          <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg" alt="">
+        </span>
+      </button>
+
+      <div class="tournament-header">
+        <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-01.png" alt="">
+        <div class="tournament-name">Формула-1</div>
+      </div>
+
+      <button class="stream-btn" onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-6.html', this,
+        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png','Кваліфікація','vs','Кваліфікація',
+        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png')">
+        <span class="team">
+          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
+          Кваліфікація
+        </span>
+        <span class="match-time">23:00</span>
+        <span class="team">
+          Кваліфікація
+          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
+        </span>
+      </button>
+
+      <!-- Інші кнопки (залишив як було) -->
+      <button class="stream-btn" onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-6.html', this,
+        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png','Кваліфікація','vs','Кваліфікація',
+        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png')">
+        <span class="team">
+          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
+          Кваліфікація
+        </span>
+        <span class="match-time">23:00</span>
+        <span class="team">
+          Кваліфікація
+          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
+        </span>
+      </button>
+
+      <button class="stream-btn" onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-6.html', this,
+        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png','Кваліфікація','vs','Кваліфікація',
+        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png')">
+        <span class="team">
+          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
+          Кваліфікація
+        </span>
+        <span class="match-time">23:00</span>
+        <span class="team">
+          Кваліфікація
+          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
+        </span>
+      </button>
+
+      <button class="stream-btn" onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-6.html', this,
+        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png','Кваліфікація','vs','Кваліфікація',
+        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png')">
+        <span class="team">
+          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
+          Кваліфікація
+        </span>
+        <span class="match-time">23:00</span>
+        <span class="team">
+          Кваліфікація
+          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
+        </span>
+      </button>
     </div>
 
-    <div class="select-text" id="selectText">Оберіть трансляцію</div>
+    <div class="player-section">
+      <div class="player-container">
+        <iframe id="mainPlayer" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock" allowfullscreen></iframe>
+      </div>
 
-    <div class="match-info" id="matchInfo">
-      <img id="team1Img">
-      <span id="team1Name"></span>
-      <span id="matchTime"></span>
-      <span id="team2Name"></span>
-      <img id="team2Img">
+      <div class="select-text" id="selectText">Оберіть трансляцію</div>
+
+      <div class="match-info" id="matchInfo">
+        <img id="team1Img" src="">
+        <span id="team1Name"></span>
+        <span id="matchTime"></span>
+        <span id="team2Name"></span>
+        <img id="team2Img" src="">
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-function setStream(url, btn, img1, t1, time, t2, img2) {
-  const iframe = document.getElementById('mainPlayer');
-  const slider = document.getElementById('slider');
+  <script>
+    function setStream(url, btn, img1, t1, time, t2, img2) {
+      const iframe = document.getElementById('mainPlayer');
+      const matchInfo = document.getElementById('matchInfo');
+      const selectText = document.getElementById('selectText');
 
-  slider.style.display = 'none';
+      document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-  document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+      iframe.src = url;
+      selectText.style.display = 'none';
 
-  iframe.src = url;
+      document.getElementById('team1Img').src = img1;
+      document.getElementById('team2Img').src = img2;
+      document.getElementById('team1Name').innerText = t1;
+      document.getElementById('team2Name').innerText = t2;
+      document.getElementById('matchTime').innerText = time;
+      matchInfo.classList.add('active');
+    }
 
-  document.getElementById('team1Img').src = img1;
-  document.getElementById('team2Img').src = img2;
-  document.getElementById('team1Name').innerText = t1;
-  document.getElementById('team2Name').innerText = t2;
-  document.getElementById('matchTime').innerText = time;
-  document.getElementById('matchInfo').classList.add('active');
-}
+    function toggleMenu() {
+      alert("Меню (тут можна додати пункти пізніше)");
+    }
 
-let slides = document.querySelectorAll('.slide');
-let index = 0;
-
-setInterval(()=>{
-  slides[index].classList.remove('active');
-  index = (index+1) % slides.length;
-  slides[index].classList.add('active');
-},4000);
-
-function toggleMenu() {
-  alert("Меню");
-}
-</script>
-
+    document.addEventListener('fullscreenchange', async () => {
+      if (document.fullscreenElement) {
+        try { await screen.orientation.lock('landscape'); } catch {}
+      } else {
+        try { await screen.orientation.unlock(); } catch {}
+      }
+    });
+  </script>
 </body>
 </html>
