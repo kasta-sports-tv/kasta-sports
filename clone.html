@@ -1,176 +1,229 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUZT</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', system_ui, sans-serif;
-        }
-        
-        .hero {
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.75)), 
-                        url('https://picsum.photos/id/1015/1200/620') center/cover;
-            height: 380px;
-        }
-        
-        .category-card {
-            transition: all 0.2s ease;
-        }
-        .category-card:hover {
-            transform: translateY(-3px);
-            background-color: #27272a;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasta Sports</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b0f1a;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  position: fixed;
+  top:0; left:0; right:0;
+  height:70px;
+  background: rgba(15,20,35,0.8);
+  backdrop-filter: blur(12px);
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding:0 20px;
+  z-index:1000;
+}
+
+.logo {
+  font-size:26px;
+  font-weight:900;
+}
+
+.logo span:first-child { color:white; }
+.logo span:last-child { color:#ff8c2a; }
+
+/* LAYOUT */
+.layout {
+  display:flex;
+  margin-top:70px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width:28%;
+  background: rgba(20,25,45,0.6);
+  backdrop-filter: blur(12px);
+  padding:10px;
+  overflow-y:auto;
+}
+
+.tournament-name {
+  color:#ff8c2a;
+  font-weight:bold;
+  margin:10px 0;
+}
+
+/* BUTTON */
+.stream-btn {
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border-radius:14px;
+  border:none;
+  background: rgba(255,255,255,0.05);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  transition:0.3s;
+}
+
+.stream-btn:hover {
+  background: rgba(255,140,42,0.2);
+  transform: scale(1.03);
+}
+
+.stream-btn.active {
+  background: linear-gradient(90deg,#ff8c2a,#ff5e00);
+}
+
+/* PLAYER */
+.player-section {
+  width:72%;
+  padding:15px;
+}
+
+.player-container {
+  width:100%;
+  padding-bottom:56.25%;
+  position:relative;
+  border-radius:18px;
+  overflow:hidden;
+  background:black;
+  box-shadow: 0 0 30px rgba(255,140,42,0.2);
+}
+
+iframe {
+  position:absolute;
+  width:100%;
+  height:100%;
+}
+
+/* SLIDER */
+.slider {
+  position:absolute;
+  width:100%;
+  height:100%;
+}
+
+.slide {
+  position:absolute;
+  width:100%;
+  height:100%;
+  background-size:cover;
+  background-position:center;
+  opacity:0;
+  transition:opacity 1s;
+}
+
+.slide.active {
+  opacity:1;
+}
+
+.slide::after {
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:40%;
+  background:linear-gradient(transparent, rgba(0,0,0,0.9));
+}
+
+.slide-title {
+  position:absolute;
+  bottom:20px;
+  left:20px;
+  font-size:26px;
+  font-weight:bold;
+}
+
+/* MATCH INFO */
+.match-info {
+  display:none;
+  justify-content:center;
+  margin-top:10px;
+}
+
+.match-info.active {
+  display:flex;
+}
+</style>
 </head>
-<body class="bg-zinc-950 text-white">
 
-    <!-- Top Bar -->
-    <div class="bg-black flex items-center justify-between px-4 py-3 border-b border-zinc-800">
-        <div class="flex items-center gap-3">
-            <div class="text-3xl">📺</div>
-            <span class="text-3xl font-bold tracking-tighter text-orange-500">JUZT</span>
-        </div>
-        
-        <div class="flex items-center gap-1 bg-zinc-900 rounded-3xl p-1">
-            <button class="bg-orange-600 text-white px-5 py-2 rounded-3xl flex items-center gap-2">
-                <i class="fa-solid fa-tv"></i>
-            </button>
-            <button class="px-4 py-2 text-zinc-400 hover:text-white">
-                <i class="fa-solid fa-headphones"></i>
-            </button>
-            <button class="px-4 py-2 text-zinc-400 hover:text-white">
-                <i class="fa-solid fa-grip"></i>
-            </button>
-        </div>
+<body>
 
-        <div class="flex items-center gap-4">
-            <i class="fa-solid fa-gear text-xl text-zinc-400"></i>
-            <i class="fa-solid fa-bars text-2xl text-zinc-400"></i>
-        </div>
-    </div>
+<header>
+  <div class="logo"><span>Kasta</span> <span>Sports</span></div>
+</header>
 
-    <!-- Hero Banner -->
-    <div class="hero relative">
-        <div class="absolute bottom-8 left-6 right-6">
-            <h1 class="text-6xl font-bold tracking-tighter mb-1">DAVID</h1>
-            <p class="text-xl text-white/90">Angel</p>
-            
-            <div class="mt-6 flex items-center gap-4">
-                <button onclick="alert('Плеєр відкрито')" 
-                        class="bg-white text-black px-8 py-3.5 rounded-2xl font-semibold flex items-center gap-3 hover:scale-105 transition">
-                    <i class="fa-solid fa-play"></i>
-                    <span>Click to play</span>
-                </button>
-            </div>
-        </div>
+<div class="layout">
 
-        <!-- Carousel dots -->
-        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-            <div class="w-6 h-1 bg-orange-500 rounded-full"></div>
-            <div class="w-2 h-1 bg-white/50 rounded-full"></div>
-            <div class="w-2 h-1 bg-white/50 rounded-full"></div>
-            <div class="w-2 h-1 bg-white/50 rounded-full"></div>
-        </div>
-    </div>
+<div class="sidebar">
 
-    <!-- Navigation Tabs -->
-    <div class="px-4 pt-4 pb-3 bg-zinc-950 border-b border-zinc-800">
-        <div class="flex items-center gap-4 overflow-x-auto scrollbar-none">
-            <button onclick="this.classList.add('bg-orange-600','text-white')" 
-                    class="bg-orange-600 text-white px-6 py-2.5 rounded-3xl font-medium whitespace-nowrap">
-                All
-            </button>
-            <button class="px-6 py-2.5 text-zinc-400 hover:text-white whitespace-nowrap">Categories</button>
-            <button class="px-6 py-2.5 text-zinc-400 hover:text-white whitespace-nowrap flex items-center gap-2">
-                <i class="fa-solid fa-star"></i>
-                <span>Favorites</span>
-            </button>
-            <button class="ml-auto text-2xl text-zinc-400">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-        </div>
-    </div>
+<div class="tournament-name">Матчі</div>
 
-    <!-- Categories List -->
-    <div class="px-4 py-2 space-y-3">
-        <!-- Item 1 -->
-        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
-            <img src="https://via.placeholder.com/80x80/111827/ffffff?text=Action" 
-                 class="w-14 h-14 rounded-2xl object-cover" alt="">
-            <div class="flex-1">
-                <h3 class="font-semibold text-lg">Action Hollywood Movies HD</h3>
-                <p class="text-zinc-400 text-sm">Movies</p>
-            </div>
-            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
-        </div>
+<button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/vk.html', this)">
+Match 1
+</button>
 
-        <!-- Item 2 -->
-        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
-            <img src="https://via.placeholder.com/80x80/991b1b/ffffff?text=AFV" 
-                 class="w-14 h-14 rounded-2xl object-cover" alt="">
-            <div class="flex-1">
-                <h3 class="font-semibold text-lg">AFV</h3>
-                <p class="text-zinc-400 text-sm">Entertainment</p>
-            </div>
-            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
-        </div>
+<button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/vk.html', this)">
+Match 2
+</button>
 
-        <!-- Item 3 -->
-        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
-            <img src="https://via.placeholder.com/80x80/111827/ffffff?text=Alien" 
-                 class="w-14 h-14 rounded-2xl object-cover" alt="">
-            <div class="flex-1">
-                <h3 class="font-semibold text-lg">Alien Nation</h3>
-                <p class="text-zinc-400 text-sm">Entertainment</p>
-            </div>
-            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
-        </div>
+</div>
 
-        <!-- Item 4 -->
-        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
-            <img src="https://via.placeholder.com/80x80/166534/ffffff?text=Wedding" 
-                 class="w-14 h-14 rounded-2xl object-cover" alt="">
-            <div class="flex-1">
-                <h3 class="font-semibold text-lg">All Weddings We TV</h3>
-                <p class="text-zinc-400 text-sm">Entertainment</p>
-            </div>
-            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
-        </div>
+<div class="player-section">
 
-        <!-- Item 5 -->
-        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
-            <img src="https://via.placeholder.com/80x80/7f1d1d/ffffff?text=AMC" 
-                 class="w-14 h-14 rounded-2xl object-cover" alt="">
-            <div class="flex-1">
-                <h3 class="font-semibold text-lg">AMC Thrillers</h3>
-                <p class="text-zinc-400 text-sm">Thriller & Crime</p>
-            </div>
-            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
-        </div>
+<div class="player-container">
 
-        <!-- Item 6 -->
-        <div class="category-card bg-zinc-900 rounded-3xl p-4 flex items-center gap-4 cursor-pointer">
-            <img src="https://via.placeholder.com/80x80/44403c/ffffff?text=Crime" 
-                 class="w-14 h-14 rounded-2xl object-cover" alt="">
-            <div class="flex-1">
-                <h3 class="font-semibold text-lg">American Crimes</h3>
-                <p class="text-zinc-400 text-sm">Documentary</p>
-            </div>
-            <i class="fa-regular fa-star text-2xl text-zinc-500"></i>
-        </div>
-    </div>
+<!-- SLIDER -->
+<div class="slider" id="slider">
+  <div class="slide active" style="background-image:url('https://img.uefa.com/imgml/TP/players/2024/2024/324x324/250043268.jpg')">
+    <div class="slide-title">Champions League</div>
+  </div>
+  <div class="slide" style="background-image:url('https://cdn.football.ua/images/news/640x360/529155.jpg')">
+    <div class="slide-title">Premier League</div>
+  </div>
+</div>
 
-    <script>
-        // Поки що просто alert, заміни на свій плеєр
-        function openPlayer() {
-            alert("Тут буде ваш iframe плеєр");
-        }
-    </script>
+<iframe id="mainPlayer"></iframe>
+
+</div>
+
+<div class="match-info" id="matchInfo"></div>
+
+</div>
+
+</div>
+
+<script>
+
+/* ТВОЯ ЛОГІКА НЕ ЧІПАВ */
+function setStream(url, btn) {
+  const iframe = document.getElementById('mainPlayer');
+  document.getElementById('slider').style.display='none';
+
+  document.querySelectorAll('.stream-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+
+  iframe.src=url;
+}
+
+/* SLIDER */
+let slides = document.querySelectorAll('.slide');
+let index = 0;
+
+setInterval(()=>{
+  slides[index].classList.remove('active');
+  index = (index+1) % slides.length;
+  slides[index].classList.add('active');
+},4000);
+
+</script>
+
 </body>
 </html>
