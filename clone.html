@@ -9,8 +9,6 @@
   <title>Kasta Sports</title>
   <style>
     body {
-      background: url('https://kasta-sports-tv.github.io/iptv/logo/site-poster.jpg') no-repeat center center fixed;
-      background-size: cover;
       background-color: #0a0a0a;
       font-family: Arial, sans-serif;
       margin: 0;
@@ -28,14 +26,14 @@
       left: 0;
       right: 0;
       height: 68px;
-      background: rgba(10, 10, 10, 0.95);
+      background: rgba(15, 15, 15, 0.98);
       backdrop-filter: blur(12px);
-      border-bottom: 2px solid #e60000;
+      border-bottom: 3px solid #ff6200;
       display: flex;
       align-items: center;
       padding: 0 15px;
       z-index: 1000;
-      box-shadow: 0 2px 10px rgba(230, 0, 0, 0.3);
+      box-shadow: 0 2px 10px rgba(255, 98, 0, 0.3);
     }
 
     .header-content {
@@ -53,12 +51,12 @@
       gap: 6px;
       font-size: 28px;
       font-weight: 900;
-      text-shadow: 0 0 8px rgba(255,255,255,0.6), 0 0 12px #e60000;
+      text-shadow: 0 0 8px rgba(255,255,255,0.6), 0 0 12px #ff6200;
       white-space: nowrap;
     }
 
     .logo .kasta { color: #ffffff; }
-    .logo .sports { color: #ff1a1a; }
+    .logo .sports { color: #ff6200; }
 
     .hamburger {
       display: none;
@@ -86,7 +84,7 @@
     }
 
     .match-info span {
-      text-shadow: 0 0 6px #ff1a1a, 0 0 12px #990000;
+      text-shadow: 0 0 6px #ff6200;
       padding: 0 4px;
     }
 
@@ -110,7 +108,7 @@
     .sidebar {
       width: 28%;
       min-width: 180px;
-      background: rgba(15, 15, 15, 0.88);
+      background: rgba(20, 20, 20, 0.92);
       padding: 10px;
       overflow-y: auto;
       scrollbar-width: thin;
@@ -132,7 +130,7 @@
     }
 
     .tournament-name {
-      color: #ff1a1a;
+      color: #ff6200;
       font-weight: 800;
       font-size: 20px;
       white-space: nowrap;
@@ -153,9 +151,8 @@
       padding-bottom: 56.25%;
       background-color: black;
       border-radius: 12px;
-      border: 3px solid #e60000;
+      border: 3px solid #ff6200;
       overflow: hidden;
-      box-shadow: 0 0 20px rgba(230, 0, 0, 0.35);
     }
 
     iframe {
@@ -170,12 +167,12 @@
       font-size: 18px;
       text-align: center;
       opacity: 0.9;
-      text-shadow: 0 0 6px #ff1a1a, 0 0 12px #990000;
+      text-shadow: 0 0 6px #ff6200;
     }
 
     .stream-btn {
       width: 100%;
-      background-color: rgba(30, 30, 30, 0.85);
+      background-color: rgba(35, 35, 35, 0.9);
       color: white;
       border: 2px solid #444;
       padding: 12px 8px;
@@ -191,14 +188,14 @@
     }
 
     .stream-btn:hover {
-      background-color: rgba(230, 0, 0, 0.2);
-      border-color: #ff1a1a;
+      background-color: rgba(255, 98, 0, 0.2);
+      border-color: #ff6200;
       transform: scale(1.04);
     }
 
     .stream-btn.active {
-      background-color: rgba(230, 0, 0, 0.35);
-      border-color: #ff1a1a;
+      background-color: rgba(255, 98, 0, 0.3);
+      border-color: #ff6200;
     }
 
     .team {
@@ -209,7 +206,6 @@
       flex: 1;
       justify-content: center;
       text-align: center;
-      text-shadow: 0 0 6px #990000;
     }
 
     .team img {
@@ -225,7 +221,6 @@
       font-size: 15px;
       font-weight: bold;
       flex-shrink: 0;
-      text-shadow: 0 0 6px #990000;
     }
 
     /* ==================== АДАПТИВ ==================== */
