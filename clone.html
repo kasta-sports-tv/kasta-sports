@@ -21,6 +21,7 @@
       overflow-y: hidden;
     }
 
+    /* ==================== ХЕДЕР ==================== */
     header {
       position: fixed;
       top: 0;
@@ -35,6 +36,15 @@
       padding: 0 15px;
       z-index: 1000;
       box-shadow: 0 2px 20px rgba(255,140,42,0.2);
+    }
+
+    .header-content {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .logo {
@@ -71,6 +81,7 @@
       border-radius: 8px;
     }
 
+    /* ==================== MATCH INFO ==================== */
     .match-info span {
       text-shadow: 0 0 6px #ff8c2a;
     }
@@ -90,6 +101,13 @@
       backdrop-filter: blur(10px);
       padding: 10px;
       overflow-y: auto;
+    }
+
+    .tournament-header img {
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
+      object-fit: contain;
     }
 
     .tournament-name {
@@ -163,6 +181,12 @@
       text-align: center;
     }
 
+    .team img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
     .match-time {
       width: 55px;
       text-align: center;
@@ -228,36 +252,69 @@
         <span class="kasta">Kasta</span>
         <span class="sports">Sports</span>
       </div>
-      <div class="chat-icon">💬</div>
+      <div class="chat-icon" title="Чат">💬</div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <div class="menu"></div>
+      <div class="hamburger" onclick="toggleMenu()">☰</div>
     </div>
   </div>
 </header>
 
 <div class="layout">
+  <div class="sidebar" id="streamButtons">
 
-<div class="sidebar" id="streamButtons">
-  <!-- ТУТ ТВОЇ КНОПКИ 1:1 -->
-</div>
+    <div class="tournament-header">
+      <img src="https://storage.livescore.com/images/competition/high/2023-europa-league-1.png">
+      <div class="tournament-name">Ліга Конференцій</div>
+    </div>
 
-<div class="player-section">
+    <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
+      'https://s1.vcdn.biz/static/f/6411632851/image.jpg','Райо Вальєкано','vs','Страсбур',
+      'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
+      <span class="team">
+        <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg">
+        Райо Вальєкано
+      </span>
+      <span class="match-time">22:00</span>
+      <span class="team">
+        Страсбур
+        <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg">
+      </span>
+    </button>
 
-<div class="player-container">
-
-<div class="slider" id="slider">
-  <div class="slide active" style="background-image:url('https://cdn.football.ua/images/news/640x360/529155.jpg')">
-    <div class="slide-title">Football Highlights</div>
+    <!-- інші кнопки залишені як були -->
+    
   </div>
-  <div class="slide" style="background-image:url('https://img.uefa.com/imgml/TP/players/2024/2024/324x324/250043268.jpg')">
-    <div class="slide-title">Top Matches</div>
+
+  <div class="player-section">
+
+    <div class="player-container">
+
+      <div class="slider" id="slider">
+        <div class="slide active" style="background-image:url('https://cdn.football.ua/images/news/640x360/529155.jpg')">
+          <div class="slide-title">Football Highlights</div>
+        </div>
+        <div class="slide" style="background-image:url('https://img.uefa.com/imgml/TP/players/2024/2024/324x324/250043268.jpg')">
+          <div class="slide-title">Top Matches</div>
+        </div>
+      </div>
+
+      <iframe id="mainPlayer" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock" allowfullscreen></iframe>
+    </div>
+
+    <div class="select-text" id="selectText">Оберіть трансляцію</div>
+
+    <div class="match-info" id="matchInfo">
+      <img id="team1Img">
+      <span id="team1Name"></span>
+      <span id="matchTime"></span>
+      <span id="team2Name"></span>
+      <img id="team2Img">
+    </div>
   </div>
-</div>
-
-<iframe id="mainPlayer" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock" allowfullscreen></iframe>
-
-</div>
-
-</div>
 </div>
 
 <script>
@@ -271,6 +328,13 @@ function setStream(url, btn, img1, t1, time, t2, img2) {
   btn.classList.add('active');
 
   iframe.src = url;
+
+  document.getElementById('team1Img').src = img1;
+  document.getElementById('team2Img').src = img2;
+  document.getElementById('team1Name').innerText = t1;
+  document.getElementById('team2Name').innerText = t2;
+  document.getElementById('matchTime').innerText = time;
+  document.getElementById('matchInfo').classList.add('active');
 }
 
 let slides = document.querySelectorAll('.slide');
@@ -281,6 +345,10 @@ setInterval(()=>{
   index = (index+1) % slides.length;
   slides[index].classList.add('active');
 },4000);
+
+function toggleMenu() {
+  alert("Меню");
+}
 </script>
 
 </body>
