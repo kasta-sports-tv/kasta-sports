@@ -15,10 +15,9 @@
       color: white;
       overflow-x: hidden;
       height: 100vh;
-      overflow-y: hidden;
+      overflow-y: hidden; /* сторінка не скролиться */
     }
 
-    /* ================= HEADER ================= */
     header {
       position: fixed;
       top: 0;
@@ -55,7 +54,7 @@
     .logo .kasta { color: #ffffff; }
     .logo .sports { color: #ff1a1a; }
 
-    /* ================= MATCH INFO ================= */
+    /* MATCH INFO FIX */
     .match-info {
       display: none;
       justify-content: center;
@@ -64,12 +63,23 @@
       margin-top: 12px;
       font-size: 22px;
       font-weight: bold;
-      flex-wrap: wrap;
-      text-align: center;
+
+      flex-wrap: nowrap;          /* ❗ FIX */
+      white-space: nowrap;        /* ❗ FIX */
+      overflow: hidden;           /* ❗ FIX */
+      text-overflow: ellipsis;    /* ❗ FIX */
+      max-width: 100%;
     }
 
     .match-info.active {
       display: flex;
+    }
+
+    .match-info span {
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .match-info img {
@@ -77,9 +87,9 @@
       height: 42px;
       border-radius: 50%;
       object-fit: cover;
+      flex-shrink: 0;
     }
 
-    /* ================= LAYOUT ================= */
     .layout {
       display: flex;
       height: calc(100vh - 68px);
@@ -87,13 +97,13 @@
       overflow: hidden;
     }
 
-    /* SIDEBAR */
+    /* SIDEBAR SCROLL ONLY HERE */
     .sidebar {
       width: 28%;
       min-width: 180px;
       background: #1a1e2a;
       padding: 10px;
-      overflow-y: auto;
+      overflow-y: auto;   /* ❗ єдиний скрол */
     }
 
     .tournament-header {
@@ -108,7 +118,6 @@
       width: 42px;
       height: 42px;
       border-radius: 6px;
-      object-fit: contain;
     }
 
     .tournament-name {
@@ -117,7 +126,6 @@
       font-size: 20px;
     }
 
-    /* ================= BUTTONS ================= */
     .stream-btn {
       width: 100%;
       background-color: #1a1e2a;
@@ -130,7 +138,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: 0.25s;
     }
 
     .stream-btn:hover {
@@ -145,27 +152,6 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.6);
     }
 
-    .team {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      justify-content: center;
-      flex: 1;
-    }
-
-    .team img {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-    }
-
-    .match-time {
-      width: 55px;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    /* ================= PLAYER ================= */
     .player-section {
       width: 72%;
       display: flex;
@@ -198,7 +184,6 @@
       opacity: 0.8;
     }
 
-    /* ================= MOBILE ================= */
     @media (max-width: 768px) {
       body { overflow-y: auto; }
 
@@ -243,7 +228,7 @@
     <button class="stream-btn"
       onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
       'https://s1.vcdn.biz/static/f/6411632851/image.jpg',
-      'Райо Вальєкано','vs','Страсбур',
+      'Райо Вальєкано','22:00','Страсбур',
       'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
 
       <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg" width="24">
@@ -258,7 +243,7 @@
   <div class="player-section">
 
     <div class="player-container">
-      <iframe id="mainPlayer" src="" 
+      <iframe id="mainPlayer" src=""
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
         allowfullscreen></iframe>
@@ -298,7 +283,7 @@ function setStream(url, btn, img1, t1, time, t2, img2) {
   matchInfo.classList.add('active');
 }
 
-/* FULLSCREEN FIX (ПОВЕРНУТО) */
+/* FULLSCREEN FIX (НЕ ТРОГАВ) */
 document.addEventListener('fullscreenchange', async () => {
   if (document.fullscreenElement) {
     try { await screen.orientation.lock('landscape'); } catch {}
