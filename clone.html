@@ -15,7 +15,7 @@
       color: white;
       overflow-x: hidden;
       height: 100vh;
-      overflow-y: hidden; /* сторінка не скролиться */
+      overflow-y: hidden;
     }
 
     header {
@@ -54,21 +54,20 @@
     .logo .kasta { color: #ffffff; }
     .logo .sports { color: #ff1a1a; }
 
-    /* MATCH INFO FIX */
+    /* ================= MATCH INFO FIX ================= */
     .match-info {
       display: none;
       justify-content: center;
       align-items: center;
       gap: 10px;
       margin-top: 12px;
-      font-size: 22px;
-      font-weight: bold;
 
-      flex-wrap: nowrap;          /* ❗ FIX */
-      white-space: nowrap;        /* ❗ FIX */
-      overflow: hidden;           /* ❗ FIX */
-      text-overflow: ellipsis;    /* ❗ FIX */
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      overflow: hidden;
       max-width: 100%;
+      width: 100%;
+      font-weight: bold;
     }
 
     .match-info.active {
@@ -76,10 +75,13 @@
     }
 
     .match-info span {
-      max-width: 120px;
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
+
+      /* 🔥 авто зменшення тексту */
+      font-size: clamp(10px, 3.5vw, 22px);
+      max-width: 28%;
     }
 
     .match-info img {
@@ -92,64 +94,17 @@
 
     .layout {
       display: flex;
-      height: calc(100vh - 68px);
+      height: calc(100dvh - 68px); /* 🔥 FIX MOBILE */
       margin-top: 68px;
       overflow: hidden;
     }
 
-    /* SIDEBAR SCROLL ONLY HERE */
     .sidebar {
       width: 28%;
       min-width: 180px;
       background: #1a1e2a;
       padding: 10px;
-      overflow-y: auto;   /* ❗ єдиний скрол */
-    }
-
-    .tournament-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin: 12px 0 6px;
-    }
-
-    .tournament-header img {
-      width: 42px;
-      height: 42px;
-      border-radius: 6px;
-    }
-
-    .tournament-name {
-      color: #bfc7d5;
-      font-weight: 800;
-      font-size: 20px;
-    }
-
-    .stream-btn {
-      width: 100%;
-      background-color: #1a1e2a;
-      color: white;
-      border: 1px solid #2b3244;
-      padding: 12px 8px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .stream-btn:hover {
-      background-color: #222838;
-      transform: scale(1.03);
-      border-color: #3a425a;
-    }
-
-    .stream-btn.active {
-      background-color: #2a3142;
-      border-color: #4a556f;
-      box-shadow: 0 0 10px rgba(0,0,0,0.6);
+      overflow-y: auto;
     }
 
     .player-section {
@@ -184,12 +139,16 @@
       opacity: 0.8;
     }
 
+    /* ================= MOBILE FIX ================= */
     @media (max-width: 768px) {
-      body { overflow-y: auto; }
+      body {
+        height: 100dvh;
+        overflow-y: hidden; /* ❗ сторінка не скролиться */
+      }
 
       .layout {
         flex-direction: column;
-        height: auto;
+        height: calc(100dvh - 68px);
       }
 
       .sidebar {
@@ -220,22 +179,15 @@
 
   <div class="sidebar">
 
-    <div class="tournament-header">
-      <img src="https://storage.livescore.com/images/competition/high/2023-europa-league-1.png">
-      <div class="tournament-name">Ліга Конференцій</div>
-    </div>
-
     <button class="stream-btn"
       onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
       'https://s1.vcdn.biz/static/f/6411632851/image.jpg',
       'Райо Вальєкано','22:00','Страсбур',
       'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
 
-      <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg" width="24">
       Райо Вальєкано
       <span class="match-time">22:00</span>
       Страсбур
-      <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg" width="24">
     </button>
 
   </div>
@@ -245,7 +197,6 @@
     <div class="player-container">
       <iframe id="mainPlayer" src=""
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-        allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
         allowfullscreen></iframe>
     </div>
 
@@ -282,15 +233,6 @@ function setStream(url, btn, img1, t1, time, t2, img2) {
 
   matchInfo.classList.add('active');
 }
-
-/* FULLSCREEN FIX (НЕ ТРОГАВ) */
-document.addEventListener('fullscreenchange', async () => {
-  if (document.fullscreenElement) {
-    try { await screen.orientation.lock('landscape'); } catch {}
-  } else {
-    try { await screen.orientation.unlock(); } catch {}
-  }
-});
 </script>
 
 </body>
