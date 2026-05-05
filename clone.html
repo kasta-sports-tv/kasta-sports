@@ -1,399 +1,326 @@
-<!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="referrer" content="no-referrer">
-  <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta name="google-site-verification" content="-SWuspthxR-vXpOxIoqwNKlsa9nYdTpoo6OfBlKECr4" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kasta Sports</title>
-  <style>
-    body {
-      background-color: #0a0a0a;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      color: #e0e0e0;
-      overflow-x: hidden;
-      height: 100vh;
-      overflow-y: hidden;
-    }
+<meta charset="UTF-8">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasta Sports</title>
 
-    /* ==================== ХЕДЕР ==================== */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 68px;
-      background: rgba(15, 15, 15, 0.98);
-      backdrop-filter: blur(12px);
-      border-bottom: 3px solid #ff6200;
-      display: flex;
-      align-items: center;
-      padding: 0 15px;
-      z-index: 1000;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-    }
+<style>
+body {
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #e5e7eb;
+  overflow-x: hidden;
+  height: 100vh;
+  overflow-y: hidden;
+}
 
-    .header-content {
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+/* ==================== ХЕДЕР ==================== */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 28px;
-      font-weight: 900;
-      text-shadow: 0 0 10px rgba(255, 98, 0, 0.6);
-      white-space: nowrap;
-    }
+.header-content {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-    .logo .kasta { color: #ffffff; }
-    .logo .sports { color: #ff6200; }
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
 
-    .hamburger {
-      display: none;
-      font-size: 28px;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 8px;
-      color: #ccc;
-    }
+.logo .kasta {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255,255,255,0.4);
+}
 
-    /* ==================== MATCH INFO ==================== */
-    .match-info {
-      display: none;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      margin-top: 12px;
-      font-size: 22px;
-      font-weight: bold;
-      flex-wrap: wrap;
-      text-align: center;
-    }
+.logo .sports {
+  background: linear-gradient(90deg, #38bdf8, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
-    .match-info.active {
-      display: flex;
-    }
+.hamburger {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+}
 
-    .match-info span {
-      text-shadow: 0 0 8px #ff6200;
-      padding: 0 4px;
-    }
+/* ==================== MATCH INFO ==================== */
+.match-info {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 22px;
+  font-weight: bold;
+  flex-wrap: wrap;
+  text-align: center;
+}
 
-    .match-info img {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
+.match-info.active {
+  display: flex;
+}
 
-    /* ==================== ЛЕЙАУТ ==================== */
-    .layout {
-      display: flex;
-      height: calc(100vh - 68px);
-      max-height: calc(100vh - 68px);
-      overflow: hidden;
-      margin-top: 68px;
-    }
+.match-info span {
+  text-shadow: 0 0 8px rgba(99,102,241,0.8);
+}
 
-    .sidebar {
-      width: 28%;
-      min-width: 180px;
-      background: rgba(18, 18, 18, 0.95);
-      padding: 12px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-    }
+.match-info img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
 
-    .tournament-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin: 15px 0 8px;
-    }
+/* ==================== ОСНОВНИЙ КОНТЕНТ ==================== */
+.layout {
+  display: flex;
+  height: calc(100vh - 68px);
+  max-height: calc(100vh - 68px);
+  overflow: hidden;
+  margin-top: 68px;
+}
 
-    .tournament-name {
-      color: #ff6200;
-      font-weight: 800;
-      font-size: 20px;
-    }
+.sidebar {
+  width: 28%;
+  min-width: 180px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(10px);
+  padding: 10px;
+  overflow-y: auto;
+}
 
-    .player-section {
-      width: 72%;
-      display: flex;
-      flex-direction: column;
-      padding: 10px;
-      overflow: hidden;
-    }
+.tournament-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 12px 0 6px;
+}
 
-    .player-container {
-      position: relative;
-      width: 100%;
-      padding-bottom: 56.25%;
-      background-color: #000;
-      border-radius: 14px;
-      border: 3px solid #ff6200;
-      overflow: hidden;
-      box-shadow: 0 0 25px rgba(255, 98, 0, 0.25);
-    }
+.tournament-header img {
+  width: 42px;
+  height: 42px;
+  border-radius: 6px;
+  object-fit: contain;
+}
 
-    iframe {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      border: none;
-    }
+.tournament-name {
+  color: #60a5fa;
+  font-weight: 800;
+  font-size: 20px;
+}
 
-    .select-text {
-      margin-top: 15px;
-      font-size: 18px;
-      text-align: center;
-      opacity: 0.85;
-      text-shadow: 0 0 6px #ff6200;
-    }
+.player-section {
+  width: 72%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
 
-    /* Кнопки */
-    .stream-btn {
-      width: 100%;
-      background-color: rgba(30, 30, 30, 0.9);
-      color: white;
-      border: 2px solid #333;
-      padding: 13px 10px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      transition: all 0.3s;
-      margin-bottom: 10px;
-    }
+.player-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  background-color: black;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(99,102,241,0.25);
+}
 
-    .stream-btn:hover {
-      background-color: rgba(255, 98, 0, 0.15);
-      border-color: #ff6200;
-      transform: translateY(-2px);
-    }
+iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
 
-    .stream-btn.active {
-      background-color: rgba(255, 98, 0, 0.25);
-      border-color: #ff6200;
-      box-shadow: 0 0 18px rgba(255, 98, 0, 0.3);
-    }
+.select-text {
+  margin-top: 12px;
+  font-size: 18px;
+  text-align: center;
+  opacity: 0.9;
+  text-shadow: 0 0 8px rgba(99,102,241,0.6);
+}
 
-    .team {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 15px;
-      flex: 1;
-      justify-content: center;
-      text-align: center;
-    }
+.stream-btn {
+  width: 100%;
+  background: rgba(30, 41, 59, 0.6);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 12px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: all 0.25s ease;
+  margin-bottom: 6px;
+}
 
-    .team img {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-    }
+.stream-btn:hover {
+  background: rgba(99,102,241,0.25);
+  transform: scale(1.03);
+  box-shadow: 0 0 15px rgba(99,102,241,0.4);
+}
 
-    .match-time {
-      width: 60px;
-      text-align: center;
-      font-size: 15px;
-      font-weight: bold;
-      color: #ffcc99;
-    }
+.stream-btn.active {
+  background: linear-gradient(90deg, #6366f1, #38bdf8);
+  border: none;
+}
 
-    /* ==================== АДАПТИВ ==================== */
-    @media (max-width: 768px) {
-      body { height: auto; overflow-y: auto; }
-      header { height: 60px; }
-      .logo { font-size: 24px; }
-      .hamburger { display: block; }
+.team {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  flex: 1;
+  justify-content: center;
+  text-align: center;
+}
 
-      .layout {
-        flex-direction: column;
-        height: auto;
-        margin-top: 60px;
-      }
+.team img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
 
-      .sidebar {
-        width: 95%;
-        max-height: 300px;
-        order: 2;
-      }
+.match-time {
+  width: 55px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: bold;
+}
 
-      .player-section {
-        width: 95%;
-        order: 1;
-      }
-    }
-  </style>
+/* ==================== АДАПТИВ ==================== */
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    overflow-y: auto;
+  }
+
+  header { height: 60px; }
+  .logo { font-size: 24px; }
+  .hamburger { display: block; }
+
+  .layout {
+    flex-direction: column;
+    height: auto;
+    margin-top: 60px;
+  }
+
+  .sidebar {
+    width: 95%;
+    max-height: 280px;
+    order: 2;
+  }
+
+  .player-section {
+    width: 95%;
+    order: 1;
+  }
+}
+</style>
 </head>
+
 <body>
 
-  <!-- ХЕДЕР -->
-  <header>
-    <div class="header-content">
-      <div style="display: flex; align-items: center;">
-        <div class="logo">
-          <span class="kasta">Kasta</span>
-          <span class="sports">Sports</span>
-        </div>
-      </div>
-
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <div class="hamburger" onclick="toggleMenu()">☰</div>
-      </div>
+<header>
+  <div class="header-content">
+    <div class="logo">
+      <span class="kasta">Kasta</span>
+      <span class="sports">Sports</span>
     </div>
-  </header>
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+  </div>
+</header>
 
-  <div class="layout">
-    <div class="sidebar" id="streamButtons">
-      <!-- Контент без змін -->
-      <div class="tournament-header">
-        <img src="https://storage.livescore.com/images/competition/high/2023-europa-league-1.png" alt="">
-        <div class="tournament-name">Ліга Конференцій</div>
-      </div>
+<div class="layout">
 
-      <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
-        'https://s1.vcdn.biz/static/f/6411632851/image.jpg','Райо Вальєкано','vs','Страсбур',
-        'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
-        <span class="team">
-          <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg" alt="">
-          Райо Вальєкано
-        </span>
-        <span class="match-time">22:00</span>
-        <span class="team">
-          Страсбур
-          <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg" alt="">
-        </span>
-      </button>
+  <div class="sidebar">
 
-      <div class="tournament-header">
-        <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-01.png" alt="">
-        <div class="tournament-name">Формула-1</div>
-      </div>
-
-      <button class="stream-btn" onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-6.html', this,
-        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png','Кваліфікація','vs','Кваліфікація',
-        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png')">
-        <span class="team">
-          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
-          Кваліфікація
-        </span>
-        <span class="match-time">23:00</span>
-        <span class="team">
-          Кваліфікація
-          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
-        </span>
-      </button>
-
-      <!-- інші кнопки (залишив як було) -->
-      <button class="stream-btn" onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-6.html', this,
-        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png','Кваліфікація','vs','Кваліфікація',
-        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png')">
-        <span class="team">
-          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
-          Кваліфікація
-        </span>
-        <span class="match-time">23:00</span>
-        <span class="team">
-          Кваліфікація
-          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
-        </span>
-      </button>
-
-      <button class="stream-btn" onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-6.html', this,
-        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png','Кваліфікація','vs','Кваліфікація',
-        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png')">
-        <span class="team">
-          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
-          Кваліфікація
-        </span>
-        <span class="match-time">23:00</span>
-        <span class="team">
-          Кваліфікація
-          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
-        </span>
-      </button>
-
-      <button class="stream-btn" onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-6.html', this,
-        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png','Кваліфікація','vs','Кваліфікація',
-        'https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png')">
-        <span class="team">
-          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
-          Кваліфікація
-        </span>
-        <span class="match-time">23:00</span>
-        <span class="team">
-          Кваліфікація
-          <img src="https://crystalpng.com/wp-content/uploads/2025/06/F1-02.png" alt="">
-        </span>
-      </button>
+    <div class="tournament-header">
+      <img src="https://storage.livescore.com/images/competition/high/2023-europa-league-1.png">
+      <div class="tournament-name">Ліга Конференцій</div>
     </div>
 
-    <div class="player-section">
-      <div class="player-container">
-        <iframe id="mainPlayer" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-          allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock" allowfullscreen></iframe>
+    <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
+    'https://s1.vcdn.biz/static/f/6411632851/image.jpg','Райо Вальєкано','vs','Страсбур',
+    'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
+
+      <div class="team">
+        <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg">
+        Райо Вальєкано
       </div>
 
-      <div class="select-text" id="selectText">Оберіть трансляцію</div>
+      <div class="match-time">22:00</div>
 
-      <div class="match-info" id="matchInfo">
-        <img id="team1Img" src="">
-        <span id="team1Name"></span>
-        <span id="matchTime"></span>
-        <span id="team2Name"></span>
-        <img id="team2Img" src="">
+      <div class="team">
+        Страсбур
+        <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg">
       </div>
-    </div>
+
+    </button>
+
   </div>
 
-  <script>
-    function setStream(url, btn, img1, t1, time, t2, img2) {
-      const iframe = document.getElementById('mainPlayer');
-      const matchInfo = document.getElementById('matchInfo');
-      const selectText = document.getElementById('selectText');
+  <div class="player-section">
 
-      document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+    <div class="player-container">
+      <iframe id="mainPlayer" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock" allowfullscreen></iframe>
+    </div>
 
-      iframe.src = url;
-      selectText.style.display = 'none';
+    <div class="select-text">Оберіть трансляцію</div>
 
-      document.getElementById('team1Img').src = img1;
-      document.getElementById('team2Img').src = img2;
-      document.getElementById('team1Name').innerText = t1;
-      document.getElementById('team2Name').innerText = t2;
-      document.getElementById('matchTime').innerText = time;
-      matchInfo.classList.add('active');
-    }
+  </div>
 
-    function toggleMenu() {
-      alert("Меню (тут можна додати пункти пізніше)");
-    }
+</div>
 
-    document.addEventListener('fullscreenchange', async () => {
-      if (document.fullscreenElement) {
-        try { await screen.orientation.lock('landscape'); } catch(e) {}
-      } else {
-        try { await screen.orientation.unlock(); } catch(e) {}
-      }
-    });
-  </script>
+<script>
+function setStream(url, btn, img1, t1, time, t2, img2) {
+  const iframe = document.getElementById('mainPlayer');
+  document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  iframe.src = url;
+  document.querySelector('.select-text').style.display = 'none';
+}
+
+function toggleMenu() {
+  alert("Меню можна додати пізніше");
+}
+</script>
+
 </body>
 </html>
