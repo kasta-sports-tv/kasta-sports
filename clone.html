@@ -18,21 +18,20 @@
       overflow-y: hidden;
     }
 
-    /* HEADER */
+    /* ================= HEADER ================= */
     header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       height: 68px;
-      background: rgba(10, 12, 18, 0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #2a2f3d;
+      background: rgba(8, 10, 15, 0.98);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #222838;
       display: flex;
       align-items: center;
       padding: 0 15px;
       z-index: 1000;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
     }
 
     .header-content {
@@ -50,29 +49,22 @@
       gap: 6px;
       font-size: 28px;
       font-weight: 900;
-      text-shadow: 0 0 10px rgba(255,255,255,0.2);
       white-space: nowrap;
     }
 
     .logo .kasta { color: #ffffff; }
-    .logo .sports { color: #ff2b2b; }
+    .logo .sports { color: #ff1a1a; }
 
-    .hamburger {
-      display: none;
-      font-size: 28px;
-      cursor: pointer;
-      padding: 8px;
-    }
-
-    /* MATCH INFO */
+    /* ================= MATCH INFO ================= */
     .match-info {
       display: none;
       justify-content: center;
       align-items: center;
       gap: 10px;
       margin-top: 12px;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
+      flex-wrap: wrap;
       text-align: center;
     }
 
@@ -81,12 +73,13 @@
     }
 
     .match-info img {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
+      object-fit: cover;
     }
 
-    /* LAYOUT */
+    /* ================= LAYOUT ================= */
     .layout {
       display: flex;
       height: calc(100vh - 68px);
@@ -94,10 +87,11 @@
       overflow: hidden;
     }
 
+    /* SIDEBAR */
     .sidebar {
       width: 28%;
       min-width: 180px;
-      background: rgba(0,0,0,0.25);
+      background: #1a1e2a;
       padding: 10px;
       overflow-y: auto;
     }
@@ -114,24 +108,25 @@
       width: 42px;
       height: 42px;
       border-radius: 6px;
+      object-fit: contain;
     }
 
     .tournament-name {
-      color: #c7c7c7;
-      font-weight: 700;
-      font-size: 18px;
+      color: #bfc7d5;
+      font-weight: 800;
+      font-size: 20px;
     }
 
-    /* BUTTONS */
+    /* ================= BUTTONS ================= */
     .stream-btn {
       width: 100%;
-      background: #1a1e2a;
+      background-color: #1a1e2a;
       color: white;
-      border: 1px solid #2e3446;
+      border: 1px solid #2b3244;
       padding: 12px 8px;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -139,15 +134,15 @@
     }
 
     .stream-btn:hover {
-      transform: scale(1.02);
-      border-color: #4a5166;
-      background: #222838;
+      background-color: #222838;
+      transform: scale(1.03);
+      border-color: #3a425a;
     }
 
     .stream-btn.active {
-      background: #2a0f14;
-      border-color: #ff2b2b;
-      box-shadow: 0 0 12px rgba(255,0,0,0.15);
+      background-color: #2a3142;
+      border-color: #4a556f;
+      box-shadow: 0 0 10px rgba(0,0,0,0.6);
     }
 
     .team {
@@ -164,7 +159,13 @@
       border-radius: 50%;
     }
 
-    /* PLAYER */
+    .match-time {
+      width: 55px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* ================= PLAYER ================= */
     .player-section {
       width: 72%;
       display: flex;
@@ -179,7 +180,7 @@
       background: black;
       border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 10px 35px rgba(0,0,0,0.7);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.75);
     }
 
     iframe {
@@ -197,7 +198,7 @@
       opacity: 0.8;
     }
 
-    /* MOBILE */
+    /* ================= MOBILE ================= */
     @media (max-width: 768px) {
       body { overflow-y: auto; }
 
@@ -227,7 +228,6 @@
       <span class="kasta">Kasta</span>
       <span class="sports">Sports</span>
     </div>
-    <div class="hamburger">☰</div>
   </div>
 </header>
 
@@ -241,16 +241,16 @@
     </div>
 
     <button class="stream-btn"
-      onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-1.html', this,
-      'https://s7.vcdn.biz/static/f/10537579141/image.jpg',
-      'Арсенал','22:00','Атлетіко',
-      'https://s2.vcdn.biz/static/f/8618964311/image.jpg')">
+      onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
+      'https://s1.vcdn.biz/static/f/6411632851/image.jpg',
+      'Райо Вальєкано','vs','Страсбур',
+      'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
 
-      <img src="https://s7.vcdn.biz/static/f/10537579141/image.jpg" width="24">
-      Арсенал
-      22:00
-      Атлетіко
-      <img src="https://s2.vcdn.biz/static/f/8618964311/image.jpg" width="24">
+      <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg" width="24">
+      Райо Вальєкано
+      <span class="match-time">22:00</span>
+      Страсбур
+      <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg" width="24">
     </button>
 
   </div>
@@ -258,12 +258,14 @@
   <div class="player-section">
 
     <div class="player-container">
-      <iframe id="mainPlayer" allowfullscreen></iframe>
+      <iframe id="mainPlayer" src="" 
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        allow="fullscreen; autoplay; encrypted-media; picture-in-picture; orientation-lock"
+        allowfullscreen></iframe>
     </div>
 
     <div class="select-text" id="selectText">Оберіть трансляцію</div>
 
-    <!-- FIXED MATCH INFO -->
     <div class="match-info" id="matchInfo">
       <img id="team1Img">
       <span id="team1Name"></span>
@@ -273,7 +275,6 @@
     </div>
 
   </div>
-
 </div>
 
 <script>
@@ -296,6 +297,15 @@ function setStream(url, btn, img1, t1, time, t2, img2) {
 
   matchInfo.classList.add('active');
 }
+
+/* FULLSCREEN FIX (ПОВЕРНУТО) */
+document.addEventListener('fullscreenchange', async () => {
+  if (document.fullscreenElement) {
+    try { await screen.orientation.lock('landscape'); } catch {}
+  } else {
+    try { await screen.orientation.unlock(); } catch {}
+  }
+});
 </script>
 
 </body>
