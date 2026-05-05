@@ -61,7 +61,6 @@
       align-items: center;
       gap: 10px;
       margin-top: 12px;
-
       flex-wrap: nowrap;
       white-space: nowrap;
       overflow: hidden;
@@ -105,7 +104,29 @@
       overflow-y: auto;
     }
 
-    /* КНОПКИ (ПОВЕРНУТІ) */
+    /* ТУРНІР */
+    .tournament-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 12px 0 6px;
+    }
+
+    .tournament-header img {
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+
+    .tournament-name {
+      color: #bfc7d5;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    /* BUTTONS */
     .stream-btn {
       width: 100%;
       background-color: #1a1e2a;
@@ -228,6 +249,12 @@
 
   <div class="sidebar">
 
+    <!-- 🔥 ТУРНІР -->
+    <div class="tournament-header">
+      <img src="https://static.flashscore.com/res/image/data/QexI2ehD-OCwQhZeh.png">
+      <div class="tournament-name">Кубок Туреччини</div>
+    </div>
+
     <button class="stream-btn"
       onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-2.html', this,
       'https://static.flashscore.com/res/image/data/W0HRCIjl-UcWWlFia.png',
@@ -248,14 +275,20 @@
 
     </button>
 
+    <!-- 🔥 ТУРНІР -->
+    <div class="tournament-header">
+      <img src="https://storage.livescore.com/images/competition/high/2023-champions-league.png">
+      <div class="tournament-name">Ліга Чемпіонів</div>
+    </div>
+
     <button class="stream-btn"
       onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-1.html', this,
-      'https://s1.vcdn.biz/static/f/6411632851/image.jpg',
+      'https://s7.vcdn.biz/static/f/10537579141/image.jpg',
       'Арсенал','22:00','Атлетіко',
-      'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
+      'https://s2.vcdn.biz/static/f/8618964311/image.jpg')">
 
       <div class="team">
-        <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg">
+        <img src="https://s7.vcdn.biz/static/f/10537579141/image.jpg">
         <span>Арсенал</span>
       </div>
 
@@ -263,7 +296,7 @@
 
       <div class="team">
         <span>Атлетіко</span>
-        <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg">
+        <img src="https://s2.vcdn.biz/static/f/8618964311/image.jpg">
       </div>
 
     </button>
@@ -273,7 +306,7 @@
   <div class="player-section">
 
     <div class="player-container">
-      <iframe id="mainPlayer" src=""
+      <iframe id="mainPlayer"
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         allowfullscreen></iframe>
     </div>
@@ -312,7 +345,7 @@ function setStream(url, btn, img1, t1, time, t2, img2) {
   matchInfo.classList.add('active');
 }
 
-/* 👉 ОКРЕМО */
+/* FULLSCREEN ROTATE FIX */
 document.addEventListener('fullscreenchange', async () => {
   if (document.fullscreenElement) {
     try { await screen.orientation.lock('landscape'); } catch(e) {}
