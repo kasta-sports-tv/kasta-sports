@@ -54,7 +54,7 @@
     .logo .kasta { color: #ffffff; }
     .logo .sports { color: #ff1a1a; }
 
-    /* ================= MATCH INFO FIX ================= */
+    /* MATCH INFO */
     .match-info {
       display: none;
       justify-content: center;
@@ -78,8 +78,6 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-
-      /* 🔥 авто зменшення тексту */
       font-size: clamp(10px, 3.5vw, 22px);
       max-width: 28%;
     }
@@ -94,7 +92,7 @@
 
     .layout {
       display: flex;
-      height: calc(100dvh - 68px); /* 🔥 FIX MOBILE */
+      height: calc(100dvh - 68px);
       margin-top: 68px;
       overflow: hidden;
     }
@@ -105,6 +103,58 @@
       background: #1a1e2a;
       padding: 10px;
       overflow-y: auto;
+    }
+
+    /* КНОПКИ (ПОВЕРНУТІ) */
+    .stream-btn {
+      width: 100%;
+      background-color: #1a1e2a;
+      color: white;
+      border: 1px solid #2b3244;
+      padding: 12px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: 0.25s;
+    }
+
+    .stream-btn:hover {
+      background-color: #222838;
+      transform: scale(1.03);
+      border-color: #3a425a;
+    }
+
+    .stream-btn.active {
+      background-color: #2a3142;
+      border-color: #4a556f;
+      box-shadow: 0 0 10px rgba(0,0,0,0.6);
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      justify-content: center;
+      flex: 1;
+      text-align: center;
+    }
+
+    .team img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .match-time {
+      width: 55px;
+      text-align: center;
+      font-weight: bold;
+      flex-shrink: 0;
     }
 
     .player-section {
@@ -139,11 +189,10 @@
       opacity: 0.8;
     }
 
-    /* ================= MOBILE FIX ================= */
     @media (max-width: 768px) {
       body {
         height: 100dvh;
-        overflow-y: hidden; /* ❗ сторінка не скролиться */
+        overflow-y: hidden;
       }
 
       .layout {
@@ -185,9 +234,18 @@
       'Райо Вальєкано','22:00','Страсбур',
       'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
 
-      Райо Вальєкано
+      <div class="team">
+        <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg">
+        <span>Райо Вальєкано</span>
+      </div>
+
       <span class="match-time">22:00</span>
-      Страсбур
+
+      <div class="team">
+        <span>Страсбур</span>
+        <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg">
+      </div>
+
     </button>
 
   </div>
