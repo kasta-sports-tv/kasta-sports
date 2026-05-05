@@ -61,7 +61,6 @@
       align-items: center;
       gap: 10px;
       margin-top: 12px;
-
       flex-wrap: nowrap;
       white-space: nowrap;
       overflow: hidden;
@@ -105,7 +104,29 @@
       overflow-y: auto;
     }
 
-    /* КНОПКИ (ПОВЕРНУТІ) */
+    /* ТУРНІР */
+    .tournament-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 12px 0 6px;
+    }
+
+    .tournament-header img {
+      width: 42px;
+      height: 42px;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+
+    .tournament-name {
+      color: #bfc7d5;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    /* BUTTONS */
     .stream-btn {
       width: 100%;
       background-color: #1a1e2a;
@@ -228,6 +249,12 @@
 
   <div class="sidebar">
 
+    <!-- 🔥 ТУРНІР ПОВЕРНУТО -->
+    <div class="tournament-header">
+      <img src="https://storage.livescore.com/images/competition/high/2023-europa-league-1.png">
+      <div class="tournament-name">Ліга Конференцій</div>
+    </div>
+
     <button class="stream-btn"
       onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
       'https://s1.vcdn.biz/static/f/6411632851/image.jpg',
@@ -253,7 +280,7 @@
   <div class="player-section">
 
     <div class="player-container">
-      <iframe id="mainPlayer" src=""
+      <iframe id="mainPlayer"
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         allowfullscreen></iframe>
     </div>
@@ -270,8 +297,6 @@
 
   </div>
 </div>
-
-... (весь HTML сайту)
 
 <script>
 function setStream(url, btn, img1, t1, time, t2, img2) {
@@ -294,7 +319,7 @@ function setStream(url, btn, img1, t1, time, t2, img2) {
   matchInfo.classList.add('active');
 }
 
-/* 👉 ОКРЕМО */
+/* FULLSCREEN ROTATE FIX */
 document.addEventListener('fullscreenchange', async () => {
   if (document.fullscreenElement) {
     try { await screen.orientation.lock('landscape'); } catch(e) {}
