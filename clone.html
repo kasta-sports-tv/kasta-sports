@@ -280,6 +280,15 @@ function setStream(url, btn, img1, t1, time, t2, img2) {
   document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 
+  document.addEventListener('fullscreenchange', async () => {
+  if (document.fullscreenElement) {
+    try { await screen.orientation.lock('landscape'); } catch(e) {}
+  } else {
+    try { await screen.orientation.unlock(); } catch(e) {}
+  }
+});
+</script>
+
   iframe.src = url;
   selectText.style.display = 'none';
 
