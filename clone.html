@@ -7,15 +7,22 @@
 <title>Kasta Sports</title>
 
 <style>
+
+/* 🔥 ГЛОБАЛЬНО — УБИВАЄ СКРОЛ */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+}
+
 body {
   background: #0e1118;
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
   color: #e5e7eb;
-  overflow-x: hidden;
-  height: 100vh;
-  overflow-y: hidden;
 }
 
 /* HEADER */
@@ -58,11 +65,11 @@ header {
 .match-info {
   display: none;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-top: 12px;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
-  overflow: hidden;
+  width: 100%; /* 🔥 ВАЖЛИВО */
 }
 
 .match-info.active {
@@ -70,16 +77,17 @@ header {
 }
 
 .match-info span {
+  flex: 1; /* 🔥 РОЗТЯГУЄ */
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 140px; /* 🔥 СТИСКАЄ */
-  text-shadow: 0 0 8px rgba(99,102,241,0.7);
+  text-align: center;
 }
 
 .match-info img {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -89,8 +97,10 @@ header {
   display: flex;
   height: calc(100vh - 68px);
   margin-top: 68px;
+  overflow: hidden;
 }
 
+/* 🔥 ЄДИНИЙ СКРОЛ */
 .sidebar {
   width: 28%;
   min-width: 180px;
@@ -98,6 +108,7 @@ header {
   backdrop-filter: blur(10px);
   padding: 10px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* TOURNAMENT */
@@ -113,7 +124,7 @@ header {
   color: #60a5fa;
   font-weight: 800;
   font-size: 20px;
-  white-space: nowrap; /* 🔥 В ОДИН РЯДОК */
+  white-space: nowrap;
 }
 
 /* PLAYER */
@@ -122,6 +133,7 @@ header {
   display: flex;
   flex-direction: column;
   padding: 10px;
+  overflow: hidden; /* 🔥 ВАЖЛИВО */
 }
 
 .player-container {
@@ -156,7 +168,7 @@ iframe {
   border-radius: 12px;
   cursor: pointer;
   display: flex;
-  align-items: center; /* 🔥 ЦЕНТР ВЕРТИКАЛЬ */
+  align-items: center;
   justify-content: space-between;
   transition: 0.25s;
   margin-bottom: 6px;
@@ -177,7 +189,8 @@ iframe {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-weight: 600; /* 🔥 ТРОХИ ЖИРНІШЕ */
+  font-weight: 600;
+  min-width: 0;
 }
 
 .team img {
@@ -189,34 +202,29 @@ iframe {
 .match-time {
   font-weight: 700;
   display: flex;
-  align-items: center; /* 🔥 ІДЕАЛЬНО ПО ЦЕНТРУ */
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
 }
 
 /* MOBILE */
 @media (max-width: 768px) {
-  body {
-    height: auto;
-    overflow-y: auto;
-  }
 
   .layout {
     flex-direction: column;
   }
 
   .sidebar {
-    width: 95%;
+    width: 100%;
     max-height: 280px;
     order: 2;
   }
 
   .player-section {
-    width: 95%;
+    width: 100%;
     order: 1;
   }
 
-  .match-info span {
-    max-width: 90px;
-  }
 }
 </style>
 </head>
@@ -240,42 +248,6 @@ iframe {
       <img src="https://storage.livescore.com/images/competition/high/2023-europa-league-1.png">
       <div class="tournament-name">Ліга Конференцій</div>
     </div>
-
-    <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
-    'https://s1.vcdn.biz/static/f/6411632851/image.jpg','Райо Вальєкано','22:00','Страсбур',
-    'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
-
-      <div class="team">
-        <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg">
-        Райо Вальєкано
-      </div>
-
-      <div class="match-time">22:00</div>
-
-      <div class="team">
-        Страсбур
-        <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg">
-      </div>
-
-    </button>
-
-    <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
-    'https://s1.vcdn.biz/static/f/6411632851/image.jpg','Райо Вальєкано','22:00','Страсбур',
-    'https://s2.vcdn.biz/static/f/6503182931/image.jpg')">
-
-      <div class="team">
-        <img src="https://s1.vcdn.biz/static/f/6411632851/image.jpg">
-        Райо Вальєкано
-      </div>
-
-      <div class="match-time">22:00</div>
-
-      <div class="team">
-        Страсбур
-        <img src="https://s2.vcdn.biz/static/f/6503182931/image.jpg">
-      </div>
-
-    </button>
 
     <button class="stream-btn" onclick="setStream('https://kasta-sports.vercel.app/vk.html', this,
     'https://s1.vcdn.biz/static/f/6411632851/image.jpg','Райо Вальєкано','22:00','Страсбур',
