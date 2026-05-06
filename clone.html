@@ -231,16 +231,28 @@
     }
 
     @media (max-width: 768px) {
+      body {
+        height: 100dvh;
+        overflow-y: hidden;
+      }
+
       .layout {
         flex-direction: column;
+        height: calc(100dvh - 68px);
       }
-      .sidebar, .player-section {
+
+      .sidebar {
         width: 95%;
+        order: 2;
+      }
+
+      .player-section {
+        width: 95%;
+        order: 1;
       }
     }
 
-    /* ===== CHAT ===== */
-
+    /* 🔥 CHAT */
     #chat-wrapper {
       position: fixed;
       top: 80px;
@@ -252,12 +264,16 @@
     }
 
     #chat-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
       width: 40px;
       height: 40px;
-      border: 1px solid #2b3244;
       background: #1a1e2a;
+      border: 1px solid #2b3244;
       border-radius: 8px;
       cursor: pointer;
+      z-index: 10000;
     }
 
   </style>
@@ -271,35 +287,45 @@
       <span class="kasta">Kasta</span>
       <span class="sports">Sports</span>
     </div>
-
-    <!-- КНОПКА ЧАТУ (твоя, без дизайну) -->
-    <div id="chat-toggle"></div>
-
   </div>
 </header>
 
 <div class="layout">
 
   <div class="sidebar">
-    <!-- твій код без змін -->
+
     <div class="tournament-header">
       <img src="https://static.flashscore.com/res/image/data/QexI2ehD-OCwQhZeh.png">
       <div class="tournament-name">Кубок Туреччини</div>
     </div>
 
-    <button class="stream-btn">...</button>
   </div>
 
   <div class="player-section">
-    <div class="player-container">
-      <div class="slider" id="slider"></div>
-      <iframe id="mainPlayer"></iframe>
-    </div>
-  </div>
 
+    <div class="player-container">
+
+      <div class="slider" id="slider">
+        <img class="slide active" src="https://www.betaura.com.ua/wp-content/uploads/2026/05/bayern_psg_banner-1536x864.webp">
+        <img class="slide" src="https://www.betaura.com.ua/wp-content/uploads/2026/05/palace_shakhtar_banner.webp">
+        <img class="slide" src="https://www.betaura.com.ua/wp-content/uploads/2026/05/astonvilla_forest_banner.webp">
+        <img class="slide" src="https://www.betaura.com.ua/wp-content/uploads/2026/05/freiburg_braga_banner.webp">
+      </div>
+
+      <iframe id="mainPlayer"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        allowfullscreen></iframe>
+
+    </div>
+
+    <div class="select-text" id="selectText">Оберіть трансляцію</div>
+
+    <div class="match-info" id="matchInfo"></div>
+
+  </div>
 </div>
 
-<!-- CHAT -->
+<!-- CHAT (НЕ ЛАМАЄ КЛІКИ) -->
 <div id="chat-wrapper">
   <script id="cid0020000439054751580" data-cfasync="false" async 
   src="//st.chatango.com/js/gz/emb.js"
@@ -330,11 +356,24 @@
   </script>
 </div>
 
+<!-- КНОПКА -->
+<div id="chat-toggle"></div>
+
 <script>
 document.getElementById("chat-toggle").onclick = function () {
   const chat = document.getElementById("chat-wrapper");
   chat.style.display = chat.style.display === "block" ? "none" : "block";
 };
+
+/* SLIDER */
+let slides = document.querySelectorAll('.slide');
+let current = 0;
+
+setInterval(() => {
+  slides[current].classList.remove('active');
+  current = (current + 1) % slides.length;
+  slides[current].classList.add('active');
+}, 4000);
 </script>
 
 </body>
