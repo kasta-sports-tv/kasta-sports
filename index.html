@@ -54,7 +54,6 @@
     .logo .kasta { color: #ffffff; }
     .logo .sports { color: #ff1a1a; }
 
-    /* MATCH INFO */
     .match-info {
       display: none;
       justify-content: center;
@@ -104,7 +103,6 @@
       overflow-y: auto;
     }
 
-    /* ТУРНІР */
     .tournament-header {
       display: flex;
       align-items: center;
@@ -126,7 +124,6 @@
       font-size: 18px;
     }
 
-    /* BUTTONS */
     .stream-btn {
       width: 100%;
       background-color: #1a1e2a;
@@ -202,6 +199,30 @@
       width: 100%;
       height: 100%;
       border: none;
+      z-index: 1;
+    }
+
+    /* 🔥 SLIDER */
+    .slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    .slide.active {
+      opacity: 1;
     }
 
     .select-text {
@@ -249,7 +270,6 @@
 
   <div class="sidebar">
 
-    <!-- 🔥 ТУРНІР -->
     <div class="tournament-header">
       <img src="https://static.flashscore.com/res/image/data/QexI2ehD-OCwQhZeh.png">
       <div class="tournament-name">Кубок Туреччини</div>
@@ -275,7 +295,6 @@
 
     </button>
 
-    <!-- 🔥 ТУРНІР -->
     <div class="tournament-header">
       <img src="https://storage.livescore.com/images/competition/high/2023-champions-league.png">
       <div class="tournament-name">Ліга Чемпіонів</div>
@@ -306,9 +325,19 @@
   <div class="player-section">
 
     <div class="player-container">
+
+      <!-- 🔥 СЛАЙДЕР -->
+      <div class="slider" id="slider">
+        <img src="https://www.betaura.com.ua/wp-content/uploads/2026/05/bayern_psg_banner-1536x864.webp" class="slide active">
+        <img src="https://www.betaura.com.ua/wp-content/uploads/2026/05/palace_shakhtar_banner.webp" class="slide">
+        <img src="https://www.betaura.com.ua/wp-content/uploads/2026/05/astonvilla_forest_banner.webp" class="slide">
+        <img src="https://www.betaura.com.ua/wp-content/uploads/2026/05/freiburg_braga_banner.webp" class="slide">
+      </div>
+
       <iframe id="mainPlayer"
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         allowfullscreen></iframe>
+
     </div>
 
     <div class="select-text" id="selectText">Оберіть трансляцію</div>
@@ -336,6 +365,8 @@ function setStream(url, btn, img1, t1, time, t2, img2) {
   iframe.src = url;
   selectText.style.display = 'none';
 
+  document.getElementById('slider').style.display = 'none';
+
   document.getElementById('team1Img').src = img1;
   document.getElementById('team2Img').src = img2;
   document.getElementById('team1Name').innerText = t1;
@@ -345,7 +376,17 @@ function setStream(url, btn, img1, t1, time, t2, img2) {
   matchInfo.classList.add('active');
 }
 
-/* FULLSCREEN ROTATE FIX */
+/* SLIDER */
+let slides = document.querySelectorAll('.slide');
+let current = 0;
+
+setInterval(() => {
+  slides[current].classList.remove('active');
+  current = (current + 1) % slides.length;
+  slides[current].classList.add('active');
+}, 4000);
+
+/* FULLSCREEN */
 document.addEventListener('fullscreenchange', async () => {
   if (document.fullscreenElement) {
     try { await screen.orientation.lock('landscape'); } catch(e) {}
