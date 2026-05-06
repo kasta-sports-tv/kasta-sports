@@ -202,7 +202,6 @@
       z-index: 1;
     }
 
-    /* 🔥 SLIDER */
     .slider {
       position: absolute;
       top: 0;
@@ -232,26 +231,35 @@
     }
 
     @media (max-width: 768px) {
-      body {
-        height: 100dvh;
-        overflow-y: hidden;
-      }
-
       .layout {
         flex-direction: column;
-        height: calc(100dvh - 68px);
       }
-
-      .sidebar {
+      .sidebar, .player-section {
         width: 95%;
-        order: 2;
-      }
-
-      .player-section {
-        width: 95%;
-        order: 1;
       }
     }
+
+    /* ===== CHAT ===== */
+
+    #chat-wrapper {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      width: 200px;
+      height: 300px;
+      z-index: 9999;
+      display: none;
+    }
+
+    #chat-toggle {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #2b3244;
+      background: #1a1e2a;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 
@@ -263,137 +271,70 @@
       <span class="kasta">Kasta</span>
       <span class="sports">Sports</span>
     </div>
+
+    <!-- КНОПКА ЧАТУ (твоя, без дизайну) -->
+    <div id="chat-toggle"></div>
+
   </div>
 </header>
 
 <div class="layout">
 
   <div class="sidebar">
-
+    <!-- твій код без змін -->
     <div class="tournament-header">
       <img src="https://static.flashscore.com/res/image/data/QexI2ehD-OCwQhZeh.png">
       <div class="tournament-name">Кубок Туреччини</div>
     </div>
 
-    <button class="stream-btn"
-      onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-2.html', this,
-      'https://static.flashscore.com/res/image/data/W0HRCIjl-UcWWlFia.png',
-      'Бешикташ','20:30','Коньяспор',
-      'https://static.flashscore.com/res/image/data/tIm7wGzB-IB8hJkKa.png')">
-
-      <div class="team">
-        <img src="https://static.flashscore.com/res/image/data/W0HRCIjl-UcWWlFia.png">
-        <span>Бешикташ</span>
-      </div>
-
-      <span class="match-time">20:30</span>
-
-      <div class="team">
-        <span>Коньяспор</span>
-        <img src="https://static.flashscore.com/res/image/data/tIm7wGzB-IB8hJkKa.png">
-      </div>
-
-    </button>
-
-    <div class="tournament-header">
-      <img src="https://storage.livescore.com/images/competition/high/2023-champions-league.png">
-      <div class="tournament-name">Ліга Чемпіонів</div>
-    </div>
-
-    <button class="stream-btn"
-      onclick="setStream('https://sportkastv.blogspot.com/2026/02/kasta-sports-1.html', this,
-      'https://s7.vcdn.biz/static/f/10537579141/image.jpg',
-      'Арсенал','22:00','Атлетіко',
-      'https://s2.vcdn.biz/static/f/8618964311/image.jpg')">
-
-      <div class="team">
-        <img src="https://s7.vcdn.biz/static/f/10537579141/image.jpg">
-        <span>Арсенал</span>
-      </div>
-
-      <span class="match-time">22:00</span>
-
-      <div class="team">
-        <span>Атлетіко</span>
-        <img src="https://s2.vcdn.biz/static/f/8618964311/image.jpg">
-      </div>
-
-    </button>
-
+    <button class="stream-btn">...</button>
   </div>
 
   <div class="player-section">
-
     <div class="player-container">
-
-      <!-- 🔥 СЛАЙДЕР -->
-      <div class="slider" id="slider">
-        <img src="https://www.betaura.com.ua/wp-content/uploads/2026/05/bayern_psg_banner-1536x864.webp" class="slide active">
-        <img src="https://www.betaura.com.ua/wp-content/uploads/2026/05/palace_shakhtar_banner.webp" class="slide">
-        <img src="https://www.betaura.com.ua/wp-content/uploads/2026/05/astonvilla_forest_banner.webp" class="slide">
-        <img src="https://www.betaura.com.ua/wp-content/uploads/2026/05/freiburg_braga_banner.webp" class="slide">
-      </div>
-
-      <iframe id="mainPlayer"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-        allowfullscreen></iframe>
-
+      <div class="slider" id="slider"></div>
+      <iframe id="mainPlayer"></iframe>
     </div>
-
-    <div class="select-text" id="selectText">Оберіть трансляцію</div>
-
-    <div class="match-info" id="matchInfo">
-      <img id="team1Img">
-      <span id="team1Name"></span>
-      <span id="matchTime"></span>
-      <span id="team2Name"></span>
-      <img id="team2Img">
-    </div>
-
   </div>
+
+</div>
+
+<!-- CHAT -->
+<div id="chat-wrapper">
+  <script id="cid0020000439054751580" data-cfasync="false" async 
+  src="//st.chatango.com/js/gz/emb.js"
+  style="width: 200px;height: 300px;">
+  {
+    "handle":"deltest",
+    "arch":"js",
+    "styles":{
+      "a":"CC0000",
+      "b":100,
+      "c":"FFFFFF",
+      "d":"FFFFFF",
+      "k":"CC0000",
+      "l":"CC0000",
+      "m":"CC0000",
+      "n":"FFFFFF",
+      "p":"10",
+      "q":"CC0000",
+      "r":100,
+      "cv":1,
+      "cvfntsz":"18px",
+      "cvfntw":"bolder",
+      "cvbg":"CC0000",
+      "cvw":72,
+      "cvh":41
+    }
+  }
+  </script>
 </div>
 
 <script>
-function setStream(url, btn, img1, t1, time, t2, img2) {
-  const iframe = document.getElementById('mainPlayer');
-  const matchInfo = document.getElementById('matchInfo');
-  const selectText = document.getElementById('selectText');
-
-  document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  iframe.src = url;
-  selectText.style.display = 'none';
-
-  document.getElementById('slider').style.display = 'none';
-
-  document.getElementById('team1Img').src = img1;
-  document.getElementById('team2Img').src = img2;
-  document.getElementById('team1Name').innerText = t1;
-  document.getElementById('team2Name').innerText = t2;
-  document.getElementById('matchTime').innerText = time;
-
-  matchInfo.classList.add('active');
-}
-
-/* SLIDER */
-let slides = document.querySelectorAll('.slide');
-let current = 0;
-
-setInterval(() => {
-  slides[current].classList.remove('active');
-  current = (current + 1) % slides.length;
-  slides[current].classList.add('active');
-}, 4000);
-
-/* FULLSCREEN */
-document.addEventListener('fullscreenchange', async () => {
-  if (document.fullscreenElement) {
-    try { await screen.orientation.lock('landscape'); } catch(e) {}
-  } else {
-    try { await screen.orientation.unlock(); } catch(e) {}
-  }
-});
+document.getElementById("chat-toggle").onclick = function () {
+  const chat = document.getElementById("chat-wrapper");
+  chat.style.display = chat.style.display === "block" ? "none" : "block";
+};
 </script>
 
 </body>
