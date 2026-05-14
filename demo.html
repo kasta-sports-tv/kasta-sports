@@ -12,17 +12,10 @@
 <style>
 
 :root{
-    --accent:#00c2ff;
-    --accent2:#7b61ff;
-    --bg:#0b1220;
-    --panel:#111a2b;
-    --panel2:#182235;
-    --border:rgba(255,255,255,0.08);
-    --text:#ffffff;
-    --muted:#8fa3bf;
-    --hover:rgba(0,194,255,0.12);
-    --active:rgba(0,194,255,0.18);
-    --shadow:0 10px 30px rgba(0,0,0,0.45);
+    --yellow:#FFD700;
+    --bg:#1a1a00;
+    --panel:rgba(30,30,0,0.98);
+    --border:1px solid var(--yellow);
 }
 
 *{
@@ -35,12 +28,8 @@
 }
 
 body{
-    background:
-    radial-gradient(circle at top left, rgba(0,194,255,0.10), transparent 35%),
-    radial-gradient(circle at top right, rgba(123,97,255,0.10), transparent 35%),
-    var(--bg);
-
-    color:var(--text);
+    background:var(--bg);
+    color:var(--yellow);
     height:100vh;
     display:flex;
     flex-direction:column;
@@ -51,13 +40,12 @@ body{
 
 header{
     flex-shrink:0;
-    padding:14px 18px;
+    padding:12px 16px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    border-bottom:1px solid var(--border);
-    background:rgba(12,18,32,0.92);
-    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--yellow);
+    background:#111100;
     z-index:100;
 }
 
@@ -66,9 +54,9 @@ header{
     font-size:28px;
     font-weight:700;
     letter-spacing:1px;
-    color:#fff;
+    color:var(--yellow);
     cursor:pointer;
-    text-shadow:0 0 18px rgba(0,194,255,0.35);
+    text-shadow:0 0 14px var(--yellow);
 }
 
 .search-wrap{
@@ -76,25 +64,24 @@ header{
 }
 
 .search{
-    background:#182235;
-    border:1px solid rgba(255,255,255,0.08);
-    color:#fff;
-    padding:10px 14px;
+    background:#222200;
+    border:1px solid var(--yellow);
+    color:var(--yellow);
+    padding:9px 14px;
     width:180px;
     font-size:14px;
     outline:none;
-    border-radius:12px;
+    border-radius:10px;
     transition:0.3s;
     font-weight:600;
 }
 
 .search::placeholder{
-    color:#7f91aa;
+    color:#d4c15a;
 }
 
 .search:focus{
-    border-color:var(--accent);
-    box-shadow:0 0 0 4px rgba(0,194,255,0.12);
+    box-shadow:0 0 12px var(--yellow);
     width:220px;
 }
 
@@ -104,10 +91,10 @@ header{
     flex:1;
     display:grid;
     grid-template-columns:3fr 1.2fr;
-    gap:16px;
-    padding:16px;
+    gap:15px;
+    padding:15px;
     overflow:hidden;
-    max-width:1700px;
+    max-width:1600px;
     margin:0 auto;
     width:100%;
 }
@@ -117,12 +104,11 @@ header{
 .player-wrap{
     display:flex;
     flex-direction:column;
-    border:1px solid var(--border);
+    border:1px solid var(--yellow);
     background:#000;
     overflow:hidden;
     height:100%;
-    border-radius:22px;
-    box-shadow:var(--shadow);
+    border-radius:18px;
 }
 
 .video-container{
@@ -135,7 +121,6 @@ header{
 .aspect-ratio{
     padding-top:56.25%;
     position:relative;
-    background:#000;
 }
 
 #iframePlayer{
@@ -149,9 +134,9 @@ header{
 }
 
 .info-bar{
-    padding:14px 16px;
-    background:linear-gradient(180deg,#182235,#131d2f);
-    border-top:1px solid var(--border);
+    padding:12px;
+    background:#222200;
+    border-top:1px solid var(--yellow);
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -165,34 +150,29 @@ header{
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    letter-spacing:0.4px;
 }
 
 .live-badge{
-    background:linear-gradient(90deg,#ff3b3b,#ff0066);
+    background:#ff4444;
     color:#fff;
-    padding:4px 8px;
+    padding:3px 7px;
     font-size:11px;
-    border-radius:6px;
-    margin-right:6px;
+    border-radius:4px;
+    animation:blink 1s infinite;
+    margin-right:5px;
     vertical-align:middle;
     font-weight:700;
-    letter-spacing:1px;
-    box-shadow:0 0 12px rgba(255,0,102,0.45);
-    animation:blink 1s infinite;
 }
 
 #watermark{
     font-family:'Rajdhani',sans-serif;
-    border:1px solid rgba(255,255,255,0.08);
-    background:rgba(255,255,255,0.04);
-    padding:6px 12px;
+    border:1px solid var(--yellow);
+    padding:5px 10px;
     font-size:13px;
-    border-radius:10px;
     opacity:0.9;
-    color:var(--accent);
+    color:var(--yellow);
+    border-radius:8px;
     font-weight:700;
-    letter-spacing:0.6px;
 }
 
 /* LIST SECTION */
@@ -200,33 +180,30 @@ header{
 .list-wrap{
     display:flex;
     flex-direction:column;
-    border:1px solid var(--border);
-    background:rgba(17,26,43,0.92);
+    border:1px solid var(--yellow);
+    background:var(--panel);
     overflow:hidden;
     height:100%;
-    border-radius:22px;
-    backdrop-filter:blur(14px);
-    box-shadow:var(--shadow);
+    border-radius:18px;
 }
 
 .marquee{
-    background:#10192b;
-    color:#d9e6ff;
-    padding:10px;
+    background:#111100;
+    color:#ffcc00;
+    padding:8px;
     font-size:13px;
-    border-bottom:1px solid var(--border);
+    border-bottom:1px solid #444400;
     white-space:nowrap;
     overflow:hidden;
     font-weight:600;
-    letter-spacing:0.3px;
 }
 
 .cat-bar{
-    background:#0f1728;
+    background:#0a0a00;
     padding:10px;
     overflow-x:auto;
     white-space:nowrap;
-    border-bottom:1px solid var(--border);
+    border-bottom:1px solid #333300;
     scrollbar-width:none;
     flex-shrink:0;
 }
@@ -236,29 +213,29 @@ header{
 }
 
 .cat-btn{
-    background:#182235;
-    color:#a7b9d1;
-    border:1px solid rgba(255,255,255,0.06);
-    padding:9px 16px;
-    margin-right:6px;
+    background:#1d1d00;
+    color:#b9a93f;
+    border:1px solid #444400;
+    padding:8px 14px;
+    margin-right:5px;
     cursor:pointer;
     font-size:13px;
     font-family:'Inter',sans-serif;
-    border-radius:12px;
-    transition:0.25s;
+    border-radius:8px;
+    transition:0.2s;
     font-weight:700;
 }
 
 .cat-btn:hover{
-    background:#22314a;
-    color:#fff;
+    background:#2b2b00;
+    color:#fff2a8;
 }
 
 .cat-btn.active{
-    color:#fff;
-    background:linear-gradient(90deg,var(--accent),var(--accent2));
-    border-color:transparent;
-    box-shadow:0 4px 16px rgba(0,194,255,0.25);
+    color:#000;
+    background:var(--yellow);
+    font-weight:bold;
+    border-color:var(--yellow);
 }
 
 .list-items{
@@ -270,29 +247,29 @@ header{
 .item{
     display:flex;
     align-items:center;
-    padding:14px 12px;
-    border-bottom:1px solid rgba(255,255,255,0.05);
+    padding:13px 10px;
+    border-bottom:1px solid #333300;
     cursor:pointer;
     transition:0.2s;
 }
 
 .item:hover{
-    background:var(--hover);
+    background:rgba(255,215,0,0.1);
 }
 
 .item.active{
-    background:var(--active);
-    border-left:4px solid var(--accent);
+    background:rgba(255,215,0,0.2);
+    border-left:4px solid var(--yellow);
 }
 
 .c-icon{
     width:48px;
     height:48px;
     background:#fff;
-    margin-right:14px;
+    margin-right:12px;
     object-fit:contain;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,0.06);
+    border-radius:10px;
+    border:1px solid #666600;
     flex-shrink:0;
     padding:4px;
 }
@@ -300,16 +277,15 @@ header{
 .c-txt-icon{
     width:48px;
     height:48px;
-    background:#131d2f;
-    color:#fff;
-    border:1px solid rgba(255,255,255,0.08);
+    background:#111100;
+    color:var(--yellow);
+    border:1px solid var(--yellow);
     display:grid;
     place-items:center;
-    margin-right:14px;
+    margin-right:12px;
     font-weight:bold;
     flex-shrink:0;
-    border-radius:12px;
-    font-size:14px;
+    border-radius:10px;
 }
 
 .c-meta{
@@ -323,12 +299,12 @@ header{
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    color:#ffffff;
+    color:#ffcc00;
 }
 
 .c-cat{
     font-size:12px;
-    color:var(--muted);
+    color:#888800;
     margin-top:3px;
 }
 
@@ -336,14 +312,14 @@ header{
 
 footer{
     flex-shrink:0;
-    background:#10192b;
-    border-top:1px solid var(--border);
-    padding:8px 14px;
+    background:#111100;
+    border-top:1px solid var(--yellow);
+    padding:6px 12px;
     font-size:12px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    color:#90a4c0;
+    color:#888800;
     font-weight:600;
 }
 
@@ -359,7 +335,7 @@ footer{
     }
 
     header{
-        padding:10px 12px;
+        padding:8px 10px;
     }
 
     .logo{
@@ -368,7 +344,7 @@ footer{
 
     .search{
         width:120px;
-        padding:8px 10px;
+        padding:7px 10px;
         font-size:13px;
     }
 
@@ -387,7 +363,7 @@ footer{
 
     .player-wrap{
         border:none;
-        border-bottom:1px solid var(--border);
+        border-bottom:2px solid var(--yellow);
         height:auto;
         flex-shrink:0;
         border-radius:0;
@@ -401,20 +377,20 @@ footer{
     }
 
     .info-bar{
-        padding:10px;
+        padding:8px;
     }
 
     .ch-info h2{
-        font-size:15px;
+        font-size:14px;
     }
 
     .item{
-        padding:14px;
+        padding:12px 15px;
     }
 
     .cat-btn{
-        padding:8px 14px;
-        font-size:12px;
+        padding:6px 14px;
+        font-size:13px;
     }
 
     footer{
@@ -424,13 +400,12 @@ footer{
 }
 
 ::-webkit-scrollbar{
-    width:5px;
-    background:#10192b;
+    width:4px;
+    background:#111100;
 }
 
 ::-webkit-scrollbar-thumb{
-    background:linear-gradient(var(--accent),var(--accent2));
-    border-radius:10px;
+    background:var(--yellow);
 }
 
 @keyframes blink{
@@ -445,11 +420,19 @@ footer{
 <body oncontextmenu="return false;">
 
 <header>
-    <div class="logo" onclick="location.reload()">Kasta Sports</div>
+
+    <div class="logo" onclick="location.reload()">
+        Kasta Sports
+    </div>
 
     <div class="search-wrap">
-        <input type="text" class="search" placeholder="Search channel..." onkeyup="search(this.value)">
+        <input
+            type="text"
+            class="search"
+            placeholder="SEARCH..."
+            onkeyup="search(this.value)">
     </div>
+
 </header>
 
 <div class="container">
@@ -477,10 +460,12 @@ footer{
         <div class="info-bar">
 
             <div class="ch-info">
+
                 <h2>
-                    <span class="live-badge">LIVE</span>
+                    <span class="live-badge">ON</span>
                     <span id="chName">SELECT CHANNEL</span>
                 </h2>
+
             </div>
 
             <div id="watermark">Kasta Sports</div>
@@ -498,7 +483,9 @@ footer{
         </marquee>
 
         <div class="cat-bar" id="catMenu">
-            <button class="cat-btn active" onclick="setCat('All')">ALL</button>
+            <button class="cat-btn active" onclick="setCat('All')">
+                ALL
+            </button>
         </div>
 
         <div class="list-items" id="chList"></div>
@@ -509,18 +496,18 @@ footer{
 
 <footer>
     <span>VISITORS: 6184</span>
-    <span>STATUS: <span style="color:#00c2ff;">ONLINE</span></span>
+    <span>STATUS: <span style="color:var(--yellow)">ONLINE</span></span>
 </footer>
 
 <script>
 
 const db = {
 
-    "notice":"WELCOME TO Kasta Sports - LIVE SPORTS STREAMS",
+    "notice":"WELCOME TO Kasta Sports - Kasta Sports",
 
     "watermark_text":"Kasta Sports",
 
-    "watermark_color":"#00c2ff",
+    "watermark_color":"#FFD700",
 
     "channels":[
 
@@ -610,7 +597,7 @@ function render(list){
 
     el.innerHTML = '';
 
-    if(list.length === 0){
+    if(list.length===0){
 
         el.innerHTML =
         '<p style="padding:20px;text-align:center;">NO CHANNELS</p>';
@@ -638,7 +625,7 @@ function render(list){
 
             ${txtIcon}
 
-            <div class="c-meta" onclick="playChannel('${c.url}', '${c.name.replace(/'/g,"\\'")}', this)">
+            <div class="c-meta" onclick="playChannel('${c.url}','${c.name.replace(/'/g,"\\'")}',this)">
 
                 <div class="c-name">${c.name}</div>
 
@@ -723,40 +710,6 @@ function search(t){
 }
 
 init();
-
-</script>
-
-<script
-id="cid0020000438888683130"
-data-cfasync="false"
-async
-src="//st.chatango.com/js/gz/emb.js"
-style="width: 200px;height: 300px;">
-
-{
-"handle":"kastachat",
-"arch":"js",
-"styles":{
-"a":"00c2ff",
-"b":100,
-"c":"FFFFFF",
-"d":"FFFFFF",
-"k":"00c2ff",
-"l":"00c2ff",
-"m":"00c2ff",
-"n":"FFFFFF",
-"p":"10",
-"q":"00c2ff",
-"r":100,
-"pos":"tl",
-"cv":1,
-"cvfntsz":"16px",
-"cvfntw":"bolder",
-"cvbg":"00c2ff",
-"cvw":71,
-"cvh":36
-}
-}
 
 </script>
 
