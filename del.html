@@ -1,95 +1,382 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
 <meta charset="UTF-8">
-<title>Sports TV</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AX Sports</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
-body{
-  background:#111;
-  color:white;
-  font-family:Arial;
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
+body{
+    background:#0f1720;
+    font-family:Arial,sans-serif;
+    color:white;
+}
+
+/* HEADER */
+
+.header{
+    width:100%;
+    padding:18px;
+    background:#18222d;
+    border-bottom:1px solid #2f3c4d;
+    text-align:center;
+    font-size:24px;
+    font-weight:bold;
+    letter-spacing:1px;
+}
+
+/* MAIN */
+
+.main{
+    display:flex;
+    height:calc(100vh - 70px);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:360px;
+    background:#141c24;
+    overflow-y:auto;
+    border-right:1px solid #2f3c4d;
+}
+
+/* GROUP */
+
+.group{
+    padding:14px 14px 8px;
+    font-size:15px;
+    color:#9eb1c7;
+    font-weight:bold;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+/* MATCH */
+
 .match{
-  padding:12px;
-  margin:6px;
-  background:#222;
-  cursor:pointer;
-  border-radius:10px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    margin:8px 10px;
+    padding:12px;
+
+    background:#1c2733;
+    border:1px solid #2d3a4a;
+    border-radius:14px;
+
+    cursor:pointer;
+
+    transition:.2s;
 }
 
 .match:hover{
-  background:#333;
+    background:#253242;
+    transform:scale(1.01);
+}
+
+.match.active{
+    border-color:#4ea3ff;
+    background:#243446;
+}
+
+/* LOGO */
+
+.match img{
+    width:42px;
+    height:42px;
+    object-fit:contain;
+    border-radius:8px;
+    background:#111;
+    flex-shrink:0;
+}
+
+/* TEXT */
+
+.match-info{
+    overflow:hidden;
+}
+
+.match-title{
+    font-size:14px;
+    font-weight:bold;
+    line-height:1.4;
+}
+
+.live{
+    display:inline-block;
+    margin-top:5px;
+    padding:3px 8px;
+
+    background:#ff2d2d;
+    border-radius:20px;
+
+    font-size:11px;
+    font-weight:bold;
+}
+
+/* PLAYER */
+
+.player-area{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:black;
+    position:relative;
 }
 
 video{
-  width:100%;
-  max-width:1000px;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    background:black;
 }
+
+/* EMPTY */
+
+.empty{
+    position:absolute;
+    color:#888;
+    font-size:20px;
+    text-align:center;
+    padding:20px;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .main{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+        height:45%;
+        border-right:none;
+        border-bottom:1px solid #2f3c4d;
+    }
+
+    .player-area{
+        height:55%;
+    }
+
+}
+
 </style>
 </head>
+
 <body>
 
-<h2>LIVE MATCHES</h2>
+<div class="header">
+    AX SPORTS LIVE
+</div>
 
-<div id="matches"></div>
+<div class="main">
 
-<video id="video" controls autoplay></video>
+    <div class="sidebar" id="sidebar"></div>
+
+    <div class="player-area">
+
+        <div class="empty" id="empty">
+            Select match
+        </div>
+
+        <video id="video" controls autoplay playsinline></video>
+
+    </div>
+
+</div>
 
 <script>
 
+const PLAYLIST_URL =
+"https://raw.githubusercontent.com/srhady/axsports/main/playlist.m3u";
+
+const sidebar = document.getElementById("sidebar");
 const video = document.getElementById("video");
-const matchesDiv = document.getElementById("matches");
+const empty = document.getElementById("empty");
+
+let hls;
 
 async function loadPlaylist(){
 
-  matchesDiv.innerHTML = "";
+    try{
 
-  const res = await fetch("https://raw.githubusercontent.com/srhady/axsports/main/playlist.m3u");
-  const text = await res.text();
+        sidebar.innerHTML = "";
 
-  const lines = text.split("\n");
+        const response = await fetch(
+            PLAYLIST_URL + "?t=" + Date.now()
+        );
 
-  for(let i=0;i<lines.length;i++){
+        const text = await response.text();
 
-    if(lines[i].startsWith("#EXTINF")){
+        const lines = text.split("\n");
 
-      const title = lines[i].split(",")[1];
-      const stream = lines[i+1].trim();
+        const groups = {};
 
-      const div = document.createElement("div");
+        for(let i=0;i<lines.length;i++){
 
-      div.className = "match";
-      div.innerText = title;
+            const line = lines[i];
 
-      div.onclick = () => playStream(stream);
+            if(line.startsWith("#EXTINF")){
 
-      matchesDiv.appendChild(div);
+                const title =
+                    line.split(",").pop().trim();
+
+                const stream =
+                    lines[i + 1]?.trim();
+
+                const logoMatch =
+                    line.match(/tvg-logo="(.*?)"/);
+
+                const groupMatch =
+                    line.match(/group-title="(.*?)"/);
+
+                const logo =
+                    logoMatch ? logoMatch[1] : "";
+
+                const group =
+                    groupMatch ? groupMatch[1] : "Other";
+
+                if(
+                    stream &&
+                    stream.startsWith("http")
+                ){
+
+                    if(!groups[group]){
+                        groups[group] = [];
+                    }
+
+                    groups[group].push({
+                        title,
+                        stream,
+                        logo
+                    });
+
+                }
+
+            }
+
+        }
+
+        Object.keys(groups).forEach(groupName => {
+
+            const groupDiv =
+                document.createElement("div");
+
+            groupDiv.className = "group";
+            groupDiv.innerText = groupName;
+
+            sidebar.appendChild(groupDiv);
+
+            groups[groupName].forEach(match => {
+
+                const item =
+                    document.createElement("div");
+
+                item.className = "match";
+
+                item.innerHTML = `
+
+                    <img src="${match.logo}"
+                    onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/3/3b/Logo_Sport.svg'">
+
+                    <div class="match-info">
+
+                        <div class="match-title">
+                            ${match.title}
+                        </div>
+
+                        <div class="live">
+                            LIVE
+                        </div>
+
+                    </div>
+
+                `;
+
+                item.onclick = () => {
+
+                    document
+                    .querySelectorAll(".match")
+                    .forEach(el =>
+                        el.classList.remove("active")
+                    );
+
+                    item.classList.add("active");
+
+                    playStream(match.stream);
+
+                };
+
+                sidebar.appendChild(item);
+
+            });
+
+        });
+
+    }catch(err){
+
+        console.error(err);
+
+        sidebar.innerHTML = `
+            <div style="padding:20px;color:red">
+                Playlist load error
+            </div>
+        `;
+
     }
-  }
+
 }
 
 function playStream(url){
 
-  if(Hls.isSupported()){
+    empty.style.display = "none";
 
-    const hls = new Hls();
+    if(hls){
+        hls.destroy();
+    }
 
-    hls.loadSource(url);
+    if(Hls.isSupported()){
 
-    hls.attachMedia(video);
+        hls = new Hls();
 
-  }else{
+        hls.loadSource(url);
 
-    video.src = url;
+        hls.attachMedia(video);
 
-  }
+    }else{
+
+        video.src = url;
+
+    }
+
 }
 
+/* LOAD */
+
 loadPlaylist();
+
+/* AUTO REFRESH PLAYLIST */
+
+setInterval(() => {
+
+    loadPlaylist();
+
+}, 60000);
 
 </script>
 
