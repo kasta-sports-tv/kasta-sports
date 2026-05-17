@@ -48,7 +48,7 @@ async function loadPlaylist(){
 
   matchesDiv.innerHTML = "";
 
-  const res = await fetch("playlist.m3u");
+  const res = await fetch("https://raw.githubusercontent.com/srhady/axsports/main/playlist.m3u");
   const text = await res.text();
 
   const lines = text.split("\n");
