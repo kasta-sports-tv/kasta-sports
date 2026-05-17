@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sports TV</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<style>
+body{
+  background:#111;
+  color:white;
+  font-family:Arial;
+}
+
+.match{
+  padding:12px;
+  margin:6px;
+  background:#222;
+  cursor:pointer;
+  border-radius:10px;
+}
+
+.match:hover{
+  background:#333;
+}
+
+video{
+  width:100%;
+  max-width:1000px;
+}
+</style>
+</head>
+<body>
+
+<h2>LIVE MATCHES</h2>
+
+<div id="matches"></div>
+
+<video id="video" controls autoplay></video>
+
+<script>
+
+const video = document.getElementById("video");
+const matchesDiv = document.getElementById("matches");
+
+async function loadPlaylist(){
+
+  matchesDiv.innerHTML = "";
+
+  const res = await fetch("playlist.m3u");
+  const text = await res.text();
+
+  const lines = text.split("\n");
+
+  for(let i=0;i<lines.length;i++){
+
+    if(lines[i].startsWith("#EXTINF")){
+
+      const title = lines[i].split(",")[1];
+      const stream = lines[i+1].trim();
+
+      const div = document.createElement("div");
+
+      div.className = "match";
+      div.innerText = title;
+
+      div.onclick = () => playStream(stream);
+
+      matchesDiv.appendChild(div);
+    }
+  }
+}
+
+function playStream(url){
+
+  if(Hls.isSupported()){
+
+    const hls = new Hls();
+
+    hls.loadSource(url);
+
+    hls.attachMedia(video);
+
+  }else{
+
+    video.src = url;
+
+  }
+}
+
+loadPlaylist();
+
+</script>
+
+</body>
+</html>
