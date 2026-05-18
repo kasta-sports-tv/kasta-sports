@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kasta Sports</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --yellow:#FFD700;
+    --bg:#1a1a00;
+    --panel:rgba(30,30,0,0.98);
+    --border:1px solid var(--yellow);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    background:var(--bg);
+    color:var(--yellow);
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+/* HEADER */
+
+header{
+    flex-shrink:0;
+    padding:12px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid var(--yellow);
+    background:#111100;
+    z-index:100;
+}
+
+.logo{
+    font-family:'Rajdhani',sans-serif;
+    font-size:28px;
+    font-weight:700;
+    letter-spacing:1px;
+    color:var(--yellow);
+    cursor:pointer;
+    text-shadow:0 0 14px var(--yellow);
+}
+
+.search-wrap{
+    position:relative;
+}
+
+.search{
+    background:#222200;
+    border:1px solid var(--yellow);
+    color:var(--yellow);
+    padding:9px 14px;
+    width:180px;
+    font-size:14px;
+    outline:none;
+    border-radius:10px;
+    transition:0.3s;
+    font-weight:600;
+}
+
+.search::placeholder{
+    color:#d4c15a;
+}
+
+.search:focus{
+    box-shadow:0 0 12px var(--yellow);
+    width:220px;
+}
+
+/* CONTAINER */
+
+.container{
+    flex:1;
+    display:grid;
+    grid-template-columns:3fr 1.2fr;
+    gap:15px;
+    padding:15px;
+    overflow:hidden;
+    max-width:1600px;
+    margin:0 auto;
+    width:100%;
+}
+
+/* PLAYER SECTION */
+
+.player-wrap{
+    display:flex;
+    flex-direction:column;
+    border:1px solid var(--yellow);
+    background:#000;
+    overflow:hidden;
+    height:100%;
+    border-radius:18px;
+}
+
+.video-container{
+    position:relative;
+    width:100%;
+    background:#000;
+    flex-shrink:0;
+}
+
+.aspect-ratio{
+    padding-top:56.25%;
+    position:relative;
+}
+
+#iframePlayer{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    border:none;
+    background:#000;
+}
+
+.info-bar{
+    padding:12px;
+    background:#222200;
+    border-top:1px solid var(--yellow);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.ch-info h2{
+    font-family:'Rajdhani',sans-serif;
+    font-size:18px;
+    margin:0;
+    color:#fff;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.live-badge{
+    background:#ff4444;
+    color:#fff;
+    padding:3px 7px;
+    font-size:11px;
+    border-radius:4px;
+    animation:blink 1s infinite;
+    margin-right:5px;
+    vertical-align:middle;
+    font-weight:700;
+}
+
+#watermark{
+    font-family:'Rajdhani',sans-serif;
+    border:1px solid var(--yellow);
+    padding:5px 10px;
+    font-size:13px;
+    opacity:0.9;
+    color:var(--yellow);
+    border-radius:8px;
+    font-weight:700;
+}
+
+/* LIST SECTION */
+
+.list-wrap{
+    display:flex;
+    flex-direction:column;
+    border:1px solid var(--yellow);
+    background:var(--panel);
+    overflow:hidden;
+    height:100%;
+    border-radius:18px;
+}
+
+.marquee{
+    background:#111100;
+    color:#ffcc00;
+    padding:8px;
+    font-size:13px;
+    border-bottom:1px solid #444400;
+    white-space:nowrap;
+    overflow:hidden;
+    font-weight:600;
+}
+
+.cat-bar{
+    background:#0a0a00;
+    padding:10px;
+    overflow-x:auto;
+    white-space:nowrap;
+    border-bottom:1px solid #333300;
+    scrollbar-width:none;
+    flex-shrink:0;
+}
+
+.cat-bar::-webkit-scrollbar{
+    display:none;
+}
+
+.cat-btn{
+    background:#1d1d00;
+    color:#b9a93f;
+    border:1px solid #444400;
+    padding:8px 14px;
+    margin-right:5px;
+    cursor:pointer;
+    font-size:13px;
+    font-family:'Inter',sans-serif;
+    border-radius:8px;
+    transition:0.2s;
+    font-weight:700;
+}
+
+.cat-btn:hover{
+    background:#2b2b00;
+    color:#fff2a8;
+}
+
+.cat-btn.active{
+    color:#000;
+    background:var(--yellow);
+    font-weight:bold;
+    border-color:var(--yellow);
+}
+
+.list-items{
+    overflow-y:auto;
+    flex:1;
+    padding:0;
+}
+
+.item{
+    display:flex;
+    align-items:center;
+    padding:13px 10px;
+    border-bottom:1px solid #333300;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.item:hover{
+    background:rgba(255,215,0,0.1);
+}
+
+.item.active{
+    background:rgba(255,215,0,0.2);
+    border-left:4px solid var(--yellow);
+}
+
+.c-icon{
+    width:48px;
+    height:48px;
+    background:#fff;
+    margin-right:12px;
+    object-fit:contain;
+    border-radius:10px;
+    border:1px solid #666600;
+    flex-shrink:0;
+    padding:4px;
+}
+
+.c-txt-icon{
+    width:48px;
+    height:48px;
+    background:#111100;
+    color:var(--yellow);
+    border:1px solid var(--yellow);
+    display:grid;
+    place-items:center;
+    margin-right:12px;
+    font-weight:bold;
+    flex-shrink:0;
+    border-radius:10px;
+}
+
+.c-meta{
+    flex:1;
+    overflow:hidden;
+}
+
+.c-name{
+    font-weight:700;
+    font-size:15px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    color:#ffcc00;
+}
+
+.c-cat{
+    font-size:12px;
+    color:#888800;
+    margin-top:3px;
+}
+
+/* FOOTER */
+
+footer{
+    flex-shrink:0;
+    background:#111100;
+    border-top:1px solid var(--yellow);
+    padding:6px 12px;
+    font-size:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:#888800;
+    font-weight:600;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    body{
+        height:100vh;
+        display:flex;
+        flex-direction:column;
+        overflow:hidden;
+    }
+
+    header{
+        padding:8px 10px;
+    }
+
+    .logo{
+        font-size:24px;
+    }
+
+    .search{
+        width:120px;
+        padding:7px 10px;
+        font-size:13px;
+    }
+
+    .search:focus{
+        width:140px;
+    }
+
+    .container{
+        display:flex;
+        flex-direction:column;
+        padding:0;
+        gap:0;
+        flex:1;
+        overflow:hidden;
+    }
+
+    .player-wrap{
+        border:none;
+        border-bottom:2px solid var(--yellow);
+        height:auto;
+        flex-shrink:0;
+        border-radius:0;
+    }
+
+    .list-wrap{
+        border:none;
+        border-radius:0;
+        flex:1;
+        height:auto;
+    }
+
+    .info-bar{
+        padding:8px;
+    }
+
+    .ch-info h2{
+        font-size:14px;
+    }
+
+    .item{
+        padding:12px 15px;
+    }
+
+    .cat-btn{
+        padding:6px 14px;
+        font-size:13px;
+    }
+
+    footer{
+        display:none;
+    }
+
+}
+
+::-webkit-scrollbar{
+    width:4px;
+    background:#111100;
+}
+
+::-webkit-scrollbar-thumb{
+    background:var(--yellow);
+}
+
+@keyframes blink{
+    50%{
+        opacity:0.5;
+    }
+}
+
+</style>
+</head>
+
+<body oncontextmenu="return false;">
+
+<header>
+
+    <div class="logo" onclick="location.reload()">
+        Kasta Sports
+    </div>
+
+    <div class="search-wrap">
+        <input
+            type="text"
+            class="search"
+            placeholder="SEARCH..."
+            onkeyup="search(this.value)">
+    </div>
+
+</header>
+
+<div class="container">
+
+    <!-- PLAYER -->
+
+    <div class="player-wrap" id="playerTarget">
+
+        <div class="video-container">
+
+            <div class="aspect-ratio">
+
+                <iframe
+                    id="iframePlayer"
+                    allowfullscreen
+                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+                    referrerpolicy="no-referrer">
+                </iframe>
+
+            </div>
+
+        </div>
+
+        <div class="info-bar">
+
+            <div class="ch-info">
+
+                <h2>
+                    <span class="live-badge">LIVE</span>
+                    <span id="chName">SELECT CHANNEL</span>
+                </h2>
+
+            </div>
+
+            <div id="watermark">Kasta Sports</div>
+
+        </div>
+
+    </div>
+
+    <!-- LIST -->
+
+    <div class="list-wrap">
+
+        <marquee class="marquee" id="noticeText" scrollamount="4">
+            WELCOME TO Kasta Sports - SYSTEM ONLINE
+        </marquee>
+
+        <div class="cat-bar" id="catMenu">
+        </div>
+
+        <div class="list-items" id="chList"></div>
+
+    </div>
+
+</div>
+
+<footer>
+    <span>VISITORS: 6184</span>
+    <span>STATUS: <span style="color:var(--yellow)">ONLINE</span></span>
+</footer>
+
+<script>
+
+const PLAYLIST_URL =
+"https://raw.githubusercontent.com/srhady/axsports/main/playlist.m3u";
+
+const PLAYER_URL =
+"https://kasta-sports.vercel.app/videojs.html?url=";
+
+let db = {
+    channels:[]
+};
+
+let currentCategory = "All";
+
+let currentSearch = "";
+
+let currentPlaying = "";
+
+function init(){
+
+    document.getElementById('noticeText').innerText =
+    "WELCOME TO Kasta Sports - LIVE SPORTS SYSTEM";
+
+    const wm = document.getElementById('watermark');
+
+    wm.innerText = "Kasta Sports";
+
+    wm.style.color = "#FFD700";
+
+    wm.style.borderColor = "#FFD700";
+
+    loadPlaylist();
+
+    setInterval(() => {
+
+        loadPlaylist(true);
+
+    }, 60000);
+
+}
+
+async function loadPlaylist(silent = false){
+
+    try{
+
+        const response = await fetch(
+            PLAYLIST_URL + "?t=" + Date.now()
+        );
+
+        const text = await response.text();
+
+        const lines = text.split('\n');
+
+        let channels = [];
+
+        let counts = {};
+
+        for(let i=0;i<lines.length;i++){
+
+            const line = lines[i];
+
+            if(line.startsWith('#EXTINF')){
+
+                const url =
+                lines[i + 1]?.trim();
+
+                if(!url || !url.startsWith('http')){
+                    continue;
+                }
+
+                const title =
+                line.split(',').pop().trim();
+
+                const logoMatch =
+                line.match(/tvg-logo="(.*?)"/);
+
+                const groupMatch =
+                line.match(/group-title="(.*?)"/);
+
+                const logo =
+                logoMatch ? logoMatch[1] : "";
+
+                const group =
+                groupMatch ? groupMatch[1] : "Other";
+
+                if(!counts[title]){
+                    counts[title] = 1;
+                }else{
+                    counts[title]++;
+                }
+
+                const serverName =
+                counts[title] > 1
+                ? ` • S${counts[title]}`
+                : "";
+
+                channels.push({
+
+                    name:title + serverName,
+
+                    rawname:title,
+
+                    group:group,
+
+                    logo:logo,
+
+                    url:
+                    PLAYER_URL +
+                    encodeURIComponent(url),
+
+                    icon:title
+                    .substring(0,2)
+                    .toUpperCase()
+
+                });
+
+            }
+
+        }
+
+        db.channels = channels;
+
+        buildCategories();
+
+        applyFilters();
+
+    }catch(err){
+
+        console.error(err);
+
+    }
+
+}
+
+function buildCategories(){
+
+    const menu =
+    document.getElementById('catMenu');
+
+    let html = `
+        <button class="cat-btn ${currentCategory==='All'?'active':''}"
+        onclick="setCat('All')">
+        ALL
+        </button>
+    `;
+
+    const cats = [
+        ...new Set(
+            db.channels.map(c => c.group)
+        )
+    ].sort();
+
+    cats.forEach(c => {
+
+        html += `
+            <button
+            class="cat-btn ${currentCategory===c?'active':''}"
+            onclick="setCat('${c.replace(/'/g,"\\'")}')">
+            ${c}
+            </button>
+        `;
+
+    });
+
+    menu.innerHTML = html;
+
+}
+
+function applyFilters(){
+
+    let filtered = db.channels;
+
+    if(currentCategory !== 'All'){
+
+        filtered = filtered.filter(c =>
+            c.group === currentCategory
+        );
+
+    }
+
+    if(currentSearch){
+
+        filtered = filtered.filter(c =>
+            c.name.toLowerCase()
+            .includes(currentSearch.toLowerCase())
+        );
+
+    }
+
+    render(filtered);
+
+}
+
+function render(list){
+
+    const el =
+    document.getElementById('chList');
+
+    let html = '';
+
+    if(list.length===0){
+
+        html =
+        '<p style="padding:20px;text-align:center;">NO CHANNELS</p>';
+
+        el.innerHTML = html;
+
+        return;
+
+    }
+
+    list.forEach(c => {
+
+        const active =
+        currentPlaying === c.url
+        ? 'active'
+        : '';
+
+        const logo = c.logo
+        ? `<img src="${c.logo}" class="c-icon"
+        onerror="this.nextElementSibling.style.display='grid';this.style.display='none'">`
+        : '';
+
+        const txtIcon =
+        `<div class="c-txt-icon"
+        style="display:${c.logo?'none':'grid'}">
+        ${c.icon}
+        </div>`;
+
+        html += `
+
+        <div class="item ${active}">
+
+            ${logo}
+
+            ${txtIcon}
+
+            <div class="c-meta"
+            onclick="playChannel('${c.url}','${c.name.replace(/'/g,"\\'")}',this)">
+
+                <div class="c-name">
+                    ${c.name}
+                </div>
+
+                <div class="c-cat">
+                    ${c.group}
+                </div>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    el.innerHTML = html;
+
+}
+
+function playChannel(url,name,el){
+
+    currentPlaying = url;
+
+    document.getElementById('chName').innerText =
+    name;
+
+    const iframe =
+    document.getElementById('iframePlayer');
+
+    iframe.src = url;
+
+    document.querySelectorAll('.item').forEach(i =>
+        i.classList.remove('active')
+    );
+
+    if(el){
+        el.parentElement.classList.add('active');
+    }
+
+    if(window.innerWidth < 900){
+
+        document.getElementById('playerTarget')
+        .scrollIntoView({
+            behavior:'smooth'
+        });
+
+    }
+
+}
+
+function setCat(cat){
+
+    currentCategory = cat;
+
+    buildCategories();
+
+    applyFilters();
+
+}
+
+function search(t){
+
+    currentSearch = t;
+
+    applyFilters();
+
+}
+
+document.addEventListener('fullscreenchange', async () => {
+
+    if(document.fullscreenElement){
+
+        try{
+
+            if(screen.orientation &&
+            screen.orientation.lock){
+
+                await screen.orientation.lock('landscape');
+
+            }
+
+        }catch(e){}
+
+    }else{
+
+        try{
+
+            if(screen.orientation &&
+            screen.orientation.unlock){
+
+                screen.orientation.unlock();
+
+            }
+
+        }catch(e){}
+
+    }
+
+});
+
+init();
+
+</script>
+
+</body>
+</html>
