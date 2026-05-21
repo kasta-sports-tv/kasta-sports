@@ -2,99 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BHAGYA LAKSHMI</title>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Adlidziliqram/Adlidziliqram.github.io@main/test/style.css">
     <script src='https://cdn.jsdelivr.net/gh/Adlidziliqram/Adlidziliqram.github.io@main/test/Jq6HIbgz.js'></script>
-
+</head>
+  
+  <body>
     <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
-        }
-
         #player {
             position: absolute;
-            inset: 0;
             width: 100% !important;
             height: 100% !important;
-            overflow: hidden;
-            background: #000;
-        }
-
-        .jwplayer {
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-        .jw-video,
-        .jw-preview,
-        video {
-            object-fit: cover !important;
-        }
-
-        .jw-slider-time {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            flex: 1 !important;
-        }
-
-        .jw-icon-settings {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
-        .jw-text-track-display {
-            display: none !important;
-        }
-
-        .jw-captions {
-            display: none !important;
-        }
-
-        .jw-controlbar {
-            overflow: hidden !important;
-        }
-
-        .jw-button-container {
-            align-items: center !important;
         }
     </style>
-</head>
+    
+    <!-- Player -->
+    <div id="player"></div>
+    <!-- partial -->
 
-<body>
-
-<div id="player"></div>
-
-<script>
-const playerInstance = jwplayer("player").setup({
+    <script>
+    const playerInstance = jwplayer("player").setup({
     controls: true,
     sharing: false,
     displaytitle: true,
     displaydescription: true,
     abouttext: "",
     aboutlink: "",
-
-    stretching: "uniform",
-    autostart: false,
-
-    skin: {
+      
+      skin: {
         name: "netflix"
     },
 
     logo: {
         file: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
     },
-
-    captions: {
+      
+      captions: {
         color: "#FFF",
         fontSize: 14,
         backgroundOpacity: 0,
@@ -104,121 +47,65 @@ const playerInstance = jwplayer("player").setup({
     playlist: [{
         title: "BHAGYA LAKSHMI EPISODE 110 SUBTITLE",
         description: "BUDAYAKAN KLIK IKLAN SEBELUM DAN SESUDAH NONTON",
-
-        image: "https://www.betaura.com.ua/wp-content/uploads/2026/05/kolos-obolon-16x9-1-1536x864.webp",
-
-        sources: [{
-            label: "HD",
-            type: "hls",
-            file: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8",
-            default: true
-        }]
-    }]
+        image: 
+      "https://akamaividz2.zee5.com/image/upload/w_528,h_298,c_scale,f_webp,q_auto:eco/resources/0-1-6z5376464/list/00000189b438a7fd7a70470480355f035f552e5d.jpg",
+        sources: [{label: '0', type: 'dash', file: "https://a151aivottlinear-a.akamaihd.net/OTTB/sin-nitro/live/dash/enc/5qz8wmdome/out/v1/b9323e853dce427eac214b77bd48a204/cenc.mpd", drm: {"clearkey":{"keyId": 'd9623774ac5c8c351aafe97c5fe70267',"key": '5164e6d05164a2d65fa8fcc962aa4861'}},
+                   }],
+            tracks:[
+            {
+            file: "https://adlidziliqram.github.io/bk/110.id.vtt",
+            label: "INDONESIA",
+            kind: "captions",
+            default: true,
+            }],
+    }],
 });
+      
+      playerInstance.on("ready", function() {
 
-playerInstance.on("ready", function() {
-
+    // Move the timeslider in-line with other controls
     const playerContainer = playerInstance.getContainer();
-
-    const buttonContainer =
-        playerContainer.querySelector(".jw-button-container");
-
-    const spacer =
-        buttonContainer.querySelector(".jw-spacer");
-
-    const timeSlider =
-        playerContainer.querySelector(".jw-slider-time");
-
-    if (buttonContainer && spacer && timeSlider) {
-        buttonContainer.replaceChild(timeSlider, spacer);
-    }
+    const buttonContainer = playerContainer.querySelector(".jw-button-container");
+    const spacer = buttonContainer.querySelector(".jw-spacer");
+    const timeSlider = 
+          playerContainer.querySelector(".jw-slider-time");
+    buttonContainer.replaceChild(timeSlider, spacer);
 
     // Forward 10 seconds
     const rewindContainer = playerContainer.querySelector(
         ".jw-display-icon-rewind"
     );
+    const forwardContainer = rewindContainer.cloneNode(true);
+    const forwardDisplayButton = 
+          forwardContainer.querySelector(
+        ".jw-icon-rewind"
+    );
+    forwardDisplayButton.style.transform = "scaleX(-1)";
+    forwardDisplayButton.ariaLabel = "Forward 10 Seconds";
+    const nextContainer = playerContainer.querySelector(".jw-display-icon-next");
+        
+        nextContainer.parentNode.insertBefore(forwardContainer, nextContainer);
 
-    if (rewindContainer) {
-
-        const forwardContainer = rewindContainer.cloneNode(true);
-
-        const forwardDisplayButton =
-            forwardContainer.querySelector(".jw-icon-rewind");
-
-        forwardDisplayButton.style.transform = "scaleX(-1)";
-        forwardDisplayButton.ariaLabel = "Forward 10 Seconds";
-
-        const nextContainer =
-            playerContainer.querySelector(".jw-display-icon-next");
-
-        if (nextContainer) {
-            nextContainer.parentNode.insertBefore(
-                forwardContainer,
-                nextContainer
-            );
-        }
-
-        // hide next button
-        const nextBtn =
-            playerContainer.querySelector(".jw-display-icon-next");
-
-        if (nextBtn) {
-            nextBtn.style.display = "none";
-        }
-
-        // control bar icon
-        const rewindControlBarButton =
-            buttonContainer.querySelector(".jw-icon-rewind");
-
-        if (rewindControlBarButton) {
-
-            const forwardControlBarButton =
-                rewindControlBarButton.cloneNode(true);
-
-            forwardControlBarButton.style.transform = "scaleX(-1)";
-            forwardControlBarButton.ariaLabel = "Forward 10 Seconds";
-
-            rewindControlBarButton.parentNode.insertBefore(
-                forwardControlBarButton,
-                rewindControlBarButton.nextElementSibling
-            );
-
-            [forwardDisplayButton, forwardControlBarButton].forEach((button) => {
-
-                button.onclick = () => {
-
-                    const duration = playerInstance.getDuration();
-                    const position = playerInstance.getPosition();
-
-                    if (duration > 0) {
-                        playerInstance.seek(position + 10);
-                    }
-                };
-            });
-        }
-    }
-
-    // Always keep settings icon visible
-    const rightControls = playerContainer.querySelector(".jw-rightclick");
-
-    const settingsButton = playerContainer.querySelector(".jw-icon-settings");
-
-    if (!settingsButton && buttonContainer) {
-
-        const fakeSettings = document.createElement("div");
-
-        fakeSettings.className =
-            "jw-icon jw-icon-inline jw-button-color jw-reset jw-icon-settings";
-
-        fakeSettings.style.display = "flex";
-        fakeSettings.style.opacity = "1";
-        fakeSettings.style.visibility = "visible";
-        fakeSettings.style.pointerEvents = "none";
-
-        buttonContainer.appendChild(fakeSettings);
-    }
-});
-</script>
-
+    // control bar icon
+    playerContainer.querySelector(".jw-display-icon-next").style.display = "none"; // hide next button
+    const rewindControlBarButton = buttonContainer.querySelector(
+        ".jw-icon-rewind"
+    );
+    const forwardControlBarButton = rewindControlBarButton.cloneNode(true);
+        forwardControlBarButton.style.transform = "scaleX(-1)";
+    forwardControlBarButton.ariaLabel = "Forward 10 Seconds";
+    rewindControlBarButton.parentNode.insertBefore(
+        forwardControlBarButton,
+        rewindControlBarButton.nextElementSibling
+    );
+        
+        // add onclick handlers
+    [forwardDisplayButton, forwardControlBarButton].forEach((button) => {
+        button.onclick = () => {
+            playerInstance.seek(playerInstance.getPosition() + 10);
+        };
+    });
+    });
+    </script>
 </body>
 </html>
