@@ -103,6 +103,20 @@
             opacity: 0;
         }
 
+        /* CUSTOM WATERMARK */
+        .player-watermark {
+            position: absolute;
+            z-index: 999999;
+            pointer-events: none;
+            display: none;
+        }
+
+        .player-watermark img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
         /* MOBILE FIX */
         @media (max-width: 768px) {
 
@@ -161,10 +175,6 @@
             name: "netflix"
         },
 
-        logo: {
-            file: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
-        },
-
         playlist: [{
             title: "4874 0700 5215 1618",
             description: "ПОДЯКА ЗА ТРАНСЛЯЦІЮ:",
@@ -182,6 +192,79 @@
     });
 
     playerInstance.on("ready", function() {
+
+        // CUSTOM WATERMARK
+        const wmContainer = document.createElement("div");
+
+        wmContainer.className = "player-watermark";
+
+        wmContainer.innerHTML = `
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" id="wm-logo">
+        `;
+
+        document
+            .getElementById("player-wrapper")
+            .appendChild(wmContainer);
+
+        const wmImg = document.getElementById("wm-logo");
+
+        const baseWidth = 100;
+
+        function updateWatermark() {
+
+            const isFullscreen =
+                playerInstance.getFullscreen();
+
+            const isDesktop =
+                window.innerWidth > 768;
+
+            if (isFullscreen) {
+
+                if (isDesktop) {
+
+                    wmImg.style.width =
+                        (baseWidth * 3) + "px";
+
+                    wmContainer.style.top = "5%";
+                    wmContainer.style.right = "1%";
+
+                } else {
+
+                    wmImg.style.width =
+                        (baseWidth * 1.2) + "px";
+
+                    wmContainer.style.top = "0.5%";
+                    wmContainer.style.right = "8%";
+                }
+
+            } else {
+
+                if (isDesktop) {
+
+                    wmImg.style.width =
+                        (baseWidth * 2.4) + "px";
+
+                    wmContainer.style.top = "0.5%";
+                    wmContainer.style.right = "0.3%";
+
+                } else {
+
+                    wmImg.style.width =
+                        (baseWidth * 0.8) + "px";
+
+                    wmContainer.style.top = "1%";
+                    wmContainer.style.right = "1%";
+                }
+            }
+        }
+
+        wmContainer.style.display = "block";
+
+        updateWatermark();
+
+        playerInstance.on("fullscreen", updateWatermark);
+
+        window.addEventListener("resize", updateWatermark);
 
         // Move the timeslider in-line with other controls
         const playerContainer = playerInstance.getContainer();
