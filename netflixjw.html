@@ -27,7 +27,6 @@
             overflow: hidden;
         }
 
-        /* fallback for old browsers */
         @supports not (aspect-ratio: 16 / 9) {
             #player-wrapper {
                 height: 0;
@@ -82,7 +81,6 @@
             display: none !important;
         }
 
-        /* KEEP RIGHT BUTTONS POSITION */
         .jw-button-container {
             display: flex !important;
             align-items: center !important;
@@ -94,7 +92,6 @@
             min-width: 120px !important;
         }
 
-        /* fake hidden progress spacer for live streams */
         .jw-slider-time:empty::before {
             content: "";
             display: block;
@@ -103,21 +100,17 @@
             opacity: 0;
         }
 
-        /* CUSTOM WATERMARK */
+        /* WATERMARK */
         .player-watermark {
             position: absolute;
             z-index: 999999;
             pointer-events: none;
-            display: none;
         }
 
         .player-watermark img {
             display: block;
-            width: 100%;
-            height: auto;
         }
 
-        /* MOBILE FIX */
         @media (max-width: 768px) {
 
             body {
@@ -132,7 +125,6 @@
                 margin: 0;
             }
 
-            /* RETURN PLAY BUTTON */
             .jw-button-container {
                 flex-wrap: nowrap !important;
             }
@@ -155,245 +147,226 @@
 
 <body>
 
-    <!-- Player -->
-    <div id="player-wrapper">
-        <div id="player"></div>
-    </div>
+<div id="player-wrapper">
+    <div id="player"></div>
+</div>
 
-    <script>
-    const playerInstance = jwplayer("player").setup({
-        controls: true,
-        sharing: false,
-        displaytitle: true,
-        displaydescription: true,
-        abouttext: "",
-        aboutlink: "",
+<script>
+const playerInstance = jwplayer("player").setup({
+    controls: true,
+    sharing: false,
+    displaytitle: true,
+    displaydescription: true,
+    abouttext: "",
+    aboutlink: "",
 
-        stretching: "uniform",
+    stretching: "uniform",
 
-        skin: {
-            name: "netflix"
-        },
+    skin: {
+        name: "netflix"
+    },
 
-        playlist: [{
-            title: "4874 0700 5215 1618",
-            description: "ПОДЯКА ЗА ТРАНСЛЯЦІЮ:",
+    // disable default JW logo fully
+    logo: {
+        file: "",
+        hide: true
+    },
 
-            image:
-            "https://www.betaura.com.ua/wp-content/uploads/2026/05/kolos-obolon-16x9-1-1536x864.webp",
+    playlist: [{
+        title: "4874 0700 5215 1618",
+        description: "ПОДЯКА ЗА ТРАНСЛЯЦІЮ:",
 
-            sources: [{
-                label: 'HD',
-                type: 'hls',
-                file: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8",
-                default: true
-            }]
+        image: "https://www.betaura.com.ua/wp-content/uploads/2026/05/kolos-obolon-16x9-1-1536x864.webp",
+
+        sources: [{
+            label: 'HD',
+            type: 'hls',
+            file: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8",
+            default: true
         }]
-    });
+    }]
+});
 
-    playerInstance.on("ready", function() {
+playerInstance.on("ready", function() {
 
-        // CUSTOM WATERMARK
-        const wmContainer = document.createElement("div");
+    const wrapper = document.getElementById("player-wrapper");
 
-        wmContainer.className = "player-watermark";
+    /* ===== WATERMARK (FULL CONTROL) ===== */
+    const wmContainer = document.createElement("div");
+    wmContainer.className = "player-watermark";
 
-        wmContainer.innerHTML = `
-            <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" id="wm-logo">
-        `;
+    const wmImg = document.createElement("img");
+    wmImg.src = "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg";
 
-        document
-            .getElementById("player-wrapper")
-            .appendChild(wmContainer);
+    wmContainer.appendChild(wmImg);
+    wrapper.appendChild(wmContainer);
 
-        const wmImg = document.getElementById("wm-logo");
+    function updateWatermark() {
 
-        const baseWidth = 100;
+        const isFullscreen = document.fullscreenElement ||
+            document.querySelector(".jw-flag-fullscreen");
 
-        function updateWatermark() {
+        const isDesktop = window.innerWidth > 768;
 
-            const isFullscreen =
-                playerInstance.getFullscreen();
+        if (isFullscreen) {
 
-            const isDesktop =
-                window.innerWidth > 768;
-
-            if (isFullscreen) {
-
-                if (isDesktop) {
-
-                    wmImg.style.width =
-                        (baseWidth * 3) + "px";
-
-                    wmContainer.style.top = "5%";
-                    wmContainer.style.right = "1%";
-
-                } else {
-
-                    wmImg.style.width =
-                        (baseWidth * 1.2) + "px";
-
-                    wmContainer.style.top = "0.5%";
-                    wmContainer.style.right = "8%";
-                }
-
+            if (isDesktop) {
+                wmImg.style.width = "320px";
+                wmContainer.style.top = "5%";
+                wmContainer.style.right = "2%";
             } else {
+                wmImg.style.width = "140px";
+                wmContainer.style.top = "2%";
+                wmContainer.style.right = "4%";
+            }
 
-                if (isDesktop) {
+        } else {
 
-                    wmImg.style.width =
-                        (baseWidth * 2.4) + "px";
-
-                    wmContainer.style.top = "0.5%";
-                    wmContainer.style.right = "0.3%";
-
-                } else {
-
-                    wmImg.style.width =
-                        (baseWidth * 0.8) + "px";
-
-                    wmContainer.style.top = "1%";
-                    wmContainer.style.right = "1%";
-                }
+            if (isDesktop) {
+                wmImg.style.width = "240px";
+                wmContainer.style.top = "2%";
+                wmContainer.style.right = "2%";
+            } else {
+                wmImg.style.width = "90px";
+                wmContainer.style.top = "2%";
+                wmContainer.style.right = "2%";
             }
         }
 
-        wmContainer.style.display = "block";
-
-        updateWatermark();
-
-        playerInstance.on("fullscreen", updateWatermark);
-
-        window.addEventListener("resize", updateWatermark);
-
-        // Move the timeslider in-line with other controls
-        const playerContainer = playerInstance.getContainer();
-
-        const buttonContainer =
-            playerContainer.querySelector(".jw-button-container");
-
-        const spacer =
-            buttonContainer.querySelector(".jw-spacer");
-
-        const timeSlider =
-            playerContainer.querySelector(".jw-slider-time");
-
-        if (
-            buttonContainer &&
-            spacer &&
-            timeSlider &&
-            window.innerWidth > 768
-        ) {
-            buttonContainer.replaceChild(timeSlider, spacer);
+        // always keep inside correct root (fix JW fullscreen DOM swap)
+        const fs = document.querySelector(".jw-flag-fullscreen");
+        if (fs && wmContainer.parentElement !== fs) {
+            fs.appendChild(wmContainer);
+        } else if (!fs && wmContainer.parentElement !== wrapper) {
+            wrapper.appendChild(wmContainer);
         }
+    }
 
-        // FIX RIGHT BUTTONS SHIFT ON LIVE STREAMS
-        if (
-            buttonContainer &&
-            !timeSlider &&
-            window.innerWidth > 768
-        ) {
+    updateWatermark();
 
-            const fakeSlider = document.createElement("div");
+    playerInstance.on("fullscreen", updateWatermark);
+    window.addEventListener("resize", updateWatermark);
 
-            fakeSlider.className = "jw-slider-time";
+    /* ===== KEEP YOUR ORIGINAL CONTROL FIXES ===== */
 
-            fakeSlider.style.flex = "1 1 auto";
-            fakeSlider.style.minWidth = "120px";
-            fakeSlider.style.height = "4px";
-            fakeSlider.style.opacity = "0";
-            fakeSlider.style.pointerEvents = "none";
+    const playerContainer = playerInstance.getContainer();
 
-            buttonContainer.insertBefore(
-                fakeSlider,
-                buttonContainer.children[3]
+    const buttonContainer =
+        playerContainer.querySelector(".jw-button-container");
+
+    const spacer =
+        buttonContainer.querySelector(".jw-spacer");
+
+    const timeSlider =
+        playerContainer.querySelector(".jw-slider-time");
+
+    if (
+        buttonContainer &&
+        spacer &&
+        timeSlider &&
+        window.innerWidth > 768
+    ) {
+        buttonContainer.replaceChild(timeSlider, spacer);
+    }
+
+    if (
+        buttonContainer &&
+        !timeSlider &&
+        window.innerWidth > 768
+    ) {
+        const fakeSlider = document.createElement("div");
+
+        fakeSlider.className = "jw-slider-time";
+
+        fakeSlider.style.flex = "1 1 auto";
+        fakeSlider.style.minWidth = "120px";
+        fakeSlider.style.height = "4px";
+        fakeSlider.style.opacity = "0";
+        fakeSlider.style.pointerEvents = "none";
+
+        buttonContainer.insertBefore(
+            fakeSlider,
+            buttonContainer.children[3]
+        );
+    }
+
+    if (window.innerWidth <= 768) {
+
+        const playButton =
+            playerContainer.querySelector(".jw-icon-playback");
+
+        if (playButton) {
+            playButton.style.display = "flex";
+            playButton.style.visibility = "visible";
+            playButton.style.opacity = "1";
+        }
+    }
+
+    const rewindContainer =
+        playerContainer.querySelector(".jw-display-icon-rewind");
+
+    if (rewindContainer) {
+
+        const forwardContainer =
+            rewindContainer.cloneNode(true);
+
+        const forwardDisplayButton =
+            forwardContainer.querySelector(".jw-icon-rewind");
+
+        forwardDisplayButton.style.transform = "scaleX(-1)";
+        forwardDisplayButton.ariaLabel = "Forward 10 Seconds";
+
+        const nextContainer =
+            playerContainer.querySelector(".jw-display-icon-next");
+
+        if (nextContainer) {
+            nextContainer.parentNode.insertBefore(
+                forwardContainer,
+                nextContainer
             );
         }
 
-        // MOBILE PLAY BUTTON FIX
-        if (window.innerWidth <= 768) {
+        const nextButton =
+            playerContainer.querySelector(".jw-display-icon-next");
 
-            const playButton =
-                playerContainer.querySelector(".jw-icon-playback");
-
-            if (playButton) {
-                playButton.style.display = "flex";
-                playButton.style.visibility = "visible";
-                playButton.style.opacity = "1";
-            }
+        if (nextButton) {
+            nextButton.style.display = "none";
         }
 
-        // Forward 10 seconds
-        const rewindContainer = playerContainer.querySelector(
-            ".jw-display-icon-rewind"
-        );
+        const rewindControlBarButton =
+            buttonContainer.querySelector(".jw-icon-rewind");
 
-        if (rewindContainer) {
+        if (rewindControlBarButton) {
 
-            const forwardContainer =
-                rewindContainer.cloneNode(true);
+            const forwardControlBarButton =
+                rewindControlBarButton.cloneNode(true);
 
-            const forwardDisplayButton =
-                forwardContainer.querySelector(
-                    ".jw-icon-rewind"
-                );
+            forwardControlBarButton.style.transform = "scaleX(-1)";
+            forwardControlBarButton.ariaLabel = "Forward 10 Seconds";
 
-            forwardDisplayButton.style.transform = "scaleX(-1)";
-            forwardDisplayButton.ariaLabel = "Forward 10 Seconds";
+            rewindControlBarButton.parentNode.insertBefore(
+                forwardControlBarButton,
+                rewindControlBarButton.nextElementSibling
+            );
 
-            const nextContainer =
-                playerContainer.querySelector(".jw-display-icon-next");
+            [forwardDisplayButton, forwardControlBarButton].forEach((button) => {
 
-            if (nextContainer) {
-                nextContainer.parentNode.insertBefore(
-                    forwardContainer,
-                    nextContainer
-                );
-            }
+                button.onclick = () => {
 
-            // control bar icon
-            const nextButton =
-                playerContainer.querySelector(".jw-display-icon-next");
+                    const duration = playerInstance.getDuration();
 
-            if (nextButton) {
-                nextButton.style.display = "none";
-            }
-
-            const rewindControlBarButton =
-                buttonContainer.querySelector(".jw-icon-rewind");
-
-            if (rewindControlBarButton) {
-
-                const forwardControlBarButton =
-                    rewindControlBarButton.cloneNode(true);
-
-                forwardControlBarButton.style.transform = "scaleX(-1)";
-                forwardControlBarButton.ariaLabel = "Forward 10 Seconds";
-
-                rewindControlBarButton.parentNode.insertBefore(
-                    forwardControlBarButton,
-                    rewindControlBarButton.nextElementSibling
-                );
-
-                // add onclick handlers
-                [forwardDisplayButton, forwardControlBarButton].forEach((button) => {
-
-                    button.onclick = () => {
-
-                        const duration = playerInstance.getDuration();
-
-                        if (duration && duration !== Infinity) {
-
-                            playerInstance.seek(
-                                playerInstance.getPosition() + 10
-                            );
-                        }
-                    };
-                });
-            }
+                    if (duration && duration !== Infinity) {
+                        playerInstance.seek(
+                            playerInstance.getPosition() + 10
+                        );
+                    }
+                };
+            });
         }
-    });
-    </script>
+    }
+
+});
+</script>
 
 </body>
 </html>
