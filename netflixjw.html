@@ -1,73 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BHAGYA LAKSHMI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BHAGYA LAKSHMI</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Adlidziliqram/Adlidziliqram.github.io@main/test/style.css">
-    <script src='https://cdn.jsdelivr.net/gh/Adlidziliqram/Adlidziliqram.github.io@main/test/Jq6HIbgz.js'></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Adlidziliqram/Adlidziliqram.github.io@main/test/style.css">
+<script src='https://cdn.jsdelivr.net/gh/Adlidziliqram/Adlidziliqram.github.io@main/test/Jq6HIbgz.js'></script>
 
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
-        }
+<style>
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
 
-        #player {
-            position: absolute;
-            inset: 0;
-            width: 100% !important;
-            height: 100% !important;
-            overflow: hidden;
-            background: #000;
-        }
+#player {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden;
+    background: #000;
+}
 
-        .jwplayer {
-            width: 100% !important;
-            height: 100% !important;
-        }
+.jwplayer {
+    width: 100% !important;
+    height: 100% !important;
+    background: #000 !important;
+}
 
-        .jw-video,
-        .jw-preview,
-        video {
-            object-fit: cover !important;
-        }
+/* FIX POSTER */
+.jw-preview,
+.jw-preview video,
+.jw-preview-image,
+.jw-stretch-uniform .jw-preview-image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: fill !important;
+    background-size: 100% 100% !important;
+    background-position: center center !important;
+}
 
-        .jw-slider-time {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            flex: 1 !important;
-        }
+/* FIX VIDEO FULLSCREEN */
+.jw-video,
+.jw-video video,
+video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #000 !important;
+}
 
-        .jw-icon-settings {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
+/* FULLSCREEN FIX */
+.jwplayer.jw-flag-fullscreen,
+.jwplayer.jw-state-playing.jw-flag-fullscreen,
+.jw-fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    background: #000 !important;
+}
 
-        .jw-text-track-display {
-            display: none !important;
-        }
+.jwplayer.jw-flag-fullscreen video {
+    object-fit: contain !important;
+}
 
-        .jw-captions {
-            display: none !important;
-        }
+/* ALWAYS SHOW PROGRESS BAR */
+.jw-slider-time {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex: 1 !important;
+    min-width: 120px !important;
+}
 
-        .jw-controlbar {
-            overflow: hidden !important;
-        }
+/* DISABLE SEEK BUT KEEP BAR */
+.jw-live .jw-slider-time,
+.jw-flag-live .jw-slider-time {
+    pointer-events: none !important;
+    opacity: .85 !important;
+}
 
-        .jw-button-container {
-            align-items: center !important;
-        }
-    </style>
+/* ALWAYS KEEP CONTROLBAR NORMAL */
+.jw-controlbar {
+    overflow: hidden !important;
+}
+
+.jw-button-container {
+    align-items: center !important;
+}
+
+/* REMOVE SUBTITLES */
+.jw-text-track-display,
+.jw-captions {
+    display: none !important;
+}
+
+/* QUALITY BUTTON */
+.fake-quality-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 12px;
+    color: rgba(255,255,255,.9);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: default;
+    user-select: none;
+    white-space: nowrap;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .fake-quality-btn {
+        font-size: 11px;
+        padding: 0 8px;
+    }
+
+    .jw-slider-time {
+        min-width: 70px !important;
+    }
+}
+</style>
 </head>
 
 <body>
@@ -108,9 +168,9 @@ const playerInstance = jwplayer("player").setup({
         image: "https://www.betaura.com.ua/wp-content/uploads/2026/05/kolos-obolon-16x9-1-1536x864.webp",
 
         sources: [{
-            label: "HD",
+            label: "1080p",
             type: "hls",
-            file: "https://betkinglive.online/betking/video.m3u8",
+            file: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8",
             default: true
         }]
     }]
@@ -118,7 +178,8 @@ const playerInstance = jwplayer("player").setup({
 
 playerInstance.on("ready", function() {
 
-    const playerContainer = playerInstance.getContainer();
+    const playerContainer =
+        playerInstance.getContainer();
 
     const buttonContainer =
         playerContainer.querySelector(".jw-button-container");
@@ -129,18 +190,40 @@ playerInstance.on("ready", function() {
     const timeSlider =
         playerContainer.querySelector(".jw-slider-time");
 
+    /* MOVE PROGRESS BAR INLINE */
     if (buttonContainer && spacer && timeSlider) {
         buttonContainer.replaceChild(timeSlider, spacer);
     }
 
-    // Forward 10 seconds
+    /* FORCE PROGRESS BAR EXIST */
+    if (!timeSlider && buttonContainer) {
+
+        const fakeSlider = document.createElement("div");
+
+        fakeSlider.className = "jw-slider-time";
+
+        fakeSlider.style.flex = "1";
+        fakeSlider.style.height = "4px";
+        fakeSlider.style.margin = "0 12px";
+        fakeSlider.style.borderRadius = "999px";
+        fakeSlider.style.background = "rgba(255,255,255,.25)";
+        fakeSlider.style.pointerEvents = "none";
+
+        buttonContainer.insertBefore(
+            fakeSlider,
+            buttonContainer.children[3]
+        );
+    }
+
+    /* FORWARD 10 SEC */
     const rewindContainer = playerContainer.querySelector(
         ".jw-display-icon-rewind"
     );
 
     if (rewindContainer) {
 
-        const forwardContainer = rewindContainer.cloneNode(true);
+        const forwardContainer =
+            rewindContainer.cloneNode(true);
 
         const forwardDisplayButton =
             forwardContainer.querySelector(".jw-icon-rewind");
@@ -152,13 +235,13 @@ playerInstance.on("ready", function() {
             playerContainer.querySelector(".jw-display-icon-next");
 
         if (nextContainer) {
+
             nextContainer.parentNode.insertBefore(
                 forwardContainer,
                 nextContainer
             );
         }
 
-        // hide next button
         const nextBtn =
             playerContainer.querySelector(".jw-display-icon-next");
 
@@ -166,7 +249,6 @@ playerInstance.on("ready", function() {
             nextBtn.style.display = "none";
         }
 
-        // control bar icon
         const rewindControlBarButton =
             buttonContainer.querySelector(".jw-icon-rewind");
 
@@ -187,10 +269,13 @@ playerInstance.on("ready", function() {
 
                 button.onclick = () => {
 
-                    const duration = playerInstance.getDuration();
-                    const position = playerInstance.getPosition();
+                    const duration =
+                        playerInstance.getDuration();
 
-                    if (duration > 0) {
+                    const position =
+                        playerInstance.getPosition();
+
+                    if (duration > 0 && duration !== Infinity) {
                         playerInstance.seek(position + 10);
                     }
                 };
@@ -198,24 +283,32 @@ playerInstance.on("ready", function() {
         }
     }
 
-    // Always keep settings icon visible
-    const rightControls = playerContainer.querySelector(".jw-rightclick");
+    /* REMOVE ORIGINAL SETTINGS IF BROKEN */
+    const settingsButton =
+        playerContainer.querySelector(".jw-icon-settings");
 
-    const settingsButton = playerContainer.querySelector(".jw-icon-settings");
+    if (settingsButton) {
+        settingsButton.style.display = "none";
+    }
 
-    if (!settingsButton && buttonContainer) {
+    /* ADD FAKE QUALITY BUTTON */
+    const fakeQuality =
+        document.createElement("div");
 
-        const fakeSettings = document.createElement("div");
+    fakeQuality.className = "fake-quality-btn";
+    fakeQuality.innerText = "1080p";
 
-        fakeSettings.className =
-            "jw-icon jw-icon-inline jw-button-color jw-reset jw-icon-settings";
+    buttonContainer.appendChild(fakeQuality);
 
-        fakeSettings.style.display = "flex";
-        fakeSettings.style.opacity = "1";
-        fakeSettings.style.visibility = "visible";
-        fakeSettings.style.pointerEvents = "none";
+});
 
-        buttonContainer.appendChild(fakeSettings);
+/* FULLSCREEN MOBILE FIX */
+document.addEventListener("fullscreenchange", () => {
+
+    const vid = document.querySelector("video");
+
+    if (vid) {
+        vid.style.objectFit = "contain";
     }
 });
 </script>
