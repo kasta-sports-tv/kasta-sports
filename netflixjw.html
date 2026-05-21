@@ -177,8 +177,13 @@
         const timeSlider =
             playerContainer.querySelector(".jw-slider-time");
 
-        if (buttonContainer && spacer && timeSlider) {
-            buttonContainer.replaceChild(timeSlider, spacer);
+        if (
+    buttonContainer &&
+    spacer &&
+    timeSlider &&
+    window.innerWidth > 768
+) {
+    buttonContainer.replaceChild(timeSlider, spacer);
         }
 
         // FIX RIGHT BUTTONS SHIFT ON LIVE STREAMS
