@@ -18,10 +18,13 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 <style>
 
 :root{
-    --yellow:#FFD700;
-    --bg:#1a1a00;
-    --panel:rgba(30,30,0,0.98);
-    --border:1px solid var(--yellow);
+    --accent:#E50914;
+    --bg:#0A0A0A;
+    --panel:#141414;
+    --card:#1F1F1F;
+    --text:#FFFFFF;
+    --text-secondary:#B3B3B3;
+    --border:rgba(255,255,255,0.08);
 }
 
 *{
@@ -35,7 +38,7 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 
 body{
     background:var(--bg);
-    color:var(--yellow);
+    color:var(--text);
     height:100vh;
     display:flex;
     flex-direction:column;
@@ -50,8 +53,8 @@ header{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    border-bottom:1px solid var(--yellow);
-    background:#111100;
+    border-bottom:1px solid var(--border);
+    background:#0F0F0F;
     z-index:100;
 }
 
@@ -59,20 +62,29 @@ header{
     font-family:'Rajdhani',sans-serif;
     font-size:28px;
     font-weight:700;
-    letter-spacing:1px;
-    color:var(--yellow);
+    letter-spacing:1.5px;
+    color:#FFFFFF;
     cursor:pointer;
-    text-shadow:0 0 14px var(--yellow);
+    text-shadow:0 0 20px var(--accent),
+                0 0 40px rgba(229,9,20,0.3);
+    transition:0.3s;
 }
+
+.logo:hover{
+    text-shadow:0 0 25px var(--accent),
+                0 0 50px rgba(229,9,20,0.5);
+}
+
+/* SEARCH */
 
 .search-wrap{
     position:relative;
 }
 
 .search{
-    background:#222200;
-    border:1px solid var(--yellow);
-    color:var(--yellow);
+    background:#1F1F1F;
+    border:1px solid var(--border);
+    color:var(--text);
     padding:9px 14px;
     width:180px;
     font-size:14px;
@@ -83,12 +95,13 @@ header{
 }
 
 .search::placeholder{
-    color:#d4c15a;
+    color:#666666;
 }
 
 .search:focus{
-    box-shadow:0 0 12px var(--yellow);
-    width:220px;
+    box-shadow:0 0 0 3px rgba(229,9,20,0.3);
+    border-color:var(--accent);
+    width:240px;
 }
 
 /* CONTAINER */
@@ -110,7 +123,7 @@ header{
 .player-wrap{
     display:flex;
     flex-direction:column;
-    border:1px solid var(--yellow);
+    border:1px solid var(--border);
     background:#000;
     overflow:hidden;
     height:100%;
@@ -141,8 +154,8 @@ header{
 
 .info-bar{
     padding:12px;
-    background:#222200;
-    border-top:1px solid var(--yellow);
+    background:var(--panel);
+    border-top:1px solid var(--border);
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -152,33 +165,34 @@ header{
     font-family:'Rajdhani',sans-serif;
     font-size:18px;
     margin:0;
-    color:#fff;
+    color:var(--text);
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
 }
 
 .live-badge{
-    background:#ff4444;
+    background:var(--accent);
     color:#fff;
-    padding:3px 7px;
+    padding:3px 8px;
     font-size:11px;
     border-radius:4px;
-    animation:blink 1s infinite;
-    margin-right:5px;
+    animation:blink 1.2s infinite;
+    margin-right:6px;
     vertical-align:middle;
     font-weight:700;
+    letter-spacing:0.5px;
 }
 
 #watermark{
     font-family:'Rajdhani',sans-serif;
-    border:1px solid var(--yellow);
-    padding:5px 10px;
+    border:1px solid var(--accent);
+    padding:5px 12px;
     font-size:13px;
-    opacity:0.9;
-    color:var(--yellow);
+    color:var(--accent);
     border-radius:8px;
     font-weight:700;
+    text-shadow:0 0 10px rgba(229,9,20,0.5);
 }
 
 /* LIST SECTION */
@@ -186,7 +200,7 @@ header{
 .list-wrap{
     display:flex;
     flex-direction:column;
-    border:1px solid var(--yellow);
+    border:1px solid var(--border);
     background:var(--panel);
     overflow:hidden;
     height:100%;
@@ -194,22 +208,22 @@ header{
 }
 
 .marquee{
-    background:#111100;
-    color:#ffcc00;
+    background:#0F0F0F;
+    color:#AAAAAA;
     padding:8px;
     font-size:13px;
-    border-bottom:1px solid #444400;
+    border-bottom:1px solid var(--border);
     white-space:nowrap;
     overflow:hidden;
     font-weight:600;
 }
 
 .cat-bar{
-    background:#0a0a00;
+    background:#0A0A0A;
     padding:10px;
     overflow-x:auto;
     white-space:nowrap;
-    border-bottom:1px solid #333300;
+    border-bottom:1px solid var(--border);
     scrollbar-width:none;
     flex-shrink:0;
 }
@@ -219,29 +233,30 @@ header{
 }
 
 .cat-btn{
-    background:#1d1d00;
-    color:#b9a93f;
-    border:1px solid #444400;
+    background:var(--card);
+    color:var(--text-secondary);
+    border:1px solid var(--border);
     padding:8px 14px;
     margin-right:5px;
     cursor:pointer;
     font-size:13px;
     font-family:'Inter',sans-serif;
     border-radius:8px;
-    transition:0.2s;
+    transition:0.3s;
     font-weight:700;
 }
 
 .cat-btn:hover{
-    background:#2b2b00;
-    color:#fff2a8;
+    background:#2A2A2A;
+    color:#FFFFFF;
+    border-color:#444;
 }
 
 .cat-btn.active{
-    color:#000;
-    background:var(--yellow);
-    font-weight:bold;
-    border-color:var(--yellow);
+    color:#FFFFFF;
+    background:var(--accent);
+    border-color:var(--accent);
+    box-shadow:0 0 12px rgba(229,9,20,0.4);
 }
 
 .list-items{
@@ -254,28 +269,28 @@ header{
     display:flex;
     align-items:center;
     padding:13px 10px;
-    border-bottom:1px solid #333300;
+    border-bottom:1px solid var(--border);
     cursor:pointer;
     transition:0.2s;
 }
 
 .item:hover{
-    background:rgba(255,215,0,0.1);
+    background:rgba(229,9,20,0.08);
 }
 
 .item.active{
-    background:rgba(255,215,0,0.2);
-    border-left:4px solid var(--yellow);
+    background:rgba(229,9,20,0.12);
+    border-left:4px solid var(--accent);
 }
 
 .c-icon{
     width:48px;
     height:48px;
-    background:#fff;
+    background:#1F1F1F;
     margin-right:12px;
     object-fit:contain;
     border-radius:10px;
-    border:1px solid #666600;
+    border:1px solid #333;
     flex-shrink:0;
     padding:4px;
 }
@@ -283,9 +298,9 @@ header{
 .c-txt-icon{
     width:48px;
     height:48px;
-    background:#111100;
-    color:var(--yellow);
-    border:1px solid var(--yellow);
+    background:var(--card);
+    color:var(--accent);
+    border:1px solid var(--accent);
     display:grid;
     place-items:center;
     margin-right:12px;
@@ -305,12 +320,12 @@ header{
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    color:#ffcc00;
+    color:var(--text);
 }
 
 .c-cat{
     font-size:12px;
-    color:#888800;
+    color:var(--text-secondary);
     margin-top:3px;
 }
 
@@ -318,15 +333,39 @@ header{
 
 footer{
     flex-shrink:0;
-    background:#111100;
-    border-top:1px solid var(--yellow);
+    background:#0F0F0F;
+    border-top:1px solid var(--border);
     padding:6px 12px;
     font-size:12px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    color:#888800;
+    color:#666666;
     font-weight:600;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar{
+    width:5px;
+    background:#0F0F0F;
+}
+
+::-webkit-scrollbar-thumb{
+    background:var(--accent);
+    border-radius:10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#FF1E2E;
+}
+
+/* ANIMATIONS */
+
+@keyframes blink{
+    50%{
+        opacity:0.6;
+    }
 }
 
 /* MOBILE */
@@ -355,7 +394,7 @@ footer{
     }
 
     .search:focus{
-        width:140px;
+        width:160px;
     }
 
     .container{
@@ -369,7 +408,7 @@ footer{
 
     .player-wrap{
         border:none;
-        border-bottom:2px solid var(--yellow);
+        border-bottom:2px solid var(--accent);
         height:auto;
         flex-shrink:0;
         border-radius:0;
@@ -405,21 +444,6 @@ footer{
 
 }
 
-::-webkit-scrollbar{
-    width:4px;
-    background:#111100;
-}
-
-::-webkit-scrollbar-thumb{
-    background:var(--yellow);
-}
-
-@keyframes blink{
-    50%{
-        opacity:0.5;
-    }
-}
-
 </style>
 </head>
 
@@ -444,7 +468,6 @@ footer{
 <div class="container">
 
     <!-- PLAYER -->
-
     <div class="player-wrap" id="playerTarget">
 
         <div class="video-container">
@@ -481,11 +504,10 @@ footer{
     </div>
 
     <!-- LIST -->
-
     <div class="list-wrap">
 
         <marquee class="marquee" id="noticeText" scrollamount="4">
-            WELCOME TO Kasta Sports - SYSTEM ONLINE
+            Test site | Live streames
         </marquee>
 
         <div class="cat-bar" id="catMenu">
@@ -498,8 +520,8 @@ footer{
 </div>
 
 <footer>
-    <span>VISITORS: 6184</span>
-    <span>STATUS: <span style="color:var(--yellow)">ONLINE</span></span>
+    <span>VISITORS: --</span>
+    <span>STATUS: <span style="color:var(--accent)">ONLINE</span></span>
 </footer>
 
 <script>
@@ -528,10 +550,8 @@ function init(){
     const wm = document.getElementById('watermark');
 
     wm.innerText = "Kasta Sports";
-
-    wm.style.color = "#FFD700";
-
-    wm.style.borderColor = "#FFD700";
+    wm.style.color = "#E50914";
+    wm.style.borderColor = "#E50914";
 
     loadPlaylist();
 
@@ -705,7 +725,7 @@ function render(list){
     if(list.length===0){
 
         html =
-        '<p style="padding:20px;text-align:center;">NO CHANNELS</p>';
+        '<p style="padding:20px;text-align:center;color:#666;">NO CHANNELS</p>';
 
         el.innerHTML = html;
 
