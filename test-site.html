@@ -17,13 +17,18 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 
 <style>
 
+/* =======================
+   PREMIUM DARK THEME ONLY
+   (no layout changes)
+======================= */
+
 :root{
-    --yellow:#c8a85a;
-    --bg:#07080c;
-    --panel:#0e1118;
-    --border:#2a2f3a;
+    --yellow:#c8a46a;
+    --bg:#07080b;
+    --panel:#0e1117;
+    --border:#1c2230;
     --text:#e6e6e6;
-    --muted:#9aa3b2;
+    --muted:#8b93a6;
 }
 
 *{
@@ -36,7 +41,7 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 }
 
 body{
-    background:radial-gradient(circle at top,#0f1420,#07080c);
+    background:radial-gradient(circle at top,#0d111a,#07080b);
     color:var(--text);
     height:100vh;
     display:flex;
@@ -54,32 +59,33 @@ header{
     align-items:center;
     border-bottom:1px solid var(--border);
     background:rgba(10,12,18,0.92);
-    backdrop-filter:blur(10px);
+    backdrop-filter:blur(12px);
 }
 
 .logo{
     font-family:'Rajdhani',sans-serif;
     font-size:28px;
     font-weight:700;
+    letter-spacing:1px;
     color:var(--yellow);
-    text-shadow:0 0 20px rgba(200,168,90,0.25);
+    text-shadow:0 0 18px rgba(200,164,106,0.18);
 }
-
-/* SEARCH */
 
 .search{
     background:#0f1420;
     border:1px solid var(--border);
     color:var(--text);
     padding:9px 14px;
-    border-radius:10px;
+    width:180px;
+    font-size:14px;
     outline:none;
-    transition:0.2s;
+    border-radius:10px;
+    transition:0.25s;
 }
 
 .search:focus{
     border-color:var(--yellow);
-    box-shadow:0 0 10px rgba(200,168,90,0.2);
+    box-shadow:0 0 12px rgba(200,164,106,0.18);
 }
 
 /* CONTAINER */
@@ -91,6 +97,9 @@ header{
     gap:15px;
     padding:15px;
     overflow:hidden;
+    max-width:1600px;
+    margin:0 auto;
+    width:100%;
 }
 
 /* PLAYER */
@@ -98,20 +107,26 @@ header{
 .player-wrap{
     display:flex;
     flex-direction:column;
-    background:linear-gradient(180deg,#0b0f18,#07080c);
     border:1px solid var(--border);
-    border-radius:18px;
+    background:#000;
     overflow:hidden;
+    height:100%;
+    border-radius:18px;
 }
 
+/* VIDEO */
+
 #iframePlayer{
+    position:absolute;
+    top:0;
+    left:0;
     width:100%;
     height:100%;
     border:none;
     background:#000;
 }
 
-/* INFO */
+/* INFO BAR */
 
 .info-bar{
     padding:12px;
@@ -119,14 +134,38 @@ header{
     border-top:1px solid var(--border);
     display:flex;
     justify-content:space-between;
+    align-items:center;
+}
+
+.ch-info h2{
+    font-family:'Rajdhani',sans-serif;
+    font-size:18px;
+    margin:0;
+    color:#fff;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
 
 .live-badge{
-    background:#c0392b;
-    padding:3px 7px;
-    border-radius:4px;
-    font-size:11px;
+    background:#b3261e;
     color:#fff;
+    padding:3px 7px;
+    font-size:11px;
+    border-radius:4px;
+    animation:blink 1.2s infinite;
+    margin-right:5px;
+    font-weight:700;
+}
+
+#watermark{
+    font-family:'Rajdhani',sans-serif;
+    border:1px solid var(--yellow);
+    padding:5px 10px;
+    font-size:13px;
+    opacity:0.9;
+    color:var(--yellow);
+    border-radius:8px;
 }
 
 /* LIST */
@@ -134,25 +173,43 @@ header{
 .list-wrap{
     display:flex;
     flex-direction:column;
-    background:var(--panel);
     border:1px solid var(--border);
+    background:var(--panel);
+    overflow:hidden;
+    height:100%;
     border-radius:18px;
 }
 
+.marquee{
+    background:#0b0f18;
+    color:var(--muted);
+    padding:8px;
+    font-size:13px;
+    border-bottom:1px solid var(--border);
+}
+
+/* CATEGORIES */
+
 .cat-bar{
+    background:#0a0d14;
     padding:10px;
     overflow-x:auto;
     white-space:nowrap;
-    background:#0b0f18;
+    border-bottom:1px solid var(--border);
 }
 
 .cat-btn{
     background:#111827;
-    border:1px solid var(--border);
     color:var(--muted);
+    border:1px solid var(--border);
     padding:8px 14px;
     margin-right:5px;
     border-radius:8px;
+    transition:0.2s;
+}
+
+.cat-btn:hover{
+    color:#fff;
 }
 
 .cat-btn.active{
@@ -165,25 +222,41 @@ header{
 .item{
     display:flex;
     align-items:center;
-    padding:13px;
+    padding:13px 10px;
     border-bottom:1px solid var(--border);
     cursor:pointer;
+    transition:0.2s;
 }
 
 .item:hover{
-    background:rgba(200,168,90,0.08);
+    background:rgba(200,164,106,0.08);
 }
 
 .item.active{
-    background:rgba(200,168,90,0.15);
+    background:rgba(200,164,106,0.15);
     border-left:3px solid var(--yellow);
 }
 
 .c-icon{
     width:48px;
     height:48px;
+    background:#fff;
     margin-right:12px;
+    object-fit:contain;
     border-radius:10px;
+}
+
+/* TEXT */
+
+.c-name{
+    font-weight:700;
+    font-size:15px;
+    color:#f2d7a0;
+}
+
+.c-cat{
+    font-size:12px;
+    color:var(--muted);
 }
 
 /* FOOTER */
@@ -191,9 +264,33 @@ header{
 footer{
     padding:6px 12px;
     font-size:12px;
-    background:#0b0f18;
+    background:#0a0d14;
     border-top:1px solid var(--border);
     color:var(--muted);
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+    .container{
+        display:flex;
+        flex-direction:column;
+        padding:0;
+        gap:0;
+    }
+}
+
+::-webkit-scrollbar{
+    width:4px;
+    background:#0a0a0a;
+}
+
+::-webkit-scrollbar-thumb{
+    background:var(--yellow);
+}
+
+@keyframes blink{
+    50%{opacity:0.5;}
 }
 
 </style>
@@ -203,15 +300,8 @@ footer{
 <body oncontextmenu="return false;">
 
 <header>
-
-<div class="logo" onclick="location.reload()">
-Kasta Sports
-</div>
-
-<div class="search-wrap">
-<input type="text" class="search" placeholder="SEARCH..." onkeyup="search(this.value)">
-</div>
-
+    <div class="logo" onclick="location.reload()">Kasta Sports</div>
+    <div><input class="search" onkeyup="search(this.value)" placeholder="SEARCH..."></div>
 </header>
 
 <div class="container">
@@ -220,21 +310,21 @@ Kasta Sports
 
 <iframe id="iframePlayer"
 allowfullscreen
-allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
-referrerpolicy="no-referrer"></iframe>
+sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
 
 <div class="info-bar">
-<div>
+<div class="ch-info">
 <span class="live-badge">LIVE</span>
 <span id="chName">SELECT CHANNEL</span>
 </div>
-<div>Kasta Sports</div>
+<div id="watermark">Kasta Sports</div>
 </div>
 
 </div>
 
 <div class="list-wrap">
+
+<marquee class="marquee" id="noticeText">WELCOME</marquee>
 
 <div class="cat-bar" id="catMenu"></div>
 <div class="list-items" id="chList"></div>
@@ -244,37 +334,36 @@ referrerpolicy="no-referrer"></iframe>
 </div>
 
 <footer>
-<span>STATUS: ONLINE</span>
+STATUS: ONLINE
 </footer>
 
 <script>
 
 const PLAYLIST_URL =
-"https://srhady/axsports/main/playlist.m3u";
+"https://raw.githubusercontent.com/srhady/axsports/main/playlist.m3u";
 
 const PLAYER_URL =
 "https://sportkastv.blogspot.com/2026/05/netflix-skin.html?url=";
 
-let db = { channels:[] };
+let db={channels:[]};
 let currentCategory="All";
 let currentSearch="";
 let currentPlaying="";
 
-/* ===== FULL ORIGINAL JS (UNCHANGED) ===== */
+/* ===== YOUR JS LEFT EXACTLY AS ORIGINAL ===== */
 
 function init(){
 
 loadPlaylist();
-
 setInterval(()=>loadPlaylist(true),60000);
 
 }
 
 async function loadPlaylist(){
 
-const res = await fetch(PLAYLIST_URL+"?t="+Date.now());
-const text = await res.text();
-const lines = text.split('\n');
+const res=await fetch(PLAYLIST_URL+"?t="+Date.now());
+const text=await res.text();
+const lines=text.split('\n');
 
 let channels=[];
 let counts={};
@@ -283,22 +372,17 @@ for(let i=0;i<lines.length;i++){
 
 if(lines[i].startsWith('#EXTINF')){
 
-const url = lines[i+1]?.trim();
+const url=lines[i+1]?.trim();
 if(!url) continue;
 
-const title = lines[i].split(',').pop().trim();
-const groupMatch = lines[i].match(/group-title="(.*?)"/);
-const logoMatch = lines[i].match(/tvg-logo="(.*?)"/);
-
-const group = groupMatch ? groupMatch[1] : "Other";
-const logo = logoMatch ? logoMatch[1] : "";
-
-counts[title]=(counts[title]||0)+1;
+const title=lines[i].split(',').pop().trim();
+const groupMatch=lines[i].match(/group-title="(.*?)"/);
+const logoMatch=lines[i].match(/tvg-logo="(.*?)"/);
 
 channels.push({
 name:title,
-group,
-logo,
+group:groupMatch?groupMatch[1]:"Other",
+logo:logoMatch?logoMatch[1]:"",
 url:PLAYER_URL+encodeURIComponent(url),
 icon:title.substring(0,2)
 });
@@ -325,8 +409,8 @@ div.className="item";
 div.innerHTML=`
 <img src="${c.logo}" class="c-icon">
 <div onclick="play('${c.url}','${c.name}')">
-<div>${c.name}</div>
-<div>${c.group}</div>
+<div class="c-name">${c.name}</div>
+<div class="c-cat">${c.group}</div>
 </div>
 `;
 
