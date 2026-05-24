@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="referrer" content="no-referrer">
+
+<title>Kasta Sports</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --yellow:#c8a85a;
+    --bg:#07080c;
+    --panel:#0e1118;
+    --border:#2a2f3a;
+    --text:#e6e6e6;
+    --muted:#9aa3b2;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    background:radial-gradient(circle at top,#0f1420,#07080c);
+    color:var(--text);
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+/* HEADER */
+
+header{
+    flex-shrink:0;
+    padding:12px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid var(--border);
+    background:rgba(10,12,18,0.92);
+    backdrop-filter:blur(10px);
+}
+
+.logo{
+    font-family:'Rajdhani',sans-serif;
+    font-size:28px;
+    font-weight:700;
+    color:var(--yellow);
+    text-shadow:0 0 20px rgba(200,168,90,0.25);
+}
+
+/* SEARCH */
+
+.search{
+    background:#0f1420;
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:9px 14px;
+    border-radius:10px;
+    outline:none;
+    transition:0.2s;
+}
+
+.search:focus{
+    border-color:var(--yellow);
+    box-shadow:0 0 10px rgba(200,168,90,0.2);
+}
+
+/* CONTAINER */
+
+.container{
+    flex:1;
+    display:grid;
+    grid-template-columns:3fr 1.2fr;
+    gap:15px;
+    padding:15px;
+    overflow:hidden;
+}
+
+/* PLAYER */
+
+.player-wrap{
+    display:flex;
+    flex-direction:column;
+    background:linear-gradient(180deg,#0b0f18,#07080c);
+    border:1px solid var(--border);
+    border-radius:18px;
+    overflow:hidden;
+}
+
+#iframePlayer{
+    width:100%;
+    height:100%;
+    border:none;
+    background:#000;
+}
+
+/* INFO */
+
+.info-bar{
+    padding:12px;
+    background:#0f1420;
+    border-top:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+}
+
+.live-badge{
+    background:#c0392b;
+    padding:3px 7px;
+    border-radius:4px;
+    font-size:11px;
+    color:#fff;
+}
+
+/* LIST */
+
+.list-wrap{
+    display:flex;
+    flex-direction:column;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:18px;
+}
+
+.cat-bar{
+    padding:10px;
+    overflow-x:auto;
+    white-space:nowrap;
+    background:#0b0f18;
+}
+
+.cat-btn{
+    background:#111827;
+    border:1px solid var(--border);
+    color:var(--muted);
+    padding:8px 14px;
+    margin-right:5px;
+    border-radius:8px;
+}
+
+.cat-btn.active{
+    background:var(--yellow);
+    color:#000;
+}
+
+/* ITEMS */
+
+.item{
+    display:flex;
+    align-items:center;
+    padding:13px;
+    border-bottom:1px solid var(--border);
+    cursor:pointer;
+}
+
+.item:hover{
+    background:rgba(200,168,90,0.08);
+}
+
+.item.active{
+    background:rgba(200,168,90,0.15);
+    border-left:3px solid var(--yellow);
+}
+
+.c-icon{
+    width:48px;
+    height:48px;
+    margin-right:12px;
+    border-radius:10px;
+}
+
+/* FOOTER */
+
+footer{
+    padding:6px 12px;
+    font-size:12px;
+    background:#0b0f18;
+    border-top:1px solid var(--border);
+    color:var(--muted);
+}
+
+</style>
+
+</head>
+
+<body oncontextmenu="return false;">
+
+<header>
+
+<div class="logo" onclick="location.reload()">
+Kasta Sports
+</div>
+
+<div class="search-wrap">
+<input type="text" class="search" placeholder="SEARCH..." onkeyup="search(this.value)">
+</div>
+
+</header>
+
+<div class="container">
+
+<div class="player-wrap" id="playerTarget">
+
+<iframe id="iframePlayer"
+allowfullscreen
+allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+referrerpolicy="no-referrer"></iframe>
+
+<div class="info-bar">
+<div>
+<span class="live-badge">LIVE</span>
+<span id="chName">SELECT CHANNEL</span>
+</div>
+<div>Kasta Sports</div>
+</div>
+
+</div>
+
+<div class="list-wrap">
+
+<div class="cat-bar" id="catMenu"></div>
+<div class="list-items" id="chList"></div>
+
+</div>
+
+</div>
+
+<footer>
+<span>STATUS: ONLINE</span>
+</footer>
+
+<script>
+
+const PLAYLIST_URL =
+"https://srhady/axsports/main/playlist.m3u";
+
+const PLAYER_URL =
+"https://sportkastv.blogspot.com/2026/05/netflix-skin.html?url=";
+
+let db = { channels:[] };
+let currentCategory="All";
+let currentSearch="";
+let currentPlaying="";
+
+/* ===== FULL ORIGINAL JS (UNCHANGED) ===== */
+
+function init(){
+
+loadPlaylist();
+
+setInterval(()=>loadPlaylist(true),60000);
+
+}
+
+async function loadPlaylist(){
+
+const res = await fetch(PLAYLIST_URL+"?t="+Date.now());
+const text = await res.text();
+const lines = text.split('\n');
+
+let channels=[];
+let counts={};
+
+for(let i=0;i<lines.length;i++){
+
+if(lines[i].startsWith('#EXTINF')){
+
+const url = lines[i+1]?.trim();
+if(!url) continue;
+
+const title = lines[i].split(',').pop().trim();
+const groupMatch = lines[i].match(/group-title="(.*?)"/);
+const logoMatch = lines[i].match(/tvg-logo="(.*?)"/);
+
+const group = groupMatch ? groupMatch[1] : "Other";
+const logo = logoMatch ? logoMatch[1] : "";
+
+counts[title]=(counts[title]||0)+1;
+
+channels.push({
+name:title,
+group,
+logo,
+url:PLAYER_URL+encodeURIComponent(url),
+icon:title.substring(0,2)
+});
+
+}
+
+}
+
+db.channels=channels;
+render(channels);
+
+}
+
+function render(list){
+
+const el=document.getElementById('chList');
+el.innerHTML="";
+
+list.forEach(c=>{
+
+const div=document.createElement("div");
+div.className="item";
+
+div.innerHTML=`
+<img src="${c.logo}" class="c-icon">
+<div onclick="play('${c.url}','${c.name}')">
+<div>${c.name}</div>
+<div>${c.group}</div>
+</div>
+`;
+
+el.appendChild(div);
+
+});
+
+}
+
+function play(url,name){
+
+document.getElementById('iframePlayer').src=url;
+document.getElementById('chName').innerText=name;
+
+}
+
+function search(t){
+
+render(db.channels.filter(c=>
+c.name.toLowerCase().includes(t.toLowerCase())
+));
+
+}
+
+init();
+
+</script>
+
+</body>
+</html>
