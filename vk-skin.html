@@ -23,7 +23,7 @@
             background: black;
             isolation: isolate;
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* FIX: було center */
             justify-content: center;
         }
 
@@ -47,7 +47,7 @@
             inset: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain;           /* Головна зміна */
+            object-fit: contain;
             background: black;
             z-index: 9999;
             opacity: 1;
@@ -88,41 +88,9 @@
             50%  { transform: rotate(180deg) scale(1); opacity: 1; }
             100% { transform: rotate(360deg) scale(0.85); opacity: 0.6; }
         }
-
-        /* LIVE індикатор */
-        #live-indicator {
-            position: fixed;
-            bottom: 15px;
-            left: 105px;
-            z-index: 999999;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            font-size: 12px;
-            font-family: Arial, sans-serif;
-            font-weight: 600;
-            pointer-events: none;
-        }
-
-        #live-dot {
-            width: 8px;
-            height: 8px;
-            background: red;
-            border-radius: 50%;
-            animation: pulse 1.2s infinite;
-        }
-
-        @keyframes pulse {
-            0%   { transform: scale(1); opacity: 1; }
-            50%  { transform: scale(1.6); opacity: 0.5; }
-            100% { transform: scale(1); opacity: 1; }
-        }
     </style>
 </head>
+
 <body>
 
     <div id="player-wrapper">
@@ -131,17 +99,10 @@
         <div id="player"></div>
     </div>
 
-    <!-- LIVE індикатор -->
-    <div id="live-indicator">
-        <div id="live-dot"></div>
-        LIVE
-    </div>
-
     <script>
         const image = document.getElementById("myImage");
         const spinner = document.getElementById("spinner");
 
-        // Прибираємо заставку та спінер
         setTimeout(() => {
             image.style.opacity = 0;
             spinner.style.opacity = 0;
@@ -154,37 +115,23 @@
     </script>
 
     <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
+
     <script>
+        const params = new URLSearchParams(window.location.search);
+
+        const streamUrl =
+            params.get("url") ||
+            "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
+
         var vs = {
             id: "player",
-            file: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8",
+            file: decodeURIComponent(streamUrl),
             poster: "",
             autoplay: 0,
             lang: "en"
         };
 
         var player = new Playerjs(vs);
-
-        /* Fullscreen fix для LIVE індикатора */
-        function keepLiveVisible() {
-            const live = document.getElementById("live-indicator");
-
-            function move() {
-                const fs = document.fullscreenElement ||
-                           document.webkitFullscreenElement ||
-                           document.querySelector("#player-wrapper");
-
-                if (fs && live.parentElement !== fs) {
-                    fs.appendChild(live);
-                }
-            }
-
-            document.addEventListener("fullscreenchange", move);
-            document.addEventListener("webkitfullscreenchange", move);
-            setInterval(move, 800);
-        }
-
-        keepLiveVisible();
     </script>
 
 </body>
