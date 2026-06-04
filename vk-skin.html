@@ -23,7 +23,7 @@
             background: black;
             isolation: isolate;
             display: flex;
-            align-items: flex-start; /* FIX: було center */
+            align-items: flex-start; /* важливо */
             justify-content: center;
         }
 
@@ -41,10 +41,11 @@
             background: black;
         }
 
-        /* Заставка */
+        /* POSTER */
         #myImage {
             position: absolute;
-            inset: 0;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: contain;
@@ -54,14 +55,14 @@
             transition: opacity 1s ease-out;
         }
 
-        /* Спінер */
+        /* SPINNER FIXED */
         #spinner {
-            position: fixed;
-            top: 50%;
+            position: absolute;   /* ВАЖЛИВО: було fixed */
+            top: 10px;            /* тепер зверху */
             left: 50%;
+            transform: translateX(-50%);
             width: 56px;
             height: 56px;
-            margin: -28px 0 0 -28px;
             z-index: 10000;
             border-radius: 50%;
             border: 4px solid rgba(255, 0, 0, 0.2);
@@ -93,46 +94,46 @@
 
 <body>
 
-    <div id="player-wrapper">
-        <img id="myImage" src="https://static3.go3.tv/scale/go3/webuploads/rest/upload/programme/11443963/images/28577507?dsth=202&dstw=360&srcmode=0&quality=80&type=2&srcx=1&srcy=1&srcw=1%2F1&srch=1%2F1">
-        <div id="spinner"></div>
-        <div id="player"></div>
-    </div>
+<div id="player-wrapper">
+    <img id="myImage" src="https://static3.go3.tv/scale/go3/webuploads/rest/upload/programme/11443963/images/28577507?dsth=202&dstw=360&srcmode=0&quality=80&type=2&srcx=1&srcy=1&srcw=1%2F1&srch=1%2F1">
+    <div id="spinner"></div>
+    <div id="player"></div>
+</div>
 
-    <script>
-        const image = document.getElementById("myImage");
-        const spinner = document.getElementById("spinner");
+<script>
+    const image = document.getElementById("myImage");
+    const spinner = document.getElementById("spinner");
+
+    setTimeout(() => {
+        image.style.opacity = 0;
+        spinner.style.opacity = 0;
 
         setTimeout(() => {
-            image.style.opacity = 0;
-            spinner.style.opacity = 0;
+            image.style.display = "none";
+            spinner.style.display = "none";
+        }, 1000);
+    }, 3000);
+</script>
 
-            setTimeout(() => {
-                image.style.display = "none";
-                spinner.style.display = "none";
-            }, 1000);
-        }, 3000);
-    </script>
+<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
 
-    <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
+<script>
+    const params = new URLSearchParams(window.location.search);
 
-    <script>
-        const params = new URLSearchParams(window.location.search);
+    const streamUrl =
+        params.get("url") ||
+        "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
 
-        const streamUrl =
-            params.get("url") ||
-            "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
+    var vs = {
+        id: "player",
+        file: decodeURIComponent(streamUrl),
+        poster: "",
+        autoplay: 0,
+        lang: "en"
+    };
 
-        var vs = {
-            id: "player",
-            file: decodeURIComponent(streamUrl),
-            poster: "",
-            autoplay: 0,
-            lang: "en"
-        };
-
-        var player = new Playerjs(vs);
-    </script>
+    var player = new Playerjs(vs);
+</script>
 
 </body>
 </html>
