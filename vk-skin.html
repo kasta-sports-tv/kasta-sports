@@ -17,7 +17,7 @@
             overflow: hidden;
         }
 
-        /* ВАЖЛИВО: весь контент тепер "прибитий" до верху */
+        /* ВАЖЛИВО: все тепер прив’язано до верху */
         #player-wrapper {
             position: fixed;
             top: 0;
@@ -45,7 +45,7 @@
             background: black;
         }
 
-        /* POSTER (тепер теж правильно прив'язаний) */
+        /* POSTER — тепер теж НЕ центрується від viewport */
         #myImage {
             position: absolute;
             top: 0;
@@ -59,39 +59,23 @@
             transition: opacity 1s ease-out;
         }
 
-        /* SPINNER — повернув "нормальний", стабільний */
+        /* ОРИГІНАЛЬНИЙ СПІНЕР (простий, як був) */
         #spinner {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 56px;
-            height: 56px;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ccc;
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
             z-index: 10000;
-            border-radius: 50%;
-            border: 4px solid rgba(255, 0, 0, 0.2);
-            border-top-color: red;
-            animation: spin 1.6s linear infinite;
-            transition: opacity 1s ease;
         }
 
-        #spinner::after {
-            content: "";
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            border: 4px solid transparent;
-            border-top-color: red;
-            border-right-color: rgba(255,0,0,0.6);
-            filter: drop-shadow(0 0 6px red);
-            animation: dash 1.6s ease-in-out infinite;
-        }
-
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes dash {
-            0%   { transform: rotate(0deg) scale(0.85); opacity: 0.6; }
-            50%  { transform: rotate(180deg) scale(1); opacity: 1; }
-            100% { transform: rotate(360deg) scale(0.85); opacity: 0.6; }
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
     </style>
 </head>
