@@ -17,7 +17,7 @@
             overflow: hidden;
         }
 
-        /* ВАЖЛИВО: все тепер прив’язано до верху */
+        /* FIX: більше НЕ центруємо по вертикалі */
         #player-wrapper {
             position: fixed;
             top: 0;
@@ -25,10 +25,6 @@
             width: 100%;
             height: 100%;
             background: black;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            isolation: isolate;
         }
 
         #player {
@@ -45,7 +41,7 @@
             background: black;
         }
 
-        /* POSTER — тепер теж НЕ центрується від viewport */
+        /* FIX: poster тепер реально зверху */
         #myImage {
             position: absolute;
             top: 0;
@@ -59,9 +55,9 @@
             transition: opacity 1s ease-out;
         }
 
-        /* ОРИГІНАЛЬНИЙ СПІНЕР (простий, як був) */
+        /* spinner простий */
         #spinner {
-            position: fixed;
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
