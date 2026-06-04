@@ -17,14 +17,18 @@
             overflow: hidden;
         }
 
+        /* ВАЖЛИВО: весь контент тепер "прибитий" до верху */
         #player-wrapper {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: black;
-            isolation: isolate;
             display: flex;
-            align-items: flex-start; /* важливо */
+            align-items: flex-start;
             justify-content: center;
+            isolation: isolate;
         }
 
         #player {
@@ -41,7 +45,7 @@
             background: black;
         }
 
-        /* POSTER */
+        /* POSTER (тепер теж правильно прив'язаний) */
         #myImage {
             position: absolute;
             top: 0;
@@ -55,12 +59,12 @@
             transition: opacity 1s ease-out;
         }
 
-        /* SPINNER FIXED */
+        /* SPINNER — повернув "нормальний", стабільний */
         #spinner {
-            position: absolute;   /* ВАЖЛИВО: було fixed */
-            top: 10px;            /* тепер зверху */
+            position: fixed;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             width: 56px;
             height: 56px;
             z-index: 10000;
