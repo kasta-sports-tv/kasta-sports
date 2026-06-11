@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<style>
+
+/* =========================
+   HARD RESET (Blogspot safe)
+========================= */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+}
+
+/* =========================
+   FIX: REMOVE BLOGSPOT GAP
+========================= */
+body {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* =========================
+   JW STYLE WRAPPER
+========================= */
+#player-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+}
+
+/* fallback */
+@supports not (aspect-ratio: 16 / 9) {
+    #player-wrapper {
+        height: calc(100vw * 9 / 16);
+    }
+}
+
+/* =========================
+   PLAYER AREA
+========================= */
+#player {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background: #000;
+}
+
+/* VK PLAYER FIX */
+#player iframe,
+#player video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #000 !important;
+}
+
+/* =========================
+   POSTER
+========================= */
+#myImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+    z-index: 9999;
+    transition: opacity .8s ease;
+    pointer-events: none;
+}
+
+/* =========================
+   SPINNER
+========================= */
+#spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
+    border: 5px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 10000;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* =========================
+   LIVE MENU (ADDED - НЕ ЛАМАЄ ТВОЄ)
+========================= */
+#liveMenu {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 20000;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s ease;
+}
+
+#liveMenu.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.live-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 12px;
+    border-radius: 10px;
+
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+
+    font-family: Arial;
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.live-btn.active {
+    border-color: red;
+    color: red;
+    box-shadow: 0 0 10px rgba(255,0,0,0.6);
+}
+
+/* fullscreen safe */
+:fullscreen #liveMenu {
+    left: 18px;
+}
+
+/* =========================
+   BLOGSPOT FIX (НЕ ЧІПАЮ ТВОЄ)
+========================= */
+#player * {
+    box-sizing: border-box !important;
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    line-height: normal !important;
+}
+
+#player [class*="quality"],
+#player [class*="menu"],
+#player [class*="settings"] {
+    writing-mode: horizontal-tb !important;
+    white-space: nowrap !important;
+}
+
+/* =========================
+   MOBILE FIX (НЕ ЧІПАЮ)
+========================= */
+@media (max-width: 768px) {
+    html, body {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    #player-wrapper {
+        width: 100vw;
+        left: 0;
+        top: 0;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="player-wrapper">
+
+    <div id="player"></div>
+
+    <img id="myImage"
+         src="https://www.jumpdesign.co.uk/wp-content/uploads/2025/07/HD-GRABS_0000_Layer-55-1250x703.jpg">
+
+    <div id="spinner"></div>
+
+    <!-- LIVE MENU (ADDED) -->
+    <div id="liveMenu"></div>
+
+</div>
+
+<script>
+/* =========================
+   STREAMS
+========================= */
+const streams = [
+    {
+        name: "Live 1",
+        flag: "🇺🇦",
+        url: "https://live-nstu.cdn-03.cosmonova.net.ua/mobile-app/main/Suspilne-Sport/master.m3u8?key=YcCUSSFsx0Q3YMgtd2OA"
+    },
+    {
+        name: "Live 2",
+        flag: "🇬🇧",
+        url: "https://example.com/live2.m3u8"
+    },
+    {
+        name: "Live 3",
+        flag: "🇪🇸",
+        url: "https://example.com/live3.m3u8"
+    }
+];
+
+let current = 0;
+let playerInstance = null;
+
+const menu = document.getElementById("liveMenu");
+
+/* =========================
+   LOAD PLAYER (FULL RELOAD - як ти хотів)
+========================= */
+function loadStream(i) {
+    current = i;
+
+    document.getElementById("player").innerHTML = "";
+
+    playerInstance = new Playerjs({
+        id: "player",
+        file: streams[i].url,
+        poster: "",
+        autoplay: 1,
+        lang: "en"
+    });
+
+    updateActive();
+}
+
+/* =========================
+   MENU BUILD
+========================= */
+function buildMenu() {
+    menu.innerHTML = "";
+
+    streams.forEach((s, i) => {
+        const btn = document.createElement("div");
+        btn.className = "live-btn";
+        btn.innerHTML = `${s.flag} ${s.name}`;
+
+        btn.onclick = () => loadStream(i);
+
+        menu.appendChild(btn);
+    });
+
+    updateActive();
+}
+
+function updateActive() {
+    document.querySelectorAll(".live-btn").forEach((b, i) => {
+        b.classList.toggle("active", i === current);
+    });
+}
+
+/* =========================
+   SHOW/HIDE MENU (FIX FULLSCREEN)
+========================= */
+let hideTimer;
+
+function showMenu() {
+    menu.classList.add("show");
+
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+        menu.classList.remove("show");
+    }, 3000);
+}
+
+/* IMPORTANT: працює і в fullscreen */
+document.addEventListener("click", showMenu);
+document.addEventListener("touchstart", showMenu);
+
+/* =========================
+   INIT PLAYER START (FIX ТВОЄЇ ПРОБЛЕМИ)
+========================= */
+buildMenu();
+
+/* стартовий стрім = Live 1 */
+loadStream(0);
+</script>
+
+<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
+
+<script>
+const img = document.getElementById("myImage");
+const spinner = document.getElementById("spinner");
+
+setTimeout(() => {
+    img.style.opacity = "0";
+    spinner.style.opacity = "0";
+
+    setTimeout(() => {
+        img.remove();
+        spinner.remove();
+    }, 800);
+}, 3000);
+</script>
+
+</body>
+</html>
