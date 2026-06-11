@@ -9,9 +9,7 @@
 
 <style>
 
-/* =========================
-   HARD RESET (Blogspot safe)
-========================= */
+/* ========================= HARD RESET ========================= */
 html, body {
     margin: 0;
     padding: 0;
@@ -20,44 +18,30 @@ html, body {
     overflow: hidden;
 }
 
-/* =========================
-   FIX: REMOVE BLOGSPOT GAP
-========================= */
 body {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
 }
 
-/* =========================
-   JW STYLE WRAPPER
-========================= */
+/* ========================= WRAPPER ========================= */
 #player-wrapper {
     position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
     max-width: 100vw;
-    margin: 0;
-    padding: 0;
-
     aspect-ratio: 16 / 9;
     background: #000;
     overflow: hidden;
 }
 
-/* fallback */
 @supports not (aspect-ratio: 16 / 9) {
     #player-wrapper {
         height: calc(100vw * 9 / 16);
     }
 }
 
-/* =========================
-   PLAYER AREA
-========================= */
+/* ========================= PLAYER ========================= */
 #player {
     position: absolute;
     inset: 0;
@@ -66,7 +50,6 @@ body {
     background: #000;
 }
 
-/* VK PLAYER FIX */
 #player iframe,
 #player video {
     width: 100% !important;
@@ -75,9 +58,7 @@ body {
     background: #000 !important;
 }
 
-/* =========================
-   POSTER
-========================= */
+/* ========================= POSTER ========================= */
 #myImage {
     position: absolute;
     inset: 0;
@@ -90,9 +71,7 @@ body {
     pointer-events: none;
 }
 
-/* =========================
-   SPINNER
-========================= */
+/* ========================= SPINNER ========================= */
 #spinner {
     position: absolute;
     top: 50%;
@@ -111,9 +90,7 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* =========================
-   LIVE MENU (ADDED - НЕ ЛАМАЄ ТВОЄ)
-========================= */
+/* ========================= LIVE MENU ========================= */
 #liveMenu {
     position: absolute;
     left: 12px;
@@ -158,14 +135,27 @@ body {
     box-shadow: 0 0 10px rgba(255,0,0,0.6);
 }
 
+/* ========================= MOBILE FIX (ONLY CHANGED PART) ========================= */
+@media (max-width: 768px) {
+
+    #liveMenu {
+        gap: 6px; /* було 10px */
+        left: 10px;
+    }
+
+    .live-btn {
+        padding: 7px 10px; /* зменшено */
+        font-size: 12px;   /* зменшено */
+        gap: 6px;
+    }
+}
+
 /* fullscreen safe */
 :fullscreen #liveMenu {
     left: 18px;
 }
 
-/* =========================
-   BLOGSPOT FIX (НЕ ЧІПАЮ ТВОЄ)
-========================= */
+/* ========================= BLOGSPOT FIX ========================= */
 #player * {
     box-sizing: border-box !important;
     writing-mode: horizontal-tb !important;
@@ -182,22 +172,6 @@ body {
     white-space: nowrap !important;
 }
 
-/* =========================
-   MOBILE FIX (НЕ ЧІПАЮ)
-========================= */
-@media (max-width: 768px) {
-    html, body {
-        height: 100%;
-        overflow: hidden;
-    }
-
-    #player-wrapper {
-        width: 100vw;
-        left: 0;
-        top: 0;
-    }
-}
-
 </style>
 </head>
 
@@ -212,15 +186,11 @@ body {
 
     <div id="spinner"></div>
 
-    <!-- LIVE MENU (ADDED) -->
     <div id="liveMenu"></div>
 
 </div>
 
 <script>
-/* =========================
-   STREAMS
-========================= */
 const streams = [
     {
         name: "Live 1",
@@ -240,32 +210,22 @@ const streams = [
 ];
 
 let current = 0;
-let playerInstance = null;
-
 const menu = document.getElementById("liveMenu");
 
-/* =========================
-   LOAD PLAYER (FULL RELOAD - як ти хотів)
-========================= */
 function loadStream(i) {
     current = i;
 
     document.getElementById("player").innerHTML = "";
 
-    playerInstance = new Playerjs({
+    new Playerjs({
         id: "player",
         file: streams[i].url,
-        poster: "",
-        autoplay: 1,
-        lang: "en"
+        autoplay: 0   // 🔥 FIX: тепер НЕ автоплей, тільки підвантаження
     });
 
     updateActive();
 }
 
-/* =========================
-   MENU BUILD
-========================= */
 function buildMenu() {
     menu.innerHTML = "";
 
@@ -273,9 +233,7 @@ function buildMenu() {
         const btn = document.createElement("div");
         btn.className = "live-btn";
         btn.innerHTML = `${s.flag} ${s.name}`;
-
         btn.onclick = () => loadStream(i);
-
         menu.appendChild(btn);
     });
 
@@ -288,9 +246,7 @@ function updateActive() {
     });
 }
 
-/* =========================
-   SHOW/HIDE MENU (FIX FULLSCREEN)
-========================= */
+/* show menu */
 let hideTimer;
 
 function showMenu() {
@@ -302,17 +258,15 @@ function showMenu() {
     }, 3000);
 }
 
-/* IMPORTANT: працює і в fullscreen */
-document.addEventListener("click", showMenu);
-document.addEventListener("touchstart", showMenu);
+document.addEventListener("pointerdown", showMenu);
 
-/* =========================
-   INIT PLAYER START (FIX ТВОЄЇ ПРОБЛЕМИ)
-========================= */
+/* INIT */
 buildMenu();
 
-/* стартовий стрім = Live 1 */
-loadStream(0);
+/* 🔥 FIX: тільки preload Live 1 */
+window.addEventListener("load", () => {
+    loadStream(0);
+});
 </script>
 
 <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
