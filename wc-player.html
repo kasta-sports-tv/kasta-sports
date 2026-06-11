@@ -129,23 +129,30 @@ body {
     cursor: pointer;
 }
 
+.live-btn img {
+    width: 18px;
+    height: 12px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
 .live-btn.active {
     border-color: red;
     color: red;
     box-shadow: 0 0 10px rgba(255,0,0,0.6);
 }
 
-/* ========================= MOBILE FIX (ONLY CHANGED PART) ========================= */
+/* ========================= MOBILE FIX ========================= */
 @media (max-width: 768px) {
 
     #liveMenu {
-        gap: 6px; /* було 10px */
+        gap: 6px;
         left: 10px;
     }
 
     .live-btn {
-        padding: 7px 10px; /* зменшено */
-        font-size: 12px;   /* зменшено */
+        padding: 7px 10px;
+        font-size: 12px;
         gap: 6px;
     }
 }
@@ -199,7 +206,7 @@ const streams = [
     },
     {
         name: "Stream 2",
-        flag: "https://img.magnific.com/free-photo/abstract-surface-textures-white-concrete-stone-wall_74190-8189.jpg?semt=ais_hybrid&w=740&q=80",
+        flag: "https://img.magnific.com/free-photo/abstract-surface-textures-white-concrete-stone-wall_74190-8189.jpg",
         url: "https://mf.kasta-sports-tv.workers.dev/?url=https://t5.ultrastream.vip/mtv_laliga/index.m3u8"
     },
     {
@@ -220,7 +227,7 @@ function loadStream(i) {
     new Playerjs({
         id: "player",
         file: streams[i].url,
-        autoplay: 0   // 🔥 FIX: тепер НЕ автоплей, тільки підвантаження
+        autoplay: 0
     });
 
     updateActive();
@@ -232,8 +239,18 @@ function buildMenu() {
     streams.forEach((s, i) => {
         const btn = document.createElement("div");
         btn.className = "live-btn";
-        btn.innerHTML = `${s.flag} ${s.name}`;
+
+        const img = document.createElement("img");
+        img.src = s.flag;
+
+        const text = document.createElement("span");
+        text.textContent = " " + s.name;
+
+        btn.appendChild(img);
+        btn.appendChild(text);
+
         btn.onclick = () => loadStream(i);
+
         menu.appendChild(btn);
     });
 
@@ -246,7 +263,7 @@ function updateActive() {
     });
 }
 
-/* show menu */
+/* menu */
 let hideTimer;
 
 function showMenu() {
@@ -263,7 +280,6 @@ document.addEventListener("pointerdown", showMenu);
 /* INIT */
 buildMenu();
 
-/* 🔥 FIX: тільки preload Live 1 */
 window.addEventListener("load", () => {
     loadStream(0);
 });
