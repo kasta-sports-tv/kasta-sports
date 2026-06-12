@@ -35,15 +35,21 @@ iframe {
     border: 0;
 }
 
-/* ===== OVERLAY (IMPORTANT FIX) ===== */
-#touchLayer {
+/* ===== BUTTON ZONE ONLY (NOT FULL SCREEN) ===== */
+#buttonZone {
     position: absolute;
-    inset: 0;
-    z-index: 5;
+    top: 0;
+    left: 0;
+
+    width: 140px;          /* 👈 тільки вузька зона */
+    height: 100%;
+
+    z-index: 10;
+
     background: transparent;
 }
 
-/* ===== MENU ===== */
+/* ===== MENU INSIDE ZONE ===== */
 #liveMenu {
     position: absolute;
     top: 10px;
@@ -52,8 +58,6 @@ iframe {
     display: flex;
     flex-direction: column;
     gap: 10px;
-
-    z-index: 10;
 
     opacity: 0;
     pointer-events: none;
@@ -65,6 +69,7 @@ iframe {
     pointer-events: auto;
 }
 
+/* buttons */
 .live-btn {
     display: flex;
     align-items: center;
@@ -101,10 +106,10 @@ iframe {
 
     <div id="player"></div>
 
-    <!-- 🔥 THIS FIXES EVERYTHING -->
-    <div id="touchLayer"></div>
-
-    <div id="liveMenu"></div>
+    <!-- 🔥 ONLY LEFT STRIP IS ACTIVE -->
+    <div id="buttonZone">
+        <div id="liveMenu"></div>
+    </div>
 
 </div>
 
@@ -131,7 +136,7 @@ let current = 0;
 
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
-const touchLayer = document.getElementById("touchLayer");
+const zone = document.getElementById("buttonZone");
 
 /* ===== LOAD STREAM ===== */
 function loadStream(i) {
@@ -182,7 +187,7 @@ function updateActive() {
     });
 }
 
-/* ===== SHOW / HIDE ===== */
+/* ===== SHOW / HIDE ONLY IN ZONE ===== */
 let hideTimer;
 
 function showMenu() {
@@ -194,8 +199,8 @@ function showMenu() {
     }, 3000);
 }
 
-/* 🔥 THIS IS THE KEY FIX */
-touchLayer.addEventListener("pointerdown", (e) => {
+/* 👇 ONLY LEFT ZONE HANDLES TAPS */
+zone.addEventListener("pointerdown", (e) => {
     showMenu();
 });
 
