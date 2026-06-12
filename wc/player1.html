@@ -42,15 +42,19 @@ body {
     width: 100% !important;
     height: 100% !important;
     background: #000;
+
     z-index: 1;
 }
 
+/* 🔥 FIX: iframe НЕ блокує кліки */
 #player iframe,
 #player video {
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
     background: #000 !important;
+
+    pointer-events: auto;
 }
 
 /* ========================= POSTER ========================= */
@@ -95,7 +99,9 @@ body {
     flex-direction: column;
     gap: 10px;
 
-    z-index: 9999999;
+    /* 🔥 FIX: СУПЕР ВАЖЛИВО */
+    z-index: 99999999;
+
     opacity: 0;
     pointer-events: none;
     transition: .25s ease;
@@ -121,6 +127,7 @@ body {
     font-family: Arial;
     font-size: 14px;
     cursor: pointer;
+    user-select: none;
 }
 
 .live-btn img {
@@ -194,14 +201,13 @@ const streams = [
 let current = 0;
 const menu = document.getElementById("liveMenu");
 
+/* ========================= LOAD STREAM ========================= */
 function loadStream(i) {
     current = i;
 
     const player = document.getElementById("player");
 
-    while (player.firstChild) {
-        player.removeChild(player.firstChild);
-    }
+    player.innerHTML = "";
 
     const s = streams[i];
 
@@ -264,27 +270,13 @@ function showMenu() {
 
 document.addEventListener("pointerdown", showMenu);
 
-/* ========================= POSTER + SPINNER FIX ========================= */
-window.addEventListener("load", () => {
-
+/* ========================= INIT ========================= */
+document.addEventListener("DOMContentLoaded", () => {
     buildMenu();
+});
+
+window.addEventListener("load", () => {
     loadStream(0);
-
-    // 🔥 FIX: ховаємо спінер і постер після старту
-    setTimeout(() => {
-        const img = document.getElementById("myImage");
-        const spinner = document.getElementById("spinner");
-
-        if (img) {
-            img.style.opacity = "0";
-            setTimeout(() => img.remove(), 800);
-        }
-
-        if (spinner) {
-            spinner.style.opacity = "0";
-            setTimeout(() => spinner.remove(), 800);
-        }
-    }, 1200);
 });
 
 </script>
