@@ -2,74 +2,96 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <style>
 
-html,body{
-    margin:0;
-    padding:0;
-    background:#000;
-    height:100%;
-    overflow:hidden;
+/* ===== RESET ===== */
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
-/* PLAYER */
-#player-wrapper{
-    position:absolute;
-    inset:0;
+/* ===== PLAYER WRAPPER ===== */
+#player-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
 }
 
-#player{
-    position:absolute;
-    inset:0;
+/* ===== IFRAME PLAYER ===== */
+#player {
+    width: 100%;
+    height: 100%;
 }
 
-#player iframe{
-    width:100%;
-    height:100%;
-    border:0;
+iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
 }
 
-/* MENU */
-#liveMenu{
-    position:absolute;
-    left:12px;
-    top:40%;
-    transform:translateY(-50%);
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+/* ===== MENU OVER PLAYER ===== */
+#liveMenu {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 9999;
 
-    z-index:999999;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.25s ease;
 }
 
-.live-btn{
-    display:flex;
-    align-items:center;
-    gap:8px;
-
-    padding:10px 12px;
-    border-radius:10px;
-
-    background:rgba(0,0,0,0.7);
-    border:1px solid rgba(255,255,255,0.3);
-
-    color:#fff;
-    font-family:Arial;
-    font-size:14px;
-
-    cursor:pointer;
+#liveMenu.show {
+    opacity: 1;
+    pointer-events: auto;
 }
 
-.live-btn img{
-    width:18px;
-    height:12px;
+/* ===== BUTTONS ===== */
+.live-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 10px;
+    font-size: 14px;
+    font-family: Arial;
+
+    color: #fff;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 8px;
+
+    cursor: pointer;
 }
 
-.live-btn.active{
-    border-color:red;
-    color:red;
+.live-btn img {
+    width: 18px;
+    height: 12px;
+}
+
+.live-btn.active {
+    border-color: red;
+    color: red;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+    .live-btn {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
 }
 
 </style>
@@ -78,112 +100,115 @@ html,body{
 <body>
 
 <div id="player-wrapper">
+
     <div id="player"></div>
+
     <div id="liveMenu"></div>
+
 </div>
 
 <script>
 
-const streams=[
-{
- name:"LIVE 1",
- flag:"https://upload.wikimedia.org/wikipedia/commons/d/d2/Flag_of_Ukraine.png",
- url:"https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
-},
-{
- name:"LIVE 2",
- flag:"https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg",
- url:"https://sportkastv.blogspot.com/2026/06/2-vs.html"
-},
-{
- name:"LIVE 3",
- flag:"https://upload.wikimedia.org/wikipedia/commons/9/99/Flag_of_Germany.svg",
- url:"https://kasta-sports.vercel.app/wc-player.html"
-}
+const streams = [
+    {
+        name: "LIVE 1",
+        flag: "https://upload.wikimedia.org/wikipedia/commons/d/d2/Flag_of_Ukraine.png",
+        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
+    },
+    {
+        name: "LIVE 2",
+        flag: "https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg",
+        url: "https://sportkastv.blogspot.com/2026/06/2-vs.html"
+    },
+    {
+        name: "LIVE 3",
+        flag: "https://upload.wikimedia.org/wikipedia/commons/9/99/Flag_of_Germany.svg",
+        url: "https://kasta-sports.vercel.app/wc-player.html"
+    }
 ];
 
-const player=document.getElementById("player");
-const menu=document.getElementById("liveMenu");
+let current = 0;
 
-let current=0;
-let timer=null;
+const player = document.getElementById("player");
+const menu = document.getElementById("liveMenu");
+const wrapper = document.getElementById("player-wrapper");
 
-/* LOAD PLAYER */
-function load(i){
- current=i;
- player.innerHTML="";
+let hideTimer = null;
 
- const iframe=document.createElement("iframe");
- iframe.src=streams[i].url;
- iframe.allow="autoplay; fullscreen";
- iframe.allowFullscreen=true;
+/* ===== LOAD STREAM ===== */
+function loadStream(i) {
+    current = i;
 
- player.appendChild(iframe);
+    player.innerHTML = "";
 
- updateActive();
+    const iframe = document.createElement("iframe");
+    iframe.src = streams[i].url;
+    iframe.allow = "autoplay; fullscreen";
+    iframe.allowFullscreen = true;
+
+    player.appendChild(iframe);
+
+    updateActive();
 }
 
-/* BUILD MENU */
-function buildMenu(){
- console.log("BUILD MENU RUN"); // 🔥 дебаг
+/* ===== MENU ===== */
+function buildMenu() {
+    streams.forEach((s, i) => {
 
- streams.forEach((s,i)=>{
-    const btn=document.createElement("div");
-    btn.className="live-btn";
+        const btn = document.createElement("div");
+        btn.className = "live-btn";
 
-    const img=document.createElement("img");
-    img.src=s.flag;
+        const img = document.createElement("img");
+        img.src = s.flag;
 
-    const text=document.createElement("span");
-    text.textContent=s.name;
+        const text = document.createElement("span");
+        text.textContent = s.name;
 
-    btn.appendChild(img);
-    btn.appendChild(text);
+        btn.appendChild(img);
+        btn.appendChild(text);
 
-    btn.onclick=()=>{
-        load(i);
+        btn.onclick = (e) => {
+            e.stopPropagation(); // щоб тап не закривав меню
+            loadStream(i);
+            showMenu(); // оновлюємо таймер
+        };
+
+        menu.appendChild(btn);
+    });
+
+    updateActive();
+}
+
+/* ===== ACTIVE ===== */
+function updateActive() {
+    document.querySelectorAll(".live-btn").forEach((b, i) => {
+        b.classList.toggle("active", i === current);
+    });
+}
+
+/* ===== SHOW / HIDE MENU ===== */
+function showMenu() {
+    menu.classList.add("show");
+
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+        menu.classList.remove("show");
+    }, 3000);
+}
+
+/* ===== TAP ON PLAYER TOGGLE ===== */
+wrapper.addEventListener("click", () => {
+    if (menu.classList.contains("show")) {
+        menu.classList.remove("show");
+        clearTimeout(hideTimer);
+    } else {
         showMenu();
-    };
+    }
+});
 
-    menu.appendChild(btn);
- });
-
- updateActive();
-}
-
-/* ACTIVE */
-function updateActive(){
- document.querySelectorAll(".live-btn").forEach((b,i)=>{
-    b.classList.toggle("active",i===current);
- });
-}
-
-/* SHOW MENU */
-function showMenu(){
- console.log("SHOW MENU"); // 🔥 дебаг
-
- clearTimeout(timer);
-
- menu.style.display="flex";
-
- timer=setTimeout(()=>{
-    menu.style.display="none";
- },3000);
-}
-
-/* TAP FIX */
-document.getElementById("player-wrapper")
-.addEventListener("click",showMenu,true);
-
-document.getElementById("player-wrapper")
-.addEventListener("touchstart",showMenu,true);
-
-/* INIT */
+/* ===== INIT ===== */
 buildMenu();
-load(0);
-
-/* 🔥 щоб ти точно бачив що JS живий */
-menu.style.display="flex";
+loadStream(0);
 
 </script>
 
