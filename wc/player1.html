@@ -42,6 +42,7 @@ body {
     width: 100% !important;
     height: 100% !important;
     background: #000;
+    z-index: 1;
 }
 
 #player iframe,
@@ -50,7 +51,6 @@ body {
     height: 100% !important;
     object-fit: contain !important;
     background: #000 !important;
-    pointer-events: auto;
 }
 
 /* ========================= POSTER ========================= */
@@ -62,7 +62,7 @@ body {
     object-fit: contain;
     background: #000;
     z-index: 9999;
-    transition: opacity .6s ease;
+    transition: opacity .8s ease;
     pointer-events: none;
 }
 
@@ -95,7 +95,7 @@ body {
     flex-direction: column;
     gap: 10px;
 
-    z-index: 999999;
+    z-index: 9999999; /* 🔥 FIX: завжди поверх iframe */
     opacity: 0;
     pointer-events: none;
     transition: .25s ease;
@@ -114,13 +114,14 @@ body {
     padding: 10px 12px;
     border-radius: 10px;
 
-    background: rgba(0,0,0,0.35);
+    background: rgba(0,0,0,0.45);
     border: 1px solid rgba(255,255,255,0.25);
     color: #fff;
 
     font-family: Arial;
     font-size: 14px;
     cursor: pointer;
+    user-select: none;
 }
 
 .live-btn img {
@@ -169,6 +170,7 @@ body {
 </div>
 
 <script>
+
 const streams = [
     {
         name: "Stream 1",
@@ -193,46 +195,33 @@ const streams = [
 let current = 0;
 const menu = document.getElementById("liveMenu");
 
-/* ========================= FIX: LOADER CONTROL ========================= */
-function hideLoader() {
-    const img = document.getElementById("myImage");
-    const spinner = document.getElementById("spinner");
-
-    if (img) img.style.opacity = "0";
-    if (spinner) spinner.style.opacity = "0";
-
-    setTimeout(() => {
-        img?.remove();
-        spinner?.remove();
-    }, 600);
-}
-
 /* ========================= LOAD STREAM ========================= */
 function loadStream(i) {
     current = i;
 
     const player = document.getElementById("player");
-    player.innerHTML = "";
+
+    /* НЕ innerHTML = ризик втрати кнопок/шарів у деяких браузерах */
+    while (player.firstChild) {
+        player.removeChild(player.firstChild);
+    }
 
     const s = streams[i];
 
-    player.innerHTML = `
-        <iframe 
-            src="${s.url}" 
-            frameborder="0"
-            allowfullscreen
-            allow="autoplay; fullscreen"
-            style="width:100%;height:100%;border:0;">
-        </iframe>
-    `;
+    const iframe = document.createElement("iframe");
+    iframe.src = s.url;
+    iframe.frameBorder = "0";
+    iframe.allow = "autoplay; fullscreen";
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.border = "0";
+
+    player.appendChild(iframe);
 
     updateActive();
-
-    /* 🔥 FIX: ховаємо loader коли iframe реально вставився */
-    setTimeout(hideLoader, 800);
 }
 
-/* ========================= MENU BUILD ========================= */
+/* ========================= MENU ========================= */
 function buildMenu() {
     menu.innerHTML = "";
 
@@ -286,6 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("load", () => {
     loadStream(0);
 });
+
 </script>
 
 </body>
