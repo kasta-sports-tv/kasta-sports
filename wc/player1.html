@@ -6,76 +6,68 @@
 
 <style>
 
+/* ===== PAGE ===== */
 html, body {
     margin: 0;
     padding: 0;
     background: #000;
-    width: 100%;
-    height: 100%;
     overflow: hidden;
+    height: 100%;
 }
 
 /* ===== PLAYER ===== */
 #player-wrapper {
-    position: absolute;
-    inset: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 16/9;
     background: #000;
 }
 
 #player {
-    position: absolute;
-    inset: 0;
+    width: 100%;
+    height: 100%;
 }
 
-#player iframe {
+iframe {
     width: 100%;
     height: 100%;
     border: 0;
 }
 
-/* ===== MENU ===== */
+/* ===== MENU OVER PLAYER ===== */
 #liveMenu {
-    position: absolute;
-    left: 12px;
-    top: 20px;
+    position: fixed;
+    top: 10px;
+    left: 10px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    z-index: 99999;
 
-    z-index: 9999999;
-
-    /* 🔥 важливо: стартовий стан */
     opacity: 0;
-    visibility: hidden;
     pointer-events: none;
-
-    transition: 0.2s ease;
+    transition: opacity .25s ease;
 }
 
-/* 🔥 активний стан */
 #liveMenu.show {
     opacity: 1;
-    visibility: visible;
     pointer-events: auto;
 }
 
-/* ===== BUTTON ===== */
 .live-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    padding: 10px 12px;
-    border-radius: 10px;
-
     background: rgba(0,0,0,0.6);
     border: 1px solid rgba(255,255,255,0.3);
     color: #fff;
-
+    padding: 8px 10px;
+    border-radius: 8px;
     font-family: Arial;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
-    user-select: none;
+    display: flex;
+    gap: 6px;
+    align-items: center;
 }
 
 .live-btn img {
@@ -95,8 +87,9 @@ html, body {
 
 <div id="player-wrapper">
     <div id="player"></div>
-    <div id="liveMenu"></div>
 </div>
+
+<div id="liveMenu"></div>
 
 <script>
 
@@ -118,11 +111,10 @@ const streams = [
     }
 ];
 
-let current = 0;
-
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
 
+let current = 0;
 let hideTimer = null;
 
 /* ===== LOAD STREAM ===== */
@@ -141,12 +133,9 @@ function loadStream(i) {
     updateActive();
 }
 
-/* ===== BUILD MENU ===== */
+/* ===== MENU BUILD ===== */
 function buildMenu() {
-    menu.innerHTML = "";
-
     streams.forEach((s, i) => {
-
         const btn = document.createElement("div");
         btn.className = "live-btn";
 
@@ -160,8 +149,9 @@ function buildMenu() {
         btn.appendChild(text);
 
         btn.onclick = (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // ❗ важливо щоб тап не перехоплював player
             loadStream(i);
+            showMenu();
         };
 
         menu.appendChild(btn);
@@ -178,14 +168,7 @@ function updateActive() {
 }
 
 /* ===== SHOW / HIDE MENU ===== */
-function toggleMenu() {
-
-    if (menu.classList.contains("show")) {
-        menu.classList.remove("show");
-        clearTimeout(hideTimer);
-        return;
-    }
-
+function showMenu() {
     menu.classList.add("show");
 
     clearTimeout(hideTimer);
@@ -194,10 +177,8 @@ function toggleMenu() {
     }, 3000);
 }
 
-/* ===== TAP ANYWHERE ===== */
-document.getElementById("player-wrapper").addEventListener("click", () => {
-    toggleMenu();
-});
+/* ===== TAP ON PLAYER SHOWS MENU ===== */
+document.getElementById("player-wrapper").addEventListener("click", showMenu);
 
 /* ===== INIT ===== */
 buildMenu();
