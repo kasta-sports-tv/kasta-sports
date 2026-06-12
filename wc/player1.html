@@ -2,25 +2,19 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 html, body {
     margin: 0;
     padding: 0;
-    background: #000;
+    background: black;
     width: 100%;
     height: 100%;
     overflow: hidden;
 }
 
 /* ===== PLAYER ===== */
-#player-wrapper {
-    position: absolute;
-    inset: 0;
-    background: #000;
-}
-
 #player {
     position: absolute;
     inset: 0;
@@ -29,90 +23,80 @@ html, body {
 iframe {
     width: 100%;
     height: 100%;
-    border: 0;
+    border: none;
 }
 
-/* ===== MENU (ВАЖЛИВО: НЕ БЛОКУЄ ПЛЕЄР ПОКИ СХОВАНЕ) ===== */
-#liveMenu {
+/* ===== OVERLAY WRAPPER (НЕ ЛАМАЄ КЛІКИ) ===== */
+#ui {
     position: absolute;
-    top: 12px;
+    inset: 0;
+    pointer-events: none; /* 🔥 ключ */
+}
+
+/* ===== MENU ===== */
+#menu {
+    position: absolute;
+    top: 20%;
     left: 12px;
 
     display: flex;
     flex-direction: column;
     gap: 10px;
 
-    z-index: 9999;
-
     opacity: 0;
-    pointer-events: none;
-    transform: translateY(-5px);
+    transform: translateX(-10px);
     transition: 0.25s ease;
+
+    pointer-events: none;
 }
 
-#liveMenu.show {
+#menu.show {
     opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
+    transform: translateX(0);
+    pointer-events: auto; /* включається тільки коли видно */
 }
 
-/* ===== BUTTONS ===== */
-.live-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.btn {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
 
     padding: 10px 12px;
     border-radius: 10px;
 
-    background: rgba(0,0,0,0.6);
-    border: 1px solid rgba(255,255,255,0.25);
-
-    color: #fff;
     font-family: Arial;
     font-size: 14px;
 
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
     cursor: pointer;
-    user-select: none;
 }
 
-.live-btn img {
+.btn img {
     width: 18px;
     height: 12px;
-    object-fit: cover;
 }
 
-.live-btn.active {
-    border-color: red;
-    color: red;
-}
-
-/* ===== SAFE TOUCH AREA (щоб iframe не блокував тапи для меню) ===== */
-#touchArea {
+/* ===== hidden tap layer ===== */
+#tapLayer {
     position: absolute;
     inset: 0;
-    z-index: 5;
     background: transparent;
-}
-
-/* меню поверх */
-#liveMenu {
-    z-index: 10000;
 }
 </style>
 </head>
 
 <body>
 
-<div id="player-wrapper">
+<div id="player"></div>
 
-    <div id="player"></div>
+<div id="ui">
 
-    <!-- зона для ловлі тапів/миші -->
-    <div id="touchArea"></div>
+    <div id="menu"></div>
 
-    <!-- меню -->
-    <div id="liveMenu"></div>
+    <div id="tapLayer"></div>
 
 </div>
 
@@ -121,96 +105,72 @@ const streams = [
     {
         name: "Stream 1",
         flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png",
-        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
+        url: "https://sportkastv.blogspot.com/2026/06/2-vs.html"
     },
     {
         name: "Stream 2",
         flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/330px-Flag_of_the_United_Kingdom_%283-5%29.svg.png",
-        url: "https://sportkastv.blogspot.com/2026/06/2-vs.html"
+        url: "https://kasta-sports.vercel.app/wc-player.html"
     },
     {
         name: "Stream 3",
         flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Flag_of_Germany.svg/330px-Flag_of_Germany.svg.png",
-        url: "https://kasta-sports.vercel.app/wc-player.html"
+        url: "https://example.com"
     }
 ];
 
-let current = 0;
-
 const player = document.getElementById("player");
-const menu = document.getElementById("liveMenu");
-const touchArea = document.getElementById("touchArea");
+const menu = document.getElementById("menu");
+const tapLayer = document.getElementById("tapLayer");
 
+let current = 0;
 let hideTimer;
 
-/* ===== LOAD STREAM ===== */
-function loadStream(i) {
+/* ===== LOAD ===== */
+function load(i) {
     current = i;
 
-    player.innerHTML = "";
+    player.innerHTML = `
+        <iframe src="${streams[i].url}" allowfullscreen></iframe>
+    `;
 
-    const iframe = document.createElement("iframe");
-    iframe.src = streams[i].url;
-    iframe.allow = "autoplay; fullscreen";
-    iframe.allowFullscreen = true;
-
-    player.appendChild(iframe);
-
-    updateActive();
+    renderMenu();
 }
 
 /* ===== MENU BUILD ===== */
-function buildMenu() {
+function renderMenu() {
     menu.innerHTML = "";
 
     streams.forEach((s, i) => {
-        const btn = document.createElement("div");
-        btn.className = "live-btn";
+        const b = document.createElement("div");
+        b.className = "btn";
+        b.innerHTML = `<img src="${s.flag}"> ${s.name}`;
 
-        const img = document.createElement("img");
-        img.src = s.flag;
+        b.onclick = () => load(i);
 
-        const text = document.createElement("span");
-        text.textContent = s.name;
+        if (i === current) b.style.borderColor = "red";
 
-        btn.appendChild(img);
-        btn.appendChild(text);
-
-        btn.onclick = () => loadStream(i);
-
-        menu.appendChild(btn);
-    });
-
-    updateActive();
-}
-
-/* ===== ACTIVE ===== */
-function updateActive() {
-    document.querySelectorAll(".live-btn").forEach((b, i) => {
-        b.classList.toggle("active", i === current);
+        menu.appendChild(b);
     });
 }
 
-/* ===== SHOW / HIDE MENU ===== */
+/* ===== SHOW/HIDE LOGIC ===== */
 function showMenu() {
     menu.classList.add("show");
 
     clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
         menu.classList.remove("show");
-    }, 3500);
+    }, 3000);
 }
 
-/* ===== EVENTS (моб + ПК) ===== */
-touchArea.addEventListener("pointerdown", showMenu);
-touchArea.addEventListener("mousemove", showMenu);
+/* tap + mouse */
+tapLayer.addEventListener("click", showMenu);
+document.addEventListener("mousemove", showMenu);
 
-/* також щоб тап по iframe теж викликав меню */
-document.addEventListener("touchstart", showMenu);
-
-/* ===== INIT ===== */
-buildMenu();
-loadStream(0);
+/* INIT */
+renderMenu();
+load(0);
 </script>
 
 </body>
