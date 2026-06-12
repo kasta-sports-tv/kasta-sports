@@ -13,7 +13,7 @@ html, body {
     overflow: hidden;
 }
 
-/* ===== PLAYER ===== */
+/* PLAYER */
 #player-wrapper{
     position: absolute;
     top: 0;
@@ -34,7 +34,7 @@ iframe{
     border: 0;
 }
 
-/* ===== MENU ===== */
+/* MENU */
 #liveMenu{
     position: absolute;
     left: 12px;
@@ -43,11 +43,11 @@ iframe{
     display: flex;
     flex-direction: column;
     gap: 10px;
-    z-index: 1000;
+    z-index: 9999;
 
     opacity: 0;
     pointer-events: none;
-    transition: .25s ease;
+    transition: .2s ease;
 }
 
 #liveMenu.show{
@@ -62,13 +62,12 @@ iframe{
     padding: 10px 12px;
     border-radius: 10px;
 
-    background: rgba(0,0,0,0.55);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.25);
     color: #fff;
 
     font-family: Arial;
     font-size: 14px;
-
     cursor: pointer;
 }
 
@@ -82,22 +81,14 @@ iframe{
     color: red;
 }
 
-/* ===== TAP FIX (ВАЖЛИВО) ===== */
-#player-wrapper{
-    touch-action: manipulation;
-}
-
 </style>
 </head>
 
 <body>
 
 <div id="player-wrapper">
-
     <div id="player"></div>
-
     <div id="liveMenu"></div>
-
 </div>
 
 <script>
@@ -124,7 +115,6 @@ let current = 0;
 
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
-const wrapper = document.getElementById("player-wrapper");
 
 function loadStream(i){
     current = i;
@@ -169,22 +159,22 @@ function updateActive(){
     });
 }
 
-/* ===== MENU LOGIC ===== */
-let hideTimer = null;
+/* ===== FIXED MENU LOGIC ===== */
+let timer = null;
 
 function showMenu(){
     menu.classList.add("show");
 
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(()=>{
+    clearTimeout(timer);
+    timer = setTimeout(()=>{
         menu.classList.remove("show");
     }, 2500);
 }
 
-/* ===== FIX: tap тільки по wrapper, але НЕ ламаємо iframe controls ===== */
-wrapper.addEventListener("pointerdown", (e) => {
+/* 🔥 ОЦЕ ГОЛОВНЕ ВИПРАВЛЕННЯ */
+document.addEventListener("pointerdown", (e) => {
 
-    // якщо тап по меню — нічого не робимо
+    // не реагуємо на кліки по кнопках меню
     if(e.target.closest("#liveMenu")) return;
 
     showMenu();
