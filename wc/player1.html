@@ -15,23 +15,21 @@ html, body {
     height: 100%;
 }
 
-/* ===== WRAPPER = тепер це і є зона тапу ===== */
+/* ===== WRAPPER ===== */
 #player-wrapper {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-
     aspect-ratio: 16 / 9;
     background: #000;
-
-    display: block;
 }
 
 /* ===== PLAYER ===== */
 #player {
     position: absolute;
     inset: 0;
+    z-index: 1;
 }
 
 iframe {
@@ -40,7 +38,15 @@ iframe {
     border: 0;
 }
 
-/* ===== MENU ПОВЕРХ ПЛЕЄРА ===== */
+/* ===== 🔥 TAP LAYER (ГОЛОВНЕ ВИПРАВЛЕННЯ) ===== */
+#tapLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: transparent;
+}
+
+/* ===== MENU ===== */
 #liveMenu {
     position: absolute;
     top: 0;
@@ -50,10 +56,9 @@ iframe {
     display: flex;
     flex-direction: column;
     justify-content: center;
-
     gap: 10px;
 
-    z-index: 99999999;
+    z-index: 999999;
 
     opacity: 0;
     pointer-events: none;
@@ -65,7 +70,6 @@ iframe {
     pointer-events: auto;
 }
 
-/* buttons */
 .live-btn {
     display: flex;
     align-items: center;
@@ -110,6 +114,9 @@ iframe {
 
     <div id="player"></div>
 
+    <!-- 🔥 ОЦЕ ЛОВИТЬ ВСІ ТАПИ -->
+    <div id="tapLayer"></div>
+
     <div id="liveMenu"></div>
 
 </div>
@@ -138,6 +145,7 @@ let current = 0;
 
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
+const tapLayer = document.getElementById("tapLayer");
 
 /* ===== LOAD STREAM ===== */
 function loadStream(i) {
@@ -191,7 +199,7 @@ function updateActive() {
     });
 }
 
-/* ===== TAP HANDLER (ОЦЕ ГОЛОВНЕ ВИПРАВЛЕННЯ) ===== */
+/* ===== MENU TOGGLE ===== */
 let hideTimer;
 
 function showMenu() {
@@ -203,8 +211,8 @@ function showMenu() {
     }, 3000);
 }
 
-/* 🔥 ТЕПЕР ТАП ЛОВИТЬСЯ ТІЛЬКИ ПО ПЛЕЄРУ */
-document.getElementById("player-wrapper").addEventListener("pointerdown", showMenu);
+/* 🔥 ТЕПЕР ТАП ПРАЦЮЄ ЗАВЖДИ */
+tapLayer.addEventListener("pointerdown", showMenu);
 
 /* INIT */
 buildMenu();
