@@ -42,9 +42,15 @@ html, body {
     flex-direction: column;
     gap: 10px;
 
-    z-index: 999999999;
+    z-index: 999999;
 
-    opacity: 1; /* 🔥 ВАЖЛИВО: НЕ ховаємо для тесту */
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.25s ease;
+}
+
+#liveMenu.show {
+    opacity: 1;
     pointer-events: auto;
 }
 
@@ -64,6 +70,7 @@ html, body {
     font-family: Arial;
     font-size: 14px;
     cursor: pointer;
+    user-select: none;
 }
 
 .live-btn img {
@@ -107,11 +114,12 @@ const streams = [
 ];
 
 let current = 0;
-
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
 
-/* ===== PLAYER LOAD ===== */
+let hideTimer = null;
+
+/* ===== LOAD STREAM ===== */
 function loadStream(i) {
     current = i;
 
@@ -127,10 +135,9 @@ function loadStream(i) {
     updateActive();
 }
 
-/* ===== MENU BUILD (ФІКС ГАРАНТІЯ) ===== */
+/* ===== MENU BUILD ===== */
 function buildMenu() {
-
-    console.log("MENU BUILD OK"); // 🔥 debug
+    menu.innerHTML = "";
 
     streams.forEach((s, i) => {
 
@@ -146,8 +153,8 @@ function buildMenu() {
         btn.appendChild(img);
         btn.appendChild(text);
 
-        btn.onclick = () => {
-            console.log("CLICK STREAM", i); // debug
+        btn.onclick = (e) => {
+            e.stopPropagation();
             loadStream(i);
         };
 
@@ -164,11 +171,24 @@ function updateActive() {
     });
 }
 
-/* ===== INIT (ВАЖЛИВО) ===== */
-window.addEventListener("load", () => {
-    buildMenu();
-    loadStream(0);
+/* ===== TOGGLE MENU ===== */
+function showMenu() {
+    menu.classList.add("show");
+
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+        menu.classList.remove("show");
+    }, 3000);
+}
+
+/* ===== TAP ANYWHERE ===== */
+document.getElementById("player-wrapper").addEventListener("click", (e) => {
+    showMenu();
 });
+
+/* ===== INIT ===== */
+buildMenu();
+loadStream(0);
 
 </script>
 
