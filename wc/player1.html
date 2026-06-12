@@ -2,11 +2,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 
-/* ===== RESET ===== */
 html,body{
     margin:0;
     padding:0;
@@ -15,13 +14,12 @@ html,body{
     overflow:hidden;
 }
 
-/* ===== PLAYER WRAPPER ===== */
+/* PLAYER */
 #player-wrapper{
     position:absolute;
     inset:0;
 }
 
-/* ===== PLAYER ===== */
 #player{
     position:absolute;
     inset:0;
@@ -33,7 +31,7 @@ html,body{
     border:0;
 }
 
-/* ===== MENU ===== */
+/* MENU */
 #liveMenu{
     position:absolute;
     left:12px;
@@ -43,19 +41,7 @@ html,body{
     flex-direction:column;
     gap:10px;
 
-    z-index:99999;
-
-    opacity:0;
-    visibility:hidden;
-    pointer-events:none;
-
-    transition:0.25s ease;
-}
-
-#liveMenu.show{
-    opacity:1;
-    visibility:visible;
-    pointer-events:auto;
+    z-index:999999;
 }
 
 .live-btn{
@@ -66,8 +52,8 @@ html,body{
     padding:10px 12px;
     border-radius:10px;
 
-    background:rgba(0,0,0,0.6);
-    border:1px solid rgba(255,255,255,0.25);
+    background:rgba(0,0,0,0.7);
+    border:1px solid rgba(255,255,255,0.3);
 
     color:#fff;
     font-family:Arial;
@@ -86,14 +72,6 @@ html,body{
     color:red;
 }
 
-/* mobile */
-@media(max-width:768px){
-    .live-btn{
-        font-size:12px;
-        padding:7px 10px;
-    }
-}
-
 </style>
 </head>
 
@@ -107,21 +85,21 @@ html,body{
 <script>
 
 const streams=[
-  {
-    name:"LIVE 1 UK",
-    flag:"https://upload.wikimedia.org/wikipedia/commons/d/d2/Flag_of_Ukraine.png",
-    url:"https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
-  },
-  {
-    name:"LIVE 2 RU",
-    flag:"https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg",
-    url:"https://sportkastv.blogspot.com/2026/06/2-vs.html"
-  },
-  {
-    name:"LIVE 3",
-    flag:"https://upload.wikimedia.org/wikipedia/commons/9/99/Flag_of_Germany.svg",
-    url:"https://kasta-sports.vercel.app/wc-player.html"
-  }
+{
+ name:"LIVE 1",
+ flag:"https://upload.wikimedia.org/wikipedia/commons/d/d2/Flag_of_Ukraine.png",
+ url:"https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
+},
+{
+ name:"LIVE 2",
+ flag:"https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg",
+ url:"https://sportkastv.blogspot.com/2026/06/2-vs.html"
+},
+{
+ name:"LIVE 3",
+ flag:"https://upload.wikimedia.org/wikipedia/commons/9/99/Flag_of_Germany.svg",
+ url:"https://kasta-sports.vercel.app/wc-player.html"
+}
 ];
 
 const player=document.getElementById("player");
@@ -130,75 +108,82 @@ const menu=document.getElementById("liveMenu");
 let current=0;
 let timer=null;
 
-/* ===== LOAD STREAM ===== */
+/* LOAD PLAYER */
 function load(i){
-    current=i;
+ current=i;
+ player.innerHTML="";
 
-    player.innerHTML="";
+ const iframe=document.createElement("iframe");
+ iframe.src=streams[i].url;
+ iframe.allow="autoplay; fullscreen";
+ iframe.allowFullscreen=true;
 
-    const iframe=document.createElement("iframe");
-    iframe.src=streams[i].url;
-    iframe.allow="autoplay; fullscreen";
-    iframe.allowFullscreen=true;
+ player.appendChild(iframe);
 
-    player.appendChild(iframe);
-
-    updateActive();
+ updateActive();
 }
 
-/* ===== MENU BUILD ===== */
+/* BUILD MENU */
 function buildMenu(){
-    streams.forEach((s,i)=>{
-        const btn=document.createElement("div");
-        btn.className="live-btn";
+ console.log("BUILD MENU RUN"); // 🔥 дебаг
 
-        const img=document.createElement("img");
-        img.src=s.flag;
+ streams.forEach((s,i)=>{
+    const btn=document.createElement("div");
+    btn.className="live-btn";
 
-        const text=document.createElement("span");
-        text.textContent=s.name;
+    const img=document.createElement("img");
+    img.src=s.flag;
 
-        btn.appendChild(img);
-        btn.appendChild(text);
+    const text=document.createElement("span");
+    text.textContent=s.name;
 
-        btn.onclick=()=>{
-            load(i);
-            showMenu();
-        };
+    btn.appendChild(img);
+    btn.appendChild(text);
 
-        menu.appendChild(btn);
-    });
+    btn.onclick=()=>{
+        load(i);
+        showMenu();
+    };
 
-    updateActive();
+    menu.appendChild(btn);
+ });
+
+ updateActive();
 }
 
-/* ===== ACTIVE STATE ===== */
+/* ACTIVE */
 function updateActive(){
-    document.querySelectorAll(".live-btn").forEach((b,i)=>{
-        b.classList.toggle("active", i===current);
-    });
+ document.querySelectorAll(".live-btn").forEach((b,i)=>{
+    b.classList.toggle("active",i===current);
+ });
 }
 
-/* ===== SHOW / HIDE MENU ===== */
+/* SHOW MENU */
 function showMenu(){
-    menu.classList.add("show");
+ console.log("SHOW MENU"); // 🔥 дебаг
 
-    clearTimeout(timer);
-    timer=setTimeout(()=>{
-        menu.classList.remove("show");
-    },3000);
+ clearTimeout(timer);
+
+ menu.style.display="flex";
+
+ timer=setTimeout(()=>{
+    menu.style.display="none";
+ },3000);
 }
 
-/* ===== FIX: TAP ALWAYS WORKS (MOB + PC) ===== */
-const wrapper=document.getElementById("player-wrapper");
+/* TAP FIX */
+document.getElementById("player-wrapper")
+.addEventListener("click",showMenu,true);
 
-wrapper.addEventListener("pointerdown", showMenu, true);
-wrapper.addEventListener("touchstart", showMenu, true);
-wrapper.addEventListener("click", showMenu, true);
+document.getElementById("player-wrapper")
+.addEventListener("touchstart",showMenu,true);
 
 /* INIT */
 buildMenu();
 load(0);
+
+/* 🔥 щоб ти точно бачив що JS живий */
+menu.style.display="flex";
 
 </script>
 
