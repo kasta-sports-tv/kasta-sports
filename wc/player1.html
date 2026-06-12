@@ -62,7 +62,7 @@ body {
     object-fit: contain;
     background: #000;
     z-index: 9999;
-    transition: opacity .8s ease;
+    transition: opacity .6s ease;
     pointer-events: none;
 }
 
@@ -85,7 +85,7 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* ========================= LIVE MENU (FIXED) ========================= */
+/* ========================= LIVE MENU ========================= */
 #liveMenu {
     position: absolute;
     left: 12px;
@@ -95,7 +95,7 @@ body {
     flex-direction: column;
     gap: 10px;
 
-    z-index: 999999; /* 🔥 FIX */
+    z-index: 999999;
     opacity: 0;
     pointer-events: none;
     transition: .25s ease;
@@ -193,6 +193,20 @@ const streams = [
 let current = 0;
 const menu = document.getElementById("liveMenu");
 
+/* ========================= FIX: LOADER CONTROL ========================= */
+function hideLoader() {
+    const img = document.getElementById("myImage");
+    const spinner = document.getElementById("spinner");
+
+    if (img) img.style.opacity = "0";
+    if (spinner) spinner.style.opacity = "0";
+
+    setTimeout(() => {
+        img?.remove();
+        spinner?.remove();
+    }, 600);
+}
+
 /* ========================= LOAD STREAM ========================= */
 function loadStream(i) {
     current = i;
@@ -213,6 +227,9 @@ function loadStream(i) {
     `;
 
     updateActive();
+
+    /* 🔥 FIX: ховаємо loader коли iframe реально вставився */
+    setTimeout(hideLoader, 800);
 }
 
 /* ========================= MENU BUILD ========================= */
@@ -242,9 +259,7 @@ function buildMenu() {
 
 /* ========================= ACTIVE ========================= */
 function updateActive() {
-    const buttons = document.querySelectorAll(".live-btn");
-
-    buttons.forEach((btn, i) => {
+    document.querySelectorAll(".live-btn").forEach((btn, i) => {
         btn.classList.toggle("active", i === current);
     });
 }
