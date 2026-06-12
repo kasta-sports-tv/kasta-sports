@@ -5,75 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <style>
+
+/* ===== RESET ===== */
 html, body {
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
     background: #000;
     overflow: hidden;
+    width: 100%;
+    height: 100%;
 }
 
-body {
-    position: fixed;
-    inset: 0;
-}
-
-/* PLAYER */
+/* ===== WRAPPER ===== */
 #player-wrapper {
     position: absolute;
     inset: 0;
-    width: 100vw;
-    height: 100vh;
     background: #000;
 }
 
+/* ===== VIDEO AREA ===== */
 #player {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
 }
 
-#player iframe {
+/* iframe fullscreen */
+iframe {
     width: 100%;
     height: 100%;
     border: 0;
 }
 
-/* POSTER */
-#myImage {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    z-index: 50;
-    background: #000;
-    transition: opacity 0.6s ease;
-}
-
-/* SPINNER */
-#spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 50px;
-    height: 50px;
-    margin: -25px 0 0 -25px;
-    border: 5px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    z-index: 60;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* MENU */
+/* ===== BUTTONS ===== */
 #liveMenu {
     position: absolute;
     left: 12px;
@@ -82,15 +45,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    z-index: 999999;
-    opacity: 0;
-    pointer-events: none;
-    transition: .25s ease;
-}
-
-#liveMenu.show {
-    opacity: 1;
-    pointer-events: auto;
+    z-index: 99999999; /* завжди поверх */
 }
 
 .live-btn {
@@ -98,19 +53,18 @@ body {
     align-items: center;
     gap: 8px;
     padding: 10px 12px;
-    background: rgba(0,0,0,0.45);
-    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.3);
     color: #fff;
     font-family: Arial;
     font-size: 14px;
     cursor: pointer;
-    border-radius: 10px;
 }
 
 .live-btn img {
     width: 18px;
     height: 12px;
-    object-fit: cover;
 }
 
 .live-btn.active {
@@ -119,15 +73,12 @@ body {
 }
 
 @media (max-width: 768px) {
-    #liveMenu {
-        left: 10px;
-        gap: 6px;
-    }
     .live-btn {
         font-size: 12px;
         padding: 7px 10px;
     }
 }
+
 </style>
 </head>
 
@@ -137,54 +88,58 @@ body {
 
     <div id="player"></div>
 
-    <img id="myImage"
-         src="https://terrikon.com/i/0/1200/logos/tourns/fifa_world_cup2026.jpg">
-
-    <div id="spinner"></div>
-
     <div id="liveMenu"></div>
 
 </div>
 
 <script>
+
+/* ===== STREAMS (3 IFRAME) ===== */
 const streams = [
     {
         name: "Stream 1",
         flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png",
-        url: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8"
-    },
-    {
-        name: "Stream 2",
-        flag: "https://img.magnific.com/free-photo/abstract-surface-textures-white-concrete-stone-wall_74190-8189.jpg",
         url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
     },
     {
-        name: "Stream 3",
+        name: "Stream 2",
         flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/330px-Flag_of_the_United_Kingdom_%283-5%29.svg.png",
         url: "https://sportkastv.blogspot.com/2026/06/2-vs.html"
+    },
+    {
+        name: "Stream 3",
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Flag_of_Germany.svg/330px-Flag_of_Germany.svg.png",
+        url: "https://kasta-sports.vercel.app/wc-player.html"
     }
 ];
 
 let current = 0;
+
+const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
 
+/* ===== LOAD STREAM ===== */
 function loadStream(i) {
     current = i;
 
-    const player = document.getElementById("player");
+    // очищаємо
+    player.innerHTML = "";
 
-    player.innerHTML = `
-        <iframe src="${streams[i].url}" allowfullscreen></iframe>
-    `;
+    // створюємо iframe
+    const iframe = document.createElement("iframe");
+    iframe.src = streams[i].url;
+    iframe.allow = "autoplay; fullscreen";
+    iframe.allowFullscreen = true;
+
+    player.appendChild(iframe);
 
     updateActive();
 }
 
-/* MENU */
+/* ===== MENU ===== */
 function buildMenu() {
-    menu.innerHTML = "";
-
     streams.forEach((s, i) => {
+
         const btn = document.createElement("div");
         btn.className = "live-btn";
 
@@ -192,7 +147,7 @@ function buildMenu() {
         img.src = s.flag;
 
         const text = document.createElement("span");
-        text.textContent = " " + s.name;
+        text.innerText = s.name;
 
         btn.appendChild(img);
         btn.appendChild(text);
@@ -205,39 +160,17 @@ function buildMenu() {
     updateActive();
 }
 
+/* ===== ACTIVE BUTTON ===== */
 function updateActive() {
-    document.querySelectorAll(".live-btn").forEach((btn, i) => {
-        btn.classList.toggle("active", i === current);
+    document.querySelectorAll(".live-btn").forEach((b, i) => {
+        b.classList.toggle("active", i === current);
     });
 }
 
-/* MENU SHOW */
-let hideTimer;
-
-function showMenu() {
-    menu.classList.add("show");
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(() => {
-        menu.classList.remove("show");
-    }, 3000);
-}
-
-document.addEventListener("pointerdown", showMenu);
-
-/* INIT */
+/* ===== INIT ===== */
 buildMenu();
 loadStream(0);
 
-/* FIX: прибираємо спінер + постер нормально */
-window.addEventListener("load", () => {
-    setTimeout(() => {
-        const img = document.getElementById("myImage");
-        const spinner = document.getElementById("spinner");
-
-        if (img) img.style.display = "none";
-        if (spinner) spinner.style.display = "none";
-    }, 1500);
-});
 </script>
 
 </body>
