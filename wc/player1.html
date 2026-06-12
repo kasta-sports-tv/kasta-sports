@@ -16,47 +16,65 @@ html, body {
     height: 100%;
 }
 
-/* ===== WRAPPER ===== */
+/* ===== WRAPPER (як плеєр зверху) ===== */
 #player-wrapper {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 16 / 9;
     background: #000;
 }
 
-/* ===== VIDEO AREA ===== */
+/* ===== PLAYER ===== */
 #player {
     position: absolute;
     inset: 0;
 }
 
-/* iframe fullscreen */
+/* iframe */
 iframe {
     width: 100%;
     height: 100%;
     border: 0;
 }
 
-/* ===== BUTTONS ===== */
+/* ===== MENU (ТЕПЕР ТАК САМО ПРИВ'ЯЗАНИЙ ДО ПЛЕЄРА) ===== */
 #liveMenu {
     position: absolute;
+    top: 0;          /* 🔥 FIX: тепер в межах плеєра */
     left: 12px;
-    top: 40%;
-    transform: translateY(-50%);
+    height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+
     gap: 10px;
-    z-index: 99999999; /* завжди поверх */
+    z-index: 99999999;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s ease;
 }
 
+/* показ меню */
+#liveMenu.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* кнопки */
 .live-btn {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 10px 12px;
     border-radius: 10px;
-    background: rgba(0,0,0,0.5);
+
+    background: rgba(0,0,0,0.55);
     border: 1px solid rgba(255,255,255,0.3);
     color: #fff;
+
     font-family: Arial;
     font-size: 14px;
     cursor: pointer;
@@ -72,6 +90,7 @@ iframe {
     color: red;
 }
 
+/* mobile */
 @media (max-width: 768px) {
     .live-btn {
         font-size: 12px;
@@ -94,7 +113,6 @@ iframe {
 
 <script>
 
-/* ===== STREAMS (3 IFRAME) ===== */
 const streams = [
     {
         name: "Stream 1",
@@ -122,10 +140,8 @@ const menu = document.getElementById("liveMenu");
 function loadStream(i) {
     current = i;
 
-    // очищаємо
     player.innerHTML = "";
 
-    // створюємо iframe
     const iframe = document.createElement("iframe");
     iframe.src = streams[i].url;
     iframe.allow = "autoplay; fullscreen";
@@ -138,6 +154,8 @@ function loadStream(i) {
 
 /* ===== MENU ===== */
 function buildMenu() {
+    menu.innerHTML = "";
+
     streams.forEach((s, i) => {
 
         const btn = document.createElement("div");
@@ -152,7 +170,10 @@ function buildMenu() {
         btn.appendChild(img);
         btn.appendChild(text);
 
-        btn.onclick = () => loadStream(i);
+        btn.onclick = () => {
+            loadStream(i);
+            showMenu(); // щоб не зникало одразу після перемикання
+        };
 
         menu.appendChild(btn);
     });
@@ -160,12 +181,27 @@ function buildMenu() {
     updateActive();
 }
 
-/* ===== ACTIVE BUTTON ===== */
+/* ===== ACTIVE ===== */
 function updateActive() {
     document.querySelectorAll(".live-btn").forEach((b, i) => {
         b.classList.toggle("active", i === current);
     });
 }
+
+/* ===== TAP MENU SHOW/HIDE ===== */
+let hideTimer;
+
+function showMenu() {
+    menu.classList.add("show");
+
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+        menu.classList.remove("show");
+    }, 3000);
+}
+
+/* тап по екрану */
+document.addEventListener("pointerdown", showMenu);
 
 /* ===== INIT ===== */
 buildMenu();
