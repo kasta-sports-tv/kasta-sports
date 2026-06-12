@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<style>
+
+/* ========================= HARD RESET ========================= */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+}
+
+body {
+    position: fixed;
+    inset: 0;
+}
+
+/* ========================= WRAPPER ========================= */
+#player-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    max-width: 100vw;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+}
+
+/* fallback */
+@supports not (aspect-ratio: 16 / 9) {
+    #player-wrapper {
+        height: calc(100vw * 9 / 16);
+    }
+}
+
+/* ========================= PLAYER ========================= */
+#player {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background: #000;
+}
+
+#player iframe,
+#player video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #000 !important;
+}
+
+/* ========================= POSTER ========================= */
+#myImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+    z-index: 9999;
+    transition: opacity .8s ease;
+    pointer-events: none;
+}
+
+/* ========================= SPINNER ========================= */
+#spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
+    border: 5px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 10000;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================= LIVE MENU ========================= */
+#liveMenu {
+    position: absolute;
+    left: 12px;
+    top: 40%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 20000;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s ease;
+}
+
+#liveMenu.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.live-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 12px;
+    border-radius: 10px;
+
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+
+    font-family: Arial;
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.live-btn img {
+    width: 18px;
+    height: 12px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.live-btn.active {
+    border-color: red;
+    color: red;
+    box-shadow: 0 0 10px rgba(255,0,0,0.6);
+}
+
+/* ========================= MOBILE FIX ========================= */
+@media (max-width: 768px) {
+    #liveMenu {
+        gap: 6px;
+        left: 10px;
+    }
+
+    .live-btn {
+        padding: 7px 10px;
+        font-size: 12px;
+        gap: 6px;
+    }
+}
+
+/* fullscreen safe */
+:fullscreen #liveMenu {
+    left: 18px;
+}
+
+/* ========================= BLOGSPOT FIX ========================= */
+#player * {
+    box-sizing: border-box !important;
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    line-height: normal !important;
+}
+
+#player [class*="quality"],
+#player [class*="menu"],
+#player [class*="settings"] {
+    writing-mode: horizontal-tb !important;
+    white-space: nowrap !important;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="player-wrapper">
+
+    <div id="player"></div>
+
+    <img id="myImage"
+         src="https://terrikon.com/i/0/1200/logos/tourns/fifa_world_cup2026.jpg">
+
+    <div id="spinner"></div>
+
+    <div id="liveMenu"></div>
+
+</div>
+
+<script>
+const streams = [
+    {
+        name: "Stream 1",
+        type: "iframe",
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png",
+        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
+    },
+    {
+        name: "Stream 2",
+        type: "iframe",
+        flag: "https://img.magnific.com/free-photo/abstract-surface-textures-white-concrete-stone-wall_74190-8189.jpg",
+        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
+    },
+    {
+        name: "Stream 3",
+        type: "iframe",
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/330px-Flag_of_the_United_Kingdom_%283-5%29.svg.png",
+        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
+    }
+];
+
+let current = 0;
+const menu = document.getElementById("liveMenu");
+
+function loadStream(i) {
+    current = i;
+
+    const player = document.getElementById("player");
+    player.innerHTML = "";
+
+    const s = streams[i];
+
+    if (s.type === "iframe") {
+        player.innerHTML = `
+            <iframe 
+                src="${s.url}" 
+                frameborder="0"
+                allowfullscreen
+                allow="autoplay; fullscreen"
+                style="width:100%;height:100%;border:0;">
+            </iframe>
+        `;
+    } else {
+        new Playerjs({
+            id: "player",
+            file: s.url,
+            autoplay: 0,
+            lang: "en"
+        });
+    }
+
+    updateActive();
+}
+
+function buildMenu() {
+    menu.innerHTML = "";
+
+    streams.forEach((s, i) => {
+        const btn = document.createElement("div");
+        btn.className = "live-btn";
+
+        const img = document.createElement("img");
+        img.src = s.flag;
+
+        const text = document.createElement("span");
+        text.textContent = " " + s.name;
+
+        btn.appendChild(img);
+        btn.appendChild(text);
+
+        btn.onclick = () => loadStream(i);
+
+        menu.appendChild(btn);
+    });
+
+    updateActive();
+}
+
+function updateActive() {
+    document.querySelectorAll(".live-btn").forEach((b, i) => {
+        b.classList.toggle("active", i === current);
+    });
+}
+
+/* menu */
+let hideTimer;
+
+function showMenu() {
+    menu.classList.add("show");
+
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+        menu.classList.remove("show");
+    }, 3000);
+}
+
+document.addEventListener("pointerdown", showMenu);
+
+/* INIT */
+buildMenu();
+
+window.addEventListener("load", () => {
+    loadStream(0);
+});
+</script>
+
+<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
+
+<script>
+const img = document.getElementById("myImage");
+const spinner = document.getElementById("spinner");
+
+setTimeout(() => {
+    img.style.opacity = "0";
+    spinner.style.opacity = "0";
+
+    setTimeout(() => {
+        img.remove();
+        spinner.remove();
+    }, 800);
+}, 3000);
+</script>
+
+</body>
+</html>
