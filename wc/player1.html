@@ -6,22 +6,20 @@
 
 <style>
 
+/* ===== RESET ===== */
 html, body {
     margin: 0;
     padding: 0;
     background: #000;
-    overflow: hidden;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
-/* ===== WRAPPER ===== */
+/* ===== WRAPPER (ВЕСЬ ЕКРАН) ===== */
 #player-wrapper {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    aspect-ratio: 16 / 9;
+    inset: 0;
     background: #000;
 }
 
@@ -29,47 +27,37 @@ html, body {
 #player {
     position: absolute;
     inset: 0;
-    z-index: 1;
 }
 
-iframe {
+/* iframe */
+#player iframe {
     width: 100%;
     height: 100%;
     border: 0;
 }
 
-/* ===== 🔥 TAP LAYER (ГОЛОВНЕ ВИПРАВЛЕННЯ) ===== */
-#tapLayer {
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    background: transparent;
-}
-
 /* ===== MENU ===== */
 #liveMenu {
     position: absolute;
-    top: 0;
     left: 12px;
-
-    height: 100%;
+    top: 40px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 10px;
 
     z-index: 999999;
 
     opacity: 0;
-    pointer-events: none;
-    transition: .25s ease;
+    pointer-events: none; /* 🔥 ВАЖЛИВО: не блокує плеєр */
+    transition: 0.25s ease;
 }
 
 #liveMenu.show {
     opacity: 1;
-    pointer-events: auto;
+    pointer-events: auto; /* тільки коли видно */
 }
 
+/* ===== BUTTON ===== */
 .live-btn {
     display: flex;
     align-items: center;
@@ -85,6 +73,7 @@ iframe {
     font-family: Arial;
     font-size: 14px;
     cursor: pointer;
+    user-select: none;
 }
 
 .live-btn img {
@@ -114,15 +103,13 @@ iframe {
 
     <div id="player"></div>
 
-    <!-- 🔥 ОЦЕ ЛОВИТЬ ВСІ ТАПИ -->
-    <div id="tapLayer"></div>
-
     <div id="liveMenu"></div>
 
 </div>
 
 <script>
 
+/* ===== STREAMS ===== */
 const streams = [
     {
         name: "Stream 1",
@@ -145,7 +132,6 @@ let current = 0;
 
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
-const tapLayer = document.getElementById("tapLayer");
 
 /* ===== LOAD STREAM ===== */
 function loadStream(i) {
@@ -163,7 +149,7 @@ function loadStream(i) {
     updateActive();
 }
 
-/* ===== MENU ===== */
+/* ===== MENU BUILD ===== */
 function buildMenu() {
     menu.innerHTML = "";
 
@@ -181,9 +167,9 @@ function buildMenu() {
         btn.appendChild(img);
         btn.appendChild(text);
 
-        btn.onclick = () => {
+        btn.onclick = (e) => {
+            e.stopPropagation(); // 🔥 щоб клік не закривав меню
             loadStream(i);
-            showMenu();
         };
 
         menu.appendChild(btn);
@@ -199,22 +185,20 @@ function updateActive() {
     });
 }
 
-/* ===== MENU TOGGLE ===== */
-let hideTimer;
-
-function showMenu() {
-    menu.classList.add("show");
-
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(() => {
-        menu.classList.remove("show");
-    }, 3000);
+/* ===== TOGGLE MENU ===== */
+function toggleMenu() {
+    menu.classList.toggle("show");
 }
 
-/* 🔥 ТЕПЕР ТАП ПРАЦЮЄ ЗАВЖДИ */
-tapLayer.addEventListener("pointerdown", showMenu);
+/* ===== TAP ON PLAYER OPENS MENU ===== */
+document.getElementById("player-wrapper").addEventListener("click", (e) => {
+    // якщо тап по меню — не закриваємо
+    if (e.target.closest("#liveMenu")) return;
 
-/* INIT */
+    toggleMenu();
+});
+
+/* ===== INIT ===== */
 buildMenu();
 loadStream(0);
 
