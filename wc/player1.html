@@ -35,12 +35,6 @@ body {
     overflow: hidden;
 }
 
-@supports not (aspect-ratio: 16 / 9) {
-    #player-wrapper {
-        height: calc(100vw * 9 / 16);
-    }
-}
-
 /* ========================= PLAYER ========================= */
 #player {
     position: absolute;
@@ -56,6 +50,7 @@ body {
     height: 100% !important;
     object-fit: contain !important;
     background: #000 !important;
+    pointer-events: auto;
 }
 
 /* ========================= POSTER ========================= */
@@ -90,7 +85,7 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* ========================= LIVE MENU ========================= */
+/* ========================= LIVE MENU (FIXED) ========================= */
 #liveMenu {
     position: absolute;
     left: 12px;
@@ -99,8 +94,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    z-index: 20000;
 
+    z-index: 999999; /* 🔥 FIX */
     opacity: 0;
     pointer-events: none;
     transition: .25s ease;
@@ -125,7 +120,6 @@ body {
 
     font-family: Arial;
     font-size: 14px;
-
     cursor: pointer;
 }
 
@@ -154,28 +148,6 @@ body {
         font-size: 12px;
         gap: 6px;
     }
-}
-
-/* fullscreen safe */
-:fullscreen #liveMenu {
-    left: 18px;
-}
-
-/* ========================= BLOGSPOT FIX ========================= */
-#player * {
-    box-sizing: border-box !important;
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    white-space: nowrap !important;
-    word-break: normal !important;
-    line-height: normal !important;
-}
-
-#player [class*="quality"],
-#player [class*="menu"],
-#player [class*="settings"] {
-    writing-mode: horizontal-tb !important;
-    white-space: nowrap !important;
 }
 
 </style>
@@ -230,32 +202,21 @@ function loadStream(i) {
 
     const s = streams[i];
 
-    if (s.type === "iframe") {
-        player.innerHTML = `
-            <iframe 
-                src="${s.url}" 
-                frameborder="0"
-                allowfullscreen
-                allow="autoplay; fullscreen"
-                style="width:100%;height:100%;border:0;">
-            </iframe>
-        `;
-    } else {
-        new Playerjs({
-            id: "player",
-            file: s.url,
-            autoplay: 0,
-            lang: "en"
-        });
-    }
+    player.innerHTML = `
+        <iframe 
+            src="${s.url}" 
+            frameborder="0"
+            allowfullscreen
+            allow="autoplay; fullscreen"
+            style="width:100%;height:100%;border:0;">
+        </iframe>
+    `;
 
     updateActive();
 }
 
-/* ========================= MENU BUILD (FIXED) ========================= */
+/* ========================= MENU BUILD ========================= */
 function buildMenu() {
-    if (!menu) return;
-
     menu.innerHTML = "";
 
     streams.forEach((s, i) => {
@@ -279,7 +240,7 @@ function buildMenu() {
     updateActive();
 }
 
-/* ========================= ACTIVE FIX ========================= */
+/* ========================= ACTIVE ========================= */
 function updateActive() {
     const buttons = document.querySelectorAll(".live-btn");
 
@@ -302,7 +263,7 @@ function showMenu() {
 
 document.addEventListener("pointerdown", showMenu);
 
-/* ========================= INIT SAFE ========================= */
+/* ========================= INIT ========================= */
 document.addEventListener("DOMContentLoaded", () => {
     buildMenu();
 });
@@ -310,23 +271,6 @@ document.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("load", () => {
     loadStream(0);
 });
-</script>
-
-<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
-
-<script>
-const img = document.getElementById("myImage");
-const spinner = document.getElementById("spinner");
-
-setTimeout(() => {
-    img.style.opacity = "0";
-    spinner.style.opacity = "0";
-
-    setTimeout(() => {
-        img.remove();
-        spinner.remove();
-    }, 800);
-}, 3000);
 </script>
 
 </body>
