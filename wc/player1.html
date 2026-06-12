@@ -6,7 +6,6 @@
 
 <style>
 
-/* ===== RESET ===== */
 html, body {
     margin: 0;
     padding: 0;
@@ -16,20 +15,18 @@ html, body {
     overflow: hidden;
 }
 
-/* ===== WRAPPER (ВЕСЬ ЕКРАН) ===== */
+/* ===== PLAYER ===== */
 #player-wrapper {
     position: absolute;
     inset: 0;
     background: #000;
 }
 
-/* ===== PLAYER ===== */
 #player {
     position: absolute;
     inset: 0;
 }
 
-/* iframe */
 #player iframe {
     width: 100%;
     height: 100%;
@@ -40,21 +37,15 @@ html, body {
 #liveMenu {
     position: absolute;
     left: 12px;
-    top: 40px;
+    top: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 
-    z-index: 999999;
+    z-index: 999999999;
 
-    opacity: 0;
-    pointer-events: none; /* 🔥 ВАЖЛИВО: не блокує плеєр */
-    transition: 0.25s ease;
-}
-
-#liveMenu.show {
-    opacity: 1;
-    pointer-events: auto; /* тільки коли видно */
+    opacity: 1; /* 🔥 ВАЖЛИВО: НЕ ховаємо для тесту */
+    pointer-events: auto;
 }
 
 /* ===== BUTTON ===== */
@@ -66,14 +57,13 @@ html, body {
     padding: 10px 12px;
     border-radius: 10px;
 
-    background: rgba(0,0,0,0.55);
+    background: rgba(0,0,0,0.6);
     border: 1px solid rgba(255,255,255,0.3);
     color: #fff;
 
     font-family: Arial;
     font-size: 14px;
     cursor: pointer;
-    user-select: none;
 }
 
 .live-btn img {
@@ -86,30 +76,18 @@ html, body {
     color: red;
 }
 
-/* mobile */
-@media (max-width: 768px) {
-    .live-btn {
-        font-size: 12px;
-        padding: 7px 10px;
-    }
-}
-
 </style>
 </head>
 
 <body>
 
 <div id="player-wrapper">
-
     <div id="player"></div>
-
     <div id="liveMenu"></div>
-
 </div>
 
 <script>
 
-/* ===== STREAMS ===== */
 const streams = [
     {
         name: "Stream 1",
@@ -133,7 +111,7 @@ let current = 0;
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
 
-/* ===== LOAD STREAM ===== */
+/* ===== PLAYER LOAD ===== */
 function loadStream(i) {
     current = i;
 
@@ -149,9 +127,10 @@ function loadStream(i) {
     updateActive();
 }
 
-/* ===== MENU BUILD ===== */
+/* ===== MENU BUILD (ФІКС ГАРАНТІЯ) ===== */
 function buildMenu() {
-    menu.innerHTML = "";
+
+    console.log("MENU BUILD OK"); // 🔥 debug
 
     streams.forEach((s, i) => {
 
@@ -167,8 +146,8 @@ function buildMenu() {
         btn.appendChild(img);
         btn.appendChild(text);
 
-        btn.onclick = (e) => {
-            e.stopPropagation(); // 🔥 щоб клік не закривав меню
+        btn.onclick = () => {
+            console.log("CLICK STREAM", i); // debug
             loadStream(i);
         };
 
@@ -185,22 +164,11 @@ function updateActive() {
     });
 }
 
-/* ===== TOGGLE MENU ===== */
-function toggleMenu() {
-    menu.classList.toggle("show");
-}
-
-/* ===== TAP ON PLAYER OPENS MENU ===== */
-document.getElementById("player-wrapper").addEventListener("click", (e) => {
-    // якщо тап по меню — не закриваємо
-    if (e.target.closest("#liveMenu")) return;
-
-    toggleMenu();
+/* ===== INIT (ВАЖЛИВО) ===== */
+window.addEventListener("load", () => {
+    buildMenu();
+    loadStream(0);
 });
-
-/* ===== INIT ===== */
-buildMenu();
-loadStream(0);
 
 </script>
 
