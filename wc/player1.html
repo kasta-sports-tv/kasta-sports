@@ -37,8 +37,7 @@ iframe {
 #liveMenu {
     position: absolute;
     left: 12px;
-    top: 40%;
-    transform: translateY(-50%);
+    top: 12px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -79,7 +78,7 @@ iframe {
     color: red;
 }
 
-/* ===== TOGGLE BUTTON (ВАЖЛИВО) ===== */
+/* ===== TOGGLE BUTTON ===== */
 #menuToggle {
     position: absolute;
     top: 12px;
@@ -100,6 +99,10 @@ iframe {
 
     font-size: 20px;
     cursor: pointer;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
 }
 
 @media (max-width: 768px) {
@@ -117,10 +120,8 @@ iframe {
 
     <div id="player"></div>
 
-    <!-- кнопки -->
     <div id="liveMenu"></div>
 
-    <!-- ТРИГЕР МЕНЮ -->
     <div id="menuToggle">☰</div>
 
 </div>
@@ -150,7 +151,6 @@ const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
 const toggle = document.getElementById("menuToggle");
 
-/* ===== LOAD STREAM ===== */
 function loadStream(i) {
     current = i;
 
@@ -166,10 +166,8 @@ function loadStream(i) {
     updateActive();
 }
 
-/* ===== MENU ===== */
 function buildMenu() {
     streams.forEach((s, i) => {
-
         const btn = document.createElement("div");
         btn.className = "live-btn";
 
@@ -190,32 +188,53 @@ function buildMenu() {
     updateActive();
 }
 
-/* ===== ACTIVE ===== */
 function updateActive() {
     document.querySelectorAll(".live-btn").forEach((b, i) => {
         b.classList.toggle("active", i === current);
     });
 }
 
-/* ===== TOGGLE LOGIC ===== */
-toggle.onclick = () => {
-    menu.classList.toggle("show");
-};
+/* ===== LOGIC ===== */
 
-/* автозакриття */
 let hideTimer;
-function autoHide() {
+
+function showUI() {
+    toggle.style.opacity = "1";
+    toggle.style.pointerEvents = "auto";
+
     clearTimeout(hideTimer);
+
     hideTimer = setTimeout(() => {
         menu.classList.remove("show");
-    }, 4000);
+
+        toggle.style.opacity = "0";
+        toggle.style.pointerEvents = "none";
+    }, 3500);
 }
 
-menu.addEventListener("click", autoHide);
+/* click / tap */
+document.addEventListener("pointerdown", showUI);
 
-/* ===== INIT ===== */
+/* PC move */
+document.addEventListener("mousemove", showUI);
+
+/* toggle menu */
+toggle.onclick = (e) => {
+    e.stopPropagation();
+    menu.classList.toggle("show");
+    showUI();
+};
+
+/* auto hide on click menu */
+menu.addEventListener("click", showUI);
+
+/* INIT */
 buildMenu();
 loadStream(0);
+
+/* start hidden */
+toggle.style.opacity = "0";
+toggle.style.pointerEvents = "none";
 </script>
 
 </body>
