@@ -35,7 +35,6 @@ body {
     overflow: hidden;
 }
 
-/* fallback */
 @supports not (aspect-ratio: 16 / 9) {
     #player-wrapper {
         height: calc(100vw * 9 / 16);
@@ -222,6 +221,7 @@ const streams = [
 let current = 0;
 const menu = document.getElementById("liveMenu");
 
+/* ========================= LOAD STREAM ========================= */
 function loadStream(i) {
     current = i;
 
@@ -252,6 +252,7 @@ function loadStream(i) {
     updateActive();
 }
 
+/* ========================= MENU ========================= */
 function buildMenu() {
     menu.innerHTML = "";
 
@@ -268,7 +269,7 @@ function buildMenu() {
         btn.appendChild(img);
         btn.appendChild(text);
 
-        btn.onclick = () => loadStream(i);
+        btn.addEventListener("click", () => loadStream(i));
 
         menu.appendChild(btn);
     });
@@ -276,13 +277,16 @@ function buildMenu() {
     updateActive();
 }
 
+/* ========================= ACTIVE STATE FIX ========================= */
 function updateActive() {
-    document.querySelectorAll(".live-btn").forEach((b, i) => {
-        b.classList.toggle("active", i === current);
+    const buttons = document.querySelectorAll(".live-btn");
+
+    buttons.forEach((btn, i) => {
+        btn.classList.toggle("active", i === current);
     });
 }
 
-/* menu */
+/* ========================= MENU SHOW/HIDE ========================= */
 let hideTimer;
 
 function showMenu() {
@@ -296,7 +300,7 @@ function showMenu() {
 
 document.addEventListener("pointerdown", showMenu);
 
-/* INIT */
+/* ========================= INIT ========================= */
 buildMenu();
 
 window.addEventListener("load", () => {
