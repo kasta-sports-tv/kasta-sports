@@ -3,17 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 
 <style>
 
+/* ================= RESET ================= */
 html, body {
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100%;
     background: #000;
     overflow: hidden;
 }
 
-/* ===== PLAYER WRAPPER ===== */
+/* ================= WRAPPER ================= */
 #player-wrapper {
     position: absolute;
     top: 0;
@@ -21,30 +27,25 @@ html, body {
     width: 100vw;
     aspect-ratio: 16 / 9;
     background: #000;
+    overflow: hidden;
 }
 
-/* ===== PLAYER ===== */
+/* ================= PLAYER ================= */
 #player {
     position: absolute;
     inset: 0;
-}
-
-/* iframe player */
-#player iframe,
-#player video {
     width: 100%;
     height: 100%;
 }
 
-/* ===== IMPORTANT FIX: TAP LAYER ===== */
-#tapLayer {
-    position: absolute;
-    inset: 0;
-    z-index: 15000;
-    background: transparent;
+/* iframe/video */
+iframe, video {
+    width: 100%;
+    height: 100%;
+    border: 0;
 }
 
-/* ===== MENU ===== */
+/* ================= MENU ================= */
 #liveMenu {
     position: absolute;
     left: 12px;
@@ -53,11 +54,11 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    z-index: 20000;
+    z-index: 9999;
 
     opacity: 0;
     pointer-events: none;
-    transition: .25s ease;
+    transition: 0.25s ease;
 }
 
 #liveMenu.show {
@@ -65,23 +66,43 @@ html, body {
     pointer-events: auto;
 }
 
+/* ================= BUTTON ================= */
 .live-btn {
     display: flex;
     align-items: center;
     gap: 8px;
+
     padding: 10px 12px;
     border-radius: 10px;
-    background: rgba(0,0,0,0.4);
+
+    background: rgba(0,0,0,0.45);
     border: 1px solid rgba(255,255,255,0.25);
+
     color: #fff;
     font-family: Arial;
     font-size: 14px;
+
     cursor: pointer;
+    user-select: none;
+}
+
+.live-btn img {
+    width: 18px;
+    height: 12px;
+    object-fit: cover;
 }
 
 .live-btn.active {
     border-color: red;
     color: red;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+    .live-btn {
+        font-size: 12px;
+        padding: 7px 10px;
+    }
 }
 
 </style>
@@ -93,9 +114,6 @@ html, body {
 
     <div id="player"></div>
 
-    <!-- 🔥 TAP CAPTURE LAYER -->
-    <div id="tapLayer"></div>
-
     <div id="liveMenu"></div>
 
 </div>
@@ -105,25 +123,28 @@ html, body {
 const streams = [
     {
         name: "Stream 1",
-        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png",
+        url: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8"
     },
     {
         name: "Stream 2",
-        url: "https://sportkastv.blogspot.com/2026/06/2-vs.html"
+        flag: "https://img.magnific.com/free-photo/abstract-surface-textures-white-concrete-stone-wall_74190-8189.jpg",
+        url: "https://mf.kasta-sports-tv.workers.dev/?url=https://t5.ultrastream.vip/mtv_laliga/index.m3u8"
     },
     {
         name: "Stream 3",
-        url: "https://sportkastv.blogspot.com/2026/06/2-vs.html"
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/330px-Flag_of_the_United_Kingdom_%283-5%29.svg.png",
+        url: "https://cinebolt.net/api/iptv-proxy?url=http://50.7.120.34:8080/TVI/index.m3u8"
     }
 ];
 
 let current = 0;
-const menu = document.getElementById("liveMenu");
-const tapLayer = document.getElementById("tapLayer");
-
 let hideTimer = null;
 
-/* ===== LOAD STREAM ===== */
+const menu = document.getElementById("liveMenu");
+const wrapper = document.getElementById("player-wrapper");
+
+/* ================= LOAD STREAM ================= */
 function loadStream(i) {
     current = i;
 
@@ -139,13 +160,22 @@ function loadStream(i) {
     updateActive();
 }
 
-/* ===== MENU ===== */
+/* ================= MENU BUILD ================= */
 function buildMenu() {
-    streams.forEach((s, i) => {
+    menu.innerHTML = "";
 
+    streams.forEach((s, i) => {
         const btn = document.createElement("div");
         btn.className = "live-btn";
-        btn.textContent = s.name;
+
+        const img = document.createElement("img");
+        img.src = s.flag;
+
+        const text = document.createElement("span");
+        text.textContent = s.name;
+
+        btn.appendChild(img);
+        btn.appendChild(text);
 
         btn.onclick = (e) => {
             e.stopPropagation();
@@ -159,14 +189,14 @@ function buildMenu() {
     updateActive();
 }
 
-/* ===== ACTIVE ===== */
+/* ================= ACTIVE ================= */
 function updateActive() {
     document.querySelectorAll(".live-btn").forEach((b, i) => {
         b.classList.toggle("active", i === current);
     });
 }
 
-/* ===== SHOW/HIDE ===== */
+/* ================= SHOW / HIDE ================= */
 function showMenu() {
     menu.classList.add("show");
 
@@ -176,8 +206,8 @@ function showMenu() {
     }, 3000);
 }
 
-/* ===== FIXED TAP SYSTEM ===== */
-tapLayer.addEventListener("click", () => {
+/* ================= TAP ON PLAYER ================= */
+wrapper.addEventListener("click", () => {
     if (menu.classList.contains("show")) {
         menu.classList.remove("show");
         clearTimeout(hideTimer);
@@ -186,9 +216,12 @@ tapLayer.addEventListener("click", () => {
     }
 });
 
-/* ===== INIT ===== */
+/* ================= INIT ================= */
 buildMenu();
-loadStream(0);
+
+window.addEventListener("load", () => {
+    loadStream(0);
+});
 
 </script>
 
