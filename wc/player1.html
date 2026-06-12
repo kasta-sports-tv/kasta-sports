@@ -35,21 +35,7 @@ iframe {
     border: 0;
 }
 
-/* ===== BUTTON ZONE ONLY (NOT FULL SCREEN) ===== */
-#buttonZone {
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    width: 140px;          /* 👈 тільки вузька зона */
-    height: 100%;
-
-    z-index: 10;
-
-    background: transparent;
-}
-
-/* ===== MENU INSIDE ZONE ===== */
+/* ===== MENU (overlay but NON-blocking) ===== */
 #liveMenu {
     position: absolute;
     top: 10px;
@@ -58,6 +44,8 @@ iframe {
     display: flex;
     flex-direction: column;
     gap: 10px;
+
+    z-index: 999;
 
     opacity: 0;
     pointer-events: none;
@@ -106,10 +94,7 @@ iframe {
 
     <div id="player"></div>
 
-    <!-- 🔥 ONLY LEFT STRIP IS ACTIVE -->
-    <div id="buttonZone">
-        <div id="liveMenu"></div>
-    </div>
+    <div id="liveMenu"></div>
 
 </div>
 
@@ -136,7 +121,7 @@ let current = 0;
 
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
-const zone = document.getElementById("buttonZone");
+const wrapper = document.getElementById("player-wrapper");
 
 /* ===== LOAD STREAM ===== */
 function loadStream(i) {
@@ -187,7 +172,7 @@ function updateActive() {
     });
 }
 
-/* ===== SHOW / HIDE ONLY IN ZONE ===== */
+/* ===== TAP ANYWHERE ON PLAYER ===== */
 let hideTimer;
 
 function showMenu() {
@@ -199,8 +184,8 @@ function showMenu() {
     }, 3000);
 }
 
-/* 👇 ONLY LEFT ZONE HANDLES TAPS */
-zone.addEventListener("pointerdown", (e) => {
+/* 🔥 IMPORTANT: FULL PLAYER TAP DETECTION */
+wrapper.addEventListener("pointerdown", () => {
     showMenu();
 });
 
