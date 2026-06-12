@@ -227,7 +227,9 @@ function loadStream(i) {
     new Playerjs({
         id: "player",
         file: streams[i].url,
-        autoplay: 0
+        poster: "",
+        autoplay: 0,
+        lang: "en"
     });
 
     updateActive();
