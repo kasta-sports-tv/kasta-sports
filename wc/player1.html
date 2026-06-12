@@ -14,7 +14,7 @@ html, body {
     overflow: hidden;
 }
 
-/* ===== PLAYER WRAPPER ===== */
+/* ===== PLAYER ===== */
 #player-wrapper {
     position: absolute;
     top: 0;
@@ -24,7 +24,6 @@ html, body {
     background: #000;
 }
 
-/* iframe player */
 #player {
     position: absolute;
     inset: 0;
@@ -36,7 +35,15 @@ iframe {
     border: 0;
 }
 
-/* ===== MENU (overlay on player) ===== */
+/* ===== OVERLAY (IMPORTANT FIX) ===== */
+#touchLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: transparent;
+}
+
+/* ===== MENU ===== */
 #liveMenu {
     position: absolute;
     top: 10px;
@@ -46,20 +53,18 @@ iframe {
     flex-direction: column;
     gap: 10px;
 
-    z-index: 9999;
+    z-index: 10;
 
     opacity: 0;
     pointer-events: none;
     transition: 0.2s ease;
 }
 
-/* visible state */
 #liveMenu.show {
     opacity: 1;
     pointer-events: auto;
 }
 
-/* buttons */
 .live-btn {
     display: flex;
     align-items: center;
@@ -81,17 +86,11 @@ iframe {
 .live-btn img {
     width: 18px;
     height: 12px;
-    object-fit: cover;
 }
 
 .live-btn.active {
     border-color: red;
     color: red;
-}
-
-/* important: iframe NEVER blocked */
-#player {
-    pointer-events: auto;
 }
 </style>
 </head>
@@ -101,6 +100,9 @@ iframe {
 <div id="player-wrapper">
 
     <div id="player"></div>
+
+    <!-- 🔥 THIS FIXES EVERYTHING -->
+    <div id="touchLayer"></div>
 
     <div id="liveMenu"></div>
 
@@ -129,6 +131,7 @@ let current = 0;
 
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
+const touchLayer = document.getElementById("touchLayer");
 
 /* ===== LOAD STREAM ===== */
 function loadStream(i) {
@@ -146,7 +149,7 @@ function loadStream(i) {
     updateActive();
 }
 
-/* ===== BUILD MENU ===== */
+/* ===== MENU ===== */
 function buildMenu() {
     streams.forEach((s, i) => {
 
@@ -163,7 +166,7 @@ function buildMenu() {
         btn.appendChild(text);
 
         btn.onclick = (e) => {
-            e.stopPropagation(); // щоб не закривалось меню
+            e.stopPropagation();
             loadStream(i);
         };
 
@@ -173,15 +176,14 @@ function buildMenu() {
     updateActive();
 }
 
-/* ===== ACTIVE STATE ===== */
 function updateActive() {
     document.querySelectorAll(".live-btn").forEach((b, i) => {
         b.classList.toggle("active", i === current);
     });
 }
 
-/* ===== SHOW/HIDE LOGIC ===== */
-let hideTimer = null;
+/* ===== SHOW / HIDE ===== */
+let hideTimer;
 
 function showMenu() {
     menu.classList.add("show");
@@ -192,12 +194,9 @@ function showMenu() {
     }, 3000);
 }
 
-/* ===== FIX: TAP ONLY ON PLAYER AREA ===== */
-document.addEventListener("pointerdown", (e) => {
-    // якщо тап по iframe/плеєру → показати меню
-    if (e.target.closest("#player-wrapper")) {
-        showMenu();
-    }
+/* 🔥 THIS IS THE KEY FIX */
+touchLayer.addEventListener("pointerdown", (e) => {
+    showMenu();
 });
 
 /* INIT */
