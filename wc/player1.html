@@ -9,6 +9,7 @@
 
 <style>
 
+/* ========================= HARD RESET ========================= */
 html, body {
     margin: 0;
     padding: 0;
@@ -28,6 +29,7 @@ body {
     top: 0;
     left: 0;
     width: 100vw;
+    max-width: 100vw;
     aspect-ratio: 16 / 9;
     background: #000;
     overflow: hidden;
@@ -59,8 +61,8 @@ body {
     height: 100%;
     object-fit: contain;
     background: #000;
-    z-index: 9998;
-    transition: opacity .6s ease;
+    z-index: 9999;
+    transition: opacity .8s ease;
     pointer-events: none;
 }
 
@@ -76,7 +78,7 @@ body {
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    z-index: 9999;
+    z-index: 10000;
 }
 
 @keyframes spin {
@@ -93,7 +95,7 @@ body {
     flex-direction: column;
     gap: 10px;
 
-    z-index: 99999999; /* 🔥 ФІКС: завжди поверх iframe */
+    z-index: 9999999;
     opacity: 0;
     pointer-events: none;
     transition: .25s ease;
@@ -111,6 +113,7 @@ body {
 
     padding: 10px 12px;
     border-radius: 10px;
+
     background: rgba(0,0,0,0.45);
     border: 1px solid rgba(255,255,255,0.25);
     color: #fff;
@@ -133,6 +136,7 @@ body {
     box-shadow: 0 0 10px rgba(255,0,0,0.6);
 }
 
+/* ========================= MOBILE FIX ========================= */
 @media (max-width: 768px) {
     #liveMenu {
         gap: 6px;
@@ -171,52 +175,40 @@ const streams = [
         name: "Stream 1",
         type: "iframe",
         flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png",
-        url: "https://sportkastv.blogspot.com"
+        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
     },
     {
         name: "Stream 2",
         type: "iframe",
-        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Flag_of_Spain.svg/330px-Flag_of_Spain.svg.png",
-        url: "https://sportkastv.blogspot.com"
+        flag: "https://img.magnific.com/free-photo/abstract-surface-textures-white-concrete-stone-wall_74190-8189.jpg",
+        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
     },
     {
         name: "Stream 3",
         type: "iframe",
-        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom.svg/330px-Flag_of_the_United_Kingdom.svg.png",
-        url: "https://sportkastv.blogspot.com"
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/330px-Flag_of_the_United_Kingdom_%283-5%29.svg.png",
+        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
     }
 ];
 
 let current = 0;
 const menu = document.getElementById("liveMenu");
 
-/* ========================= FIX LOADER ========================= */
-function hideLoader() {
-    const img = document.getElementById("myImage");
-    const spinner = document.getElementById("spinner");
-
-    if (img) img.style.opacity = "0";
-    if (spinner) spinner.style.opacity = "0";
-
-    setTimeout(() => {
-        img?.remove();
-        spinner?.remove();
-    }, 500);
-}
-
-/* ========================= LOAD STREAM ========================= */
 function loadStream(i) {
     current = i;
 
     const player = document.getElementById("player");
-    player.innerHTML = "";
+
+    while (player.firstChild) {
+        player.removeChild(player.firstChild);
+    }
 
     const s = streams[i];
 
     const iframe = document.createElement("iframe");
     iframe.src = s.url;
-    iframe.allow = "autoplay; fullscreen";
     iframe.frameBorder = "0";
+    iframe.allow = "autoplay; fullscreen";
     iframe.style.width = "100%";
     iframe.style.height = "100%";
     iframe.style.border = "0";
@@ -224,11 +216,6 @@ function loadStream(i) {
     player.appendChild(iframe);
 
     updateActive();
-
-    /* 🔥 головний FIX: loader ховається по факту вставки */
-    requestAnimationFrame(() => {
-        setTimeout(hideLoader, 600);
-    });
 }
 
 /* ========================= MENU ========================= */
@@ -256,6 +243,7 @@ function buildMenu() {
     updateActive();
 }
 
+/* ========================= ACTIVE ========================= */
 function updateActive() {
     document.querySelectorAll(".live-btn").forEach((btn, i) => {
         btn.classList.toggle("active", i === current);
@@ -276,13 +264,27 @@ function showMenu() {
 
 document.addEventListener("pointerdown", showMenu);
 
-/* ========================= INIT ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-    buildMenu();
-});
-
+/* ========================= POSTER + SPINNER FIX ========================= */
 window.addEventListener("load", () => {
+
+    buildMenu();
     loadStream(0);
+
+    // 🔥 FIX: ховаємо спінер і постер після старту
+    setTimeout(() => {
+        const img = document.getElementById("myImage");
+        const spinner = document.getElementById("spinner");
+
+        if (img) {
+            img.style.opacity = "0";
+            setTimeout(() => img.remove(), 800);
+        }
+
+        if (spinner) {
+            spinner.style.opacity = "0";
+            setTimeout(() => spinner.remove(), 800);
+        }
+    }, 1200);
 });
 
 </script>
