@@ -6,13 +6,10 @@
 
 <style>
 
-/* ===== RESET ===== */
 html, body {
     margin: 0;
     padding: 0;
     background: #000;
-    width: 100%;
-    height: 100%;
     overflow: hidden;
 }
 
@@ -21,36 +18,46 @@ html, body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100vw;
     aspect-ratio: 16 / 9;
     background: #000;
 }
 
-/* ===== IFRAME PLAYER ===== */
+/* ===== PLAYER ===== */
 #player {
+    position: absolute;
+    inset: 0;
+}
+
+/* iframe player */
+#player iframe,
+#player video {
     width: 100%;
     height: 100%;
 }
 
-iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
+/* ===== IMPORTANT FIX: TAP LAYER ===== */
+#tapLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 15000;
+    background: transparent;
 }
 
-/* ===== MENU OVER PLAYER ===== */
+/* ===== MENU ===== */
 #liveMenu {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    left: 12px;
+    top: 40%;
+    transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    z-index: 9999;
+    gap: 10px;
+    z-index: 20000;
 
     opacity: 0;
     pointer-events: none;
-    transition: 0.25s ease;
+    transition: .25s ease;
 }
 
 #liveMenu.show {
@@ -58,40 +65,23 @@ iframe {
     pointer-events: auto;
 }
 
-/* ===== BUTTONS ===== */
 .live-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-
-    padding: 8px 10px;
-    font-size: 14px;
-    font-family: Arial;
-
-    color: #fff;
-    background: rgba(0,0,0,0.55);
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4);
     border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 8px;
-
+    color: #fff;
+    font-family: Arial;
+    font-size: 14px;
     cursor: pointer;
-}
-
-.live-btn img {
-    width: 18px;
-    height: 12px;
 }
 
 .live-btn.active {
     border-color: red;
     color: red;
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
-    .live-btn {
-        font-size: 12px;
-        padding: 6px 8px;
-    }
 }
 
 </style>
@@ -103,6 +93,9 @@ iframe {
 
     <div id="player"></div>
 
+    <!-- 🔥 TAP CAPTURE LAYER -->
+    <div id="tapLayer"></div>
+
     <div id="liveMenu"></div>
 
 </div>
@@ -111,27 +104,22 @@ iframe {
 
 const streams = [
     {
-        name: "LIVE 1",
-        flag: "https://upload.wikimedia.org/wikipedia/commons/d/d2/Flag_of_Ukraine.png",
-        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
+        name: "Stream 1",
+        url: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8"
     },
     {
-        name: "LIVE 2",
-        flag: "https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg",
-        url: "https://sportkastv.blogspot.com/2026/06/2-vs.html"
+        name: "Stream 2",
+        url: "https://mf.kasta-sports-tv.workers.dev/?url=https://t5.ultrastream.vip/mtv_laliga/index.m3u8"
     },
     {
-        name: "LIVE 3",
-        flag: "https://upload.wikimedia.org/wikipedia/commons/9/99/Flag_of_Germany.svg",
-        url: "https://kasta-sports.vercel.app/wc-player.html"
+        name: "Stream 3",
+        url: "https://cinebolt.net/api/iptv-proxy?url=http://50.7.120.34:8080/TVI/index.m3u8"
     }
 ];
 
 let current = 0;
-
-const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
-const wrapper = document.getElementById("player-wrapper");
+const tapLayer = document.getElementById("tapLayer");
 
 let hideTimer = null;
 
@@ -139,14 +127,14 @@ let hideTimer = null;
 function loadStream(i) {
     current = i;
 
-    player.innerHTML = "";
+    document.getElementById("player").innerHTML = "";
 
-    const iframe = document.createElement("iframe");
-    iframe.src = streams[i].url;
-    iframe.allow = "autoplay; fullscreen";
-    iframe.allowFullscreen = true;
-
-    player.appendChild(iframe);
+    new Playerjs({
+        id: "player",
+        file: streams[i].url,
+        autoplay: 0,
+        lang: "en"
+    });
 
     updateActive();
 }
@@ -157,20 +145,12 @@ function buildMenu() {
 
         const btn = document.createElement("div");
         btn.className = "live-btn";
-
-        const img = document.createElement("img");
-        img.src = s.flag;
-
-        const text = document.createElement("span");
-        text.textContent = s.name;
-
-        btn.appendChild(img);
-        btn.appendChild(text);
+        btn.textContent = s.name;
 
         btn.onclick = (e) => {
-            e.stopPropagation(); // щоб тап не закривав меню
+            e.stopPropagation();
             loadStream(i);
-            showMenu(); // оновлюємо таймер
+            showMenu();
         };
 
         menu.appendChild(btn);
@@ -186,7 +166,7 @@ function updateActive() {
     });
 }
 
-/* ===== SHOW / HIDE MENU ===== */
+/* ===== SHOW/HIDE ===== */
 function showMenu() {
     menu.classList.add("show");
 
@@ -196,8 +176,8 @@ function showMenu() {
     }, 3000);
 }
 
-/* ===== TAP ON PLAYER TOGGLE ===== */
-wrapper.addEventListener("click", () => {
+/* ===== FIXED TAP SYSTEM ===== */
+tapLayer.addEventListener("click", () => {
     if (menu.classList.contains("show")) {
         menu.classList.remove("show");
         clearTimeout(hideTimer);
@@ -211,6 +191,8 @@ buildMenu();
 loadStream(0);
 
 </script>
+
+<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
 
 </body>
 </html>
