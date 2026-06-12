@@ -6,6 +6,7 @@
 
 <style>
 
+/* ===== RESET ===== */
 html, body {
     margin: 0;
     padding: 0;
@@ -15,70 +16,49 @@ html, body {
     height: 100%;
 }
 
-body {
-    position: fixed;
-    inset: 0;
-}
-
-/* ===== PLAYER ===== */
+/* ===== WRAPPER ===== */
 #player-wrapper {
     position: absolute;
     inset: 0;
     background: #000;
 }
 
+/* ===== VIDEO AREA ===== */
 #player {
     position: absolute;
     inset: 0;
-    z-index: 1;
 }
 
-/* iframe MUST NOT block UI */
-#player iframe {
+/* iframe fullscreen */
+iframe {
     width: 100%;
     height: 100%;
     border: 0;
-    pointer-events: none; /* 🔥 важливо — не краде тапи */
 }
 
-/* ===== BUTTON MENU ===== */
+/* ===== BUTTONS ===== */
 #liveMenu {
     position: absolute;
     left: 12px;
     top: 40%;
     transform: translateY(-50%);
-
     display: flex;
     flex-direction: column;
     gap: 10px;
-
-    z-index: 999999999; /* 🔥 завжди зверху */
-
-    opacity: 0;
-    pointer-events: none;
-    transition: .2s ease;
-}
-
-#liveMenu.show {
-    opacity: 1;
-    pointer-events: auto;
+    z-index: 99999999; /* завжди поверх */
 }
 
 .live-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-
     padding: 10px 12px;
     border-radius: 10px;
-
-    background: rgba(0,0,0,0.55);
+    background: rgba(0,0,0,0.5);
     border: 1px solid rgba(255,255,255,0.3);
     color: #fff;
-
     font-family: Arial;
     font-size: 14px;
-
     cursor: pointer;
 }
 
@@ -105,12 +85,16 @@ body {
 <body>
 
 <div id="player-wrapper">
+
     <div id="player"></div>
+
     <div id="liveMenu"></div>
+
 </div>
 
 <script>
 
+/* ===== STREAMS (3 IFRAME) ===== */
 const streams = [
     {
         name: "Stream 1",
@@ -138,8 +122,10 @@ const menu = document.getElementById("liveMenu");
 function loadStream(i) {
     current = i;
 
+    // очищаємо
     player.innerHTML = "";
 
+    // створюємо iframe
     const iframe = document.createElement("iframe");
     iframe.src = streams[i].url;
     iframe.allow = "autoplay; fullscreen";
@@ -174,26 +160,12 @@ function buildMenu() {
     updateActive();
 }
 
-/* ===== ACTIVE STATE ===== */
+/* ===== ACTIVE BUTTON ===== */
 function updateActive() {
     document.querySelectorAll(".live-btn").forEach((b, i) => {
         b.classList.toggle("active", i === current);
     });
 }
-
-/* ===== SHOW/HIDE MENU ===== */
-let hideTimer;
-
-function showMenu() {
-    menu.classList.add("show");
-
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(() => {
-        menu.classList.remove("show");
-    }, 3000);
-}
-
-document.addEventListener("pointerdown", showMenu);
 
 /* ===== INIT ===== */
 buildMenu();
