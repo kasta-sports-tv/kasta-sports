@@ -252,8 +252,10 @@ function loadStream(i) {
     updateActive();
 }
 
-/* ========================= MENU ========================= */
+/* ========================= MENU BUILD (FIXED) ========================= */
 function buildMenu() {
+    if (!menu) return;
+
     menu.innerHTML = "";
 
     streams.forEach((s, i) => {
@@ -269,7 +271,7 @@ function buildMenu() {
         btn.appendChild(img);
         btn.appendChild(text);
 
-        btn.addEventListener("click", () => loadStream(i));
+        btn.onclick = () => loadStream(i);
 
         menu.appendChild(btn);
     });
@@ -277,7 +279,7 @@ function buildMenu() {
     updateActive();
 }
 
-/* ========================= ACTIVE STATE FIX ========================= */
+/* ========================= ACTIVE FIX ========================= */
 function updateActive() {
     const buttons = document.querySelectorAll(".live-btn");
 
@@ -286,7 +288,7 @@ function updateActive() {
     });
 }
 
-/* ========================= MENU SHOW/HIDE ========================= */
+/* ========================= MENU SHOW ========================= */
 let hideTimer;
 
 function showMenu() {
@@ -300,8 +302,10 @@ function showMenu() {
 
 document.addEventListener("pointerdown", showMenu);
 
-/* ========================= INIT ========================= */
-buildMenu();
+/* ========================= INIT SAFE ========================= */
+document.addEventListener("DOMContentLoaded", () => {
+    buildMenu();
+});
 
 window.addEventListener("load", () => {
     loadStream(0);
