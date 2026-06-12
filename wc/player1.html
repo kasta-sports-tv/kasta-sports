@@ -5,94 +5,108 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <style>
-
 html, body {
     margin: 0;
     padding: 0;
     background: #000;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
 }
 
-/* PLAYER */
-#player-wrapper{
+/* ===== PLAYER WRAPPER ===== */
+#player-wrapper {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
+    width: 100%;
     aspect-ratio: 16 / 9;
     background: #000;
 }
 
-#player{
+/* iframe player */
+#player {
     position: absolute;
     inset: 0;
 }
 
-iframe{
+iframe {
     width: 100%;
     height: 100%;
     border: 0;
 }
 
-/* MENU */
-#liveMenu{
+/* ===== MENU (overlay on player) ===== */
+#liveMenu {
     position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 10px;
+    left: 10px;
+
     display: flex;
     flex-direction: column;
     gap: 10px;
+
     z-index: 9999;
 
     opacity: 0;
     pointer-events: none;
-    transition: .2s ease;
+    transition: 0.2s ease;
 }
 
-#liveMenu.show{
+/* visible state */
+#liveMenu.show {
     opacity: 1;
     pointer-events: auto;
 }
 
-.live-btn{
+/* buttons */
+.live-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 12px;
+
+    padding: 8px 10px;
     border-radius: 10px;
 
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.55);
     border: 1px solid rgba(255,255,255,0.25);
-    color: #fff;
 
+    color: #fff;
     font-family: Arial;
-    font-size: 14px;
+    font-size: 13px;
+
     cursor: pointer;
 }
 
-.live-btn img{
+.live-btn img {
     width: 18px;
     height: 12px;
+    object-fit: cover;
 }
 
-.live-btn.active{
+.live-btn.active {
     border-color: red;
     color: red;
 }
 
+/* important: iframe NEVER blocked */
+#player {
+    pointer-events: auto;
+}
 </style>
 </head>
 
 <body>
 
 <div id="player-wrapper">
+
     <div id="player"></div>
+
     <div id="liveMenu"></div>
+
 </div>
 
 <script>
-
 const streams = [
     {
         name: "Stream 1",
@@ -116,7 +130,8 @@ let current = 0;
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
 
-function loadStream(i){
+/* ===== LOAD STREAM ===== */
+function loadStream(i) {
     current = i;
 
     player.innerHTML = "";
@@ -131,8 +146,10 @@ function loadStream(i){
     updateActive();
 }
 
-function buildMenu(){
-    streams.forEach((s,i)=>{
+/* ===== BUILD MENU ===== */
+function buildMenu() {
+    streams.forEach((s, i) => {
+
         const btn = document.createElement("div");
         btn.className = "live-btn";
 
@@ -145,7 +162,10 @@ function buildMenu(){
         btn.appendChild(img);
         btn.appendChild(text);
 
-        btn.onclick = () => loadStream(i);
+        btn.onclick = (e) => {
+            e.stopPropagation(); // щоб не закривалось меню
+            loadStream(i);
+        };
 
         menu.appendChild(btn);
     });
@@ -153,36 +173,36 @@ function buildMenu(){
     updateActive();
 }
 
-function updateActive(){
-    document.querySelectorAll(".live-btn").forEach((b,i)=>{
+/* ===== ACTIVE STATE ===== */
+function updateActive() {
+    document.querySelectorAll(".live-btn").forEach((b, i) => {
         b.classList.toggle("active", i === current);
     });
 }
 
-/* ===== FIXED MENU LOGIC ===== */
-let timer = null;
+/* ===== SHOW/HIDE LOGIC ===== */
+let hideTimer = null;
 
-function showMenu(){
+function showMenu() {
     menu.classList.add("show");
 
-    clearTimeout(timer);
-    timer = setTimeout(()=>{
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
         menu.classList.remove("show");
-    }, 2500);
+    }, 3000);
 }
 
-/* 🔥 ОЦЕ ГОЛОВНЕ ВИПРАВЛЕННЯ */
+/* ===== FIX: TAP ONLY ON PLAYER AREA ===== */
 document.addEventListener("pointerdown", (e) => {
-
-    // не реагуємо на кліки по кнопках меню
-    if(e.target.closest("#liveMenu")) return;
-
-    showMenu();
+    // якщо тап по iframe/плеєру → показати меню
+    if (e.target.closest("#player-wrapper")) {
+        showMenu();
+    }
 });
 
+/* INIT */
 buildMenu();
 loadStream(0);
-
 </script>
 
 </body>
