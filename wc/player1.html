@@ -42,15 +42,20 @@ html, body {
     flex-direction: column;
     gap: 10px;
 
-    z-index: 999999;
+    z-index: 9999999;
 
+    /* 🔥 важливо: стартовий стан */
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: 0.25s ease;
+
+    transition: 0.2s ease;
 }
 
+/* 🔥 активний стан */
 #liveMenu.show {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
 }
 
@@ -114,6 +119,7 @@ const streams = [
 ];
 
 let current = 0;
+
 const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
 
@@ -135,7 +141,7 @@ function loadStream(i) {
     updateActive();
 }
 
-/* ===== MENU BUILD ===== */
+/* ===== BUILD MENU ===== */
 function buildMenu() {
     menu.innerHTML = "";
 
@@ -171,8 +177,15 @@ function updateActive() {
     });
 }
 
-/* ===== TOGGLE MENU ===== */
-function showMenu() {
+/* ===== SHOW / HIDE MENU ===== */
+function toggleMenu() {
+
+    if (menu.classList.contains("show")) {
+        menu.classList.remove("show");
+        clearTimeout(hideTimer);
+        return;
+    }
+
     menu.classList.add("show");
 
     clearTimeout(hideTimer);
@@ -182,8 +195,8 @@ function showMenu() {
 }
 
 /* ===== TAP ANYWHERE ===== */
-document.getElementById("player-wrapper").addEventListener("click", (e) => {
-    showMenu();
+document.getElementById("player-wrapper").addEventListener("click", () => {
+    toggleMenu();
 });
 
 /* ===== INIT ===== */
