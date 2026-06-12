@@ -10,67 +10,79 @@ html, body {
     margin: 0;
     padding: 0;
     background: #000;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
 }
 
-/* ===== WRAPPER ===== */
-#player-wrapper {
+/* ===== PLAYER WRAPPER ===== */
+#player-wrapper{
     position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
     aspect-ratio: 16 / 9;
     background: #000;
+    overflow: hidden;
+}
 
-    /* 🔥 ВАЖЛИВО для мобільного */
-    touch-action: manipulation;
+/* fallback */
+@supports not (aspect-ratio: 16/9){
+    #player-wrapper{
+        height: calc(100vw * 9 / 16);
+    }
 }
 
 /* ===== PLAYER ===== */
-#player {
+#player{
     position: absolute;
     inset: 0;
 }
 
-/* iframe */
-iframe {
+iframe{
     width: 100%;
     height: 100%;
     border: 0;
 }
 
+/* ===== TAP LAYER (ловить тач) ===== */
+#tapLayer{
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    background: transparent;
+}
+
 /* ===== MENU ===== */
-#liveMenu {
+#liveMenu{
     position: absolute;
     left: 12px;
-    top: 40%;
+    top: 50%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
     gap: 10px;
-    z-index: 9999;
+    z-index: 1000;
 
     opacity: 0;
     pointer-events: none;
-    transition: 0.25s ease;
+    transition: .25s ease;
 }
 
-#liveMenu.show {
+#liveMenu.show{
     opacity: 1;
     pointer-events: auto;
 }
 
-/* ===== BUTTON ===== */
-.live-btn {
+.live-btn{
     display: flex;
     align-items: center;
     gap: 8px;
-
     padding: 10px 12px;
-    border-radius: 10px;
 
     background: rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
 
     color: #fff;
     font-family: Arial;
@@ -79,9 +91,22 @@ iframe {
     cursor: pointer;
 }
 
-.live-btn.active {
+.live-btn img{
+    width: 18px;
+    height: 12px;
+}
+
+.live-btn.active{
     border-color: red;
     color: red;
+}
+
+/* mobile */
+@media(max-width:768px){
+    .live-btn{
+        font-size: 12px;
+        padding: 7px 10px;
+    }
 }
 
 </style>
@@ -93,6 +118,9 @@ iframe {
 
     <div id="player"></div>
 
+    <!-- ловить тап -->
+    <div id="tapLayer"></div>
+
     <div id="liveMenu"></div>
 
 </div>
@@ -100,47 +128,59 @@ iframe {
 <script>
 
 const streams = [
-    { name: "Stream 1", url: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8" },
-    { name: "Stream 2", url: "https://mf.kasta-sports-tv.workers.dev/?url=https://t5.ultrastream.vip/mtv_laliga/index.m3u8" },
-    { name: "Stream 3", url: "https://cinebolt.net/api/iptv-proxy?url=http://50.7.120.34:8080/TVI/index.m3u8" }
+    {
+        name: "Stream 1",
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Flag_of_Ukraine.png/330px-Flag_of_Ukraine.png",
+        url: "https://sportkastv.blogspot.com/2026/06/html-body-margin-0-padding-0-width-100_0753842376.html"
+    },
+    {
+        name: "Stream 2",
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/330px-Flag_of_the_United_Kingdom_%283-5%29.svg.png",
+        url: "https://sportkastv.blogspot.com/2026/06/2-vs.html"
+    },
+    {
+        name: "Stream 3",
+        flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Flag_of_Germany.svg/330px-Flag_of_Germany.svg.png",
+        url: "https://kasta-sports.vercel.app/wc-player.html"
+    }
 ];
 
 let current = 0;
-let hideTimer = null;
 
+const player = document.getElementById("player");
 const menu = document.getElementById("liveMenu");
-const wrapper = document.getElementById("player-wrapper");
+const tapLayer = document.getElementById("tapLayer");
 
-/* ===== LOAD ===== */
-function loadStream(i) {
+function loadStream(i){
     current = i;
 
-    document.getElementById("player").innerHTML = "";
+    player.innerHTML = "";
 
-    new Playerjs({
-        id: "player",
-        file: streams[i].url,
-        autoplay: 0
-    });
+    const iframe = document.createElement("iframe");
+    iframe.src = streams[i].url;
+    iframe.allow = "autoplay; fullscreen";
+    iframe.allowFullscreen = true;
+
+    player.appendChild(iframe);
 
     updateActive();
 }
 
-/* ===== MENU ===== */
-function buildMenu() {
-    menu.innerHTML = "";
-
-    streams.forEach((s, i) => {
-
+function buildMenu(){
+    streams.forEach((s,i)=>{
         const btn = document.createElement("div");
         btn.className = "live-btn";
-        btn.textContent = s.name;
 
-        btn.addEventListener("pointerdown", (e) => {
-            e.stopPropagation();
-            loadStream(i);
-            showMenu();
-        });
+        const img = document.createElement("img");
+        img.src = s.flag;
+
+        const text = document.createElement("span");
+        text.textContent = s.name;
+
+        btn.appendChild(img);
+        btn.appendChild(text);
+
+        btn.onclick = () => loadStream(i);
 
         menu.appendChild(btn);
     });
@@ -148,47 +188,42 @@ function buildMenu() {
     updateActive();
 }
 
-/* ===== ACTIVE ===== */
-function updateActive() {
-    document.querySelectorAll(".live-btn").forEach((b, i) => {
+function updateActive(){
+    document.querySelectorAll(".live-btn").forEach((b,i)=>{
         b.classList.toggle("active", i === current);
     });
 }
 
-/* ===== SHOW / HIDE ===== */
-function showMenu() {
+/* ===== MENU LOGIC ===== */
+let hideTimer = null;
+
+function showMenu(){
     menu.classList.add("show");
 
     clearTimeout(hideTimer);
-    hideTimer = setTimeout(() => {
+    hideTimer = setTimeout(()=>{
         menu.classList.remove("show");
-    }, 3000);
+    }, 2500);
 }
 
-/* ===== TAP FIX (KEY PART) ===== */
-wrapper.addEventListener("pointerdown", (e) => {
+/* ===== TAP HANDLER (ВАЖЛИВО) ===== */
+tapLayer.addEventListener("pointerdown", (e)=>{
+    showMenu();
+});
 
-    // якщо тап по меню — ігноруємо
-    if (menu.contains(e.target)) return;
-
-    if (menu.classList.contains("show")) {
-        menu.classList.remove("show");
-        clearTimeout(hideTimer);
-    } else {
+/* також дозволяємо тап по самому плеєру */
+document.addEventListener("pointerdown", (e)=>{
+    // якщо тап не по меню
+    if(!e.target.closest("#liveMenu")){
         showMenu();
     }
 });
 
 /* INIT */
 buildMenu();
-
-window.addEventListener("load", () => {
-    loadStream(0);
-});
+loadStream(0);
 
 </script>
-
-<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
 
 </body>
 </html>
