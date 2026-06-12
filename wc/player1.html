@@ -6,7 +6,6 @@
 
 <style>
 
-/* ===== RESET ===== */
 html, body {
     margin: 0;
     padding: 0;
@@ -16,14 +15,17 @@ html, body {
     height: 100%;
 }
 
-/* ===== WRAPPER (як плеєр зверху) ===== */
+/* ===== WRAPPER = тепер це і є зона тапу ===== */
 #player-wrapper {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
+
     aspect-ratio: 16 / 9;
     background: #000;
+
+    display: block;
 }
 
 /* ===== PLAYER ===== */
@@ -32,24 +34,25 @@ html, body {
     inset: 0;
 }
 
-/* iframe */
 iframe {
     width: 100%;
     height: 100%;
     border: 0;
 }
 
-/* ===== MENU (ТЕПЕР ТАК САМО ПРИВ'ЯЗАНИЙ ДО ПЛЕЄРА) ===== */
+/* ===== MENU ПОВЕРХ ПЛЕЄРА ===== */
 #liveMenu {
     position: absolute;
-    top: 0;          /* 🔥 FIX: тепер в межах плеєра */
+    top: 0;
     left: 12px;
+
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
 
     gap: 10px;
+
     z-index: 99999999;
 
     opacity: 0;
@@ -57,17 +60,17 @@ iframe {
     transition: .25s ease;
 }
 
-/* показ меню */
 #liveMenu.show {
     opacity: 1;
     pointer-events: auto;
 }
 
-/* кнопки */
+/* buttons */
 .live-btn {
     display: flex;
     align-items: center;
     gap: 8px;
+
     padding: 10px 12px;
     border-radius: 10px;
 
@@ -165,14 +168,14 @@ function buildMenu() {
         img.src = s.flag;
 
         const text = document.createElement("span");
-        text.innerText = s.name;
+        text.textContent = s.name;
 
         btn.appendChild(img);
         btn.appendChild(text);
 
         btn.onclick = () => {
             loadStream(i);
-            showMenu(); // щоб не зникало одразу після перемикання
+            showMenu();
         };
 
         menu.appendChild(btn);
@@ -188,7 +191,7 @@ function updateActive() {
     });
 }
 
-/* ===== TAP MENU SHOW/HIDE ===== */
+/* ===== TAP HANDLER (ОЦЕ ГОЛОВНЕ ВИПРАВЛЕННЯ) ===== */
 let hideTimer;
 
 function showMenu() {
@@ -200,10 +203,10 @@ function showMenu() {
     }, 3000);
 }
 
-/* тап по екрану */
-document.addEventListener("pointerdown", showMenu);
+/* 🔥 ТЕПЕР ТАП ЛОВИТЬСЯ ТІЛЬКИ ПО ПЛЕЄРУ */
+document.getElementById("player-wrapper").addEventListener("pointerdown", showMenu);
 
-/* ===== INIT ===== */
+/* INIT */
 buildMenu();
 loadStream(0);
 
