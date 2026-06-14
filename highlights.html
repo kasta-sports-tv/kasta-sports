@@ -55,7 +55,7 @@
     .logo .kasta  { color: #ffffff; }
     .logo .sports { color: #ff1a1a; }
 
-    /* match info in header (показується після вибору матчу) */
+    /* match info під плеєром */
     .match-info {
       display: none;
       justify-content: center;
@@ -66,17 +66,21 @@
       overflow: hidden;
       max-width: 100%;
       font-weight: bold;
+      margin-top: 10px;
     }
     .match-info.active { display: flex; }
     .match-info span {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-size: clamp(10px, 3.5vw, 22px);
-      max-width: 28%;
+      font-size: clamp(12px, 2vw, 20px);
+    }
+    .match-info .mi-time {
+      color: #aab0c0;
+      font-size: clamp(11px, 1.6vw, 16px);
     }
     .match-info img {
-      width: 36px; height: 36px;
+      width: 32px; height: 32px;
       border-radius: 50%;
       object-fit: cover;
       flex-shrink: 0;
@@ -217,11 +221,10 @@
       flex-shrink: 0;
     }
     .match-team span {
-      font-size: 12px;
+      font-size: 14px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 68px;
     }
 
     .vs-label {
@@ -303,7 +306,7 @@
         padding: 6px;
       }
 
-      .match-team span { max-width: 52px; }
+      .match-team span { font-size: 13px; }
     }
   </style>
 </head>
@@ -317,13 +320,6 @@
       <span class="sports">Sports</span>
     </div>
 
-    <div class="match-info" id="matchInfo">
-      <img id="team1Img" src="" alt="">
-      <span id="team1Name"></span>
-      <span id="matchTime"></span>
-      <span id="team2Name"></span>
-      <img id="team2Img" src="" alt="">
-    </div>
   </div>
 </header>
 
@@ -488,6 +484,14 @@
     </div>
 
     <div class="select-text" id="selectText">Оберіть трансляцію</div>
+
+    <div class="match-info" id="matchInfo">
+      <img id="team1Img" src="" alt="">
+      <span id="team1Name"></span>
+      <span class="mi-time" id="matchTime"></span>
+      <span id="team2Name"></span>
+      <img id="team2Img" src="" alt="">
+    </div>
   </div>
 
 </div><!-- /layout -->
