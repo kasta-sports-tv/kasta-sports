@@ -1,243 +1,553 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kasta Sports Highlights</title>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kasta Sports</title>
 
-<style>
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#0e1118;
-  color:#fff;
-  overflow:hidden;
-}
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
 
-/* HEADER */
-header{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  height:68px;
-  background:rgba(8,10,15,0.98);
-  display:flex;
-  align-items:center;
-  padding:0 15px;
-  z-index:1000;
-  border-bottom:1px solid #222838;
-}
+    body {
+      background: #0e1118;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: white;
+      overflow-x: hidden;
+      height: 100vh;
+      overflow-y: hidden;
+    }
 
-.logo{
-  font-size:26px;
-  font-weight:900;
-}
-.logo span:first-child{color:#fff;}
-.logo span:last-child{color:#ff1a1a;}
+    /* ── HEADER ── */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 68px;
+      background: rgba(8, 10, 15, 0.98);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #222838;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      z-index: 1000;
+    }
 
-/* LAYOUT */
-.layout{
-  display:flex;
-  height:calc(100dvh - 68px);
-  margin-top:68px;
-}
+    .header-content {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-/* SIDEBAR */
-.sidebar{
-  width:30%;
-  min-width:220px;
-  background:#1a1e2a;
-  overflow-y:auto;
-  padding:10px;
-}
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 28px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .logo .kasta  { color: #ffffff; }
+    .logo .sports { color: #ff1a1a; }
 
-.tournament-header{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  justify-content:center;
-  margin:10px 0;
-}
+    /* match info in header (показується після вибору матчу) */
+    .match-info {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 100%;
+      font-weight: bold;
+    }
+    .match-info.active { display: flex; }
+    .match-info span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: clamp(10px, 3.5vw, 22px);
+      max-width: 28%;
+    }
+    .match-info img {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
 
-.tournament-header img{
-  width:40px;
-}
+    /* ── LAYOUT ── */
+    .layout {
+      display: flex;
+      height: calc(100dvh - 68px);
+      margin-top: 68px;
+      overflow: hidden;
+    }
 
-.tournament-name{
-  font-weight:800;
-  color:#bfc7d5;
-}
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 28%;
+      min-width: 200px;
+      background: #1a1e2a;
+      padding: 10px 8px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
 
-/* ROUND BUTTON */
-.round-btn{
-  width:100%;
-  padding:12px;
-  background:#1a1e2a;
-  border:1px solid #2b3244;
-  color:#fff;
-  margin-top:8px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:700;
-}
+    /* лого + назва турніру вгорі сайдбару */
+    .tournament-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 4px 8px;
+    }
+    .tournament-header img {
+      width: 44px; height: 44px;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+    .tournament-name {
+      color: #fff;
+      font-weight: 900;
+      font-size: 20px;
+      letter-spacing: .5px;
+    }
 
-.round-btn:hover{
-  background:#222838;
-}
+    /* роздільник дати */
+    .date-divider {
+      text-align: center;
+      font-size: 12px;
+      color: #5a6480;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 0 2px;
+      user-select: none;
+    }
 
-/* MATCH BUTTON */
-.match-btn{
-  width:100%;
-  margin-top:6px;
-  padding:10px;
-  border-radius:10px;
-  background:#1a1e2a;
-  border:1px solid #2b3244;
-  color:#fff;
-  cursor:pointer;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+    /* ── КНОПКА ТУРУ ── */
+    .round-btn {
+      width: 100%;
+      background: #222838;
+      color: #c8d0e0;
+      border: 1px solid #2b3244;
+      padding: 11px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: background .2s, border-color .2s;
+      letter-spacing: .3px;
+    }
+    .round-btn:hover {
+      background: #2a3142;
+      border-color: #3a425a;
+    }
+    .round-btn.open {
+      background: #2a3142;
+      border-color: #ff1a1a;
+      color: #fff;
+    }
+    .round-btn .arrow {
+      font-size: 11px;
+      transition: transform .25s;
+      color: #6a7490;
+    }
+    .round-btn.open .arrow { transform: rotate(180deg); color: #ff1a1a; }
 
-.match-btn:hover{
-  background:#222838;
-}
+    /* ── ВИПАДАЮЧИЙ СПИСОК МАТЧІВ ── */
+    .round-matches {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      padding: 2px 0 4px 0;
+    }
+    .round-matches.open { display: flex; }
 
-.match-teams{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
+    /* кнопка матчу (прапор - назва vs назва - прапор) */
+    .match-btn {
+      width: 100%;
+      background: #161923;
+      color: white;
+      border: 1px solid #232a3a;
+      padding: 9px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      transition: background .2s, border-color .2s;
+    }
+    .match-btn:hover {
+      background: #1e2434;
+      border-color: #3a425a;
+    }
+    .match-btn.active {
+      background: #1f2b42;
+      border-color: #ff1a1a;
+      box-shadow: 0 0 8px rgba(255,26,26,.25);
+    }
 
-/* PLAYER */
-.player-section{
-  width:70%;
-  padding:10px;
-}
+    .match-team {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+    .match-team.right { justify-content: flex-end; }
 
-.player-box{
-  position:relative;
-  width:100%;
-  padding-bottom:56.25%;
-  background:black;
-  border-radius:12px;
-  overflow:hidden;
-}
+    .match-team img {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .match-team span {
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 68px;
+    }
 
-iframe{
-  position:absolute;
-  width:100%;
-  height:100%;
-  border:none;
-}
+    .vs-label {
+      font-size: 11px;
+      color: #5a6480;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
 
-.top-title{
-  text-align:center;
-  margin:10px 0;
-  font-size:18px;
-  font-weight:700;
-}
+    /* ── ПЛЕЄР ── */
+    .player-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      overflow: hidden;
+    }
 
-/* COLLAPSE */
-.round-content{
-  display:none;
-  margin-left:5px;
-}
+    .player-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      background: black;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(0,0,0,.75);
+    }
 
-.round-content.active{
-  display:block;
-}
+    iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+      z-index: 1;
+    }
 
-/* MOBILE */
-@media(max-width:768px){
-  .layout{
-    flex-direction:column;
-  }
-  .sidebar,.player-section{
-    width:100%;
-  }
-}
-</style>
+    /* СЛАЙДЕР */
+    .slider {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 2;
+    }
+    .slide {
+      position: absolute;
+      width: 100%; height: 100%;
+      object-fit: fill;
+      opacity: 0;
+      transition: opacity .8s ease;
+    }
+    .slide.active { opacity: 1; }
+
+    .select-text {
+      margin-top: 12px;
+      text-align: center;
+      opacity: .7;
+      font-size: 14px;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      body { height: 100dvh; overflow-y: hidden; }
+
+      .layout {
+        flex-direction: column;
+        height: calc(100dvh - 68px);
+      }
+
+      .sidebar {
+        width: 100%;
+        min-width: unset;
+        order: 2;
+        max-height: 45dvh;
+      }
+
+      .player-section {
+        width: 100%;
+        order: 1;
+        padding: 6px;
+      }
+
+      .match-team span { max-width: 52px; }
+    }
+  </style>
 </head>
-
 <body>
 
+<!-- ── HEADER ── -->
 <header>
-  <div class="logo">
-    <span>Kasta</span><span>Sports</span>
+  <div class="header-content">
+    <div class="logo">
+      <span class="kasta">Kasta</span>
+      <span class="sports">Sports</span>
+    </div>
+
+    <div class="match-info" id="matchInfo">
+      <img id="team1Img" src="" alt="">
+      <span id="team1Name"></span>
+      <span id="matchTime"></span>
+      <span id="team2Name"></span>
+      <img id="team2Img" src="" alt="">
+    </div>
   </div>
 </header>
 
+<!-- ── LAYOUT ── -->
 <div class="layout">
 
+  <!-- SIDEBAR -->
   <div class="sidebar">
 
+    <!-- Лого + назва турніру -->
     <div class="tournament-header">
-      <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/5/5a/2026_FIFA_World_Cup.svg/250px-2026_FIFA_World_Cup.svg.png">
-      <div class="tournament-name">ЧС-2026 Огляди</div>
+      <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/5/5a/2026_FIFA_World_Cup.svg/250px-2026_FIFA_World_Cup.svg.png" alt="ЧС-2026">
+      <div class="tournament-name">ЧС-2026</div>
     </div>
 
-    <!-- ROUND 1 -->
-    <button class="round-btn" onclick="toggleRound('r1')">1 тур</button>
-    <div class="round-content" id="r1">
+    <!-- ══ 1 ТУР ══ -->
+    <button class="round-btn" onclick="toggleRound('round1', this)">
+      1 тур <span class="arrow">▼</span>
+    </button>
+    <div class="round-matches" id="round1">
 
-      <button class="match-btn" onclick="openVideo('https://kasta-sports.vercel.app/vk-skin.html?url=https%3A%2F%2Farchive.org%2Fdownload%2FMexico-vs-South_Africa_Clear_Victory_Match_Highlights_Round_1_FIFA_World_Cup_202%2F%D0%9C%D0%B5%D0%BA%D1%81%D0%B8%D0%BA%D0%B0%E2%80%94%D0%9F%D0%90%D0%A0_%D0%A7%D0%B8%D1%81%D1%82%D0%B0%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%BE%D0%B3%D0%B0_%D0%9E%D0%B3%D0%BB%D1%8F%D0%B4%D0%BC%D0%B0%D1%82%D1%87%D1%83_1-%D0%B9%D1%82%D1%83%D1%80_%D0%A4%D1%83%D1%82%D0%B1%D0%BE%D0%BB_%D0%A7%D0%B5%D0%BC%D0%BF%D1%96%D0%BE%D0%BD%D0%B0%D1%82%D1%81%D0%B2%D1%96%D1%82%D1%83FIFA2026.mp4', this)">
-        🇲🇽 Мексика vs 🇿🇦 ПАР
+      <div class="date-divider">14 червня</div>
+
+      <button class="match-btn" onclick="setStream(
+        'https://kasta-sports.vercel.app/vk-skin.html?url=YOUR_MP4_URL_HERE', this,
+        'https://s3.vcdn.biz/static/f/10731993771/image.jpg',
+        'Німеччина','20:00','Кюрасао',
+        'https://s4.vcdn.biz/static/f/11880450031/image.jpg')">
+        <div class="match-team">
+          <img src="https://s3.vcdn.biz/static/f/10731993771/image.jpg" alt="Німеччина">
+          <span>Німеччина</span>
+        </div>
+        <span class="vs-label">vs</span>
+        <div class="match-team right">
+          <span>Кюрасао</span>
+          <img src="https://s4.vcdn.biz/static/f/11880450031/image.jpg" alt="Кюрасао">
+        </div>
       </button>
 
-      <button class="match-btn" onclick="openVideo('https://kasta-sports.vercel.app/vk-skin.html?url=', this)">
-        🇧🇷 Бразилія vs 🇫🇷 Франція
+      <button class="match-btn" onclick="setStream(
+        'https://kasta-sports.vercel.app/vk-skin.html?url=YOUR_MP4_URL_HERE', this,
+        'https://s2.vcdn.biz/static/f/10732324151/image.jpg',
+        'Нідерланди','23:00','Японія',
+        'https://s4.vcdn.biz/static/f/10732770751/image.jpg')">
+        <div class="match-team">
+          <img src="https://s2.vcdn.biz/static/f/10732324151/image.jpg" alt="Нідерланди">
+          <span>Нідерланди</span>
+        </div>
+        <span class="vs-label">vs</span>
+        <div class="match-team right">
+          <span>Японія</span>
+          <img src="https://s4.vcdn.biz/static/f/10732770751/image.jpg" alt="Японія">
+        </div>
       </button>
 
     </div>
 
-    <!-- ROUND 2 -->
-    <button class="round-btn" onclick="toggleRound('r2')">2 тур</button>
-    <div class="round-content" id="r2">
+    <!-- ══ 2 ТУР ══ -->
+    <button class="round-btn" onclick="toggleRound('round2', this)">
+      2 тур <span class="arrow">▼</span>
+    </button>
+    <div class="round-matches" id="round2">
 
-      <button class="match-btn" onclick="openVideo('https://kasta-sports.vercel.app/vk-skin.html?url=', this)">
-        🇺🇦 Україна vs 🇪🇸 Іспанія
+      <div class="date-divider">18 червня</div>
+
+      <button class="match-btn" onclick="setStream(
+        'https://kasta-sports.vercel.app/vk-skin.html?url=YOUR_MP4_URL_HERE', this,
+        'https://s3.vcdn.biz/static/f/10731993771/image.jpg',
+        'Кюрасао','18:00','Нідерланди',
+        'https://s2.vcdn.biz/static/f/10732324151/image.jpg')">
+        <div class="match-team">
+          <img src="https://s4.vcdn.biz/static/f/11880450031/image.jpg" alt="Кюрасао">
+          <span>Кюрасао</span>
+        </div>
+        <span class="vs-label">vs</span>
+        <div class="match-team right">
+          <span>Нідерланди</span>
+          <img src="https://s2.vcdn.biz/static/f/10732324151/image.jpg" alt="Нідерланди">
+        </div>
+      </button>
+
+      <div class="date-divider">19 червня</div>
+
+      <button class="match-btn" onclick="setStream(
+        'https://kasta-sports.vercel.app/vk-skin.html?url=YOUR_MP4_URL_HERE', this,
+        'https://s4.vcdn.biz/static/f/10732770751/image.jpg',
+        'Японія','21:00','Німеччина',
+        'https://s3.vcdn.biz/static/f/10731993771/image.jpg')">
+        <div class="match-team">
+          <img src="https://s4.vcdn.biz/static/f/10732770751/image.jpg" alt="Японія">
+          <span>Японія</span>
+        </div>
+        <span class="vs-label">vs</span>
+        <div class="match-team right">
+          <span>Німеччина</span>
+          <img src="https://s3.vcdn.biz/static/f/10731993771/image.jpg" alt="Німеччина">
+        </div>
       </button>
 
     </div>
 
-  </div>
+    <!-- ══ 3 ТУР ══ -->
+    <button class="round-btn" onclick="toggleRound('round3', this)">
+      3 тур <span class="arrow">▼</span>
+    </button>
+    <div class="round-matches" id="round3">
 
+      <div class="date-divider">22 червня</div>
+
+      <button class="match-btn" onclick="setStream(
+        'https://kasta-sports.vercel.app/vk-skin.html?url=YOUR_MP4_URL_HERE', this,
+        'https://s3.vcdn.biz/static/f/10731993771/image.jpg',
+        'Німеччина','20:00','Нідерланди',
+        'https://s2.vcdn.biz/static/f/10732324151/image.jpg')">
+        <div class="match-team">
+          <img src="https://s3.vcdn.biz/static/f/10731993771/image.jpg" alt="Німеччина">
+          <span>Німеччина</span>
+        </div>
+        <span class="vs-label">vs</span>
+        <div class="match-team right">
+          <span>Нідерланди</span>
+          <img src="https://s2.vcdn.biz/static/f/10732324151/image.jpg" alt="Нідерланди">
+        </div>
+      </button>
+
+      <button class="match-btn" onclick="setStream(
+        'https://kasta-sports.vercel.app/vk-skin.html?url=YOUR_MP4_URL_HERE', this,
+        'https://s4.vcdn.biz/static/f/10732770751/image.jpg',
+        'Японія','20:00','Кюрасао',
+        'https://s4.vcdn.biz/static/f/11880450031/image.jpg')">
+        <div class="match-team">
+          <img src="https://s4.vcdn.biz/static/f/10732770751/image.jpg" alt="Японія">
+          <span>Японія</span>
+        </div>
+        <span class="vs-label">vs</span>
+        <div class="match-team right">
+          <span>Кюрасао</span>
+          <img src="https://s4.vcdn.biz/static/f/11880450031/image.jpg" alt="Кюрасао">
+        </div>
+      </button>
+
+    </div>
+
+  </div><!-- /sidebar -->
+
+  <!-- ПЛЕЄР -->
   <div class="player-section">
+    <div class="player-container">
 
-    <div class="top-title" id="title">Оберіть огляд</div>
+      <!-- СЛАЙДЕР (ховається після вибору матчу) -->
+      <div class="slider" id="slider">
+        <img src="https://cdn-ksvod.kyivstar.ua/content/HLS/VOD/IMAGE6/6a0d99578a1474a373b68870/IMAGE_16_9_L.jpg" class="slide active" alt="">
+        <img src="https://s2.vcdn.biz/static/f/11910373651/targetslide-ua.jpg/pt/r410x230x4" class="slide" alt="">
+        <img src="https://s9.vcdn.biz/static/f/11910666041/targetslide-ua.jpg/pt/r410x230x4" class="slide" alt="">
+        <img src="https://s7.vcdn.biz/static/f/11905256571/targetslide-ua.jpg/pt/r410x230x4" class="slide" alt="">
+      </div>
 
-    <div class="player-box">
-      <iframe id="player"></iframe>
+      <iframe id="mainPlayer"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        allowfullscreen></iframe>
+
     </div>
 
+    <div class="select-text" id="selectText">Оберіть трансляцію</div>
   </div>
 
-</div>
+</div><!-- /layout -->
 
 <script>
+/* ── ТУРИ: відкрити/закрити ── */
+function toggleRound(id, btn) {
+  const list = document.getElementById(id);
+  const isOpen = list.classList.contains('open');
 
-function toggleRound(id){
-  document.querySelectorAll('.round-content').forEach(r=>{
-    if(r.id !== id) r.classList.remove('active');
-  });
-  document.getElementById(id).classList.toggle('active');
+  // закрити всі
+  document.querySelectorAll('.round-matches').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.round-btn').forEach(el => el.classList.remove('open'));
+
+  if (!isOpen) {
+    list.classList.add('open');
+    btn.classList.add('open');
+  }
 }
 
-function openVideo(url, btn){
-  document.getElementById('player').src = url;
+/* ── ВИБІР МАТЧУ ── */
+function setStream(url, btn, img1, t1, time, t2, img2) {
+  const iframe      = document.getElementById('mainPlayer');
+  const selectText  = document.getElementById('selectText');
+  const slider      = document.getElementById('slider');
+  const matchInfo   = document.getElementById('matchInfo');
 
-  document.querySelectorAll('.match-btn').forEach(b=>{
-    b.style.borderColor="#2b3244";
-  });
+  // знімаємо active з усіх match-btn
+  document.querySelectorAll('.match-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 
-  btn.style.borderColor="#4a90e2";
+  iframe.src = url;
+  selectText.style.display = 'none';
+  slider.style.display = 'none';
 
-  document.getElementById('title').innerText = btn.innerText;
+  document.getElementById('team1Img').src   = img1;
+  document.getElementById('team2Img').src   = img2;
+  document.getElementById('team1Name').innerText = t1;
+  document.getElementById('team2Name').innerText = t2;
+  document.getElementById('matchTime').innerText = time;
+  matchInfo.classList.add('active');
 }
 
+/* ── СЛАЙДЕР ── */
+let slides  = document.querySelectorAll('.slide');
+let current = 0;
+setInterval(() => {
+  slides[current].classList.remove('active');
+  current = (current + 1) % slides.length;
+  slides[current].classList.add('active');
+}, 4000);
+
+/* ── FULLSCREEN → landscape ── */
+document.addEventListener('fullscreenchange', async () => {
+  if (document.fullscreenElement) {
+    try { await screen.orientation.lock('landscape'); } catch(e) {}
+  } else {
+    try { await screen.orientation.unlock(); } catch(e) {}
+  }
+});
 </script>
 
 </body>
