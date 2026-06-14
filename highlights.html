@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasta Sports Highlights</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#0e1118;
+  color:#fff;
+  overflow:hidden;
+}
+
+/* HEADER */
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:68px;
+  background:rgba(8,10,15,0.98);
+  display:flex;
+  align-items:center;
+  padding:0 15px;
+  z-index:1000;
+  border-bottom:1px solid #222838;
+}
+
+.logo{
+  font-size:26px;
+  font-weight:900;
+}
+.logo span:first-child{color:#fff;}
+.logo span:last-child{color:#ff1a1a;}
+
+/* LAYOUT */
+.layout{
+  display:flex;
+  height:calc(100dvh - 68px);
+  margin-top:68px;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:30%;
+  min-width:220px;
+  background:#1a1e2a;
+  overflow-y:auto;
+  padding:10px;
+}
+
+.tournament-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  justify-content:center;
+  margin:10px 0;
+}
+
+.tournament-header img{
+  width:40px;
+}
+
+.tournament-name{
+  font-weight:800;
+  color:#bfc7d5;
+}
+
+/* ROUND BUTTON */
+.round-btn{
+  width:100%;
+  padding:12px;
+  background:#1a1e2a;
+  border:1px solid #2b3244;
+  color:#fff;
+  margin-top:8px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.round-btn:hover{
+  background:#222838;
+}
+
+/* MATCH BUTTON */
+.match-btn{
+  width:100%;
+  margin-top:6px;
+  padding:10px;
+  border-radius:10px;
+  background:#1a1e2a;
+  border:1px solid #2b3244;
+  color:#fff;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.match-btn:hover{
+  background:#222838;
+}
+
+.match-teams{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+/* PLAYER */
+.player-section{
+  width:70%;
+  padding:10px;
+}
+
+.player-box{
+  position:relative;
+  width:100%;
+  padding-bottom:56.25%;
+  background:black;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+iframe{
+  position:absolute;
+  width:100%;
+  height:100%;
+  border:none;
+}
+
+.top-title{
+  text-align:center;
+  margin:10px 0;
+  font-size:18px;
+  font-weight:700;
+}
+
+/* COLLAPSE */
+.round-content{
+  display:none;
+  margin-left:5px;
+}
+
+.round-content.active{
+  display:block;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+  .layout{
+    flex-direction:column;
+  }
+  .sidebar,.player-section{
+    width:100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    <span>Kasta</span><span>Sports</span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <div class="sidebar">
+
+    <div class="tournament-header">
+      <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/5/5a/2026_FIFA_World_Cup.svg/250px-2026_FIFA_World_Cup.svg.png">
+      <div class="tournament-name">ЧС-2026 Огляди</div>
+    </div>
+
+    <!-- ROUND 1 -->
+    <button class="round-btn" onclick="toggleRound('r1')">1 тур</button>
+    <div class="round-content" id="r1">
+
+      <button class="match-btn" onclick="openVideo('https://kasta-sports.vercel.app/vk-skin.html?url=https%3A%2F%2Farchive.org%2Fdownload%2FMexico-vs-South_Africa_Clear_Victory_Match_Highlights_Round_1_FIFA_World_Cup_202%2F%D0%9C%D0%B5%D0%BA%D1%81%D0%B8%D0%BA%D0%B0%E2%80%94%D0%9F%D0%90%D0%A0_%D0%A7%D0%B8%D1%81%D1%82%D0%B0%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%BE%D0%B3%D0%B0_%D0%9E%D0%B3%D0%BB%D1%8F%D0%B4%D0%BC%D0%B0%D1%82%D1%87%D1%83_1-%D0%B9%D1%82%D1%83%D1%80_%D0%A4%D1%83%D1%82%D0%B1%D0%BE%D0%BB_%D0%A7%D0%B5%D0%BC%D0%BF%D1%96%D0%BE%D0%BD%D0%B0%D1%82%D1%81%D0%B2%D1%96%D1%82%D1%83FIFA2026.mp4', this)">
+        🇲🇽 Мексика vs 🇿🇦 ПАР
+      </button>
+
+      <button class="match-btn" onclick="openVideo('https://kasta-sports.vercel.app/vk-skin.html?url=', this)">
+        🇧🇷 Бразилія vs 🇫🇷 Франція
+      </button>
+
+    </div>
+
+    <!-- ROUND 2 -->
+    <button class="round-btn" onclick="toggleRound('r2')">2 тур</button>
+    <div class="round-content" id="r2">
+
+      <button class="match-btn" onclick="openVideo('https://kasta-sports.vercel.app/vk-skin.html?url=', this)">
+        🇺🇦 Україна vs 🇪🇸 Іспанія
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="player-section">
+
+    <div class="top-title" id="title">Оберіть огляд</div>
+
+    <div class="player-box">
+      <iframe id="player"></iframe>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+function toggleRound(id){
+  document.querySelectorAll('.round-content').forEach(r=>{
+    if(r.id !== id) r.classList.remove('active');
+  });
+  document.getElementById(id).classList.toggle('active');
+}
+
+function openVideo(url, btn){
+  document.getElementById('player').src = url;
+
+  document.querySelectorAll('.match-btn').forEach(b=>{
+    b.style.borderColor="#2b3244";
+  });
+
+  btn.style.borderColor="#4a90e2";
+
+  document.getElementById('title').innerText = btn.innerText;
+}
+
+</script>
+
+</body>
+</html>
