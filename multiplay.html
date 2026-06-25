@@ -2,8 +2,8 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Football MultiPlayer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2x1 Плеєр</title>
 
 <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
 
@@ -15,112 +15,174 @@
 }
 
 html,body{
-  width:100%;
   height:100%;
+  width:100%;
   background:#000;
-  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-#megaPlayer{
+.mega-player{
   position:relative;
   width:90vw;
   max-width:1280px;
   aspect-ratio:16/9;
-  margin:auto;
-  top:50%;
-  transform:translateY(-50%);
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2px;
+
   overflow:hidden;
-  background:#000;
+
+  background-image:url('https://images.football.ua/i/news/630x373/543/543777.png');
+  background-size:cover;
+  background-position:center;
 }
 
 .player-box{
-  position:absolute;
-  top:0;
-  width:50%;
-  height:100%;
-  transition:all .35s ease;
-  overflow:hidden;
-  background:#000;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  transition:all .3s ease;
 }
 
-#box1{
-  left:0;
-}
-
-#box2{
-  left:50%;
-}
-
-.player-inner{
+.inner-player{
   width:100%;
-  height:100%;
+  height:60%;
+}
+
+.watermark{
+  color:#fff;
+  margin-top:6px;
+  font-size:.9rem;
+  text-shadow:0 0 5px #000;
+  text-align:center;
+  z-index:50;
 }
 
 .fullscreen-btn{
   position:absolute;
   top:10px;
   right:10px;
-  z-index:99999;
+  z-index:999;
 
-  border:none;
-  border-radius:6px;
-
-  background:rgba(0,0,0,.6);
+  background:rgba(0,0,0,.4);
   color:#fff;
 
+  border:none;
   padding:8px 12px;
+  border-radius:4px;
   cursor:pointer;
 }
 
-.focused{
-  width:100% !important;
-  height:100% !important;
-  left:0 !important;
-  top:0 !important;
-  z-index:1;
+.clappr-player{
+  background:transparent!important;
 }
 
-.miniplayer{
-  width:25% !important;
-  height:25% !important;
+video{
+  object-fit:contain!important;
+  background-color:transparent!important;
+}
 
-  right:15px !important;
-  left:auto !important;
-  top:auto !important;
-  bottom:15px !important;
+/* Прибираємо тільки полоску прогресу */
 
-  z-index:9999;
+.seekbar,
+.bar-container,
+.progress-bar-container{
+  display:none!important;
+}
+
+/* Великий режим */
+
+.player-box.focused{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:5;
+}
+
+.player-box.focused .inner-player{
+  height:100%;
+}
+
+.player-box.focused .watermark{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  margin:0;
+}
+
+/* Маленький плеєр */
+
+.player-box.pip{
+  position:absolute;
+  width:28%;
+  height:28%;
+
+  right:10px;
+  bottom:10px;
+
+  z-index:10;
 
   border:2px solid rgba(255,255,255,.25);
   border-radius:8px;
 
   overflow:hidden;
   cursor:pointer;
+
+  background:#000;
 }
 
-.media-control,
-.seekbar,
-.bar-container,
-.progress-bar-container{
-  display:none !important;
+.player-box.pip .inner-player{
+  height:100%;
+}
+
+.player-box.pip .watermark{
+  position:absolute;
+  left:6px;
+  bottom:6px;
+  margin:0;
+  font-size:.75rem;
+}
+
+@media (min-width:768px){
+
+  .inner-player{
+    height:50%;
+  }
+
+  .watermark{
+    font-size:1.2rem;
+  }
+
 }
 </style>
 </head>
 
 <body>
 
-<div id="megaPlayer">
+<div class="mega-player" id="megaPlayer">
 
-<button id="fullscreenBtn" class="fullscreen-btn">
+<button class="fullscreen-btn" id="fullscreenBtn">
 Повноекранний
 </button>
 
 <div class="player-box" id="box1">
-  <div id="player1" class="player-inner"></div>
+  <div class="inner-player" id="player1"></div>
+  <div class="watermark" id="label1">
+    Команда А
+  </div>
 </div>
 
 <div class="player-box" id="box2">
-  <div id="player2" class="player-inner"></div>
+  <div class="inner-player" id="player2"></div>
+  <div class="watermark" id="label2">
+    Команда B
+  </div>
 </div>
 
 </div>
@@ -134,94 +196,94 @@ const streams = [
 
 const players = [];
 
-let focusMode = false;
-let bigPlayer = 0;
+let isFullscreen = false;
+let selectedIndex = null;
+
+const fullscreenBtn =
+document.getElementById("fullscreenBtn");
+
+const boxes = [
+  document.getElementById("box1"),
+  document.getElementById("box2")
+];
 
 function createPlayers(){
 
-  players[0] = new Clappr.Player({
-    source: streams[0],
-    parentId:"#player1",
-    autoPlay:true,
-    mute:true,
-    width:"100%",
-    height:"100%",
-    fullscreenEnabled:false
-  });
+  streams.forEach((src,index)=>{
 
-  players[1] = new Clappr.Player({
-    source: streams[1],
-    parentId:"#player2",
-    autoPlay:true,
-    mute:true,
-    width:"100%",
-    height:"100%",
-    fullscreenEnabled:false
+    players[index] = new Clappr.Player({
+      source:src,
+      parentId:"#player"+(index+1),
+
+      autoPlay:true,
+      mute:true,
+
+      width:"100%",
+      height:"100%",
+
+      fullscreenEnabled:true
+    });
+
+    document
+    .getElementById("player"+(index+1))
+    .addEventListener("dblclick",()=>{
+
+      if(!isFullscreen) return;
+
+      if(selectedIndex===index){
+
+        restoreView();
+
+      }else{
+
+        focusPlayer(index);
+
+      }
+
+    });
+
   });
 
 }
 
-function setFocus(index){
+function focusPlayer(index){
 
-  if(!focusMode){
+  selectedIndex = index;
 
-    focusMode = true;
-    bigPlayer = index;
+  const other =
+    index===0 ? 1 : 0;
 
-  }else{
+  boxes.forEach(box=>{
 
-    bigPlayer = index;
+    box.classList.remove("focused");
+    box.classList.remove("pip");
 
-  }
+  });
 
-  const small = index === 0 ? 1 : 0;
+  boxes[index]
+    .classList.add("focused");
 
-  const bigBox =
-    document.getElementById(
-      "box"+(index+1)
-    );
+  boxes[other]
+    .classList.add("pip");
 
-  const smallBox =
-    document.getElementById(
-      "box"+(small+1)
-    );
+  players.forEach(
+    p=>p.setMute(true)
+  );
 
-  document
-    .querySelectorAll(".player-box")
-    .forEach(el=>{
-
-      el.classList.remove(
-        "focused",
-        "miniplayer"
-      );
-
-    });
-
-  bigBox.classList.add("focused");
-  smallBox.classList.add("miniplayer");
-
-  players.forEach(p=>p.setMute(true));
   players[index].setMute(false);
 
 }
 
-function restoreLayout(){
+function restoreView(){
 
-  focusMode = false;
+  selectedIndex = null;
 
-  document
-    .querySelectorAll(".player-box")
-    .forEach(el=>{
+  boxes.forEach(box=>{
 
-      el.classList.remove(
-        "focused",
-        "miniplayer"
-      );
+    box.classList.remove("focused");
+    box.classList.remove("pip");
 
-    });
-
-  document.getElementById("box1").style.left="0";
-  document.getElementById("box2").style.left="50%";
+  });
 
   players.forEach(
     p=>p.setMute(true)
@@ -229,98 +291,55 @@ function restoreLayout(){
 
 }
 
-document
-.getElementById("box1")
-.addEventListener("dblclick",()=>{
+boxes.forEach((box,index)=>{
 
-  if(
-    focusMode &&
-    bigPlayer===0
-  ){
+  box.addEventListener("click",()=>{
 
-    restoreLayout();
+    if(selectedIndex===null)
+      return;
 
-  }else{
+    if(box.classList.contains("pip")){
 
-    setFocus(0);
+      focusPlayer(index);
 
-  }
+    }
+
+  });
 
 });
 
-document
-.getElementById("box2")
-.addEventListener("dblclick",()=>{
+fullscreenBtn.addEventListener("click",()=>{
 
-  if(
-    focusMode &&
-    bigPlayer===1
-  ){
-
-    restoreLayout();
-
-  }else{
-
-    setFocus(1);
-
-  }
-
-});
-
-document
-.getElementById("box1")
-.addEventListener("click",()=>{
-
-  if(
-    focusMode &&
-    bigPlayer!==0
-  ){
-
-    setFocus(0);
-
-  }
-
-});
-
-document
-.getElementById("box2")
-.addEventListener("click",()=>{
-
-  if(
-    focusMode &&
-    bigPlayer!==1
-  ){
-
-    setFocus(1);
-
-  }
-
-});
-
-fullscreenBtn.onclick = ()=>{
-
-  const el =
+  const container =
     document.getElementById(
       "megaPlayer"
     );
 
   if(!document.fullscreenElement){
 
-    el.requestFullscreen();
+    container.requestFullscreen?.();
 
   }else{
 
-    document.exitFullscreen();
+    document.exitFullscreen?.();
 
   }
 
-};
+});
 
 document.addEventListener(
   "fullscreenchange",
   ()=>{
 
-    if(document.fullscreenElement){
+    isFullscreen =
+      !!document.fullscreenElement;
+
+    fullscreenBtn.textContent =
+      isFullscreen
+      ? "Повернутися"
+      : "Повноекранний";
+
+    if(isFullscreen){
 
       screen.orientation
       ?.lock?.("landscape")
