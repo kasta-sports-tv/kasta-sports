@@ -2,89 +2,88 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>2x1 PlayerJS</title>
 
 <script src="https://cdn.jsdelivr.net/gh/neokin77/cdn@046a27f1e59699047067a616d64b0edbf08ca0cf/playerjsv6.js"></script>
 
 <style>
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
 html,body{
-    width:100%;
-    height:100%;
-    background:#000;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+  width:100%;
+  height:100%;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 .mega-player{
-    position:relative;
-    width:90vw;
-    max-width:1280px;
-    aspect-ratio:16/9;
+  position:relative;
+  width:90vw;
+  max-width:1280px;
+  aspect-ratio:16/9;
 
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:2px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2px;
 
-    overflow:hidden;
+  overflow:hidden;
 
-    background-image:url('https://images.football.ua/i/news/630x373/543/543777.png');
-    background-size:cover;
-    background-position:center;
+  background:url('https://images.football.ua/i/news/630x373/543/543777.png')
+  center/cover no-repeat;
 }
 
 .player-box{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
 }
 
 .inner-player{
-    width:100%;
-    height:60%;
+  width:100%;
+  height:60%;
 }
 
 .watermark{
-    color:#fff;
-    margin-top:6px;
-    font-size:0.9rem;
-    text-shadow:0 0 5px #000;
+  color:#fff;
+  margin-top:6px;
+  font-size:.9rem;
+  text-shadow:0 0 5px #000;
 }
 
 .fullscreen-btn{
-    position:absolute;
-    top:10px;
-    right:10px;
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:9999;
 
-    z-index:9999;
+  border:none;
+  border-radius:6px;
 
-    background:rgba(0,0,0,.5);
-    color:#fff;
+  padding:8px 12px;
 
-    border:none;
-    padding:8px 12px;
+  background:rgba(0,0,0,.5);
+  color:#fff;
 
-    border-radius:6px;
-    cursor:pointer;
+  cursor:pointer;
 }
 
 @media(min-width:768px){
 
-    .inner-player{
-        height:50%;
-    }
+  .inner-player{
+    height:50%;
+  }
 
-    .watermark{
-        font-size:1.2rem;
-    }
+  .watermark{
+    font-size:1.2rem;
+  }
 
 }
 </style>
@@ -94,18 +93,18 @@ html,body{
 
 <div class="mega-player" id="megaPlayer">
 
-<button class="fullscreen-btn" id="fullscreenBtn">
+<button id="fullscreenBtn" class="fullscreen-btn">
 Повноекранний
 </button>
 
 <div class="player-box">
-    <div class="inner-player" id="player1"></div>
-    <div class="watermark">Команда А</div>
+  <div class="inner-player" id="player1"></div>
+  <div class="watermark">Команда А</div>
 </div>
 
 <div class="player-box">
-    <div class="inner-player" id="player2"></div>
-    <div class="watermark">Команда B</div>
+  <div class="inner-player" id="player2"></div>
+  <div class="watermark">Команда B</div>
 </div>
 
 </div>
@@ -113,8 +112,8 @@ html,body{
 <script>
 
 const streams = [
-    "https://ext.cdn.nashnet.tv/228.0.2.45/index.m3u8",
-    "https://ext.cdn.nashnet.tv/228.0.0.41/index.m3u8"
+  "https://ext.cdn.nashnet.tv/228.0.2.45/index.m3u8",
+  "https://ext.cdn.nashnet.tv/228.0.0.41/index.m3u8"
 ];
 
 const players = [];
@@ -124,167 +123,175 @@ let selectedIndex = null;
 
 function createPlayer(index, mute = true){
 
-    const id = "player" + (index + 1);
+  const id = "player" + (index + 1);
 
-    document.getElementById(id).innerHTML = "";
+  document.getElementById(id).innerHTML = "";
 
-    try{
+  try{
 
-        players[index] = new Playerjs({
-            id:id,
-            file:streams[index],
-            autoplay:1,
-            mute:mute ? 1 : 0
-        });
+    players[index] = new Playerjs({
+      id: id,
+      file: streams[index],
 
-    }catch(e){
+      autoplay: 1,
+      mute: 1,
+      volume: 0,
 
-        console.log(e);
+      controls: 0,
+      live: true
+    });
 
-    }
+    setTimeout(() => {
+
+      try{
+        players[index].api("mute");
+      }catch(e){}
+
+    }, 500);
+
+  }
+  catch(e){
+
+    console.log(e);
+
+  }
 
 }
 
 function createPlayers(){
 
-    streams.forEach((stream,index)=>{
+  streams.forEach((stream,index)=>{
 
-        createPlayer(index,true);
+    createPlayer(index,true);
 
-        const el = document.getElementById(
-            "player" + (index + 1)
-        );
+    const el =
+      document.getElementById(
+        "player" + (index + 1)
+      );
 
-        el.onclick = ()=>{
+    el.onclick = () => {
 
-            if(!isFullscreen) return;
+      if(!isFullscreen) return;
 
-            players.forEach(player=>{
+      players.forEach(player=>{
 
-                try{
-                    player.api("mute");
-                }catch(e){}
+        try{
+          player.api("mute");
+        }catch(e){}
 
-            });
+      });
 
-            try{
-                players[index].api("unmute");
-            }catch(e){}
+      try{
+        players[index].api("unmute");
+      }catch(e){}
 
-        };
+    };
 
-        el.ondblclick = ()=>{
+    el.ondblclick = () => {
 
-            if(!isFullscreen) return;
+      if(!isFullscreen) return;
 
-            selectPlayer(index);
+      selectPlayer(index);
 
-        };
+    };
 
-    });
+  });
 
 }
 
 function destroyPlayers(){
 
-    players.forEach((player,index)=>{
+  players.forEach((player,index)=>{
 
-        try{
+    try{
+      player.api("stop");
+    }catch(e){}
 
-            player.api("stop");
+    players[index] = null;
 
-        }catch(e){}
-
-        players[index] = null;
-
-    });
+  });
 
 }
 
 function selectPlayer(index){
 
-    selectedIndex = index;
+  selectedIndex = index;
+
+  destroyPlayers();
+
+  document.querySelectorAll(".player-box")
+  .forEach((box,i)=>{
+
+    box.style.display =
+      i === index ? "flex" : "none";
+
+  });
+
+  createPlayer(index,false);
+
+  const id =
+    document.getElementById(
+      "player" + (index + 1)
+    );
+
+  id.ondblclick = () => {
 
     destroyPlayers();
 
-    document.getElementById("player1").innerHTML = "";
-    document.getElementById("player2").innerHTML = "";
+    document.querySelectorAll(".player-box")
+    .forEach(box=>{
 
-    if(index === 0){
+      box.style.display = "flex";
 
-        document.querySelectorAll(".player-box")[1]
-        .style.display = "none";
+    });
 
-    }else{
+    createPlayers();
 
-        document.querySelectorAll(".player-box")[0]
-        .style.display = "none";
+    selectedIndex = null;
 
-    }
-
-    createPlayer(index,false);
-
-    const id = "player" + (index + 1);
-
-    document.getElementById(id).ondblclick = ()=>{
-
-        document.querySelectorAll(".player-box")[0]
-        .style.display = "flex";
-
-        document.querySelectorAll(".player-box")[1]
-        .style.display = "flex";
-
-        destroyPlayers();
-
-        createPlayers();
-
-        selectedIndex = null;
-
-    };
+  };
 
 }
 
-const fullscreenBtn =
-document.getElementById("fullscreenBtn");
+fullscreenBtn.onclick = () => {
 
-fullscreenBtn.onclick = ()=>{
-
-    const container =
+  const container =
     document.getElementById("megaPlayer");
 
-    if(!document.fullscreenElement){
+  if(!document.fullscreenElement){
 
-        container.requestFullscreen();
+    container.requestFullscreen();
 
-    }else{
+  }
+  else{
 
-        document.exitFullscreen();
+    document.exitFullscreen();
 
-    }
+  }
 
 };
 
 document.addEventListener(
-    "fullscreenchange",
-    ()=>{
+  "fullscreenchange",
+  ()=>{
 
-        isFullscreen =
-        !!document.fullscreenElement;
+    isFullscreen =
+      !!document.fullscreenElement;
 
-        fullscreenBtn.textContent =
-        isFullscreen
-        ? "Повернутися"
-        : "Повноекранний";
+    fullscreenBtn.textContent =
+      isFullscreen
+      ? "Повернутися"
+      : "Повноекранний";
 
-        if(isFullscreen){
+    if(isFullscreen){
 
-            screen.orientation
-            ?.lock?.("landscape")
-            .catch(()=>{});
-
-        }
+      screen.orientation
+      ?.lock?.("landscape")
+      .catch(()=>{});
 
     }
+
+  }
 );
 
 createPlayers();
