@@ -1,255 +1,295 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>2x1 Плеєр</title>
-  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    html, body {
-      height: 100%;
-      width: 100%;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2x1 PlayerJS</title>
+
+<script src="https://cdn.jsdelivr.net/gh/neokin77/cdn@046a27f1e59699047067a616d64b0edbf08ca0cf/playerjsv6.js"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    background:#000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.mega-player{
+    position:relative;
+    width:90vw;
+    max-width:1280px;
+    aspect-ratio:16/9;
+
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:2px;
+
+    overflow:hidden;
+
+    background-image:url('https://images.football.ua/i/news/630x373/543/543777.png');
+    background-size:cover;
+    background-position:center;
+}
+
+.player-box{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.inner-player{
+    width:100%;
+    height:60%;
+}
+
+.watermark{
+    color:#fff;
+    margin-top:6px;
+    font-size:0.9rem;
+    text-shadow:0 0 5px #000;
+}
+
+.fullscreen-btn{
+    position:absolute;
+    top:10px;
+    right:10px;
+
+    z-index:9999;
+
+    background:rgba(0,0,0,.5);
+    color:#fff;
+
+    border:none;
+    padding:8px 12px;
+
+    border-radius:6px;
+    cursor:pointer;
+}
+
+@media(min-width:768px){
+
+    .inner-player{
+        height:50%;
     }
 
-    /*
-      Контейнер завжди тримає пропорцію 16:9.
-      Ширина обмежується одночасно шириною екрана (90vw),
-      максимальною шириною (1280px) і висотою екрана,
-      перерахованою у відповідну ширину (90vh * 16/9).
-      Це гарантує чорні поля з боків АБО зверху/знизу
-      на будь-якому співвідношенні сторін екрана.
-    */
-    .mega-player {
-      position: relative;
-      width: min(90vw, 1280px, 90vh * 16 / 9);
-      aspect-ratio: 16 / 9;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr;
-      gap: 2px;
-      overflow: hidden;
-      background-image: url('https://images.football.ua/i/news/630x373/543/543777.png');
-      background-size: cover;
-      background-position: center;
+    .watermark{
+        font-size:1.2rem;
     }
 
-    /* У фулскріні дозволяємо займати весь екран (без обмеження 1280px),
-       але все одно зберігаючи 16:9 і центруючи через auto-margin трюк. */
-    .mega-player:fullscreen,
-    .mega-player:-webkit-full-screen,
-    .mega-player:-ms-fullscreen {
-      width: min(100vw, 100vh * 16 / 9);
-      max-width: none;
-      margin: auto;
-    }
-
-    .player-box {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      overflow: hidden;
-    }
-
-    /* Кожен окремий плеєр теж тримає 16:9, не залежно від форми сусідньої колонки */
-    .player-frame {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      max-height: 100%;
-    }
-
-    .inner-player {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Назва команди — оверлей над відео, не впливає на висоту/позицію плеєра */
-    .watermark {
-      position: absolute;
-      left: 50%;
-      bottom: 6%;
-      transform: translateX(-50%);
-      color: white;
-      font-size: 0.7rem;
-      text-shadow: 0 0 5px black;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 92%;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 3px 10px;
-      border-radius: 12px;
-      line-height: 1.2;
-      pointer-events: none;
-    }
-
-    @media (min-width: 768px) {
-      .watermark {
-        font-size: 1rem;
-        padding: 4px 12px;
-      }
-    }
-
-    /* У фулскріні назви трішки більші, ніж у звичному мобільному режимі */
-    .mega-player:fullscreen .watermark,
-    .mega-player:-webkit-full-screen .watermark {
-      font-size: 1.3rem;
-      padding: 6px 16px;
-      border-radius: 16px;
-    }
-
-    .fullscreen-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 999;
-      background: rgba(0, 0, 0, 0.4);
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-
-    @media (min-width: 768px) {
-      .fullscreen-btn {
-        font-size: 1rem;
-        padding: 10px 14px;
-      }
-    }
-
-    .clappr-player {
-      background: transparent !important;
-    }
-
-    video {
-      object-fit: contain !important;
-      background-color: transparent !important;
-    }
-  </style>
+}
+</style>
 </head>
+
 <body>
-  <div class="mega-player" id="megaPlayer">
-    <button class="fullscreen-btn" id="fullscreenBtn">Повноекранний</button>
 
-    <div class="player-box">
-      <div class="player-frame">
-        <div class="inner-player" id="player1"></div>
-        <div class="watermark" id="label1">Команда А</div>
-      </div>
-    </div>
+<div class="mega-player" id="megaPlayer">
 
-    <div class="player-box">
-      <div class="player-frame">
-        <div class="inner-player" id="player2"></div>
-        <div class="watermark" id="label2">Команда B</div>
-      </div>
-    </div>
-  </div>
+<button class="fullscreen-btn" id="fullscreenBtn">
+Повноекранний
+</button>
 
-  <script>
-    const streams = [
-      "https://ext.cdn.nashnet.tv/228.0.2.45/index.m3u8",
-      "https://ext.cdn.nashnet.tv/228.0.0.41/index.m3u8"
-    ];
+<div class="player-box">
+    <div class="inner-player" id="player1"></div>
+    <div class="watermark">Команда А</div>
+</div>
 
-    const players = [];
-    let isFullscreen = false;
-    let selectedIndex = null;
-    const fullscreenBtn = document.getElementById("fullscreenBtn");
+<div class="player-box">
+    <div class="inner-player" id="player2"></div>
+    <div class="watermark">Команда B</div>
+</div>
 
-    function createPlayers() {
-      streams.forEach((src, index) => {
-        const id = `#player${index + 1}`;
-        const player = new Clappr.Player({
-          source: src,
-          parentId: id,
-          autoPlay: true,
-          mute: true,
-          width: '100%',
-          height: '100%',
-          fullscreenEnabled: false,
+</div>
+
+<script>
+
+const streams = [
+    "https://ext.cdn.nashnet.tv/228.0.2.45/index.m3u8",
+    "https://ext.cdn.nashnet.tv/228.0.0.41/index.m3u8"
+];
+
+const players = [];
+
+let isFullscreen = false;
+let selectedIndex = null;
+
+function createPlayer(index, mute = true){
+
+    const id = "player" + (index + 1);
+
+    document.getElementById(id).innerHTML = "";
+
+    try{
+
+        players[index] = new Playerjs({
+            id:id,
+            file:streams[index],
+            autoplay:1,
+            mute:mute ? 1 : 0
         });
 
-        players[index] = player;
+    }catch(e){
 
-        document.querySelector(id).addEventListener('click', () => {
-          if (!isFullscreen) return;
-          players.forEach(p => p.setMute(true));
-          player.setMute(false);
-        });
+        console.log(e);
 
-        document.querySelector(id).addEventListener('dblclick', () => {
-          if (!isFullscreen) return;
-          selectPlayer(index);
-        });
-      });
     }
 
-    function destroyPlayers() {
-      players.forEach(p => p.destroy());
-      players.length = 0;
+}
+
+function createPlayers(){
+
+    streams.forEach((stream,index)=>{
+
+        createPlayer(index,true);
+
+        const el = document.getElementById(
+            "player" + (index + 1)
+        );
+
+        el.onclick = ()=>{
+
+            if(!isFullscreen) return;
+
+            players.forEach(player=>{
+
+                try{
+                    player.api("mute");
+                }catch(e){}
+
+            });
+
+            try{
+                players[index].api("unmute");
+            }catch(e){}
+
+        };
+
+        el.ondblclick = ()=>{
+
+            if(!isFullscreen) return;
+
+            selectPlayer(index);
+
+        };
+
+    });
+
+}
+
+function destroyPlayers(){
+
+    players.forEach((player,index)=>{
+
+        try{
+
+            player.api("stop");
+
+        }catch(e){}
+
+        players[index] = null;
+
+    });
+
+}
+
+function selectPlayer(index){
+
+    selectedIndex = index;
+
+    destroyPlayers();
+
+    document.getElementById("player1").innerHTML = "";
+    document.getElementById("player2").innerHTML = "";
+
+    if(index === 0){
+
+        document.querySelectorAll(".player-box")[1]
+        .style.display = "none";
+
+    }else{
+
+        document.querySelectorAll(".player-box")[0]
+        .style.display = "none";
+
     }
 
-    function selectPlayer(index) {
-      selectedIndex = index;
-      destroyPlayers();
+    createPlayer(index,false);
 
-      const id = `#player${index + 1}`;
-      const player = new Clappr.Player({
-        source: streams[index],
-        parentId: id,
-        autoPlay: true,
-        mute: false,
-        width: '100%',
-        height: '100%',
-      });
+    const id = "player" + (index + 1);
 
-      players[index] = player;
+    document.getElementById(id).ondblclick = ()=>{
 
-      document.querySelector(id).addEventListener('dblclick', () => {
+        document.querySelectorAll(".player-box")[0]
+        .style.display = "flex";
+
+        document.querySelectorAll(".player-box")[1]
+        .style.display = "flex";
+
         destroyPlayers();
+
         createPlayers();
+
         selectedIndex = null;
-      });
+
+    };
+
+}
+
+const fullscreenBtn =
+document.getElementById("fullscreenBtn");
+
+fullscreenBtn.onclick = ()=>{
+
+    const container =
+    document.getElementById("megaPlayer");
+
+    if(!document.fullscreenElement){
+
+        container.requestFullscreen();
+
+    }else{
+
+        document.exitFullscreen();
+
     }
 
-    fullscreenBtn.addEventListener("click", () => {
-      const container = document.getElementById("megaPlayer");
-      if (!document.fullscreenElement) {
-        if (container.requestFullscreen) container.requestFullscreen();
-        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
-        else if (container.msRequestFullscreen) container.msRequestFullscreen();
-      } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.msExitFullscreen) document.msExitFullscreen();
-      }
-    });
+};
 
-    document.addEventListener('fullscreenchange', () => {
-      isFullscreen = !!document.fullscreenElement;
-      fullscreenBtn.textContent = isFullscreen ? 'Повернутися' : 'Повноекранний';
-      if (isFullscreen) {
-        screen.orientation?.lock?.('landscape').catch(() => {});
-      }
-    });
+document.addEventListener(
+    "fullscreenchange",
+    ()=>{
 
-    createPlayers();
-  </script>
+        isFullscreen =
+        !!document.fullscreenElement;
+
+        fullscreenBtn.textContent =
+        isFullscreen
+        ? "Повернутися"
+        : "Повноекранний";
+
+        if(isFullscreen){
+
+            screen.orientation
+            ?.lock?.("landscape")
+            .catch(()=>{});
+
+        }
+
+    }
+);
+
+createPlayers();
+
+</script>
+
 </body>
 </html>
