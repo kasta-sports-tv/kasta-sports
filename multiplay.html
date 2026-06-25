@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <title>2x1 Мультиплеєр</title>
+  <title>2x1 Спортивний Мультиплєєр</title>
   <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
   <style>
     * {
@@ -17,46 +17,65 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
       overflow: hidden;
     }
 
-    /* Головний контейнер плеєра (завжди тримає 16:9) */
+    /* Головний контейнер (завжди 16:9 з твоїм фоном) */
     .mega-player {
       position: relative;
       width: 100vw;
       max-width: 100%;
       aspect-ratio: 16 / 9;
-      background: #111;
+      background-image: url('https://images.football.ua/i/news/630x373/543/543777.png');
+      background-size: cover;
+      background-position: center;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* РЕЖИМ 1: Розділений екран 50/50 (Початковий) */
+    /* РЕЖИМ 1: Початковий 50/50 (Плеєри поруч, всередині фону, не обрізані) */
     .mega-player.split-mode {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr;
-      gap: 4px;
-      padding: 4px;
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* РЕЖИМ 2: Картинка в картинці (PiP) */
-    .mega-player.pip-mode {
-      display: block;
+    /* На мобільних пристроях у режимі 50/50 плеєри стають один над одним, щоб зберігати 16:9 і не бути мікроскопічними */
+    @media (max-width: 767px) {
+      .mega-player.split-mode {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+      }
     }
 
-    /* Окремий бокс для кожного плеєра */
+    /* Контейнер для плеєра та його підпису */
     .player-box {
       position: relative;
-      width: 100%;
-      height: 100%;
-      background: #000;
       transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
+      align-items: center;
     }
 
-    /* Поведінка боксів у режимі PiP */
+    /* Стилі боксів для режиму 50/50 */
+    .mega-player.split-mode .player-box {
+      width: 46%; /* Залишає місце для фону навколо */
+      aspect-ratio: 16 / 9;
+    }
+    @media (max-width: 767px) {
+      .mega-player.split-mode .player-box {
+        width: 70%; /* Для мобілок */
+      }
+    }
+
+    /* РЕЖИМ 2: Картинка в картинці (Фулскрін / PiP) */
     .mega-player.pip-mode .player-box.main-player {
       position: absolute;
       top: 0;
@@ -68,44 +87,53 @@
 
     .mega-player.pip-mode .player-box.pip-player {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
-      width: 25%; /* Малий плеєр займає 25% від ширини екрану */
+      bottom: 15px;
+      right: 15px;
+      width: 25%; /* Малий плеєр займає 25% ширини */
       aspect-ratio: 16 / 9;
-      height: auto;
       z-index: 10;
-      box-shadow: 0 0 15px rgba(0,0,0,0.7);
-      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 15px rgba(0,0,0,0.8);
+      border: 2px solid rgba(255, 255, 255, 0.5);
       cursor: pointer;
     }
-    
     .mega-player.pip-mode .player-box.pip-player:hover {
       border-color: #fff;
     }
 
-    /* Контейнер куди Clappr вбудовує відео */
+    /* Контейнер самого відео */
     .inner-player {
       width: 100%;
       height: 100%;
-      flex-grow: 1;
+      background: #000;
     }
 
-    /* Водяний знак / Назва */
+    /* Водяний знак / Назви команд */
     .watermark {
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 4px black;
+      margin-top: 6px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    /* Ховаємо підписи під відео у режимі PiP, щоб не заважали, або робимо маленькими */
+    .mega-player.pip-mode .main-player .watermark {
       position: absolute;
       bottom: 10px;
       left: 10px;
-      color: white;
-      font-size: 0.9rem;
-      text-shadow: 0 0 4px black;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 2px 8px;
+      margin: 0;
+      background: rgba(0,0,0,0.6);
+      padding: 3px 8px;
       border-radius: 4px;
-      pointer-events: none; /* Щоб не заважало клікам */
       z-index: 5;
     }
+    .mega-player.pip-mode .pip-player .watermark {
+      display: none; /* Ховаємо назву на маленькому екрані */
+    }
 
-    /* Панель керування зверху */
+    /* Верхня панель кнопок */
     .controls-panel {
       position: absolute;
       top: 15px;
@@ -123,6 +151,7 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.85rem;
+      font-weight: bold;
       transition: background 0.2s;
     }
     .btn:hover {
@@ -130,12 +159,12 @@
       border-color: #fff;
     }
 
-    /* Стилі для Clappr, щоб відео розтягувалось коректно */
+    /* Корекція відображення Clappr */
     .clappr-player {
       background: transparent !important;
     }
     video {
-      object-fit: cover !important;
+      object-fit: contain !important; /* Гарантує, що відео ніколи не обріжеться */
     }
   </style>
 </head>
@@ -144,18 +173,17 @@
   <div class="mega-player split-mode" id="megaPlayer">
     
     <div class="controls-panel">
-      <button class="btn" id="modeBtn">Режим: PiP</button>
-      <button class="btn" id="fullscreenBtn">Повний екран</button>
+      <button class="btn" id="fullscreenBtn">Повний екран (PiP)</button>
     </div>
     
-    <div class="player-box main-player" id="box1" data-index="0">
+    <div class="player-box main-player" id="box1">
       <div class="inner-player" id="player1"></div>
-      <div class="watermark">Трансляція 1</div>
+      <div class="watermark">Команда А</div>
     </div>
     
-    <div class="player-box pip-player" id="box2" data-index="1">
+    <div class="player-box pip-player" id="box2">
       <div class="inner-player" id="player2"></div>
-      <div class="watermark">Трансляція 2</div>
+      <div class="watermark">Команда B</div>
     </div>
 
   </div>
@@ -168,13 +196,12 @@
 
     const players = [];
     const megaPlayer = document.getElementById("megaPlayer");
-    const modeBtn = document.getElementById("modeBtn");
     const fullscreenBtn = document.getElementById("fullscreenBtn");
     
     const box1 = document.getElementById("box1");
     const box2 = document.getElementById("box2");
 
-    // Ініціалізація Clappr плеєрів
+    // Ініціалізація плеєрів
     function initPlayers() {
       streams.forEach((src, index) => {
         const id = `#player${index + 1}`;
@@ -182,23 +209,23 @@
           source: src,
           parentId: id,
           autoPlay: true,
-          mute: index !== 0, // Перший зі звуком, другий без звуку за замовчуванням
+          mute: false, // Обидва зі звуком у режимі 50/50 (або налаштуй як треба)
           width: '100%',
           height: '100%',
-          fullscreenEnabled: false, // вимикаємо рідну кнопку Clappr
-          chromeless: true // приховуємо рідні контроли для чистоти інтерфейсу
+          fullscreenEnabled: false,
+          chromeless: true
         });
       });
     }
 
-    // Перемикання звуку (активний плеєр зі звуком, інший — muted)
+    // Керування звуком залежно від поточного стану вікон
     function updateMuteState() {
       if (megaPlayer.classList.contains('split-mode')) {
-        // У режимі 50/50 зазвичай увімкнені обидва або перший. Зробимо перший активним.
+        // У режимі 50/50 грають обидва потоки (можна увімкнути обидва або заглушити другий)
         players[0].setMute(false);
         players[1].setMute(false);
       } else {
-        // У режимі PiP звучить тільки той, що великий (main-player)
+        // В режимі фулскріну (PiP) звук є ТІЛЬКИ у великого плеєра
         if (box1.classList.contains('main-player')) {
           players[0].setMute(false);
           players[1].setMute(true);
@@ -209,34 +236,30 @@
       }
     }
 
-    // Зміна режимів екрану (Розкидані 50/50 <-> Мультиплеєр PiP)
-    function toggleMode() {
-      if (megaPlayer.classList.contains('split-mode')) {
+    // Перемикання режимів: 50/50 <-> Повний екран (PiP)
+    function toggleFullscreenMode(goFullscreen) {
+      if (goFullscreen) {
         megaPlayer.classList.remove('split-mode');
         megaPlayer.classList.add('pip-mode');
-        modeBtn.textContent = "Режим: 50 / 50";
       } else {
         megaPlayer.classList.remove('pip-mode');
         megaPlayer.classList.add('split-mode');
-        // Повертаємо дефолтні класи
+        // Скидаємо класи до стандартних для режиму 50/50
         box1.className = "player-box main-player";
         box2.className = "player-box pip-player";
-        modeBtn.textContent = "Режим: PiP";
       }
       updateMuteState();
     }
 
-    // Логіка Свапу (Обміну місцями) при кліку на малий плеєр
+    // Функція міксування/свапу вікон (клік по малому плеєру)
     function handlePipClick(e) {
-      // Клік працює тільки якщо ми в режимі PiP
+      // Працює виключно в режимі фулскріну (PiP)
       if (!megaPlayer.classList.contains('pip-mode')) return;
       
       const clickedBox = e.currentTarget;
-      
-      // Якщо клацнули на той, що вже великий — нічого не робимо
-      if (clickedBox.classList.contains('main-player')) return;
+      if (clickedBox.classList.contains('main-player')) return; // Якщо великий — ігноруємо
 
-      // Міняємо класи місцями
+      // Міняємо ролі місцями
       if (box1.classList.contains('main-player')) {
         box1.className = "player-box pip-player";
         box2.className = "player-box main-player";
@@ -245,37 +268,43 @@
         box2.className = "player-box pip-player";
       }
 
-      // Оновлюємо звук відповідно до нових позицій
       updateMuteState();
     }
 
-    // Слухачі подій на кліки по плеєрах
+    // Вішаємо події
     box1.addEventListener('click', handlePipClick);
     box2.addEventListener('click', handlePipClick);
-    modeBtn.addEventListener('click', toggleMode);
 
-    // Повноекранний режим браузера
+    // Логіка кнопки "Повний екран"
     fullscreenBtn.addEventListener("click", () => {
       if (!document.fullscreenElement) {
-        if (megaPlayer.requestFullscreen) megaPlayer.requestFullscreen();
-        // Якщо до кліку був режим 50/50, автоматично робимо PiP (як ти й просив)
-        if (megaPlayer.classList.contains('split-mode')) {
-          toggleMode();
+        if (megaPlayer.requestFullscreen) {
+          megaPlayer.requestFullscreen();
+        } else if (megaPlayer.webkitRequestFullscreen) {
+          megaPlayer.webkitRequestFullscreen();
         }
+        toggleFullscreenMode(true); // Вмикаємо PiP режим всередині фулскріну
       } else {
-        if (document.exitFullscreen) document.exitFullscreen();
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
       }
     });
 
+    // Відстежуємо системний вихід з фулскріну (наприклад, кнопкою Esc)
     document.addEventListener('fullscreenchange', () => {
       const isFs = !!document.fullscreenElement;
-      fullscreenBtn.textContent = isFs ? 'Вийти з повного' : 'Повний екран';
+      fullscreenBtn.textContent = isFs ? 'Повернутись у 50/50' : 'Повний екран (PiP)';
+      
+      if (!isFs) {
+        // Якщо користувач вийшов з повного екрана — повертаємо режим 50/50 з твоїм фоном
+        toggleFullscreenMode(false);
+      }
     });
 
-    // Запуск
+    // Старт плеєрів
     initPlayers();
-    // Початкове налаштування звуку
-    setTimeout(updateMuteState, 1000); 
+    setTimeout(updateMuteState, 1000);
   </script>
 </body>
 </html>
