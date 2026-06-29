@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+}
+
+/* =========================
+   JW STYLE WRAPPER (16:9 CONTAINER)
+========================= */
+#player-wrapper {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+}
+
+/* fallback */
+@supports not (aspect-ratio: 16 / 9) {
+    #player-wrapper {
+        height: calc(100vw * 9 / 16);
+    }
+}
+
+/* =========================
+   PLAYER AREA
+========================= */
+#player {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background: #000;
+}
+
+/* VK PLAYER FIX */
+#player iframe,
+#player video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #000 !important;
+}
+</style>
+</head>
+
+<body>
+
+<div id="player-wrapper">
+    <div id="player"></div>
+</div>
+
+<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+
+const streamUrl =
+    params.get("url") ||
+    "https://live-nstu.cdn-03.cosmonova.net.ua/mobile-app/main/Olympic-Cam4/master.m3u8?key=MkTSLOssx0Q3YMgs23UYl";
+
+// Створення плеєра
+var player = new Playerjs({
+    id: "player",
+    file: decodeURIComponent(streamUrl),
+    poster: "https://content.wimbledon.com/is/image/AELTC/Only+One+Wimbledon+2026+Key+Visual:16by9-Large", // Сюди вставляйте ваше посилання на постер
+    autoplay: 0,
+    lang: "en"
+});
+
+// АЛЬТЕРНАТИВНИЙ І НАЙНАДІЙНІШИЙ СПОСІБ ДЛЯ PLAYERJS
+// Ця функція викликається самим плеєром автоматично при зміні статусів
+function PlayerjsEvents(event, id, info) {
+    if (event == "play") {
+        // Звертаємось до плеєра через API та примусово ховаємо постер
+        if (typeof player !== 'undefined' && player.api) {
+            player.api("poster", "none"); 
+            player.api("hideposter");
+        }
+        
+        // Додатковий фікс: якщо плеєр створив імідж з класом чи тегом всередині контейнера,
+        // ми знаходимо будь-який постер-елемент всередині плеєра і ховаємо його через CSS
+        const posterImg = document.querySelector("#player img[src*='poster'], #player [class*='poster']");
+        if (posterImg) {
+            posterImg.style.display = "none";
+            posterImg.style.opacity = "0";
+        }
+    }
+}
+</script>
+
+</body>
+</html>
