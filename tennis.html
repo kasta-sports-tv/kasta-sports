@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KASTA SPORTS | Wimbledon</title>
+    <style>
+        /* Обнулення та базові стилі */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Заборона скролу всієї сторінки */
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        /* Головний контейнер на весь екран */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Шапка сайту */
+        header {
+            background: linear-gradient(90deg, #0d5c3a 0%, #1e4620 100%); /* Кольори Вімблдону */
+            padding: 12px 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            color: #f3f3f3;
+        }
+        
+        header span {
+            color: #e1b12c; /* Золотий акцент */
+        }
+
+        /* Основна робоча зона */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        /* Зона відеоплеєрів */
+        .video-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Контейнер головного плеєра (пропорція 16:9) */
+        .main-player-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        }
+
+        .main-player-wrapper iframe, .thumbnail-holder iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Список бічних/нижніх плеєрів */
+        .playlist-sidebar {
+            display: flex;
+            flex-direction: row; /* На мобільних в рядок */
+            gap: 10px;
+            overflow-x: auto; /* Горизонтальний скрол для мініатюр на моб */
+            padding-bottom: 5px;
+            scrollbar-width: thin;
+        }
+
+        /* Картка міні-плеєра */
+        .player-card {
+            flex: 0 0 calc(33.33% - 7px); /* На моб поміщається ~3 картки, інші скроляться */
+            min-width: 100px;
+            background-color: #1e1e1e;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .player-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .player-card.active {
+            border-color: #e1b12c;
+        }
+
+        /* Контейнер для іфрейму в картці (теж 16:9, але заблокований для кліків) */
+        .thumbnail-holder {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background-color: #000;
+            pointer-events: none; /* Щоб клік проходив на картку, а не в іфрейм */
+        }
+
+        .player-title {
+            padding: 6px;
+            font-size: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background-color: #1a1a1a;
+        }
+
+        /* Секція програми передач */
+        .schedule-section {
+            flex: 1;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Фіксуємо сам контейнер */
+            border-top: 3px solid #0d5c3a;
+        }
+
+        .schedule-header {
+            padding: 12px 15px;
+            background-color: #222;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #2d2d2d;
+            color: #e1b12c;
+        }
+
+        /* Скрол-зона для розкладу */
+        .schedule-content {
+            flex: 1;
+            overflow-y: auto; /* Дозволяємо вертикальний скрол тут */
+            padding: 10px 15px;
+        }
+
+        .schedule-item {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #2d2d2d;
+            font-size: 0.85rem;
+        }
+
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-time {
+            width: 60px;
+            font-weight: bold;
+            color: #888;
+            flex-shrink: 0;
+        }
+
+        .schedule-match {
+            color: #ddd;
+        }
+
+        /* Медіа-запити для ПК версії (екран від 992px) */
+        @media (min-width: 992px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .main-content {
+                flex-direction: row; /* Розділяємо на дві колонки */
+                padding: 25px;
+                gap: 25px;
+            }
+
+            /* Ліва колонка (Головний плеєр + Програма під ним) */
+            .left-column {
+                flex: 3;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                height: 100%;
+                overflow: hidden;
+            }
+
+            /* Права колонка (Список плеєрів у стовпчик) */
+            .playlist-sidebar {
+                flex: 1;
+                flex-direction: column; /* У стовпчик на ПК */
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding-bottom: 0;
+                padding-right: 5px;
+                gap: 15px;
+                max-width: 320px;
+            }
+
+            .player-card {
+                flex: none;
+                width: 100%;
+            }
+
+            .player-title {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+
+            .video-section {
+                display: contents; /* Руйнує проміжний контейнер, щоб підкорятися сітці ПК */
+            }
+            
+            .schedule-header {
+                font-size: 1.1rem;
+            }
+            
+            .schedule-item {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <h1>KASTA SPORTS <span>TENNIS</span></h1>
+        </header>
+
+        <div class="main-content">
+            <div class="left-column" id="leftColumn">
+                
+                <div class="video-section" id="videoSection">
+                    <div class="main-player-wrapper" id="mainPlayerContainer">
+                        </div>
+                </div>
+
+                <div class="schedule-section">
+                    <div class="schedule-header" id="scheduleTitle">Програма трансляцій</div>
+                    <div class="schedule-content" id="scheduleContainer">
+                        </div>
+                </div>
+
+            </div>
+
+            <div class="playlist-sidebar" id="sidebar">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // ДАНІ ПЛЕЄРІВ ТА ПРОГРАМ (Редагуйте тут посилання та розклад)
+        // Замініть src на ваші реальні посилання на iframe плеєри.
+        const playersData = [
+            {
+                id: "main",
+                title: "Головний Корт (Main Court)",
+                src: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Приклад іфрейму
+                schedule: [
+                    { time: "13:00", match: "Алькарас — Сіннер (1/2 фіналу)" },
+                    { time: "16:30", match: "Джоковіч — Надаль (Легенди)" },
+                    { time: "20:00", match: "Фінал. Жінки. Огляд дня" }
+                ]
+            },
+            {
+                id: "player1",
+                title: "Корт №1",
+                src: "https://www.youtube.com/embed/3tmd-ClpJxA",
+                schedule: [
+                    { time: "13:15", match: "Світоліна — Рибакіна" },
+                    { time: "15:45", match: "Костюк — Соболенко" }
+                ]
+            },
+            {
+                id: "player2",
+                title: "Корт №2",
+                src: "https://www.youtube.com/embed/Lf5S5Wst7rc",
+                schedule: [
+                    { time: "14:00", match: "Парний розряд. Чоловіки" },
+                    { time: "17:00", match: "Ціціпас — Звєрєв" }
+                ]
+            },
+            {
+                id: "player3",
+                title: "Корт №3",
+                src: "https://www.youtube.com/embed/kJQP7kiw5Fk",
+                schedule: [
+                    { time: "13:00", match: "Юніори. Одиночний розряд" },
+                    { time: "18:30", match: "Медведєв — Рубльов" }
+                ]
+            },
+            {
+                id: "player4",
+                title: "Корт №4",
+                src: "https://www.youtube.com/embed/9bZkp7q19f0",
+                schedule: [
+                    { time: "15:00", match: "Мікст. Перший раунд" },
+                    { time: "19:00", match: "Парний розряд. Жінки" }
+                ]
+            }
+        ];
+
+        // Ініціалізація змінних
+        let activeMainIndex = 0; // Індекс плеєра, який зараз у головному контейнері
+
+        const mainPlayerContainer = document.getElementById('mainPlayerContainer');
+        const sidebar = document.getElementById('sidebar');
+        const scheduleContainer = document.getElementById('scheduleContainer');
+        const scheduleTitle = document.getElementById('scheduleTitle');
+
+        // Функція для відображення розкладу
+        function renderSchedule(player) {
+            scheduleTitle.innerText = `Програма: ${player.title}`;
+            scheduleContainer.innerHTML = '';
+            
+            if (player.schedule.length === 0) {
+                scheduleContainer.innerHTML = '<div class="schedule-item">Немає запланованих трансляцій</div>';
+                return;
+            }
+
+            player.schedule.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'schedule-item';
+                row.innerHTML = `
+                    <div class="schedule-time">${item.time}</div>
+                    <div class="schedule-match">${item.match}</div>
+                `;
+                scheduleContainer.appendChild(row);
+            });
+        }
+
+        // Головна функція рендерингу інтерфейсу
+        function updateInterface() {
+            // 1. Оновлюємо головний плеєр
+            const currentMainPlayer = playersData[activeMainIndex];
+            mainPlayerContainer.innerHTML = `<iframe src="${currentMainPlayer.src}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+            
+            // 2. Оновлюємо програму для поточного головного плеєра
+            renderSchedule(currentMainPlayer);
+
+            // 3. Оновлюємо список інших плеєрів у боковій/нижній панелі
+            sidebar.innerHTML = '';
+            playersData.forEach((player, index) => {
+                // Пропускаємо той, що зараз головний
+                if (index === activeMainIndex) return;
+
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.onclick = () => switchPlayer(index);
+
+                card.innerHTML = `
+                    <div class="thumbnail-holder">
+                        <iframe src="${player.src}" scrolling="no"></iframe>
+                    </div>
+                    <div class="player-title">${player.title}</div>
+                `;
+                sidebar.appendChild(card);
+            });
+        }
+
+        // Логіка рокіровки (робимо вибраний плеєр головним, а колишній головний йде на його місце)
+        function switchPlayer(clickedIndex) {
+            activeMainIndex = clickedIndex;
+            updateInterface();
+        }
+
+        // Перший запуск системи
+        window.onload = () => {
+            // Адаптація структури елементів для ПК/Мобільного (переміщення блоку розкладу в DOM залежно від екрану)
+            const leftColumn = document.getElementById('leftColumn');
+            const videoSection = document.getElementById('videoSection');
+            const scheduleSection = document.querySelector('.schedule-section');
+
+            function handleResponsiveLayout() {
+                if (window.innerWidth < 992) {
+                    // На мобільних: розклад має бути під боковою панеллю (в самому низу main-content)
+                    if (scheduleSection.parentNode === leftColumn) {
+                        document.querySelector('.main-content').appendChild(scheduleSection);
+                    }
+                } else {
+                    // На ПК: розклад повертається в ліву колонку під головний плеєр
+                    if (scheduleSection.parentNode !== leftColumn) {
+                        leftColumn.appendChild(scheduleSection);
+                    }
+                }
+            }
+
+            window.addEventListener('resize', handleResponsiveLayout);
+            handleResponsiveLayout(); // запустити при старті
+            updateInterface(); // відрендерити плеєри
+        };
+    </script>
+</body>
+</html>
