@@ -77,14 +77,30 @@ const streamUrl =
 var player = new Playerjs({
     id: "player",
     file: decodeURIComponent(streamUrl),
-    poster: "https://terrikon.com/i/0/1200/logos/tourns/fifa_world_cup2026.jpg", // Вставте посилання на постер тут
+    poster: "https://terrikon.com/i/0/1200/logos/tourns/fifa_world_cup2026.jpg", // Сюди вставляйте ваше посилання на постер
     autoplay: 0,
-    lang: "en",
-    // ДОДАНО: Подія для приховування постера при відтворенні
-    onplay: function() {
-        player.hidePoster(); 
-    }
+    lang: "en"
 });
+
+// АЛЬТЕРНАТИВНИЙ І НАЙНАДІЙНІШИЙ СПОСІБ ДЛЯ PLAYERJS
+// Ця функція викликається самим плеєром автоматично при зміні статусів
+function PlayerjsEvents(event, id, info) {
+    if (event == "play") {
+        // Звертаємось до плеєра через API та примусово ховаємо постер
+        if (typeof player !== 'undefined' && player.api) {
+            player.api("poster", "none"); 
+            player.api("hideposter");
+        }
+        
+        // Додатковий фікс: якщо плеєр створив імідж з класом чи тегом всередині контейнера,
+        // ми знаходимо будь-який постер-елемент всередині плеєра і ховаємо його через CSS
+        const posterImg = document.querySelector("#player img[src*='poster'], #player [class*='poster']");
+        if (posterImg) {
+            posterImg.style.display = "none";
+            posterImg.style.opacity = "0";
+        }
+    }
+}
 </script>
 
 </body>
