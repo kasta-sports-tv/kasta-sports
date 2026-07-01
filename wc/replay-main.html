@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            /* Зроблено фон ще темнішим */
             --bg-main: #04060a; 
             --bg-card: #0d111a;
             --accent-green: #00ff87;
@@ -231,7 +230,7 @@
             background: rgba(0, 255, 135, 0.02);
         }
 
-        /* Формат кнопок: прапор-назва-vs-назва-прапор */
+        /* Кнопки матчів */
         .match-btn {
             width: 100%;
             background: transparent;
@@ -267,7 +266,7 @@
         .team-left {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             flex: 1;
             overflow: hidden;
         }
@@ -276,7 +275,7 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 6px;
+            gap: 8px;
             flex: 1;
             overflow: hidden;
             text-align: right;
@@ -290,9 +289,14 @@
             font-weight: 500;
         }
 
-        .flag {
-            font-size: 1.1rem;
+        /* Стилі для ваших зображень-прапорів */
+        .flag-img {
+            width: 24px;
+            height: 16px;
+            object-fit: cover;
+            border-radius: 2px;
             flex-shrink: 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4);
         }
 
         .vs-label {
@@ -318,17 +322,17 @@
         .sidebar-section::-webkit-scrollbar-track { background: var(--bg-card); }
         .sidebar-section::-webkit-scrollbar-thumb { background: #1c2536; border-radius: 10px; }
 
-        /* --- КРИТИЧНІ ЗМІНИ ДЛЯ МОБІЛЬНИХ (ФІКС С КРОЛОМ БЛОКУ) --- */
+        /* --- АДАПТИВНІСТЬ ДЛЯ МОБІЛЬНИХ --- */
         @media (max-width: 992px) {
             html, body {
-                position: fixed; /* Повна фіксація від "гумового" ефекту браузерів */
+                position: fixed;
                 width: 100%;
                 height: 100%;
             }
 
             .main-container {
                 grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr; /* Плеєр зверху, блок кнопок займає ВСІЙ ЗАЛИШОК ЕКРАНУ */
+                grid-template-rows: auto 1fr;
                 height: calc(100vh - 70px);
                 overflow: hidden;
             }
@@ -344,13 +348,10 @@
             .sidebar-section {
                 border-left: none;
                 border-top: 1px solid rgba(255, 255, 255, 0.03);
-                
-                /* Ось тут тепер залізобетонний внутрішній скрол */
                 overflow-y: scroll; 
-                -webkit-overflow-scrolling: touch; /* Плавний скрол на iOS */
-                
+                -webkit-overflow-scrolling: touch;
                 padding: 12px;
-                height: 100%; /* Чітко вписується в grid-row і не падає під екран */
+                height: 100%;
             }
 
             .site-title span {
@@ -366,6 +367,7 @@
 </head>
 <body>
 
+    <!-- ХЕДЕР -->
     <header>
         <div class="logo-area">
             <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/5/5a/2026_FIFA_World_Cup.svg/250px-2026_FIFA_World_Cup.svg.png" alt="FIFA 2026 Logo" class="wc-logo">
@@ -376,8 +378,10 @@
         </a>
     </header>
 
+    <!-- ОСНОВНИЙ БЛОК -->
     <div class="main-container">
         
+        <!-- ЛІВА ЧАСТИНА (ПЛЕЄР) -->
         <div class="video-section">
             <div class="player-wrapper">
                 <div class="placeholder-container" id="placeholder">
@@ -387,40 +391,60 @@
                 <iframe id="video-player" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
             </div>
 
+            <!-- Блок під плеєром з дублюванням назв -->
             <div class="match-info-display" id="match-display"></div>
         </div>
 
+        <!-- ПРАВА ЧАСТИНА (СПИСОК МАТЧІВ) -->
         <div class="sidebar-section">
             <div class="sidebar-title">Матчі Турніру</div>
 
+            <!-- ГРУПА A -->
             <div class="group-accordion">
                 <div class="group-header" onclick="toggleGroup(this)">
-                    <span>Група A</span>
+                    <span>1/16 фіналу</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="group-content">
-                    <div class="date-divider">11 Червня 2026</div>
+                    <div class="date-divider">01 Липня 2026</div>
                     
-                    <button class="match-btn" data-video="https://www.youtube.com/embed/dQw4w9WgXcQ" onclick="selectMatch(this)">
+                    <!-- МАТЧ 1 -->
+                    <button class="match-btn" data-video="УРЛ_ВАШОГО_ПЛЕЄРА_1" onclick="selectMatch(this)">
                         <div class="teams-wrapper">
-                            <div class="team-left"><span class="flag">🇲🇽</span> <span class="team-name">Мексика</span></div>
+                            <!-- Замініть ПОСИЛАННЯ_НА_ПРАПОР_1 на вашу адресу картинки -->
+                            <div class="team-left">
+                                <img src="https://s6.vcdn.biz/static/f/10732751511/image.jpg" class="flag-img" alt=""> 
+                                <span class="team-name">Мексика</span>
+                            </div>
                             <span class="vs-label">VS</span>
-                            <div class="team-right"><span class="team-name">Україна</span> <span class="flag">🇺🇦</span></div>
+                            <!-- Замініть ПОСИЛАННЯ_НА_ПРАПОР_2 на вашу адресу картинки -->
+                            <div class="team-right">
+                                <span class="team-name">Еквадор</span> 
+                                <img src="https://s1.vcdn.biz/static/f/10732639501/image.jpg" class="flag-img" alt="">
+                            </div>
                         </div>
                         <i class="fas fa-play play-icon"></i>
                     </button>
                     
-                    <button class="match-btn" data-video="https://www.youtube.com/embed/dQw4w9WgXcQ" onclick="selectMatch(this)">
+                    <!-- МАТЧ 2 -->
+                    <button class="match-btn" data-video="УРЛ_ВАШОГО_ПЛЕЄРА_2" onclick="selectMatch(this)">
                         <div class="teams-wrapper">
-                            <div class="team-left"><span class="flag">🇺🇸</span> <span class="team-name">США</span></div>
+                            <div class="team-left">
+                                <img src="https://s2.vcdn.biz/static/f/10732324151/image.jpg" class="flag-img" alt=""> 
+                                <span class="team-name">Нідерланди</span>
+                            </div>
                             <span class="vs-label">VS</span>
-                            <div class="team-right"><span class="team-name">Марокко</span> <span class="flag">🇲🇦</span></div>
+                            <div class="team-right">
+                                <span class="team-name">Марокко</span> 
+                                <img src="https://s8.vcdn.biz/static/f/10732766021/image.jpg" class="flag-img" alt="">
+                            </div>
                         </div>
                         <i class="fas fa-play play-icon"></i>
                     </button>
                 </div>
             </div>
 
+            <!-- ГРУПА B -->
             <div class="group-accordion">
                 <div class="group-header" onclick="toggleGroup(this)">
                     <span>Група B</span>
@@ -428,29 +452,19 @@
                 </div>
                 <div class="group-content">
                     <div class="date-divider">12 Червня 2026</div>
-                    <button class="match-btn" data-video="https://www.youtube.com/embed/dQw4w9WgXcQ" onclick="selectMatch(this)">
+                    
+                    <!-- МАТЧ 3 -->
+                    <button class="match-btn" data-video="УРЛ_ВАШОГО_ПЛЕЄРА_3" onclick="selectMatch(this)">
                         <div class="teams-wrapper">
-                            <div class="team-left"><span class="flag">🇨🇦</span> <span class="team-name">Канада</span></div>
+                            <div class="team-left">
+                                <img src="ПОСИЛАННЯ_НА_ПРАПОР_5" class="flag-img" alt="Канада"> 
+                                <span class="team-name">Канада</span>
+                            </div>
                             <span class="vs-label">VS</span>
-                            <div class="team-right"><span class="team-name">Аргентина</span> <span class="flag">🇦🇷</span></div>
-                        </div>
-                        <i class="fas fa-play play-icon"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="group-accordion">
-                <div class="group-header" onclick="toggleGroup(this)">
-                    <span>Група C</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="group-content">
-                    <div class="date-divider">13 Червня 2026</div>
-                    <button class="match-btn" data-video="https://www.youtube.com/embed/dQw4w9WgXcQ" onclick="selectMatch(this)">
-                        <div class="teams-wrapper">
-                            <div class="team-left"><span class="flag">🇫🇷</span> <span class="team-name">Франція</span></div>
-                            <span class="vs-label">VS</span>
-                            <div class="team-right"><span class="team-name">Австралія</span> <span class="flag">🇦🇺</span></div>
+                            <div class="team-right">
+                                <span class="team-name">Аргентина</span> 
+                                <img src="ПОСИЛАННЯ_НА_ПРАПОР_6" class="flag-img" alt="Аргентина">
+                            </div>
                         </div>
                         <i class="fas fa-play play-icon"></i>
                     </button>
@@ -460,6 +474,7 @@
         </div>
     </div>
 
+    <!-- СКРИПТИ -->
     <script>
         function toggleGroup(header) {
             header.classList.toggle('active');
@@ -470,7 +485,6 @@
                 content.style.maxHeight = "0px";
             }
             
-            // Важливий фікс для мобілок: оновлюємо область скролу батьківського контейнера при розгортанні
             setTimeout(() => {
                 document.querySelector('.sidebar-section').style.overflowY = 'auto';
             }, 300);
