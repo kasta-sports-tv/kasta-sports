@@ -28,7 +28,7 @@
             color: var(--text-main);
             height: 100vh;
             width: 100vw;
-            overflow: hidden; /* Заборона загального скролу сторінки */
+            overflow: hidden; /* Повна заборона скролу всієї сторінки */
         }
 
         body {
@@ -171,10 +171,11 @@
             border-left: 1px solid rgba(255, 255, 255, 0.03);
             display: flex;
             flex-direction: column;
-            overflow-y: auto; /* Дозволяємо вертикальний скрол */
+            overflow-y: auto; /* Вертикальний скрол */
             overflow-x: hidden;
             padding: 15px;
             gap: 10px;
+            height: 100%;
         }
 
         .sidebar-title {
@@ -192,6 +193,7 @@
             overflow: hidden;
             background: rgba(255, 255, 255, 0.01);
             border: 1px solid rgba(255, 255, 255, 0.03);
+            flex-shrink: 0;
         }
 
         .group-header {
@@ -289,7 +291,6 @@
             font-weight: 500;
         }
 
-        /* Стилі для ваших зображень-прапорів */
         .flag-img {
             width: 24px;
             height: 16px;
@@ -322,18 +323,20 @@
         .sidebar-section::-webkit-scrollbar-track { background: var(--bg-card); }
         .sidebar-section::-webkit-scrollbar-thumb { background: #1c2536; border-radius: 10px; }
 
-        /* --- АДАПТИВНІСТЬ ДЛЯ МОБІЛЬНИХ --- */
+        /* --- ІДЕАЛЬНИЙ ФІКС СКРОЛУ ДЛЯ МОБІЛЬНИХ --- */
         @media (max-width: 992px) {
             html, body {
-                position: fixed;
-                width: 100%;
                 height: 100%;
+                width: 100%;
+                overflow: hidden;
+                position: relative; /* Виправлено "провалювання" вниз */
             }
 
             .main-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr;
+                display: flex;
+                flex-direction: column; /* Плеєр зверху, сайдбар знизу */
                 height: calc(100vh - 70px);
+                width: 100%;
                 overflow: hidden;
             }
 
@@ -343,15 +346,16 @@
                 box-shadow: 0 6px 20px rgba(0,0,0,0.6);
                 z-index: 10;
                 background: var(--bg-main);
+                flex-shrink: 0; /* Плеєр не стискається */
             }
 
             .sidebar-section {
                 border-left: none;
                 border-top: 1px solid rgba(255, 255, 255, 0.03);
-                overflow-y: scroll; 
+                flex-grow: 1; /* Сайдбар заповнює ТІЛЬКИ залишок екрана */
+                overflow-y: auto; /* Вмикаємо залізобетонний скрол */
                 -webkit-overflow-scrolling: touch;
                 padding: 12px;
-                height: 100%;
             }
 
             .site-title span {
@@ -367,7 +371,6 @@
 </head>
 <body>
 
-    <!-- ХЕДЕР -->
     <header>
         <div class="logo-area">
             <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/5/5a/2026_FIFA_World_Cup.svg/250px-2026_FIFA_World_Cup.svg.png" alt="FIFA 2026 Logo" class="wc-logo">
@@ -378,10 +381,8 @@
         </a>
     </header>
 
-    <!-- ОСНОВНИЙ БЛОК -->
     <div class="main-container">
         
-        <!-- ЛІВА ЧАСТИНА (ПЛЕЄР) -->
         <div class="video-section">
             <div class="player-wrapper">
                 <div class="placeholder-container" id="placeholder">
@@ -391,15 +392,12 @@
                 <iframe id="video-player" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
             </div>
 
-            <!-- Блок під плеєром з дублюванням назв -->
             <div class="match-info-display" id="match-display"></div>
         </div>
 
-        <!-- ПРАВА ЧАСТИНА (СПИСОК МАТЧІВ) -->
         <div class="sidebar-section">
             <div class="sidebar-title">Матчі Турніру</div>
 
-            <!-- 1/16 -->
             <div class="group-accordion">
                 <div class="group-header" onclick="toggleGroup(this)">
                     <span>1/16 фіналу</span>
@@ -408,16 +406,13 @@
                 <div class="group-content">
                     <div class="date-divider">01 Липня 2026</div>
                     
-                    <!-- МАТЧ 1 -->
                     <button class="match-btn" data-video="https://kasta-sports.vercel.app/wc/replay.html?url=https://img.refooty.com/m3u8/14566-OSf3I.m3u8&poster=https://i2.wp.com/www.footreplays.com/wp-content/uploads/2026/06/Mexico-vs-Ecuador.webp?ssl=1&w=1600&resize=1600&ssl=1" onclick="selectMatch(this)">
                         <div class="teams-wrapper">
-                            <!-- Замініть ПОСИЛАННЯ_НА_ПРАПОР_1 на вашу адресу картинки -->
                             <div class="team-left">
                                 <img src="https://s6.vcdn.biz/static/f/10732751511/image.jpg" class="flag-img" alt=""> 
                                 <span class="team-name">Мексика</span>
                             </div>
                             <span class="vs-label">VS</span>
-                            <!-- Замініть ПОСИЛАННЯ_НА_ПРАПОР_2 на вашу адресу картинки -->
                             <div class="team-right">
                                 <span class="team-name">Еквадор</span> 
                                 <img src="https://s1.vcdn.biz/static/f/10732639501/image.jpg" class="flag-img" alt="">
@@ -427,7 +422,6 @@
                     </button>
 
                     <div class="date-divider">30 Червня 2026</div>
-                    <!-- МАТЧ 2 -->
                     <button class="match-btn" data-video="https://kasta-sports.vercel.app/wc/replay.html?url=https://img.refooty.com/m3u8/14558-ASLs0.m3u8&poster=https://i0.wp.com/www.footreplays.com/wp-content/uploads/2026/06/Ivory-Coast-vs-Norway.webp?ssl=1&w=1600&resize=1600&ssl=1" onclick="selectMatch(this)">
                         <div class="teams-wrapper">
                             <div class="team-left">
@@ -442,7 +436,6 @@
                         </div>
                         <i class="fas fa-play play-icon"></i>
                     </button>
-                    <!-- МАТЧ 2 -->
                     <button class="match-btn" data-video="https://kasta-sports.vercel.app/wc/replay.html?url=https://img.refooty.com/m3u8/14554-szoi6m3u8-8IOLP.m3u8&poster=https://i0.wp.com/www.footreplays.com/wp-content/uploads/2026/06/Netherlands-vs-Morocco.webp?ssl=1&w=1600&resize=1600&ssl=1" onclick="selectMatch(this)">
                         <div class="teams-wrapper">
                             <div class="team-left">
@@ -459,7 +452,6 @@
                     </button>
                     
                     <div class="date-divider">29 Червня 2026</div>
-                    <!-- МАТЧ 2 -->
                     <button class="match-btn" data-video="https://kasta-sports.vercel.app/wc/replay.html?url=https://img.refooty.com/m3u8/14549-isvjE.m3u8&poster=https://i3.wp.com/www.footreplays.com/wp-content/uploads/2026/06/Germany-vs-Paraguay.webp?ssl=1&w=1600&resize=1600&ssl=1" onclick="selectMatch(this)">
                         <div class="teams-wrapper">
                             <div class="team-left">
@@ -480,7 +472,6 @@
         </div>
     </div>
 
-    <!-- СКРИПТИ -->
     <script>
         function toggleGroup(header) {
             header.classList.toggle('active');
@@ -491,9 +482,11 @@
                 content.style.maxHeight = "0px";
             }
             
+            // Динамічне коригування області прокрутки
             setTimeout(() => {
-                document.querySelector('.sidebar-section').style.overflowY = 'auto';
-            }, 300);
+                const sidebar = document.querySelector('.sidebar-section');
+                sidebar.scrollTop = sidebar.scrollTop + 1; // Легкий штовхан для перерахунку скролу браузером
+            }, 350);
         }
 
         function selectMatch(button) {
