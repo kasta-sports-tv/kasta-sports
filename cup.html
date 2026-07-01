@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WC-2026 | Replay Match Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #04060a; 
+            --bg-card: #0d111a;
+            --accent-green: #00ff87;
+            --accent-purple: #6a1b9a;
+            --text-main: #ffffff;
+            --text-muted: #7e8e9f;
+            --active-match: #161f30;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        html, body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Повна заборона скролу всієї сторінки */
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- ХЕДЕР --- */
+        header {
+            background: linear-gradient(135deg, #010204 0%, #080c14 100%);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            height: 70px;
+            flex-shrink: 0;
+            width: 100%;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .wc-logo {
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .site-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .site-title span {
+            color: var(--accent-green);
+        }
+
+        .tg-btn {
+            background: #24a1de;
+            color: white;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        /* --- ОСНОВНИЙ КОНТЕНТ --- */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            flex-grow: 1;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* Ліва частина: Плеєр */
+        .video-section {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: radial-gradient(circle at top left, #0b101d 0%, #04060a 100%);
+            overflow: hidden;
+        }
+
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 */
+            background-color: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,255,0.02);
+            flex-shrink: 0;
+        }
+
+        .player-wrapper iframe, .placeholder-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .placeholder-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #06090f;
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .placeholder-logo {
+            max-width: 180px;
+            max-height: 40%;
+            opacity: 0.3;
+            object-fit: contain;
+        }
+
+        .placeholder-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        .match-info-display {
+            background: var(--bg-card);
+            padding: 12px 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-green);
+            display: none; 
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Права частина: Скрол з кнопками */
+        .sidebar-section {
+            background-color: var(--bg-card);
+            border-left: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Вертикальний скрол */
+            overflow-x: hidden;
+            padding: 15px;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .sidebar-title {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        /* Акордеон груп */
+        .group-accordion {
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            flex-shrink: 0;
+        }
+
+        .group-header {
+            background: linear-gradient(90deg, #111622 0%, #0d111a 100%);
+            padding: 14px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            user-select: none;
+        }
+
+        .group-header i {
+            transition: transform 0.3s;
+            color: var(--accent-green);
+        }
+
+        .group-header.active i {
+            transform: rotate(180deg);
+        }
+
+        .group-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: #070a10;
+        }
+
+        .date-divider {
+            padding: 8px 15px;
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            font-weight: 700;
+            text-transform: uppercase;
+            background: rgba(0, 255, 135, 0.02);
+        }
+
+        /* Кнопки матчів */
+        .match-btn {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            padding: 12px 12px;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .match-btn:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .match-btn.active {
+            background: var(--active-match);
+            border-left: 3px solid var(--accent-green);
+        }
+
+        .teams-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 6px;
+            width: 90%;
+            overflow: hidden;
+        }
+
+        .team-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .team-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            flex: 1;
+            overflow: hidden;
+            text-align: right;
+        }
+
+        .team-name {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .flag-img {
+            width: 24px;
+            height: 16px;
+            object-fit: cover;
+            border-radius: 2px;
+            flex-shrink: 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+        }
+
+        .vs-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 0 2px;
+            flex-shrink: 0;
+        }
+
+        .play-icon {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .match-btn:hover .play-icon, .match-btn.active .play-icon {
+            color: var(--accent-green);
+        }
+
+        /* Скролбар сайдбару */
+        .sidebar-section::-webkit-scrollbar { width: 4px; }
+        .sidebar-section::-webkit-scrollbar-track { background: var(--bg-card); }
+        .sidebar-section::-webkit-scrollbar-thumb { background: #1c2536; border-radius: 10px; }
+
+        /* --- ІДЕАЛЬНИЙ ФІКС СКРОЛУ ДЛЯ МОБІЛЬНИХ --- */
+        @media (max-width: 992px) {
+            html, body {
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+                position: relative; /* Виправлено "провалювання" вниз */
+            }
+
+            .main-container {
+                display: flex;
+                flex-direction: column; /* Плеєр зверху, сайдбар знизу */
+                height: calc(100vh - 70px);
+                width: 100%;
+                overflow: hidden;
+            }
+
+            .video-section {
+                padding: 10px;
+                gap: 10px;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+                z-index: 10;
+                background: var(--bg-main);
+                flex-shrink: 0; /* Плеєр не стискається */
+            }
+
+            .sidebar-section {
+                border-left: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.03);
+                flex-grow: 1; /* Сайдбар заповнює ТІЛЬКИ залишок екрана */
+                overflow-y: auto; /* Вмикаємо залізобетонний скрол */
+                -webkit-overflow-scrolling: touch;
+                padding: 12px;
+            }
+
+            .site-title span {
+                display: none;
+            }
+            
+            .match-info-display {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/5/5a/2026_FIFA_World_Cup.svg/250px-2026_FIFA_World_Cup.svg.png" alt="FIFA 2026 Logo" class="wc-logo">
+            <h1 class="site-title">WC-2026 <span>| REPLAY CENTER</span></h1>
+        </div>
+        <a href="https://t.me/YOUR_CHANNEL_LINK" target="_blank" class="tg-btn">
+            <i class="fab fa-telegram-plane"></i> Telegram
+        </a>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="video-section">
+            <div class="player-wrapper">
+                <div class="placeholder-container" id="placeholder">
+                    <img src="https://kasta-sports-tv.pages.dev/logo/kastasports.png" alt="Kasta Sports" class="placeholder-logo">
+                    <p class="placeholder-text">Виберіть матч зі списку для перегляду</p>
+                </div>
+                <iframe id="video-player" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            </div>
+
+            <div class="match-info-display" id="match-display"></div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Матчі Турніру</div>
+
+            <div class="group-accordion">
+                <div class="group-header" onclick="toggleGroup(this)">
+                    <span>1/16 фіналу</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="group-content">
+                    <div class="date-divider">01 Липня 2026</div>
+                    
+                    <button class="match-btn" data-video="https://kasta-sports.vercel.app/wc/replay.html?url=https://img.refooty.com/m3u8/14566-OSf3I.m3u8&poster=https://i2.wp.com/www.footreplays.com/wp-content/uploads/2026/06/Mexico-vs-Ecuador.webp?ssl=1&w=1600&resize=1600&ssl=1" onclick="selectMatch(this)">
+                        <div class="teams-wrapper">
+                            <div class="team-left">
+                                <img src="https://s6.vcdn.biz/static/f/10732751511/image.jpg" class="flag-img" alt=""> 
+                                <span class="team-name">Мексика</span>
+                            </div>
+                            <span class="vs-label">VS</span>
+                            <div class="team-right">
+                                <span class="team-name">Еквадор</span> 
+                                <img src="https://s1.vcdn.biz/static/f/10732639501/image.jpg" class="flag-img" alt="">
+                            </div>
+                        </div>
+                        <i class="fas fa-play play-icon"></i>
+                    </button>
+
+                    <div class="date-divider">30 Червня 2026</div>
+                    <button class="match-btn" data-video="https://kasta-sports.vercel.app/wc/replay.html?url=https://img.refooty.com/m3u8/14558-ASLs0.m3u8&poster=https://i0.wp.com/www.footreplays.com/wp-content/uploads/2026/06/Ivory-Coast-vs-Norway.webp?ssl=1&w=1600&resize=1600&ssl=1" onclick="selectMatch(this)">
+                        <div class="teams-wrapper">
+                            <div class="team-left">
+                                <img src="https://s7.vcdn.biz/static/f/7136944531/image.jpg" class="flag-img" alt=""> 
+                                <span class="team-name">Кот д'Івуар</span>
+                            </div>
+                            <span class="vs-label">VS</span>
+                            <div class="team-right">
+                                <span class="team-name">Норвегія</span> 
+                                <img src="https://s6.vcdn.biz/static/f/10732335711/image.jpg" class="flag-img" alt="">
+                            </div>
+                        </div>
+                        <i class="fas fa-play play-icon"></i>
+                    </button>
+                    <button class="match-btn" data-video="https://kasta-sports.vercel.app/wc/replay.html?url=https://img.refooty.com/m3u8/14554-szoi6m3u8-8IOLP.m3u8&poster=https://i0.wp.com/www.footreplays.com/wp-content/uploads/2026/06/Netherlands-vs-Morocco.webp?ssl=1&w=1600&resize=1600&ssl=1" onclick="selectMatch(this)">
+                        <div class="teams-wrapper">
+                            <div class="team-left">
+                                <img src="https://s2.vcdn.biz/static/f/10732324151/image.jpg" class="flag-img" alt=""> 
+                                <span class="team-name">Нідерланди</span>
+                            </div>
+                            <span class="vs-label">VS</span>
+                            <div class="team-right">
+                                <span class="team-name">Марокко</span> 
+                                <img src="https://s8.vcdn.biz/static/f/10732766021/image.jpg" class="flag-img" alt="">
+                            </div>
+                        </div>
+                        <i class="fas fa-play play-icon"></i>
+                    </button>
+                    
+                    <div class="date-divider">29 Червня 2026</div>
+                    <button class="match-btn" data-video="https://kasta-sports.vercel.app/wc/replay.html?url=https://img.refooty.com/m3u8/14549-isvjE.m3u8&poster=https://i3.wp.com/www.footreplays.com/wp-content/uploads/2026/06/Germany-vs-Paraguay.webp?ssl=1&w=1600&resize=1600&ssl=1" onclick="selectMatch(this)">
+                        <div class="teams-wrapper">
+                            <div class="team-left">
+                                <img src="https://s3.vcdn.biz/static/f/10731993771/image.jpg" class="flag-img" alt=""> 
+                                <span class="team-name">Німеччина</span>
+                            </div>
+                            <span class="vs-label">VS</span>
+                            <div class="team-right">
+                                <span class="team-name">Парагвай</span> 
+                                <img src="https://s4.vcdn.biz/static/f/10733163241/image.jpg" class="flag-img" alt="">
+                            </div>
+                        </div>
+                        <i class="fas fa-play play-icon"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleGroup(header) {
+            header.classList.toggle('active');
+            const content = header.nextElementSibling;
+            if (header.classList.contains('active')) {
+                content.style.maxHeight = content.scrollHeight + "px";
+            } else {
+                content.style.maxHeight = "0px";
+            }
+            
+            // Динамічне коригування області прокрутки
+            setTimeout(() => {
+                const sidebar = document.querySelector('.sidebar-section');
+                sidebar.scrollTop = sidebar.scrollTop + 1; // Легкий штовхан для перерахунку скролу браузером
+            }, 350);
+        }
+
+        function selectMatch(button) {
+            document.querySelectorAll('.match-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            const videoUrl = button.getAttribute('data-video');
+            const player = document.getElementById('video-player');
+            const placeholder = document.getElementById('placeholder');
+
+            player.src = videoUrl;
+            placeholder.style.display = 'none';
+
+            const teamsContent = button.querySelector('.teams-wrapper').innerHTML;
+            const displayBlock = document.getElementById('match-display');
+            
+            displayBlock.innerHTML = `<i class="fas fa-tv" style="color: var(--accent-green); flex-shrink:0;"></i> ` + teamsContent;
+            displayBlock.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
