@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WC-2026 | Replay Match Center</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,42 +23,47 @@
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
-        body {
+        html, body {
             background-color: var(--bg-main);
             color: var(--text-main);
             height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Повна заборона скролу всієї сторінки (і по вертикалі, і по горизонталі) */
+        }
+
+        body {
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Забороняємо скрол всієї сторінки */
         }
 
         /* --- ХЕДЕР --- */
         header {
             background: linear-gradient(135deg, #020408 0%, #111723 100%);
-            padding: 10px 20px;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid rgba(255, 255, 255, 0.05);
             height: 70px;
             flex-shrink: 0;
+            width: 100%;
         }
 
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
         .wc-logo {
-            height: 50px;
+            height: 45px;
             object-fit: contain;
         }
 
         .site-title {
             font-weight: 800;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
         }
 
@@ -70,20 +75,15 @@
             background: #24a1de;
             color: white;
             text-decoration: none;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 20px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(36, 161, 222, 0.3);
-        }
-
-        .tg-btn:hover {
-            transform: translateY(-2px);
-            background: #2094cd;
+            flex-shrink: 0;
         }
 
         /* --- ОСНОВНИЙ КОНТЕНТ --- */
@@ -93,27 +93,29 @@
             flex-grow: 1;
             height: calc(100vh - 70px);
             overflow: hidden;
+            width: 100%;
         }
 
-        /* Ліва частина: Плеєр та Назва */
+        /* Ліва частина: Плеєр */
         .video-section {
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
-            overflow-y: auto; /* На випадок якщо під плеєром буде багато інфо */
             background: radial-gradient(circle at top left, #161b2c 0%, #0b0e14 100%);
+            overflow: hidden; /* Захист від розпирання */
         }
 
         .player-wrapper {
             position: relative;
             width: 100%;
-            padding-top: 56.25%; /* Пропорція 16:9 */
+            padding-top: 56.25%; /* 16:9 */
             background-color: #000;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
         }
 
         .player-wrapper iframe, .placeholder-container {
@@ -136,50 +138,50 @@
         }
 
         .placeholder-logo {
-            max-width: 200px;
+            max-width: 180px;
             max-height: 40%;
             opacity: 0.4;
             object-fit: contain;
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
         }
 
         .placeholder-text {
             color: var(--text-muted);
-            font-size: 1rem;
-            font-weight: 500;
+            font-size: 0.95rem;
+            text-align: center;
+            padding: 0 10px;
         }
 
         .match-info-display {
             background: var(--bg-card);
-            padding: 15px 20px;
+            padding: 12px 15px;
             border-radius: 10px;
             border-left: 4px solid var(--accent-green);
-            display: none; /* З'являється при виборі матчу */
+            display: none; 
             align-items: center;
-            gap: 15px;
-            font-size: 1.1rem;
+            gap: 10px;
+            font-size: 1rem;
             font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
 
-        /* Права частина: Списоки матчів (Скролиться) */
+        /* Права частина: Список матчів (Скролиться) */
         .sidebar-section {
             background-color: var(--bg-card);
             border-left: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             flex-direction: column;
-            overflow-y: auto; /* Скрол тільки тут! */
+            overflow-y: auto; /* Вертикальний скрол */
+            overflow-x: hidden; /* Заборона горизонтального скролу */
             padding: 15px;
             gap: 10px;
         }
 
         .sidebar-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             text-transform: uppercase;
             color: var(--text-muted);
             letter-spacing: 1px;
-            margin-bottom: 10px;
-            padding-left: 5px;
+            margin-bottom: 5px;
             font-weight: 700;
         }
 
@@ -189,7 +191,6 @@
             overflow: hidden;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 5px;
         }
 
         .group-header {
@@ -200,12 +201,7 @@
             justify-content: space-between;
             align-items: center;
             font-weight: 700;
-            transition: background 0.3s;
             user-select: none;
-        }
-
-        .group-header:hover {
-            background: #222b3d;
         }
 
         .group-header i {
@@ -231,27 +227,25 @@
             font-weight: 700;
             text-transform: uppercase;
             background: rgba(0, 255, 135, 0.03);
-            border-bottom: 1px solid rgba(255,255,255,0.02);
         }
 
-        /* Кнопки матчів */
+        /* Кнопки матчів з новим форматом: прапор-назва-vs-назва-прапор */
         .match-btn {
             width: 100%;
             background: transparent;
             border: none;
             border-bottom: 1px solid rgba(255,255,255,0.03);
-            padding: 12px 15px;
+            padding: 12px 12px;
             color: var(--text-main);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: all 0.2s ease;
-            text-align: left;
+            gap: 8px;
         }
 
         .match-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .match-btn.active {
@@ -259,100 +253,108 @@
             border-left: 3px solid var(--accent-green);
         }
 
+        /* Головна обгортка для команд */
         .teams-wrapper {
             display: flex;
             align-items: center;
-            gap: 8px;
-            width: 85%;
+            justify-content: flex-start;
+            gap: 6px;
+            width: 90%;
             overflow: hidden;
         }
 
-        .team {
+        /* Кожна команда тепер гнучка */
+        .team-left {
             display: flex;
             align-items: center;
             gap: 6px;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            flex: 1;
             overflow: hidden;
-            font-size: 0.9rem;
-            font-weight: 500;
+        }
+
+        .team-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            flex: 1;
+            overflow: hidden;
+            text-align: right;
         }
 
         .team-name {
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .flag {
+            font-size: 1.1rem;
+            flex-shrink: 0;
         }
 
         .vs-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             font-weight: 700;
-            padding: 0 4px;
+            padding: 0 2px;
             flex-shrink: 0;
         }
 
         .play-icon {
             color: var(--text-muted);
-            font-size: 0.85rem;
-            transition: color 0.2s;
+            font-size: 0.8rem;
+            flex-shrink: 0;
         }
 
         .match-btn:hover .play-icon, .match-btn.active .play-icon {
             color: var(--accent-green);
         }
 
-        /* Кастомний скролбар для сайдбару */
-        .sidebar-section::-webkit-scrollbar {
-            width: 6px;
-        }
-        .sidebar-section::-webkit-scrollbar-track {
-            background: var(--bg-card);
-        }
-        .sidebar-section::-webkit-scrollbar-thumb {
-            background: #2c364c;
-            border-radius: 10px;
-        }
+        /* Скролбар сайдбару */
+        .sidebar-section::-webkit-scrollbar { width: 4px; }
+        .sidebar-section::-webkit-scrollbar-track { background: var(--bg-card); }
+        .sidebar-section::-webkit-scrollbar-thumb { background: #2c364c; border-radius: 10px; }
 
-        /* --- АДАПТИВНІСТЬ (МОБІЛЬНІ) --- */
+        /* --- АДАПТИВНІСТЬ ДЛЯ МОБІЛЬНИХ (ПОВНА ФІКСАЦІЯ) --- */
         @media (max-width: 992px) {
-            body {
-                overflow-y: auto; /* Дозволяємо загальний скрол на мобільних, якщо контент не влазить */
-                height: auto;
-            }
-
             .main-container {
-                grid-template-columns: 1fr; /* Плеєр зверху, матчі знизу */
-                height: auto;
-                overflow: visible;
+                grid-template-columns: 1fr; /* В один стовпчик */
+                grid-template-rows: auto 1fr; /* Плеєр займає скільки треба, кнопки — весь залишок екрана */
+                height: calc(100vh - 70px);
             }
 
             .video-section {
-                padding: 12px;
-                overflow: visible;
-                position: sticky;
-                top: 0;
-                z-index: 10;
-                background: var(--bg-main); /* Фіксуємо плеєр при скролі вниз */
-                box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+                padding: 10px;
+                gap: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+                z-index: 5;
             }
 
             .sidebar-section {
                 border-left: none;
                 border-top: 1px solid rgba(255, 255, 255, 0.05);
-                overflow-y: visible; /* Скрол переходить на саму сторінку */
-                padding: 15px 12px;
+                overflow-y: auto; /* Скроляться тільки кнопки тут! */
+                overflow-x: hidden;
+                padding: 10px;
+                height: 100%; /* Займає чітко виділений rows-простір */
+            }
+
+            .site-title span {
+                display: none;
             }
             
-            .site-title span {
-                display: none; /* Економимо місце у хедepі */
+            .match-info-display {
+                padding: 10px;
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ХЕДЕР -->
     <header>
         <div class="logo-area">
             <img src="https://upload.wikimedia.org/wikipedia/uk/thumb/5/5a/2026_FIFA_World_Cup.svg/250px-2026_FIFA_World_Cup.svg.png" alt="FIFA 2026 Logo" class="wc-logo">
@@ -363,32 +365,23 @@
         </a>
     </header>
 
-    <!-- ОСНОВНИЙ БЛОК -->
     <div class="main-container">
         
-        <!-- ЛІВА ЧАСТИНА (ПЛЕЄР + ДУБЛЮВАННЯ НАЗВИ) -->
         <div class="video-section">
             <div class="player-wrapper">
-                <!-- Плейсхолдер до вибору матчу -->
                 <div class="placeholder-container" id="placeholder">
                     <img src="https://kasta-sports-tv.pages.dev/logo/kastasports.png" alt="Kasta Sports" class="placeholder-logo">
                     <p class="placeholder-text">Виберіть матч зі списку для перегляду</p>
                 </div>
-                <!-- Сам iframe (спочатку без src) -->
                 <iframe id="video-player" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
             </div>
 
-            <!-- Блок з назвою матчу під плеєром -->
-            <div class="match-info-display" id="match-display">
-                <!-- Сюди JS підставить дані -->
-            </div>
+            <div class="match-info-display" id="match-display"></div>
         </div>
 
-        <!-- ПРАВА ЧАСТИНА (СПИСОК ГРУП ТА МАТЧІВ) -->
         <div class="sidebar-section">
             <div class="sidebar-title">Матчі Турніру</div>
 
-            <!-- ГРУПА A -->
             <div class="group-accordion">
                 <div class="group-header" onclick="toggleGroup(this)">
                     <span>Група A</span>
@@ -396,28 +389,27 @@
                 </div>
                 <div class="group-content">
                     <div class="date-divider">11 Червня 2026</div>
-                    <!-- Кнопка матчу. В data-video вставляйте посилання на ваш плеєр -->
+                    
                     <button class="match-btn" data-video="https://www.youtube.com/embed/dQw4w9WgXcQ" onclick="selectMatch(this)">
                         <div class="teams-wrapper">
-                            <div class="team"><span class="flag">🇲🇽</span> <span class="team-name">Мексика</span></div>
+                            <div class="team-left"><span class="flag">🇲🇽</span> <span class="team-name">Мексика</span></div>
                             <span class="vs-label">VS</span>
-                            <div class="team"><span class="flag">🇺🇦</span> <span class="team-name">Україна</span></div>
+                            <div class="team-right"><span class="team-name">Україна</span> <span class="flag">🇺🇦</span></div>
                         </div>
                         <i class="fas fa-play play-icon"></i>
                     </button>
                     
                     <button class="match-btn" data-video="https://www.youtube.com/embed/dQw4w9WgXcQ" onclick="selectMatch(this)">
                         <div class="teams-wrapper">
-                            <div class="team"><span class="flag">🇺🇸</span> <span class="team-name">США</span></div>
+                            <div class="team-left"><span class="flag">🇺🇸</span> <span class="team-name">США</span></div>
                             <span class="vs-label">VS</span>
-                            <div class="team"><span class="flag">🇲🇦</span> <span class="team-name">Марокко</span></div>
+                            <div class="team-right"><span class="team-name">Марокко</span> <span class="flag">🇲🇦</span></div>
                         </div>
                         <i class="fas fa-play play-icon"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- ГРУПА B -->
             <div class="group-accordion">
                 <div class="group-header" onclick="toggleGroup(this)">
                     <span>Група B</span>
@@ -427,27 +419,22 @@
                     <div class="date-divider">12 Червня 2026</div>
                     <button class="match-btn" data-video="https://www.youtube.com/embed/dQw4w9WgXcQ" onclick="selectMatch(this)">
                         <div class="teams-wrapper">
-                            <div class="team"><span class="flag">🇨🇦</span> <span class="team-name">Канада</span></div>
+                            <div class="team-left"><span class="flag">🇨🇦</span> <span class="team-name">Канада</span></div>
                             <span class="vs-label">VS</span>
-                            <div class="team"><span class="flag">🎯</span> <span class="team-name">Дуже Довга Назва Країни Для Перевірки</span></div>
+                            <div class="team-right"><span class="team-name">Дуже Довга Назва Країни Для Перевірки Скорочення</span> <span class="flag">🎯</span></div>
                         </div>
                         <i class="fas fa-play play-icon"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Додавайте інші групи за аналогією -->
-
         </div>
     </div>
 
-    <!-- СКРИПТИ -->
     <script>
-        // Логіка відкриття/закриття груп (Акордеон)
         function toggleGroup(header) {
             header.classList.toggle('active');
             const content = header.nextElementSibling;
-            
             if (header.classList.contains('active')) {
                 content.style.maxHeight = content.scrollHeight + "px";
             } else {
@@ -455,34 +442,22 @@
             }
         }
 
-        // Логіка вибору матчу
         function selectMatch(button) {
-            // Видаляємо клас active у попереднього вибраного матчу
             document.querySelectorAll('.match-btn').forEach(btn => btn.classList.remove('active'));
-            
-            // Додаємо active поточній кнопці
             button.classList.add('active');
 
-            // Отримуємо посилання на відео
             const videoUrl = button.getAttribute('data-video');
             const player = document.getElementById('video-player');
             const placeholder = document.getElementById('placeholder');
 
-            // Запускаємо відео та ховаємо заставку лога
             player.src = videoUrl;
             placeholder.style.display = 'none';
 
-            // Отримуємо назви команд та прапори для дублювання знизу
             const teamsContent = button.querySelector('.teams-wrapper').innerHTML;
             const displayBlock = document.getElementById('match-display');
             
-            displayBlock.innerHTML = `<i class="fas fa-tv" style="color: var(--accent-green)"></i> ` + teamsContent;
+            displayBlock.innerHTML = `<i class="fas fa-tv" style="color: var(--accent-green); flex-shrink:0;"></i> ` + teamsContent;
             displayBlock.style.display = 'flex';
-
-            // Якщо на мобілці - плавно скролимо вгору до плеєра після вибору матчу
-            if (window.innerWidth <= 992) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
         }
     </script>
 </body>
