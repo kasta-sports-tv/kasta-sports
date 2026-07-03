@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+}
+
+/* =========================
+   JW STYLE WRAPPER (16:9 CONTAINER)
+========================= */
+#player-wrapper {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+}
+
+/* fallback */
+@supports not (aspect-ratio: 16 / 9) {
+    #player-wrapper {
+        height: calc(100vw * 9 / 16);
+    }
+}
+
+/* =========================
+   PLAYER AREA
+========================= */
+#player {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background: #000;
+}
+
+/* VK PLAYER FIX */
+#player iframe,
+#player video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #000 !important;
+}
+
+/* =========================
+   CUSTOM HALF BUTTONS (КНОПКИ ТАЙМІВ)
+========================= */
+.halves-container {
+    position: absolute;
+    bottom: 50px; /* Трохи вище за стандартну панель Playerjs */
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Клас, який Playerjs-контролери будуть тригерувати для показу */
+.halves-container.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.half-btn {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 6px 12px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.half-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.half-btn.active {
+    background: #ff0055; /* Колір активного тайму, можна змінити під свій бренд */
+    border-color: #ff0055;
+}
+</style>
+</head>
+
+<body>
+
+<div id="player-wrapper">
+    <div id="player"></div>
+    <!-- Контейнер для кнопок таймів -->
+    <div id="match-halves" class="halves-container">
+        <button id="btn-half1" class="half-btn active" onclick="switchHalf(1)">1 тайм</button>
+        <button id="btn-half2" class="half-btn" onclick="switchHalf(2)">2 тайм</button>
+    </div>
+</div>
+
+<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
+
+<script>
+// Зчитуємо параметри з URL-адреси браузера
+const params = new URLSearchParams(window.location.search);
+
+// Отримуємо потоки для обох таймів
+const streamUrl1 = params.get("url") || "";
+const streamUrl2 = params.get("url2") || ""; // Новий параметр для 2-го тайму
+const posterUrl = params.get("poster") || "";
+
+// Логіка відображення кнопок таймів
+const halvesContainer = document.getElementById("match-halves");
+if (streamUrl1 && streamUrl2) {
+    // Якщо передано два тайми — показуємо контейнер (але він керується подіями плеєра)
+    halvesContainer.style.display = "flex";
+} else {
+    // Якщо другого тайму немає — повністю приховуємо блок кнопок
+    halvesContainer.style.display = "none";
+}
+
+// Створення плеєра (спочатку запускається 1 тайм)
+var player = new Playerjs({
+    id: "player",
+    file: decodeURIComponent(streamUrl1),
+    poster: decodeURIComponent(posterUrl), 
+    autoplay: 0,
+    lang: "en"
+});
+
+// Функція перемикання таймів
+function switchHalf(halfNum) {
+    if (typeof player === 'undefined' || !player.api) return;
+    
+    const btn1 = document.getElementById("btn-half1");
+    const btn2 = document.getElementById("btn-half2");
+    
+    if (halfNum === 1) {
+        btn1.classList.add("active");
+        btn2.classList.remove("active");
+        player.api("play", decodeURIComponent(streamUrl1));
+    } else if (halfNum === 2) {
+        btn2.classList.add("active");
+        btn1.classList.remove("active");
+        player.api("play", decodeURIComponent(streamUrl2));
+    }
+}
+
+// Відслідковування подій Playerjs
+function PlayerjsEvents(event, id, info) {
+    // 1. Автоматичне приховування постера при натисканні Play
+    if (event == "play") {
+        if (typeof player !== 'undefined' && player.api) {
+            player.api("poster", "none"); 
+            player.api("hideposter");
+        }
+        
+        const posterImg = document.querySelector("#player img[src*='poster'], #player [class*='poster']");
+        if (posterImg) {
+            posterImg.style.display = "none";
+            posterImg.style.opacity = "0";
+        }
+    }
+
+    // 2. Синхронізація появи кнопок із нижньою панеллю плеєра
+    if (event == "showmenu" || event == "over" || event == "init") {
+        halvesContainer.classList.add("visible");
+    }
+    if (event == "hidemenu" || event == "out") {
+        halvesContainer.classList.remove("visible");
+    }
+}
+
+// Додатковий трекінг миші для плавності інтерфейсу іфрейму
+document.getElementById("player-wrapper").addEventListener("mousemove", () => {
+    halvesContainer.classList.add("visible");
+    // Сховати кнопки автоматично через 3 секунди, якщо миша не рухається (як і панель плеєра)
+    clearTimeout(window.halfTimeout);
+    window.halfTimeout = setTimeout(() => {
+        // Перевіряємо, чи плеєр зараз не в стані показу меню за івентом
+        if(document.querySelector(".halves-container").classList.contains("visible") && player.api) {
+             // Залишаємо на розсуд івентів hidemenu
+        }
+    }, 3000);
+});
+</script>
+
+</body>
+</html>
