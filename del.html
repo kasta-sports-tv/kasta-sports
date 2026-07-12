@@ -1,453 +1,310 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>AX SPORTS LIVE</title>
-
-<style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:#0f1720;
-    font-family:Arial,sans-serif;
-    color:white;
-    overflow:hidden;
-}
-
-/* HEADER */
-
-.header{
-    width:100%;
-    height:70px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:#18222d;
-
-    border-bottom:1px solid #2e3a49;
-
-    font-size:24px;
-    font-weight:bold;
-    letter-spacing:1px;
-}
-
-/* MAIN */
-
-.main{
-    display:flex;
-    width:100%;
-    height:calc(100vh - 70px);
-}
-
-/* SIDEBAR */
-
-.sidebar{
-    width:360px;
-    background:#141c24;
-    overflow-y:auto;
-    border-right:1px solid #2e3a49;
-}
-
-/* GROUP */
-
-.group{
-    padding:18px 14px 8px;
-
-    color:#9eb1c7;
-
-    font-size:14px;
-    font-weight:bold;
-
-    text-transform:uppercase;
-    letter-spacing:1px;
-}
-
-/* MATCH */
-
-.match{
-    display:flex;
-    align-items:center;
-    gap:12px;
-
-    margin:8px 10px;
-    padding:12px;
-
-    background:#1c2733;
-
-    border:1px solid #2d3a4a;
-    border-radius:14px;
-
-    cursor:pointer;
-
-    transition:.2s;
-}
-
-.match:hover{
-    background:#243242;
-    transform:scale(1.01);
-}
-
-.match.active{
-    border-color:#4ea3ff;
-    background:#243446;
-}
-
-/* LOGO */
-
-.match img{
-    width:42px;
-    height:42px;
-
-    object-fit:contain;
-
-    background:#111;
-
-    border-radius:8px;
-
-    flex-shrink:0;
-}
-
-/* INFO */
-
-.match-info{
-    overflow:hidden;
-}
-
-.match-title{
-    font-size:14px;
-    font-weight:bold;
-    line-height:1.4;
-
-    word-break:break-word;
-}
-
-/* LIVE */
-
-.live{
-    display:inline-block;
-
-    margin-top:5px;
-    padding:3px 8px;
-
-    background:#ff2d2d;
-
-    border-radius:20px;
-
-    font-size:11px;
-    font-weight:bold;
-}
-
-/* PLAYER AREA */
-
-.player-area{
-    flex:1;
-    position:relative;
-    background:black;
-}
-
-/* IFRAME */
-
-#player{
-    width:100%;
-    height:100%;
-    border:none;
-    background:black;
-}
-
-/* EMPTY */
-
-.empty{
-    position:absolute;
-
-    top:50%;
-    left:50%;
-
-    transform:translate(-50%,-50%);
-
-    color:#777;
-
-    font-size:22px;
-    text-align:center;
-
-    z-index:2;
-}
-
-/* SCROLLBAR */
-
-.sidebar::-webkit-scrollbar{
-    width:8px;
-}
-
-.sidebar::-webkit-scrollbar-track{
-    background:#141c24;
-}
-
-.sidebar::-webkit-scrollbar-thumb{
-    background:#2e3a49;
-    border-radius:10px;
-}
-
-/* MOBILE */
-
-@media(max-width:900px){
-
-    body{
-        overflow:auto;
+  <meta charset="UTF-8">
+  <title>2x1 Спортивний Мультиплєєр</title>
+  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
     }
 
-    .main{
-        flex-direction:column;
-        height:auto;
+    /* Головний контейнер (завжди 16:9 з твоїм фоном) */
+    .mega-player {
+      position: relative;
+      width: 100vw;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      background-image: url('https://images.football.ua/i/news/630x373/543/543777.png');
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .sidebar{
-        width:100%;
-        height:45vh;
-
-        border-right:none;
-        border-bottom:1px solid #2e3a49;
+    /* РЕЖИМ 1: Початковий 50/50 (Плеєри поруч, всередині фону, не обрізані) */
+    .mega-player.split-mode {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+      align-items: center;
     }
 
-    .player-area{
-        width:100%;
-        height:55vh;
+    /* На мобільних пристроях у режимі 50/50 плеєри стають один над одним, щоб зберігати 16:9 і не бути мікроскопічними */
+    @media (max-width: 767px) {
+      .mega-player.split-mode {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+      }
     }
 
-}
+    /* Контейнер для плеєра та його підпису */
+    .player-box {
+      position: relative;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-</style>
+    /* Стилі боксів для режиму 50/50 */
+    .mega-player.split-mode .player-box {
+      width: 46%; /* Залишає місце для фону навколо */
+      aspect-ratio: 16 / 9;
+    }
+    @media (max-width: 767px) {
+      .mega-player.split-mode .player-box {
+        width: 70%; /* Для мобілок */
+      }
+    }
 
+    /* РЕЖИМ 2: Картинка в картинці (Фулскрін / PiP) */
+    .mega-player.pip-mode .player-box.main-player {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .mega-player.pip-mode .player-box.pip-player {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      width: 25%; /* Малий плеєр займає 25% ширини */
+      aspect-ratio: 16 / 9;
+      z-index: 10;
+      box-shadow: 0 0 15px rgba(0,0,0,0.8);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+    }
+    .mega-player.pip-mode .player-box.pip-player:hover {
+      border-color: #fff;
+    }
+
+    /* Контейнер самого відео */
+    .inner-player {
+      width: 100%;
+      height: 100%;
+      background: #000;
+    }
+
+    /* Водяний знак / Назви команд */
+    .watermark {
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 4px black;
+      margin-top: 6px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    /* Ховаємо підписи під відео у режимі PiP, щоб не заважали, або робимо маленькими */
+    .mega-player.pip-mode .main-player .watermark {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      margin: 0;
+      background: rgba(0,0,0,0.6);
+      padding: 3px 8px;
+      border-radius: 4px;
+      z-index: 5;
+    }
+    .mega-player.pip-mode .pip-player .watermark {
+      display: none; /* Ховаємо назву на маленькому екрані */
+    }
+
+    /* Верхня панель кнопок */
+    .controls-panel {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: rgba(0, 0, 0, 0.9);
+      border-color: #fff;
+    }
+
+    /* Корекція відображення Clappr */
+    .clappr-player {
+      background: transparent !important;
+    }
+    video {
+      object-fit: contain !important; /* Гарантує, що відео ніколи не обріжеться */
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="header">
-    AX SPORTS LIVE
-</div>
-
-<div class="main">
-
-    <div class="sidebar"
-    id="sidebar"></div>
-
-    <div class="player-area">
-
-        <div class="empty"
-        id="empty">
-            Select Match
-        </div>
-
-        <iframe
-            id="player"
-            allowfullscreen
-            frameborder="0"
-            allow="autoplay; fullscreen">
-        </iframe>
-
+  <div class="mega-player split-mode" id="megaPlayer">
+    
+    <div class="controls-panel">
+      <button class="btn" id="fullscreenBtn">Повний екран (PiP)</button>
+    </div>
+    
+    <div class="player-box main-player" id="box1">
+      <div class="inner-player" id="player1"></div>
+      <div class="watermark">Команда А</div>
+    </div>
+    
+    <div class="player-box pip-player" id="box2">
+      <div class="inner-player" id="player2"></div>
+      <div class="watermark">Команда B</div>
     </div>
 
-</div>
+  </div>
 
-<script>
+  <script>
+    const streams = [
+      "https://ext.cdn.nashnet.tv/228.0.2.45/index.m3u8",
+      "https://ext.cdn.nashnet.tv/228.0.0.41/index.m3u8"
+    ];
 
-const PLAYLIST_URL =
-"https://raw.githubusercontent.com/srhady/axsports/main/playlist.m3u";
+    const players = [];
+    const megaPlayer = document.getElementById("megaPlayer");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    
+    const box1 = document.getElementById("box1");
+    const box2 = document.getElementById("box2");
 
-const PLAYER_URL =
-"https://kasta-sports.vercel.app/videojs.html?url=";
-
-const sidebar =
-document.getElementById("sidebar");
-
-const empty =
-document.getElementById("empty");
-
-/* LOAD PLAYLIST */
-
-async function loadPlaylist(){
-
-    try{
-
-        sidebar.innerHTML = "";
-
-        const response = await fetch(
-            PLAYLIST_URL + "?t=" + Date.now()
-        );
-
-        const text =
-            await response.text();
-
-        const lines =
-            text.split("\n");
-
-        const groups = {};
-
-        for(let i=0;i<lines.length;i++){
-
-            const line = lines[i];
-
-            if(line.startsWith("#EXTINF")){
-
-                const title =
-                    line.split(",").pop().trim();
-
-                const stream =
-                    lines[i + 1]?.trim();
-
-                const logoMatch =
-                    line.match(/tvg-logo="(.*?)"/);
-
-                const groupMatch =
-                    line.match(/group-title="(.*?)"/);
-
-                const logo =
-                    logoMatch
-                    ? logoMatch[1]
-                    : "";
-
-                const group =
-                    groupMatch
-                    ? groupMatch[1]
-                    : "Other";
-
-                if(
-                    stream &&
-                    stream.startsWith("http")
-                ){
-
-                    if(!groups[group]){
-                        groups[group] = [];
-                    }
-
-                    groups[group].push({
-                        title,
-                        stream,
-                        logo
-                    });
-
-                }
-
-            }
-
-        }
-
-        Object.keys(groups).forEach(groupName => {
-
-            const groupDiv =
-                document.createElement("div");
-
-            groupDiv.className = "group";
-
-            groupDiv.innerText =
-                groupName;
-
-            sidebar.appendChild(groupDiv);
-
-            groups[groupName].forEach(match => {
-
-                const item =
-                    document.createElement("div");
-
-                item.className = "match";
-
-                item.innerHTML = `
-
-                    <img
-                    src="${match.logo}"
-                    onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/3/3b/Logo_Sport.svg'">
-
-                    <div class="match-info">
-
-                        <div class="match-title">
-                            ${match.title}
-                        </div>
-
-                        <div class="live">
-                            LIVE
-                        </div>
-
-                    </div>
-
-                `;
-
-                item.onclick = () => {
-
-                    document
-                    .querySelectorAll(".match")
-                    .forEach(el =>
-                        el.classList.remove("active")
-                    );
-
-                    item.classList.add("active");
-
-                    playStream(match.stream);
-
-                };
-
-                sidebar.appendChild(item);
-
-            });
-
+    // Ініціалізація плеєрів
+    function initPlayers() {
+      streams.forEach((src, index) => {
+        const id = `#player${index + 1}`;
+        players[index] = new Clappr.Player({
+          source: src,
+          parentId: id,
+          autoPlay: true,
+          mute: false, // Обидва зі звуком у режимі 50/50 (або налаштуй як треба)
+          width: '100%',
+          height: '100%',
+          fullscreenEnabled: false,
+          chromeless: true
         });
-
-    }catch(err){
-
-        console.error(err);
-
-        sidebar.innerHTML = `
-            <div style="
-                padding:20px;
-                color:red;
-                font-size:15px;
-            ">
-                Playlist Load Error
-            </div>
-        `;
-
+      });
     }
 
-}
+    // Керування звуком залежно від поточного стану вікон
+    function updateMuteState() {
+      if (megaPlayer.classList.contains('split-mode')) {
+        // У режимі 50/50 грають обидва потоки (можна увімкнути обидва або заглушити другий)
+        players[0].setMute(false);
+        players[1].setMute(false);
+      } else {
+        // В режимі фулскріну (PiP) звук є ТІЛЬКИ у великого плеєра
+        if (box1.classList.contains('main-player')) {
+          players[0].setMute(false);
+          players[1].setMute(true);
+        } else {
+          players[0].setMute(true);
+          players[1].setMute(false);
+        }
+      }
+    }
 
-/* PLAY STREAM */
+    // Перемикання режимів: 50/50 <-> Повний екран (PiP)
+    function toggleFullscreenMode(goFullscreen) {
+      if (goFullscreen) {
+        megaPlayer.classList.remove('split-mode');
+        megaPlayer.classList.add('pip-mode');
+      } else {
+        megaPlayer.classList.remove('pip-mode');
+        megaPlayer.classList.add('split-mode');
+        // Скидаємо класи до стандартних для режиму 50/50
+        box1.className = "player-box main-player";
+        box2.className = "player-box pip-player";
+      }
+      updateMuteState();
+    }
 
-function playStream(url){
+    // Функція міксування/свапу вікон (клік по малому плеєру)
+    function handlePipClick(e) {
+      // Працює виключно в режимі фулскріну (PiP)
+      if (!megaPlayer.classList.contains('pip-mode')) return;
+      
+      const clickedBox = e.currentTarget;
+      if (clickedBox.classList.contains('main-player')) return; // Якщо великий — ігноруємо
 
-    empty.style.display = "none";
+      // Міняємо ролі місцями
+      if (box1.classList.contains('main-player')) {
+        box1.className = "player-box pip-player";
+        box2.className = "player-box main-player";
+      } else {
+        box1.className = "player-box main-player";
+        box2.className = "player-box pip-player";
+      }
 
-    const player =
-        document.getElementById("player");
+      updateMuteState();
+    }
 
-    player.src =
-        PLAYER_URL +
-        encodeURIComponent(url);
+    // Вішаємо події
+    box1.addEventListener('click', handlePipClick);
+    box2.addEventListener('click', handlePipClick);
 
-}
+    // Логіка кнопки "Повний екран"
+    fullscreenBtn.addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        if (megaPlayer.requestFullscreen) {
+          megaPlayer.requestFullscreen();
+        } else if (megaPlayer.webkitRequestFullscreen) {
+          megaPlayer.webkitRequestFullscreen();
+        }
+        toggleFullscreenMode(true); // Вмикаємо PiP режим всередині фулскріну
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    });
 
-/* FIRST LOAD */
+    // Відстежуємо системний вихід з фулскріну (наприклад, кнопкою Esc)
+    document.addEventListener('fullscreenchange', () => {
+      const isFs = !!document.fullscreenElement;
+      fullscreenBtn.textContent = isFs ? 'Повернутись у 50/50' : 'Повний екран (PiP)';
+      
+      if (!isFs) {
+        // Якщо користувач вийшов з повного екрана — повертаємо режим 50/50 з твоїм фоном
+        toggleFullscreenMode(false);
+      }
+    });
 
-loadPlaylist();
-
-/* AUTO REFRESH PLAYLIST */
-
-setInterval(() => {
-
-    loadPlaylist();
-
-}, 60000);
-
-</script>
-
+    // Старт плеєрів
+    initPlayers();
+    setTimeout(updateMuteState, 1000);
+  </script>
 </body>
 </html>
