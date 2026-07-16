@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinescope Player</title>
+
+    <script src="https://player.kinescope.io/v2.187.4/player.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            background: #000;
+        }
+
+        #player {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+        }
+    </style>
+</head>
+<body>
+
+<div id="player"></div>
+
+<script>
+const player = new Kinescope.Player("player", {
+    videoId: "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8",
+    autoplay: false,
+    muted: false,
+    controls: true
+});
+</script>
+
+</body>
+</html>
