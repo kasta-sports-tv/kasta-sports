@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudStream UA Extensions</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        p.subtitle {
+            color: #aaaaaa;
+            font-size: 14px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #2a2a2a;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #3d3d3d;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .card-header img {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: #2a2a2a;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+        }
+        .card-version {
+            font-size: 12px;
+            color: #888;
+        }
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .tag {
+            background: #2c2c3e;
+            color: #8ab4f8;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .card-desc {
+            font-size: 13px;
+            color: #bbbbbb;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            flex-grow: 1;
+        }
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+        .btn-secondary {
+            background-color: #333333;
+            color: #cccccc;
+        }
+        .btn-secondary:hover {
+            background-color: #444444;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Українські джерела CloudStream</h1>
+        <p class="subtitle">Каталог онлайн-кінотеатрів та джерел для перегляду</p>
+    </header>
+
+    <div class="grid" id="catalog">Завантаження каталогу...</div>
+
+    <script>
+        const repoUrl = 'https://raw.githubusercontent.com/CakesTwix/cloudstream-extensions-uk/master/repo.json';
+
+        // Допоміжна функція для витягування домену із посилання на фавіконку
+        function getDomainFromFavicon(iconUrl) {
+            try {
+                const url = new URL(iconUrl);
+                const domain = url.searchParams.get("domain");
+                return domain ? `https://${domain}` : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function loadCatalog() {
+            try {
+                const response = await fetch(repoUrl);
+                const items = await response.json();
+
+                const catalogEl = document.getElementById('catalog');
+                catalogEl.innerHTML = '';
+
+                items.forEach(item => {
+                    // Виправлення посилання на іконку Google Favicon
+                    let icon = item.iconUrl ? item.iconUrl.replace('%size%', '128') : 'https://via.placeholder.com/48';
+                    
+                    // Отримуємо пряме посилання на сайт-джерело
+                    const siteUrl = getDomainFromFavicon(item.iconUrl);
+
+                    // Створення тегів типів (Movie, Anime, TvSeries тощо)
+                    const tagsHtml = (item.tvTypes || []).map(type => `<span class="tag">${type}</span>`).join('');
+
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div>
+                            <div class="card-header">
+                                <img src="${icon}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/48'">
+                                <div>
+                                    <h2 class="card-title">${item.name.replace('Provider', '')}</h2>
+                                    <span class="card-version">Версія v${item.version}</span>
+                                </div>
+                            </div>
+                            <div class="tags">${tagsHtml}</div>
+                            <p class="card-desc">${item.description || 'Опис відсутній.'}</p>
+                        </div>
+                        <div class="card-actions">
+                            ${siteUrl ? `<a href="${siteUrl}" target="_blank" class="btn btn-primary">Перейти на сайт</a>` : ''}
+                            <a href="${item.url}" class="btn btn-secondary">Завантажити .cs3</a>
+                        </div>
+                    `;
+                    catalogEl.appendChild(card);
+                });
+            } catch (error) {
+                document.getElementById('catalog').innerText = 'Помилка завантаження репозиторію.';
+                console.error(error);
+            }
+        }
+
+        loadCatalog();
+    </script>
+</body>
+</html>
