@@ -71,13 +71,13 @@ const params = new URLSearchParams(window.location.search);
 
 const streamUrl =
     params.get("url") ||
-    "https://live-nstu.cdn-03.cosmonova.net.ua/mobile-app/main/Olympic-Cam2/master.m3u8?key=OdABSLUsx0Q3YMgtr7oP";
+    "https://betkinglive.online/betking3/index.m3u8";
 
 // Створення плеєра
 var player = new Playerjs({
     id: "player",
     file: decodeURIComponent(streamUrl),
-    poster: "https://content.wimbledon.com/is/image/AELTC/Only+One+Wimbledon+2026+Key+Visual:16by9-Large", // Сюди вставляйте ваше посилання на постер
+    poster: "https://cdn-ksvod.kyivstar.ua/content/HLS/VOD/IMAGE6/6a5a4d52aa148428a4833ffb/IMAGE_16_9_L.jpg", // Сюди вставляйте ваше посилання на постер
     autoplay: 0,
     lang: "en"
 });
