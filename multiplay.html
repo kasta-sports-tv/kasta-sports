@@ -1,1 +1,304 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>2x1 Мультиплєєр (Hls.js)</title>
+  <!-- Підключаємо Hls.js замість Clappr -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
 
+    /* Головний контейнер (16:9) */
+    .mega-player {
+      position: relative;
+      width: 100vw;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      background-image: url('https://images.football.ua/i/news/630x373/543/543777.png');
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* РЕЖИМ 50/50 (Початковий) */
+    .mega-player.split-mode {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @media (max-width: 767px) {
+      .mega-player.split-mode {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+      }
+    }
+
+    /* Бокси для плеєрів */
+    .player-box {
+      position: relative;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .mega-player.split-mode .player-box {
+      width: 46%;
+      aspect-ratio: 16 / 9;
+    }
+
+    @media (max-width: 767px) {
+      .mega-player.split-mode .player-box {
+        width: 75%;
+      }
+    }
+
+    /* РЕЖИМ Картинка в картинці (PiP / Фулскрін) */
+    .mega-player.pip-mode .player-box.main-player {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .mega-player.pip-mode .player-box.pip-player {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      width: 25%;
+      aspect-ratio: 16 / 9;
+      z-index: 10;
+      box-shadow: 0 0 15px rgba(0,0,0,0.8);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+    }
+
+    .mega-player.pip-mode .player-box.pip-player:hover {
+      border-color: #fff;
+    }
+
+    /* Теги HTML5 Video */
+    video {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      object-fit: contain !important; /* Не ріже пропорції */
+    }
+
+    /* Підписи команд */
+    .watermark {
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 4px black;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    .mega-player.pip-mode .main-player .watermark {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      margin: 0;
+      background: rgba(0,0,0,0.6);
+      padding: 4px 10px;
+      border-radius: 4px;
+      z-index: 5;
+    }
+
+    .mega-player.pip-mode .pip-player .watermark {
+      display: none;
+    }
+
+    /* Кнопки */
+    .controls-panel {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 100;
+    }
+
+    .btn {
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: rgba(0, 0, 0, 0.9);
+      border-color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mega-player split-mode" id="megaPlayer">
+    
+    <div class="controls-panel">
+      <button class="btn" id="fullscreenBtn">Повний екран (PiP)</button>
+    </div>
+    
+    <!-- Плеєр 1 -->
+    <div class="player-box main-player" id="box1">
+      <video id="video1" playsinline autoplay muted></video>
+      <div class="watermark">Команда А</div>
+    </div>
+    
+    <!-- Плеєр 2 -->
+    <div class="player-box pip-player" id="box2">
+      <video id="video2" playsinline autoplay muted></video>
+      <div class="watermark">Команда B</div>
+    </div>
+
+  </div>
+
+  <script>
+    // Твої стріми через Worker-проксі
+    const streams = [
+      "https://mf.kasta-sports-tv.workers.dev/?url=https://t6.ultrastream.vip/reserv-3/index.m3u8",
+      "https://ext.cdn.nashnet.tv/228.0.0.41/index.m3u8" // Можеш замінити на свій 2-й проксі-стрім
+    ];
+
+    const videoElements = [
+      document.getElementById('video1'),
+      document.getElementById('video2')
+    ];
+
+    const megaPlayer = document.getElementById("megaPlayer");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const box1 = document.getElementById("box1");
+    const box2 = document.getElementById("box2");
+
+    // Ініціалізація Hls.js плеєрів
+    function initHlsPlayers() {
+      streams.forEach((src, index) => {
+        const video = videoElements[index];
+
+        if (Hls.isSupported()) {
+          const hls = new Hls({
+            enableWorker: true,
+            lowLatencyMode: true
+          });
+          hls.loadSource(src);
+          hls.attachMedia(video);
+          hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            video.play().catch(() => {});
+          });
+        } 
+        // Для Safari на iOS, який підтримує HLS нативно без Hls.js
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          video.src = src;
+          video.addEventListener('loadedmetadata', function () {
+            video.play().catch(() => {});
+          });
+        }
+      });
+    }
+
+    // Керування звуком
+    function updateMuteState() {
+      if (megaPlayer.classList.contains('split-mode')) {
+        // У режимі 50/50 обидва зі звуком (або зміни на true для другого, якщо глушити)
+        videoElements[0].muted = false;
+        videoElements[1].muted = false;
+      } else {
+        // У режимі PiP звук грає тільки у великого плеєра
+        if (box1.classList.contains('main-player')) {
+          videoElements[0].muted = false;
+          videoElements[1].muted = true;
+        } else {
+          videoElements[0].muted = true;
+          videoElements[1].muted = false;
+        }
+      }
+    }
+
+    // Перемикання режиму 50/50 <-> PiP
+    function toggleFullscreenMode(goFullscreen) {
+      if (goFullscreen) {
+        megaPlayer.classList.remove('split-mode');
+        megaPlayer.classList.add('pip-mode');
+      } else {
+        megaPlayer.classList.remove('pip-mode');
+        megaPlayer.classList.add('split-mode');
+        box1.className = "player-box main-player";
+        box2.className = "player-box pip-player";
+      }
+      updateMuteState();
+    }
+
+    // Зміна місцями (клік по малому плеєру)
+    function handlePipClick(e) {
+      if (!megaPlayer.classList.contains('pip-mode')) return;
+      
+      const clickedBox = e.currentTarget;
+      if (clickedBox.classList.contains('main-player')) return;
+
+      if (box1.classList.contains('main-player')) {
+        box1.className = "player-box pip-player";
+        box2.className = "player-box main-player";
+      } else {
+        box1.className = "player-box main-player";
+        box2.className = "player-box pip-player";
+      }
+
+      updateMuteState();
+    }
+
+    box1.addEventListener('click', handlePipClick);
+    box2.addEventListener('click', handlePipClick);
+
+    // Кнопка Фулскріну
+    fullscreenBtn.addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        if (megaPlayer.requestFullscreen) megaPlayer.requestFullscreen();
+        else if (megaPlayer.webkitRequestFullscreen) megaPlayer.webkitRequestFullscreen();
+        toggleFullscreenMode(true);
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      const isFs = !!document.fullscreenElement;
+      fullscreenBtn.textContent = isFs ? 'Повернутись у 50/50' : 'Повний екран (PiP)';
+      if (!isFs) {
+        toggleFullscreenMode(false);
+      }
+    });
+
+    // Старт
+    initHlsPlayers();
+    setTimeout(updateMuteState, 500);
+  </script>
+</body>
+</html>
