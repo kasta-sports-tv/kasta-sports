@@ -2,11 +2,10 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <title>2x1 Мультиплєєр (Video.js)</title>
+  <title>2x1 Мультиплєєр (Playerjs)</title>
   
-  <!-- Стилі та скрипт Video.js -->
-  <link href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
+  <!-- Підключаємо твій Playerjs -->
+  <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
 
   <style>
     * {
@@ -25,7 +24,7 @@
       overflow: hidden;
     }
 
-    /* Головний контейнер (завжди пропорція 16:9) */
+    /* Головний контейнер (завжди 16:9) */
     .mega-player {
       position: relative;
       width: 100vw;
@@ -104,15 +103,16 @@
       border-color: #fff;
     }
 
-    /* Стилізація самого Video.js */
-    .video-js {
-      width: 100% !important;
-      height: 100% !important;
-      background-color: #000;
+    /* Контейнери куди Playerjs вбудовує iframe/video */
+    .inner-player {
+      width: 100%;
+      height: 100%;
+      background: #000;
     }
 
-    .vjs-tech {
-      object-fit: contain !important; /* Гарантує 16:9 без обрізання */
+    /* Гарантуємо 16:9 без обрізань */
+    video {
+      object-fit: contain !important;
     }
 
     /* Підписи команд */
@@ -137,7 +137,7 @@
     }
 
     .mega-player.pip-mode .pip-player .watermark {
-      display: none; /* Ховаємо назву на маленькому екрані */
+      display: none;
     }
 
     /* Кнопка "Повний екран" */
@@ -175,72 +175,68 @@
     
     <!-- Плеєр 1 -->
     <div class="player-box main-player" id="box1">
-      <video id="vjs-player1" class="video-js vjs-default-skin" playsinline></video>
+      <div class="inner-player" id="player1"></div>
       <div class="watermark">Команда А</div>
     </div>
     
     <!-- Плеєр 2 -->
     <div class="player-box pip-player" id="box2">
-      <video id="vjs-player2" class="video-js vjs-default-skin" playsinline></video>
+      <div class="inner-player" id="player2"></div>
       <div class="watermark">Команда B</div>
     </div>
 
   </div>
 
   <script>
-    // Масив з твоїми стрімами (включаючи проксі через Worker)
+    // Посилання на твої стріми
     const streams = [
       "https://mf.kasta-sports-tv.workers.dev/?url=https://t6.ultrastream.vip/reserv-3/index.m3u8",
       "https://ext.cdn.nashnet.tv/228.0.0.41/index.m3u8"
     ];
 
-    const vjsPlayers = [];
+    const pjsPlayers = [];
     const megaPlayer = document.getElementById("megaPlayer");
     const fullscreenBtn = document.getElementById("fullscreenBtn");
     const box1 = document.getElementById("box1");
     const box2 = document.getElementById("box2");
 
-    // Ініціалізація Video.js плеєрів
-    function initVideoJS() {
+    // Ініціалізація Playerjs
+    function initPlayerJS() {
       streams.forEach((src, index) => {
-        const playerId = `vjs-player${index + 1}`;
+        const id = `player${index + 1}`;
         
-        const player = videojs(playerId, {
-          autoplay: 'any', // Автозапуск у будь-якому випадку (якщо браузеру потрібен mute - він сам замутить)
-          controls: false, // Приховуємо стандартні елементи керування для чистоти мультиплеєра
-          muted: false,
-          fluid: false,
-          sources: [{
-            src: src,
-            type: 'application/x-mpegURL'
-          }]
+        const player = new Playerjs({
+          id: id,
+          file: src,
+          autoplay: 1,
+          mute: 0
         });
 
-        vjsPlayers[index] = player;
+        pjsPlayers[index] = player;
       });
     }
 
-    // Керування звуком залежно від режиму та позиції плеєра
+    // Керування звуком через API Playerjs
     function updateMuteState() {
-      if (!vjsPlayers[0] || !vjsPlayers[1]) return;
+      if (!pjsPlayers[0] || !pjsPlayers[1]) return;
 
       if (megaPlayer.classList.contains('split-mode')) {
-        // У режимі 50/50 обидва зі звуком
-        vjsPlayers[0].muted(false);
-        vjsPlayers[1].muted(false);
+        // У режимі 50/50 увімкнений звук на обох
+        pjsPlayers[0].api("unmute");
+        pjsPlayers[1].api("unmute");
       } else {
-        // У режимі PiP звук тільки у великого плеєра
+        // У режимі PiP звук грає тільки у великого плеєра
         if (box1.classList.contains('main-player')) {
-          vjsPlayers[0].muted(false);
-          vjsPlayers[1].muted(true);
+          pjsPlayers[0].api("unmute");
+          pjsPlayers[1].api("mute");
         } else {
-          vjsPlayers[0].muted(true);
-          vjsPlayers[1].muted(false);
+          pjsPlayers[0].api("mute");
+          pjsPlayers[1].api("unmute");
         }
       }
     }
 
-    // Перемикання між 50/50 та Повним екраном (PiP)
+    // Перемикання режимів
     function toggleFullscreenMode(goFullscreen) {
       if (goFullscreen) {
         megaPlayer.classList.remove('split-mode');
@@ -254,7 +250,7 @@
       updateMuteState();
     }
 
-    // Зміна плеєрів місцями при кліку на малий плеєр у кутку
+    // Клік на малий плеєр -> зміна місцями
     function handlePipClick(e) {
       if (!megaPlayer.classList.contains('pip-mode')) return;
       
@@ -275,7 +271,7 @@
     box1.addEventListener('click', handlePipClick);
     box2.addEventListener('click', handlePipClick);
 
-    // Обробка кнопки фулскріну
+    // Кнопка Фулскріну
     fullscreenBtn.addEventListener("click", () => {
       if (!document.fullscreenElement) {
         if (megaPlayer.requestFullscreen) megaPlayer.requestFullscreen();
@@ -286,7 +282,7 @@
       }
     });
 
-    // Відстежуємо вихід з фулскріну (Esc)
+    // Повернення при виході з фулскріну (Esc)
     document.addEventListener('fullscreenchange', () => {
       const isFs = !!document.fullscreenElement;
       fullscreenBtn.textContent = isFs ? 'Повернутись у 50/50' : 'Повний екран (PiP)';
@@ -295,10 +291,10 @@
       }
     });
 
-    // Старт
-    initVideoJS();
-    // Невелика затримка для стабілізації аудіо після завантаження
-    setTimeout(updateMuteState, 800);
+    // Запуск
+    initPlayerJS();
+    // Невелика затримка для гарантії, що Playerjs завантажився та готовий приймати команди API
+    setTimeout(updateMuteState, 1000);
   </script>
 </body>
 </html>
