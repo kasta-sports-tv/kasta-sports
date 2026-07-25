@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <title>2x1 Мультиплєєр (Video.js)</title>
 
-  <!-- Стилі Video.js, які ти скинув -->
+  <!-- Стилі Video.js -->
   <link href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet" />
 
-  <!-- Скрипти Video.js, які ти скинув -->
+  <!-- Скрипти Video.js -->
   <script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
@@ -31,7 +31,7 @@
       overflow: hidden;
     }
 
-    /* Головний контейнер (завжди 16:9, тримає твій фон) */
+    /* Головний контейнер (завжди 16:9) */
     .mega-player {
       position: relative;
       width: 100vw;
@@ -46,7 +46,7 @@
       justify-content: center;
     }
 
-    /* РЕЖИМ 1: Початковий 50/50 (Плеєри поруч на фоні) */
+    /* РЕЖИМ 1: 50/50 */
     .mega-player.split-mode {
       display: flex;
       flex-direction: row;
@@ -64,7 +64,7 @@
       }
     }
 
-    /* Окремі бокси для кожного плеєра */
+    /* Бокси для плеєрів */
     .player-box {
       position: relative;
       transition: all 0.3s ease;
@@ -84,7 +84,7 @@
       }
     }
 
-    /* РЕЖИМ 2: Повний екран / PiP (Картинка в картинці) */
+    /* РЕЖИМ 2: PiP */
     .mega-player.pip-mode .player-box.main-player {
       position: absolute;
       top: 0;
@@ -106,24 +106,19 @@
       cursor: pointer;
     }
 
-    .mega-player.pip-mode .player-box.pip-player:hover {
-      border-color: #fff;
-    }
-
-    /* Фікс стилів Video.js, щоб відео не обрізалося і займало весь бокс */
+    /* Стилі Video.js */
     .video-js {
       width: 100% !important;
       height: 100% !important;
-      padding-top: 0 !important; /* перебиваємо vjs-16-9 для адаптивності контейнера */
+      padding-top: 0 !important;
       background-color: #000;
     }
 
     .vjs-tech {
-      object-fit: contain !important; /* Гарантує, що відео не обріжеться */
-      pointer-events: none; /* Передає кліки на батьківський контейнер */
+      object-fit: contain !important;
+      pointer-events: none;
     }
 
-    /* Підписи команд */
     .watermark {
       color: white;
       font-size: 1rem;
@@ -148,12 +143,13 @@
       display: none;
     }
 
-    /* Кнопка Фулскріну */
     .controls-panel {
       position: absolute;
       top: 15px;
       right: 15px;
       z-index: 100;
+      display: flex;
+      gap: 10px;
     }
 
     .btn {
@@ -171,6 +167,23 @@
       background: rgba(0, 0, 0, 0.9);
       border-color: #fff;
     }
+    
+    /* Плашка підказки, якщо браузер заблокував звук */
+    .unmute-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 200;
+      background: rgba(220, 38, 38, 0.9);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -178,53 +191,57 @@
   <div class="mega-player split-mode" id="megaPlayer">
     
     <div class="controls-panel">
+      <button class="btn" id="soundBtn">🔊 Увімкнути звук</button>
       <button class="btn" id="fullscreenBtn">Повний екран (PiP)</button>
     </div>
+
+    <!-- Підказка для розблокування звуку -->
+    <div class="unmute-overlay" id="unmuteOverlay">Клікніть сюди, щоб увімкнути звук 🔊</div>
     
     <!-- Плеєр 1 -->
     <div class="player-box main-player" id="box1">
-      <video id="vjs-player1" class="video-js vjs-16-9 vjs-big-play-centered" playsinline crossorigin="anonymous"></video>
+      <video id="vjs-player1" class="video-js vjs-16-9" playsinline></video>
       <div class="watermark">Команда А</div>
     </div>
     
     <!-- Плеєр 2 -->
     <div class="player-box pip-player" id="box2">
-      <video id="vjs-player2" class="video-js vjs-16-9 vjs-big-play-centered" playsinline crossorigin="anonymous"></video>
+      <video id="vjs-player2" class="video-js vjs-16-9" playsinline></video>
       <div class="watermark">Команда B</div>
     </div>
 
   </div>
 
   <script>
-    // Масив з твоїми стрімами
     const streams = [
       "https://mf.kasta-sports-tv.workers.dev/?url=https://t6.ultrastream.vip/reserv-3/index.m3u8",
       "https://ext.cdn.nashnet.tv/228.0.0.41/index.m3u8"
     ];
 
     const vjsPlayers = [];
+    let userInteracted = false;
+
     const megaPlayer = document.getElementById("megaPlayer");
     const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const soundBtn = document.getElementById("soundBtn");
+    const unmuteOverlay = document.getElementById("unmuteOverlay");
+    
     const box1 = document.getElementById("box1");
     const box2 = document.getElementById("box2");
 
-    // Ініціалізація Video.js з налаштуваннями для проксі та CORS
     function initVideoJS() {
       streams.forEach((src, index) => {
         const playerId = `vjs-player${index + 1}`;
         
         const player = videojs(playerId, {
           autoplay: 'any',
-          controls: false, // вимикаємо рідні кнопки, робимо чисто під твою логіку
-          muted: true, // старт без звуку для безпечного автозапуску в браузерах
+          controls: false,
+          muted: true, // ВАЖЛИВО: стартуємо строго muted для обходу блокування браузера!
           preload: 'auto',
           html5: {
             vhs: {
-              overrideNative: true, // примусово використовуємо Video.js HLS (краще обробляє Cloudflare Workers)
-              withCredentials: false
-            },
-            nativeAudioTracks: false,
-            nativeVideoTracks: false
+              overrideNative: true
+            }
           },
           sources: [{
             src: src,
@@ -233,16 +250,36 @@
         });
 
         player.ready(() => {
-          player.play().catch(() => {});
+          // Примусовий запуск відео
+          const promise = player.play();
+          if (promise !== undefined) {
+            promise.catch(error => {
+              console.log("Автозапуск заблоковано браузером, очікуємо взаємодії:", error);
+            });
+          }
         });
 
         vjsPlayers[index] = player;
       });
     }
 
-    // Керування звуком (у 50/50 грають обидва, у PiP — лише великий)
+    // Безпечне вмикання звуку
+    function enableSound() {
+      userInteracted = true;
+      unmuteOverlay.style.display = "none";
+      updateMuteState();
+    }
+
     function updateMuteState() {
       if (!vjsPlayers[0] || !vjsPlayers[1]) return;
+
+      // Якщо користувач ще не зробив жодного кліку, залишаємо без звуку
+      if (!userInteracted) {
+        vjsPlayers[0].muted(true);
+        vjsPlayers[1].muted(true);
+        unmuteOverlay.style.display = "block";
+        return;
+      }
 
       if (megaPlayer.classList.contains('split-mode')) {
         vjsPlayers[0].muted(false);
@@ -258,7 +295,6 @@
       }
     }
 
-    // Перемикання режимів: 50/50 <-> PiP
     function toggleFullscreenMode(goFullscreen) {
       if (goFullscreen) {
         megaPlayer.classList.remove('split-mode');
@@ -272,8 +308,9 @@
       updateMuteState();
     }
 
-    // Зміна місцями при кліку на малий плеєр
     function handlePipClick(e) {
+      enableSound(); // Клік автоматично розблоковує звук
+      
       if (!megaPlayer.classList.contains('pip-mode')) return;
       
       const clickedBox = e.currentTarget;
@@ -292,9 +329,11 @@
 
     box1.addEventListener('click', handlePipClick);
     box2.addEventListener('click', handlePipClick);
+    soundBtn.addEventListener('click', enableSound);
+    unmuteOverlay.addEventListener('click', enableSound);
 
-    // Кнопка Фулскріну
     fullscreenBtn.addEventListener("click", () => {
+      enableSound();
       if (!document.fullscreenElement) {
         if (megaPlayer.requestFullscreen) megaPlayer.requestFullscreen();
         else if (megaPlayer.webkitRequestFullscreen) megaPlayer.webkitRequestFullscreen();
@@ -304,7 +343,6 @@
       }
     });
 
-    // Вихід з фулскріну через Esc
     document.addEventListener('fullscreenchange', () => {
       const isFs = !!document.fullscreenElement;
       fullscreenBtn.textContent = isFs ? 'Повернутись у 50/50' : 'Повний екран (PiP)';
@@ -315,7 +353,6 @@
 
     // Запуск
     initVideoJS();
-    setTimeout(updateMuteState, 800);
   </script>
 </body>
 </html>
