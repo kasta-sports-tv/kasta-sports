@@ -1,594 +1,401 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Онлайн ТБ та Фільми — Онлайн-кінотеатр</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        /* --- СТИЛІ ТА ЗМІННІ (У стилі YOU TV) --- */
-        :root {
-            --bg-dark: #0a0e17;
-            --bg-card: #141b2d;
-            --bg-header: rgba(10, 14, 23, 0.95);
-            --accent-green: #00e676;
-            --accent-green-hover: #00c853;
-            --text-main: #ffffff;
-            --text-muted: #8c9ba5;
-            --border-color: #232d42;
-            --radius: 8px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Українське ТБ — Онлайн Телебачення</title>
+  
+  <!-- HLS.js для відтворення .m3u8 потоків -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  
+  <!-- Шрифти та Іконки -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --card-hover: #334155;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+    /* Шапка сайту */
+    header {
+      background-color: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
 
-        /* --- ШАПКА (HEADER) --- */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background-color: var(--bg-header);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 4%;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-color);
-        }
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-        }
+    .logo span {
+      color: #facc15; /* Жовтий акцент для прапора */
+    }
 
-        .logo {
-            font-size: 26px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            color: var(--text-main);
-        }
+    .search-box {
+      position: relative;
+      max-width: 400px;
+      width: 100%;
+    }
 
-        .logo span {
-            color: var(--accent-green);
-        }
+    .search-box input {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
 
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 25px;
-        }
+    .search-box input:focus {
+      border-color: var(--accent);
+    }
 
-        nav a {
-            font-weight: 500;
-            font-size: 15px;
-            transition: color 0.2s;
-        }
+    /* Категорії */
+    .categories {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border-color);
+    }
 
-        nav a:hover, nav a.active {
-            color: var(--accent-green);
-        }
+    .cat-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+    .cat-btn.active, .cat-btn:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
 
-        .btn {
-            padding: 10px 22px;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-        }
+    /* Сітка каналів */
+    main {
+      padding: 2rem;
+      flex: 1;
+    }
 
-        .btn-green {
-            background-color: var(--accent-green);
-            color: #000;
-        }
+    .channels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.5rem;
+    }
 
-        .btn-green:hover {
-            background-color: var(--accent-green-hover);
-            box-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
-        }
+    .channel-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+      text-align: center;
+    }
 
-        .btn-outline {
-            background: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
+    .channel-card:hover {
+      transform: translateY(-4px);
+      background-color: var(--card-hover);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
 
-        .btn-outline:hover {
-            background: var(--bg-card);
-            border-color: var(--text-muted);
-        }
+    .channel-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border-radius: 8px;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 0.5rem;
+    }
 
-        /* --- ГОЛОВНИЙ БАНЕР / СЛАЙДЕР (HERO SECTION) --- */
-        .hero {
-            margin-top: 70px;
-            position: relative;
-            height: 75vh;
-            min-height: 480px;
-            background: linear-gradient(180deg, rgba(10,14,23,0.3) 0%, var(--bg-dark) 100%), 
-                        url('https://picsum.photos/1920/1080?random=10') center/cover no-repeat;
-            display: flex;
-            align-items: center;
-            padding: 0 5%;
-        }
+    .channel-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
 
-        .hero-content {
-            max-width: 600px;
-        }
+    /* Модальне вікно плеєра */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.85);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
 
-        .hero-badge {
-            display: inline-block;
-            background: rgba(0, 230, 118, 0.15);
-            color: var(--accent-green);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            border: 1px solid var(--accent-green);
-        }
+    .modal.active {
+      display: flex;
+    }
 
-        .hero h1 {
-            font-size: 48px;
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 15px;
-        }
+    .modal-content {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 900px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-color);
+    }
 
-        .hero p {
-            font-size: 16px;
-            color: var(--text-muted);
-            margin-bottom: 25px;
-        }
+    .modal-header {
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+    }
 
-        /* --- РОЗДІЛИ ТА КАРТКИ --- */
-        .section {
-            padding: 40px 5%;
-        }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 20px;
-        }
+    .close-btn:hover {
+      color: var(--text-main);
+    }
 
-        .section-title {
-            font-size: 22px;
-            font-weight: 700;
-        }
+    .player-container {
+      position: relative;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      background: black;
+    }
 
-        .see-all {
-            color: var(--accent-green);
-            font-size: 14px;
-            font-weight: 500;
-        }
+    .player-container video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
 
-        .grid-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background-color: var(--bg-card);
-            border-radius: var(--radius);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            border: 1px solid transparent;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-green);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-
-        .card-img {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            background-color: #1f293d;
-            display: block;
-        }
-
-        .card-body {
-            padding: 12px;
-        }
-
-        .card-title {
-            font-size: 14px;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .card-subtitle {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* --- ТАРИФНІ ПЛАНИ --- */
-        .tariffs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .tariff-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 30px 20px;
-            text-align: center;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .tariff-card.featured {
-            border-color: var(--accent-green);
-            background: linear-gradient(180deg, #141b2d 0%, #1a253f 100%);
-        }
-
-        .tariff-badge {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent-green);
-            color: #000;
-            padding: 2px 15px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 12px;
-        }
-
-        .tariff-price {
-            font-size: 36px;
-            font-weight: 900;
-            margin: 15px 0;
-            color: var(--accent-green);
-        }
-
-        .tariff-price span {
-            font-size: 16px;
-            color: var(--text-muted);
-            font-weight: 400;
-        }
-
-        .tariff-features {
-            list-style: none;
-            margin: 20px 0;
-            text-align: left;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .tariff-features li {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .tariff-features li::before {
-            content: "✓";
-            color: var(--accent-green);
-            font-weight: bold;
-        }
-
-        /* --- ПІДВАЛ (FOOTER) --- */
-        footer {
-            background-color: #06090f;
-            border-top: 1px solid var(--border-color);
-            padding: 50px 5% 20px;
-            margin-top: 60px;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .footer-col h4 {
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .footer-col ul {
-            list-style: none;
-        }
-
-        .footer-col ul li {
-            margin-bottom: 10px;
-        }
-
-        .footer-col a {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .footer-col a:hover {
-            color: var(--accent-green);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        /* --- АДАПТИВНІСТЬ --- */
-        @media (max-width: 768px) {
-            nav { display: none; } /* Для мобільних тут зазвичай гамбургер-меню */
-            .hero h1 { font-size: 32px; }
-            .hero { height: 60vh; }
-        }
-    </style>
+    /* Футер */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- ШАПКА -->
-    <header>
-        <div class="header-left">
-            <!-- Тут буде ваш логотип -->
-            <a href="#" class="logo">YOU<span>TV</span></a>
-            <nav>
-                <ul>
-                    <li><a href="#" class="active">Телебачення</a></li>
-                    <li><a href="#">Фільми</a></li>
-                    <li><a href="#">Серіали</a></li>
-                    <li><a href="#">Тарифи</a></li>
-                    <li><a href="#">Акции</a></li>
-                </ul>
-            </nav>
-        </div>
-        <div class="header-right">
-            <button class="btn btn-outline">Увійти</button>
-            <button class="btn btn-green">Спробувати безкоштовно</button>
-        </div>
-    </header>
+  <header>
+    <a href="#" class="logo">
+      <span>UA</span> ТБ Онлайн
+    </a>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Пошук каналу..." oninput="filterChannels()">
+    </div>
+  </header>
 
-    <!-- ГОЛОВНИЙ БАНЕР -->
-    <section class="hero">
-        <div class="hero-content">
-            <span class="hero-badge">ПРЕМ'ЄРА</span>
-            <h1>300+ ТВ-каналів та 10 000+ фільмів</h1>
-            <p>Дивіться улюблені шоу, спортивні трансляції та кіно на будь-якому пристрої в HD та 4K якості.</p>
-            <div style="display: flex; gap: 15px;">
-                <button class="btn btn-green" style="padding: 14px 30px; font-size: 16px;">Дивитися зараз</button>
-                <button class="btn btn-outline" style="padding: 14px 25px; font-size: 16px;">Програми передач</button>
-            </div>
-        </div>
-    </section>
+  <div class="categories">
+    <button class="cat-btn active" onclick="filterCategory('all', this)">Усі</button>
+    <button class="cat-btn" onclick="filterCategory('news', this)">Новини</button>
+    <button class="cat-btn" onclick="filterCategory('entertainment', this)">Розважальні</button>
+    <button class="cat-btn" onclick="filterCategory('movies', this)">Кіно</button>
+  </div>
 
-    <!-- ПОПУЛЯРНІ ТВ-КАНАЛИ -->
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title">Популярні ТВ-канали</h2>
-            <a href="#" class="see-all">Усі канали (300+) &rarr;</a>
-        </div>
-        <div class="grid-cards">
-            <!-- Картка каналу (замініть картинку на логотип каналу) -->
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=1" alt="Канал" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">1+1 Україна HD</div>
-                    <div class="card-subtitle">Зараз: ТСН. Новини</div>
-                </div>
-            </div>
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=2" alt="Канал" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">ICTV HD</div>
-                    <div class="card-subtitle">Зараз: Факти тижня</div>
-                </div>
-            </div>
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=3" alt="Канал" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">Setanta Sports HD</div>
-                    <div class="card-subtitle">Зараз: Прем'єр-Ліга</div>
-                </div>
-            </div>
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=4" alt="Канал" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">Discovery Channel</div>
-                    <div class="card-subtitle">Зараз: Махінатори</div>
-                </div>
-            </div>
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=5" alt="Канал" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">CineHit HD</div>
-                    <div class="card-subtitle">Зараз: Месники</div>
-                </div>
-            </div>
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=6" alt="Канал" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">Nickelodeon</div>
-                    <div class="card-subtitle">Зараз: Губка Боб</div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <main>
+    <div class="channels-grid" id="channelsGrid">
+      <!-- Канали будуть рендеритись через JS -->
+    </div>
+  </main>
 
-    <!-- РЕКОМЕНДОВАНІ ФІЛЬМИ -->
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title">Новинки кіно</h2>
-            <a href="#" class="see-all">Дивитися всі &rarr;</a>
-        </div>
-        <div class="grid-cards">
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=7" alt="Фільм" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">Дюна: Частина друга</div>
-                    <div class="card-subtitle">Фантастика, 2024</div>
-                </div>
-            </div>
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=8" alt="Фільм" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">Ґодзілла та Конг</div>
-                    <div class="card-subtitle">Бойовик, 2024</div>
-                </div>
-            </div>
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=9" alt="Фільм" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">Оппенгеймер</div>
-                    <div class="card-subtitle">Біографія, 2023</div>
-                </div>
-            </div>
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=11" alt="Фільм" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">Кунг-фу Панда 4</div>
-                    <div class="card-subtitle">Мультфільм, 2024</div>
-                </div>
-            </div>
-            <div class="card">
-                <img src="https://picsum.photos/300/170?random=12" alt="Фільм" class="card-img">
-                <div class="card-body">
-                    <div class="card-title">Аватар: Шлях води</div>
-                    <div class="card-subtitle">Фантастика, 2022</div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Модальне вікно для перегляду -->
+  <div class="modal" id="playerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Назва каналу</h3>
+        <button class="close-btn" onclick="closePlayer()">&times;</button>
+      </div>
+      <div class="player-container">
+        <video id="videoPlayer" controls autoplay></video>
+      </div>
+    </div>
+  </div>
 
-    <!-- ТАРИФИ -->
-    <section class="section">
-        <div class="section-header" style="justify-content: center; text-align: center;">
-            <div>
-                <h2 class="section-title" style="font-size: 32px;">Оберіть свій тариф</h2>
-                <p style="color: var(--text-muted); margin-top: 5px;">Підключайте до 5 пристроїв на один акаунт</p>
-            </div>
-        </div>
+  <footer>
+    <p>&copy; 2026 Українське ТБ. Усі права захищено.</p>
+  </footer>
 
-        <div class="tariffs-grid">
-            <div class="tariff-card">
-                <h3>Базовий</h3>
-                <div class="tariff-price">99 ₴ <span>/ міс</span></div>
-                <ul class="tariff-features">
-                    <li>180+ ТВ-каналів</li>
-                    <li>Пауза та перемотування</li>
-                    <li>HD якість</li>
-                    <li>2 пристрої одночасно</li>
-                </ul>
-                <button class="btn btn-outline" style="width: 100%;">Обрати тариф</button>
-            </div>
+  <script>
+    // Масив з каналами. Додайте сюди ваші посилання m3u8 та логотипи
+    const channels = [
+      {
+        id: 1,
+        name: "Єдині Новини",
+        category: "news",
+        logo: "https://via.placeholder.com/80?text=UA+News", // Замініть на своє URL логотипу
+        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" // Замініть на свій .m3u8
+      },
+      {
+        id: 2,
+        name: "Канал 2 (Приклад)",
+        category: "entertainment",
+        logo: "https://via.placeholder.com/80?text=Channel+2",
+        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+      },
+      {
+        id: 3,
+        name: "Кіноканал",
+        category: "movies",
+        logo: "https://via.placeholder.com/80?text=Cinema",
+        streamUrl: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+      }
+    ];
 
-            <div class="tariff-card featured">
-                <div class="tariff-badge">ХІТ ПРОДАЖІВ</div>
-                <h3>Максимальний</h3>
-                <div class="tariff-price">199 ₴ <span>/ міс</span></div>
-                <ul class="tariff-features">
-                    <li>300+ ТВ-каналів</li>
-                    <li>10 000+ фільмів та серіалів</li>
-                    <li>Full HD та Ultra HD 4K</li>
-                    <li>Запис телепередач (7 днів)</li>
-                    <li>5 пристроїв одночасно</li>
-                </ul>
-                <button class="btn btn-green" style="width: 100%;">Спробувати 7 днів за 1 ₴</button>
-            </div>
+    let activeCategory = 'all';
+    let hlsInstance = null;
 
-            <div class="tariff-card">
-                <h3>Преміум + Спорт</h3>
-                <div class="tariff-price">299 ₴ <span>/ міс</span></div>
-                <ul class="tariff-features">
-                    <li>Всі канали та фільми</li>
-                    <li>Ексклюзивні спортивні канали</li>
-                    <li>Матчі Ліги Чемпіонів</li>
-                    <li>Максимальна якість звуку та відео</li>
-                    <li>5 пристроїв одночасно</li>
-                </ul>
-                <button class="btn btn-outline" style="width: 100%;">Обрати тариф</button>
-            </div>
-        </div>
-    </section>
+    // Відображення каналів
+    function renderChannels(items) {
+      const grid = document.getElementById('channelsGrid');
+      grid.innerHTML = '';
 
-    <!-- ПІДВАЛ -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-col">
-                <a href="#" class="logo" style="display: block; margin-bottom: 15px;">YOU<span>TV</span></a>
-                <p style="color: var(--text-muted); font-size: 13px;">Сучасне інтерактивне онлайн телебачення та кінотеатр для усієї родини.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Розділи</h4>
-                <ul>
-                    <li><a href="#">ТВ Онлайн</a></li>
-                    <li><a href="#">Фільми</a></li>
-                    <li><a href="#">Серіали</a></li>
-                    <li><a href="#">Передачі</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Підтримка</h4>
-                <ul>
-                    <li><a href="#">Питання та відповіді</a></li>
-                    <li><a href="#">Налаштування пристроїв</a></li>
-                    <li><a href="#">Контакти</a></li>
-                    <li><a href="#">Оплата та повернення</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Додатки</h4>
-                <ul>
-                    <li><a href="#">Smart TV</a></li>
-                    <li><a href="#">Android TV</a></li>
-                    <li><a href="#">iOS / iPadOS</a></li>
-                    <li><a href="#">Android App</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 YOU TV Clone. Усі права захищено. Створено для власного використання.</p>
-        </div>
-    </footer>
+      if(items.length === 0) {
+        grid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center;">Каналів не знайдено</p>';
+        return;
+      }
 
+      items.forEach(ch => {
+        const card = document.createElement('div');
+        card.className = 'channel-card';
+        card.onclick = () => openPlayer(ch.name, ch.streamUrl);
+        
+        card.innerHTML = `
+          <img class="channel-logo" src="${ch.logo}" alt="${ch.name}" onerror="this.src='https://via.placeholder.com/80?text=TV'">
+          <div class="channel-name">${ch.name}</div>
+        `;
+        
+        grid.appendChild(card);
+      });
+    }
+
+    // Фільтрація за категорією
+    function filterCategory(cat, btn) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterChannels();
+    }
+
+    // Фільтрація (Пошук + Категорія)
+    function filterChannels() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      
+      const filtered = channels.filter(ch => {
+        const matchesCat = activeCategory === 'all' || ch.category === activeCategory;
+        const matchesSearch = ch.name.toLowerCase().includes(query);
+        return matchesCat && matchesSearch;
+      });
+
+      renderChannels(filtered);
+    }
+
+    // Відкриття та відтворення відео HLS
+    function openPlayer(name, url) {
+      const modal = document.getElementById('playerModal');
+      const video = document.getElementById('videoPlayer');
+      document.getElementById('modalTitle').innerText = name;
+
+      modal.classList.add('active');
+
+      if (Hls.isSupported()) {
+        if (hlsInstance) {
+          hlsInstance.destroy();
+        }
+        hlsInstance = new Hls();
+        hlsInstance.loadSource(url);
+        hlsInstance.attachMedia(video);
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+          video.play();
+        });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Для Safari на iOS/macOS
+        video.src = url;
+        video.addEventListener('loadedmetadata', function() {
+          video.play();
+        });
+      }
+    }
+
+    // Закриття плеєра
+    function closePlayer() {
+      const modal = document.getElementById('playerModal');
+      const video = document.getElementById('videoPlayer');
+      
+      modal.classList.remove('active');
+      video.pause();
+      
+      if (hlsInstance) {
+        hlsInstance.destroy();
+        hlsInstance = null;
+      }
+    }
+
+    // Первинний рендер при завантаженні
+    renderChannels(channels);
+  </script>
 </body>
 </html>
