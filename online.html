@@ -2,164 +2,616 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<title>M3U IPTV Browser App</title>
+	<meta name="referrer" content="no-referrer" />
+	<title>M3U IPTV Settings</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Stream your favorite TV m3u-playlist seamlessly with our feature-rich M3U IPTV browser app. It is completely free and easy to use!">
 	<meta name="keywords" content="IPTV, M3U, M3U8, M3U IPTV, Player, Live, TV, Movie, Video, Smart, Smart TV, Online, Playlist, Browser, Desktop, Mobile, Smartphone, free, easy, ad-free">
 	<meta name="author" content="Jaroslav Herber - Herber eDevelopment">
-	<link rel="canonical" href="https://m3u-ip.tv/browser/">
+	<link rel="canonical" href="https://m3u-ip.tv/browser/settings/">
 
-	<script>var sAppVersion = '3.1.0', sDeviceFamily = 'Browser', sView = 'home';</script>
-	<style>
-		html, body {
-			margin: 0;
-			padding: 0;
-			height: 100%;
-			width: 100%;
-			color: #fff;
-			background: #000;
-			box-sizing: border-box;
-			font-family: sans-serif;
-			line-height: 1.5;
-		}
+	<link rel="stylesheet" type="text/css" href="https://cdn.m3u-ip.tv/browser/settings/css/settings.css?v=3e"/>
+	<script>var sAppVersion = '3.1.0', sDeviceFamily = 'Browser', sTvManufacturer = 'Microsoft', sView = 'settings';</script>
+	<style id="custom_theme"></style><style id="custom_styles"></style>
 
-		#stars {
-			display: none;
-			width: 2px;
-			height: 2px;
-			position: absolute;
-			box-shadow: 2vw 5vh 2px white, 10vw 9vh 2px white, 7vw 16vh 1px white,
-				22vw 22vh 1px white, 28vw 12vh 2px white, 29vw 39vh 1px white,
-				39vw 6vh 2px white, 42vw 35vh 1px white, 49vw 27vh 2px white,
-				53vw 42vh 1px white, 58vw 15vh 2px white, 63vw 50vh 1px white,
-				65vw 31vh 2px white, 73vw 45vh 1px white, 82vw 35vh 2px white,
-				90vw 51vh 1px white, 88vw 9vh 1px white, 96vw 63vh 1px white,
-				88vw 40vh 1px white, 7vw 63vh 1px white, 14vw 39vh 2px white,
-				16vw 67vh 1px white, 25vw 73vh 2px white, 31vw 58vh 1px white,
-				35vw 74vh 2px white, 40vw 68vh 1px white, 46vw 54vh 2px white,
-				52vw 14vh 1px white, 55vw 58vh 2px white, 64vw 71vh 3px white,
-				66vw 10vh 2px white, 70vw 26vh 1px white, 77vw 15vh 2px white,
-				80vw 64vh 2px white, 74vw 60vh 1px white, 90vw 17vh 1px white,
-				96vw 34vh 2px white;
-		}
-
-		#playlist_hint {
-			display: none;
-			text-align: center;
-			width: 80%;
-			position: absolute;
-			left: 50%; top: 46%;
-			transform: translate(-50%, -50%);
-			background: #151e29;
-			padding: 12px 20px;
-		}
-
-		#hint_previous {
-			display: none;
-		}
-
-		#body #playlist_hint, #body #stars {
-			display: block;
-		}
-
-		a {
-			border: 0;
-			padding: 18px 24px;
-			margin: 12px auto;
-			background-color: #118599;
-			box-shadow: 0 0 12px #111;
-			color: #fff;
-			cursor: pointer;
-			display: inline-block;
-			box-sizing: border-box;
-			text-decoration: none;
-			font-size: 120%;
-		}
-
-		#loader {
-			background: #000 url(images/loading-circle.svg) no-repeat 50% 50%;
-			background-size: 100px;
-		}
-	</style>
-	<script src="js/lang-home.js"></script>
+	<script src="js/lang.js"></script>
 </head>
-<body id="loader">
-	<div id="stars"></div>
-	<noscript>
-		<p>Please enable JavaScript!</p>
-	</noscript>
-	<div id="playlist_hint">
-		<p id="hint" class="i18n" data-langid="hint">
-			M3U IPTV is a player app that does not provide its own channels or content.<br>
-			To watch channels, you need to add an M3U playlist from your IPTV provider.
-		</p>
-		<p id="hint_previous" class="i18n" data-langid="previous-version-hint">
-			<b>Used version 2 of the M3U IPTV app before?</b><br>
-			You can import your last loaded playlist from <b>Settings » Playlists » Add Playlist</b>.<br>
-			To switch back to the previous player, go to <b>Settings » General » Switch to old app version 2</b>.
-		</p>
-		<a id="add_playlist" href="settings/index.html#add_playlist" class="i18n" data-langid="add">Add playlist</a>
+<body id="body" class="browser booting">
+	<div id='boot_loader' class="fullscreen">
+		<div id="boot_status"></div>
 	</div>
-<script>
+	<div id='loader'></div><div id='stars'></div>
+	<div id="custom_confirm" class="fullscreen"></div>
 
-localStorage.setItem('deviceStartup', 1);
-localStorage.removeItem('channelProtection');
-localStorage.removeItem('iSecondsUntilAd');
+	<div id="sesitive_password_confirm" class="fullscreen-blur">
+		<div class="fullscreen-popup fullscreen-top">
+			<h2 for="sesitive_password_confirm_input" class="i18n" data-langid="password-protected">Settings are protected</h2>
+			<input id="sesitive_password_confirm_input" class="select i18nPlaceholder" data-langid="enter-password" type="text" value="" placeholder="Insert your password" autocomplete="off">
+			<button onclick="closeSensitivePasswordInput();" class="i18n" data-langid="back">Back</button>
+		</div>
+	</div>
 
-if( localStorage.getItem('bLoadV2') === "1" ) {
-	window.location.href = "v2/";
-} else if( localStorage.getItem('bReadyForPlay') === "1" ) {
-	window.location.href = "player/index.html";
-} else {
+	<div id="password_confirm" class="fullscreen-blur">
+		<div class="fullscreen-popup fullscreen-top">
+			<h2 for="password_confirm_input" class="i18n" data-langid="password-protected">Settings are protected</h2>
+			<input id="password_confirm_input" class="select i18nPlaceholder" data-langid="enter-password" type="text" value="" placeholder="Insert your password" autocomplete="off">
+			<button onclick="closeSettings();" class="i18n" data-langid="back-to-player">Back to player</button>
+		</div>
+	</div>
 
-	applyLang();
+	<div id="modal" class="fullscreen-blur" onclick="hideModal();">
+		<div id="modal_content" class="fullscreen-popup fullscreen-center custom-scrollbar"></div>
+	</div>
 
-	if( localStorage.getItem('sChannelListStorage') ) {
-		document.getElementById('hint_previous').style.display = 'block';
-	}
+	<div id="epg_manager" class="fullscreen-blur custom-scrollbar">
 
-	document.body.id = 'body';
+		<div id="epg_status" class="status-bar"></div>
 
-	var bConfirmBoxOpened = false;
-	document.addEventListener('keydown', function(e) {
-		var k = e.keyCode;
-		switch( k ) {
-			case 13:
-				document.body.id = 'loader';
-				document.getElementById('add_playlist').click();
-				break;
+		<div id="epg_manager_form" class="editor-form">
 
-			case 999:	// Android Back-Button
-			case 10009: // RETURN Samsung
-			case 27:	// ESC
-			case 461:	// LG Back
-			case 113:	// F2 - backbutton in android
-				closeApp(); break;
-		}
-	});
-}
+			<div id="em_url_form">
+				<label for="em_epg_url" class="i18n" data-langid="epg-url">EPG URL</label>
+				<input id="em_epg_url" type="url" name="epg_url" value="" placeholder="https://example.com/epg.xml" class="url-only" data-guide="epg-url">
 
+				<label for="em_epg_time_shift"><span class="i18n" data-langid="epg-time-shift">EPG Timeshift</span> <span id="epg_time_shift_output"></span></label>
+				<input id="em_epg_time_shift" type="range" name="epg_time_shift" value="0" min="-23" max="23" step="0.5" oninput="updateEpgTimeShift(this.value);">
+			</div>
 
-function closeApp() {
+			<div class="button-row">
+				<button id="em_button_back" class="round-button button-back" onclick="emBack()"><svg height="30" width="30"><use href="../images/icons.svg#prev" height="30" width="30" /></svg></button>
+				<button id="em_button_delete" class="round-button button-delete" onclick="emDelete()"><svg height="30" width="30"><use href="../images/icons.svg#trash" height="30" width="30" /></svg></button>
+				<button id="em_button_next" class="round-button button-next" onclick="emSaveEpgUrl()"><svg height="30" width="30"><use href="../images/icons.svg#next" height="30" width="30" /></svg></button>
+			</div>
 
-	try {
-		switch( sDeviceFamily ) {
-			case 'Samsung':
-				tizen.application.getCurrentApplication().exit();
-				break;
-			case 'LG':
-				window.PalmSystem.platformBack();
-				break;
-			case 'Android':
-				m3uConnector.closeApp();
-				break;
-		}
-	} catch( e ) {
-		console.log(e.message);
-	}
+		</div>
 
-}
+		<div id="epg_download_status" class="download-status"></div>
 
-</script>
+	</div>
+
+	<div id="playlist_manager" class="fullscreen-blur custom-scrollbar">
+
+		<input id="pm_epg_url" type="hidden" name="pm_epg_url" value="">
+
+		<div class="editor-loader"></div>
+		<div id="playlist_status" class="status-bar">
+			<div id="pm_progress_bar" class="progress-bar"><div id="pm_progress" class="progress"></div></div>
+		</div>
+
+		<div id="playlist_manager_form" class="editor-form">
+			<input id="file_picker" type="file" class="HIDDEN" oninput="filePickerHandler(this);">
+			<div id="pm_step1_usb" class="step step1">
+				<h2 class="i18n" data-langid="local-playlist">Local M3U file</h2>
+				<button onclick="openExplorerButton();" id="settings_open_usb_button" name="explorer_manager" class="i18n local-only" data-langid="open-explorer" data-guide="open-explorer">Open explorer</button>
+			</div>
+
+			<div id="pm_step1_url" class="step step1">
+				<label for="pm_m3u_url" class="i18n" data-langid="playlist-url">M3U playlist URL</label>
+				<input id="pm_m3u_url" type="url" name="m3u_url" value="" placeholder="https://example.com/channels.m3u8" class="url-only" data-guide="playlist-from-url">
+			</div>
+
+			<!--div id="pm_step1_stalker" class="step step1">
+				<h2>TODO: Stalker</h2>
+				<label for="pm_stalker_url" class="i18n" data-langid="stalker-portal-url">Stalker Portal URL</label>
+				<input id="pm_stalker_url" type="url" name="pm_stalker_url" value="" placeholder="" class="input" data-guide="stalker-portal-url">
+
+				<label for="pm_stalker_login" class="i18n" data-langid="stalker-login">Username (optional)</label>
+				<input id="pm_stalker_login" type="text" name="pm_stalker_login" value="" class="input" data-guide="stalker-portal-login">
+
+				<label for="pm_stalker_pw" class="i18n" data-langid="stalker-password">Password (optional)</label>
+				<input id="pm_stalker_pw" type="text" name="pm_stalker_pw" value="" class="input" data-guide="stalker-portal-pw">
+
+				<label for="pm_stalker_mac" class="i18n" data-langid="stalker-mac">MAC address</label>
+				<input id="pm_stalker_mac" type="text" name="pm_stalker_mac" value="" class="input" data-guide="stalker-portal-mac">
+			</div-->
+
+			<div id="pm_step1_xtream" class="step step1">
+				<h2>Xtream</h2>
+
+				<label for="pm_xtream_url" class="i18n" data-langid="xtream-url">Server URL</label>
+				<input id="pm_xtream_url" type="url" name="pm_xtream_url" value="" placeholder="http://server_url.com:port" class="input" data-guide="xtream-url">
+
+				<label for="pm_xtream_login" class="i18n" data-langid="xtream-login">Username</label>
+				<input id="pm_xtream_login" type="text" name="pm_xtream_login" value="" class="input">
+
+				<label for="pm_xtream_pw" class="i18n" data-langid="xtream-password">Password</label>
+				<input id="pm_xtream_pw" type="text" name="pm_xtream_pw" value="" class="input">
+
+				<label for="pm_xtream_output">Output</label>
+				<select id="pm_xtream_output" class="input" name="pm_xtream_output" onchange="setXtreamOutputSetting(this);">
+					<option value="m3u8" selected="selected">m3u8 (Windows/LG/Browser)</option>
+					<option value="ts">ts</option>
+				</select>
+
+				<button id="pm_xtream_load_vod" class="checkbox" onclick="setXtreamVodSetting(this);">
+					<span class="i18n" data-langid="xtream-vod">Include movies (VOD)</span>
+					<div class="switch">
+						<span class="slider round"></span>
+					</div>
+				</button>
+
+				<button id="pm_xtream_load_series" class="checkbox" onclick="setXtreamSeriesSetting(this);">
+					<span class="i18n" data-langid="xtream-series">Include series</span>
+					<div class="switch">
+						<span class="slider round"></span>
+					</div>
+				</button>
+			</div>
+
+			<div id="pm_step2" class="step step2">
+				<label for="pm_playlist_name" class="i18n" data-langid="playlist-name">Playlist name</label>
+				<input id="pm_playlist_name" type="text" name="pm_playlist_name" value="" maxlength="32" placeholder="My cool playlist" class="input" data-guide="none">
+
+				<button id="pm_reload_playlist_start" class="checkbox" onclick="setReloadPlaylistSetting(this);">
+					<span class="i18n" data-langid="reload-playlist-on-start">Download playlist on each start</span>
+					<div class="switch">
+						<span class="slider round"></span>
+					</div>
+				</button>
+			</div>
+
+			<div id="pm_step3" class="step step3">
+				<!--label for="pm_epg_url" class="i18n" data-langid="epg-url">EPG URL</label>
+				<p id="pm_epg_url_output"></p-->
+				<p class="i18n" data-langid="epg-conf-hint">To view Electronic Program Guide (EPG) programs and use the archive/catch-up feature, you need to configure an EPG source in the EPG section of the settings.</p>
+
+				<label for="pm_archive_type" class="i18n" data-langid="archive-type">Archive type</label>
+				<select id="pm_archive_type" class="input" name="archiveType" data-guide="archive-type">
+					<option value="-" selected="selected">None</option>
+					<option value="default">Default</option>
+					<option value="append">Append</option>
+					<option value="flussonic">Flussonic</option>
+					<option value="shift">Shift</option>
+					<option value="archive">Archive</option>
+					<option value="timeshift">Timeshift</option>
+					<option value="xc">Xtream</option>
+				</select>
+			</div>
+
+			<div class="button-row">
+				<button id="pm_button_back" class="round-button button-back" onclick="pmBack()"><svg height="30" width="30"><use href="../images/icons.svg#prev" height="30" width="30" /></svg></button>
+				<button id="pm_button_delete" class="round-button button-delete" onclick="pmDelete()"><svg height="30" width="30"><use href="../images/icons.svg#trash" height="30" width="30" /></svg></button>
+				<button id="pm_button_next" class="round-button button-next" onclick="pmNext()"><svg height="30" width="30"><use href="../images/icons.svg#next" height="30" width="30" /></svg></button>
+			</div>
+		</div>
+		<div id="playlist_download_status" class="download-status"></div>
+	</div>
+
+	<div id="input_editor" class="fullscreen-blur">
+		<div id="input_editor_form" class="fullscreen-popup"></div>
+	</div>
+
+	<div id="playlist_companion" class="fullscreen-blur">
+		<div class="fullscreen-popup fullscreen-center ALIGNCENTER" style="max-width: 80%; top: 50%;">
+			<div id="playlist_companion_loader"></div>
+			<div id="playlist_companion_form">
+				<div id="playlist_companion_code_container">
+					<label for="companion_code" class="i18n" data-langid="pairingCode">Pairing code</label>
+					<input id="companion_code" name="companion_code" class="input i18nPlaceholder" type="number" max="9999" min="1000" oninput="return checkCompanionCode(this);" value="" placeholder="_ _ _ _" autocomplete="off">
+					<button class="round-button button-back" onclick="closePlaylistCompanion()"><svg height="30" width="30"><use href="../images/icons.svg#prev" height="30" width="30" /></svg></button>
+				</div>
+				<div>
+					<p class="i18n" data-langid="pairingInstruction" style="margin: 0 0 24px">Visit our website to create a pairing code that you can enter here.</p>
+					<p><img id="companion_qr" src="https://m3u-ip.tv/images/companion-qr.png" width="800" height="800"></p>
+					<p><a href="https://m3u-ip.tv/companion/" target="_blank">https://m3u-ip.tv/companion/</a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="settings_container" class="list-container">
+
+		<div id="settings_headline">
+			<p id="bread_crumb"></p>
+			<h2 id="current_head"></h2>
+		</div>
+
+		<div id="settings_list">
+
+			<ul id="top_nav" class="settings-nav">
+				<li data-action="close" data-guide="close-and-play">
+					<span class="svg-icon icon-play"></span>
+					<span class="i18n" data-langid="close">Close and play</span>
+				</li>
+				<li data-open="general" data-guide="usage-info">
+					<span class="i18n" data-langid="general">General</span>
+				</li>
+				<li class="sensitive-setting" data-open="playlists" data-guide="usage-info">
+					<span class="i18n" data-langid="playlists">Playlists</span>
+					<p id="count_configured_playlists"></p>
+				</li>
+				<li class="sensitive-setting" data-open="epg" data-guide="epg">
+					<span class="i18n" data-langid="epg">EPG</span>
+				</li>
+				<!--li data-open="advanced" data-guide="advanced">
+					<span class="i18n" data-langid="advanced">Advanced</span>
+				</li-->
+				<li data-open="style" data-guide="style">
+					<span class="i18n" data-langid="style">Appearance</span>
+				</li>
+				<li class="sensitive-setting" data-open="security" data-guide="security">
+					<span class="i18n" data-langid="security">Security</span>
+				</li>
+				<li id="license-navitem" class="sensitive-setting" data-open="license" data-guide="license">
+					<span class="i18n" data-langid="license">License</span>
+					<p class="current-license" data-settingval="license-type">Free</p>
+				</li>
+			</ul>
+
+			<ul id="general_nav" class="settings-nav" data-top="top">
+				<li data-open="language" data-guide="none">
+					<span class="i18n" data-langid="language">Language</span>
+					<p id="current_language"></p>
+				</li>
+				<li class="checkbox" data-type="checkbox" data-name="startup-last-channel" data-value="on" data-guide="startup-last-channel">
+					<span class="i18n" data-langid="startup-last-channel">Load last viewed channel on startup</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li class="checkbox device-include" data-device="Android" data-type="checkbox" data-name="autostart" data-value="" data-action="premium-only" data-savecallback="set-autostart" data-guide="autostart">
+					<span class="i18n" data-langid="autostart">Start app automatically after booting</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li class="checkbox device-include" data-device="Android" data-type="checkbox" data-name="pip" data-value="" data-guide="pip">
+					<span class="i18n" data-langid="pip">Enable Picture-in-Picture (PiP)</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li id="camera-cutout-navitem" class="checkbox device-include" data-device="Android" data-type="checkbox" data-name="camera-cutout" data-value="" data-guide="camera-cutout" data-savecallback="change-camera-cutout">
+					<span class="i18n" data-langid="camera-cutout">Extend display into camera cutout</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li class="checkbox device-include" data-device="Android" data-type="checkbox" data-name="landscape-orientation" data-value="" data-savecallback="change-orientation">
+					<span class="i18n" data-langid="landscape-orientation">Landscape orientation</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li data-open="buffer" data-guide="buffer">
+					<span class="i18n" data-langid="buffer">Buffer</span>
+					<p id="current_buffer" data-settingval="buffer">15</p>
+				</li>
+				<li data-open="skip_step_size" data-guide="skip-step-size">
+					<span class="i18n" data-langid="skip-step-size">Skip Step Size</span>
+					<p id="current_skip_step_size" data-settingval="skip-step-size">30</p>
+				</li>
+				<li class="checkbox" data-type="checkbox" data-name="enable-smart-controls" data-value="on" data-guide="enable-smart-controls">
+					<span class="i18n" data-langid="enable-smart-controls">Enable Smart Controls</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li class="checkbox device-include" data-device="Browser" data-type="checkbox" data-name="mousewheel-volume" data-value="on" data-guide="mousewheel-volume">
+					<span class="i18n" data-langid="mousewheel-volume">Mousewheel controls volume</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li data-type="input" data-name="user-agent" data-guide="user-agent">
+					<span class="i18n" data-langid="user-agent">User-Agent</span>
+					<p data-settingval="user-agent"></p>
+				</li>
+				<li data-action="switch-to-v2" data-guide="switch-to-v2">
+					<span class="i18n" data-langid="switch-to-v2">Switch to old app version 2</span>
+				</li>
+			</ul>
+
+			<ul id="playlists_nav" class="settings-nav sensitive-setting" data-loadaction="calculate-space" data-top="top">
+				<!-- Load playlists here -->
+				<li data-open="add_playlist">
+					<span class="icon icon-add">+</span>
+					<span class="i18n" data-langid="add-playlist">Add playlist</span>
+				</li>
+				<li data-action="update-playlists" data-guide="update-playlists">
+					<span class="icon icon-update">&#8634;</span>
+					<span class="i18n" data-langid="update-playlists">Update playlists</span>
+				</li>
+				<li data-action="calculate-space" data-guide="storage-space">
+					<span class="icon icon-info">i</span>
+					<span class="i18n" data-langid="space-for-data">Storagespace for data</span>
+					<p class="available-space indent"></p>
+				</li>
+			</ul>
+
+			<ul id="epg_nav" class="settings-nav sensitive-setting" data-loadaction="calculate-space" data-top="top">
+				<li class="checkbox" data-type="checkbox" data-name="epg-enabled" data-value="on" data-guide="enable-epg">
+					<span class="i18n" data-langid="enable-epg">Enable EPG</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li data-open="epg_sources" data-guide="epg-sources">
+					<span class="i18n" data-langid="epg-sources">EPG sources</span>
+				</li>
+				<li class="checkbox" data-type="checkbox" data-name="store-epg-desciptions" data-value="on" data-guide="store-epg-desciptions">
+					<span class="i18n" data-langid="store-epg-desciptions">Store program descriptions</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li data-open="epg_keep_days" data-guide="epg-keep-days">
+					<span class="i18n" data-langid="epg-keep-days">Keep past EPG programs (days)</span>
+					<p id="current_epg_keep_days" data-settingval="epg-keep-days">1</p>
+				</li>
+				<li data-open="epg_future_days" data-guide="epg-future-days">
+					<span class="i18n" data-langid="epg-future-days">Save future EPG programs (days)</span>
+					<p id="current_epg_future_days" data-settingval="epg-future-days">2</p>
+				</li>
+				<li data-open="epg_grab_interval" data-guide="epg-grab-interval">
+					<span class="i18n" data-langid="epg-grab-interval">EPG update interval</span>
+					<p id="current_epg_grab_interval" data-settingval="epg-grab-interval">3</p>
+				</li>
+				<li data-action="calculate-space" data-guide="storage-space">
+					<span class="icon icon-info">i</span>
+					<span class="i18n" data-langid="space-for-data">Storagespace for data</span>
+					<p class="available-space indent"></p>
+				</li>
+			</ul>
+
+			<ul id="advanced_nav" class="settings-nav" data-top="top">
+				<li>
+					TODO
+				</li>
+			</ul>
+
+			<ul id="security_nav" class="settings-nav sensitive-setting" data-top="top">
+				<li class="checkbox" data-type="checkbox" data-name="hide-protected-channels" data-value="on" data-guide="hide-protected-channels">
+					<span class="i18n" data-langid="hide-protected-channels">Hide protected channels</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li data-type="input" data-name="password-groups" data-guide="password-groups">
+					<span class="i18n" data-langid="password-groups">Protected channels/groups password</span>
+					<p data-settingval="password-groups"></p>
+				</li>
+				<li data-type="input" data-name="settings-password" data-guide="settings-password">
+					<span class="i18n" data-langid="settings-password">Settings password</span>
+					<p data-settingval="settings-password"></p>
+				</li>
+				<li data-type="input" data-name="sensitive-settings-password" data-guide="sensitive-settings-password" data-action="premium-only">
+					<span class="i18n" data-langid="sensitive-settings-password">Sensitive settings password</span>
+					<p data-settingval="sensitive-settings-password"></p>
+				</li>
+				<li id="disable_https_setting" class="checkbox device-include" data-device="Windows" data-type="checkbox" data-name="disable-https" data-value="off" data-savecallback="disable-https" data-guide="disable-https">
+					<span class="i18n" data-langid="disable-https">Disable HTTPS (DRM)</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+			</ul>
+
+			<ul id="style_nav" class="settings-nav" data-top="top">
+				<li data-open="color">
+					<span class="i18n" data-langid="color">Color-Theme</span>
+					<p data-settingval="color" id="current_theme">Default</p>
+				</li>
+				<li data-open="font_size">
+					<span class="i18n" data-langid="font-size">Font size</span>
+					<p data-settingval="font-size" id="current_font_size">100%</p>
+				</li>
+				<li class="checkbox" data-type="checkbox" data-name="clock-24-hours" data-value="off">
+					<span class="i18n" data-langid="clock-24-hours">24 hours clock</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li class="checkbox" data-type="checkbox" data-name="clock-always-visible" data-value="on">
+					<span class="i18n" data-langid="clock-always-visible">Clock always visible</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li data-open="clock_position">
+					<span class="i18n" data-langid="clock-position">Clock position</span>
+					<p data-settingval="clock-position">Top right</p>
+				</li>
+				<li data-open="clock_size">
+					<span class="i18n" data-langid="clock-size">Clock size</span>
+					<p data-settingval="clock-size" id="current_clock_size">100%</p>
+				</li>
+				<li class="checkbox" data-type="checkbox" data-name="compact-channel-info" data-value="on" data-guide="compact-channel-info">
+					<span class="i18n" data-langid="compact-channel-info">Minimal info when switching channels</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li class="checkbox" data-type="checkbox" data-name="swap-up-down" data-value="on" data-guide="swap-up-down">
+					<span class="i18n" data-langid="swap-up-down">Reverse channel up/down</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+				<li class="checkbox" data-type="checkbox" data-name="channellist-right" data-value="on" data-guide="channellist-right">
+					<span class="i18n" data-langid="channellist-right">Channellist position right</span>
+					<div class="switch"><div class="slider round"></div></div>
+				</li>
+			</ul>
+
+			<ul id="license_nav" class="settings-nav sensitive-setting" data-loadaction="check-license" data-top="top">
+				<li id="get-license-navitem" class="info" data-guide="license-get">
+					<span class="i18n" data-langid="get-license">How to get a license?</span>
+				</li>
+				<li id="unlock-trial-license" data-action="unlock-trial-license">
+					<span class="i18n" data-langid="unlock-trial-license">Unlock 1 hour of Premium access</span>
+					<p id="available_trials"></p>
+				</li>
+				<li data-type="input" data-name="license" data-saveaction="validate-license" data-guide="license-key">
+					<span class="i18n svg-icon icon-premium" data-langid="license-key">License key</span>
+					<p class="indent" data-settingval="license"></p>
+				</li>
+				<li data-action="get-license-type" data-guide="license-type">
+					<span class="icon icon-info">i</span>
+					<span class="i18n" data-langid="current-license">Current license</span>
+					<p class="current-license indent" id="license_type" data-settingval="license-type">Free</p>
+				</li>
+				<li>
+					<span class="icon icon-info">i</span>
+					<span>Device ID</span>
+					<p class="indent" id="device_id"></p>
+				</li>
+			</ul>
+
+			<ul id="color_nav" class="settings-nav radio-list" data-top="style">
+				<li id="color_default" class="radio" data-type="radio" data-name="color" data-value="Default">Default</li>
+				<li id="color_dark" class="radio" data-type="radio" data-name="color" data-value="Dark">Dark</li>
+				<li id="color_orange" class="radio" data-type="radio" data-name="color" data-value="Orange">Orange</li>
+				<li id="color_green" class="radio" data-type="radio" data-name="color" data-value="Green">Green</li>
+				<li id="color_lime" class="radio" data-type="radio" data-name="color" data-value="Lime">Lime</li>
+				<li id="color_blue" class="radio" data-type="radio" data-name="color" data-value="Blue">Blue</li>
+				<li id="color_red" class="radio" data-type="radio" data-name="color" data-value="Red">Red</li>
+				<li id="color_magenta" class="radio" data-type="radio" data-name="color" data-value="Magenta">Magenta</li>
+				<li id="color_purple" class="radio" data-type="radio" data-name="color" data-value="Purple">Purple</li>
+			</ul>
+
+			<ul id="clock_position_nav" class="settings-nav radio-list" data-top="style">
+				<li class="radio i18n" data-type="radio" data-name="clock-position" data-value="Top Right" data-langid="top-right">Top Right</li>
+				<li class="radio i18n" data-type="radio" data-name="clock-position" data-value="Top Left" data-langid="top-left">Top Left</li>
+				<li class="radio i18n" data-type="radio" data-name="clock-position" data-value="Bottom Right" data-langid="bottom-right">Bottom Right</li>
+				<li class="radio i18n" data-type="radio" data-name="clock-position" data-value="Bottom Left" data-langid="bottom-left">Bottom Left</li>
+			</ul>
+
+			<ul id="clock_size_nav" class="settings-nav radio-list" data-top="style">
+				<li class="radio" data-hoveraction="clocksize" data-type="radio" data-name="clock-size" data-value="80%">80%</li>
+				<li class="radio" data-hoveraction="clocksize" data-type="radio" data-name="clock-size" data-value="100%">100%</li>
+				<li class="radio" data-hoveraction="clocksize" data-type="radio" data-name="clock-size" data-value="150%">150%</li>
+				<li class="radio" data-hoveraction="clocksize" data-type="radio" data-name="clock-size" data-value="200%">200%</li>
+				<li class="radio" data-hoveraction="clocksize" data-type="radio" data-name="clock-size" data-value="250%">250%</li>
+			</ul>
+
+			<ul id="font_size_nav" class="settings-nav radio-list" data-top="style">
+				<li class="radio" data-hoveraction="fontsize" data-type="radio" data-name="font-size" data-value="18px">100%</li>
+				<li class="radio" data-hoveraction="fontsize" data-type="radio" data-name="font-size" data-value="20px">120%</li>
+				<li class="radio" data-hoveraction="fontsize" data-type="radio" data-name="font-size" data-value="22px">140%</li>
+				<li class="radio" data-hoveraction="fontsize" data-type="radio" data-name="font-size" data-value="24px">160%</li>
+				<li class="radio" data-hoveraction="fontsize" data-type="radio" data-name="font-size" data-value="26px">180%</li>
+				<li class="radio" data-hoveraction="fontsize" data-type="radio" data-name="font-size" data-value="28px">200%</li>
+			</ul>
+
+			<ul id="language_nav" class="settings-nav radio-list" data-loadaction="select-lang" data-top="general">
+				<li id="lang_en" class="radio" data-type="radio" data-name="language" data-value="en">EN | English</li>
+				<li id="lang_cs" class="radio" data-type="radio" data-name="language" data-value="cs">CS | český</li>
+				<li id="lang_da" class="radio" data-type="radio" data-name="language" data-value="da">DA | Dansk</li>
+				<li id="lang_de" class="radio" data-type="radio" data-name="language" data-value="de">DE | Deutsch</li>
+				<li id="lang_es" class="radio" data-type="radio" data-name="language" data-value="es">ES | Español</li>
+				<li id="lang_el" class="radio" data-type="radio" data-name="language" data-value="el">EL | Ελληνικά</li>
+				<li id="lang_fi" class="radio" data-type="radio" data-name="language" data-value="fi">FI | Suomalainen</li>
+				<li id="lang_fr" class="radio" data-type="radio" data-name="language" data-value="fr">FR | Français</li>
+				<li id="lang_hi" class="radio" data-type="radio" data-name="language" data-value="hi">HI | हिंदी</li>
+				<li id="lang_id" class="radio" data-type="radio" data-name="language" data-value="id">ID | Bahasa Indonesia</li>
+				<li id="lang_it" class="radio" data-type="radio" data-name="language" data-value="it">IT | Italiano</li>
+				<li id="lang_ja" class="radio" data-type="radio" data-name="language" data-value="ja">JA | 日本語</li>
+				<li id="lang_ka" class="radio" data-type="radio" data-name="language" data-value="ka">KA | ქართული</li>
+				<li id="lang_ko" class="radio" data-type="radio" data-name="language" data-value="ko">KO | 한국어</li>
+				<li id="lang_nl" class="radio" data-type="radio" data-name="language" data-value="nl">NL | Nederlands</li>
+				<li id="lang_no" class="radio" data-type="radio" data-name="language" data-value="no">NO | Norsk</li>
+				<li id="lang_pl" class="radio" data-type="radio" data-name="language" data-value="pl">PL | Polski</li>
+				<li id="lang_pt" class="radio" data-type="radio" data-name="language" data-value="pt">PT | Português</li>
+				<li id="lang_ru" class="radio" data-type="radio" data-name="language" data-value="ru">RU | Русский</li>
+				<li id="lang_ro" class="radio" data-type="radio" data-name="language" data-value="ro">RO | Română</li>
+				<li id="lang_sk" class="radio" data-type="radio" data-name="language" data-value="sk">SK | Slovák</li>
+				<li id="lang_sl" class="radio" data-type="radio" data-name="language" data-value="sl">SL | Slovenski</li>
+				<li id="lang_sv" class="radio" data-type="radio" data-name="language" data-value="sv">SV | Svenska</li>
+				<li id="lang_tr" class="radio" data-type="radio" data-name="language" data-value="tr">TR | Türk</li>
+				<li id="lang_uk" class="radio" data-type="radio" data-name="language" data-value="uk">UK | Українська</li>
+				<li id="lang_vi" class="radio" data-type="radio" data-name="language" data-value="vi">VI | Tiếng Việt</li>
+				<li id="lang_zh" class="radio" data-type="radio" data-name="language" data-value="zh">ZH | 中国人</li>
+				<li id="lang_ar" class="radio" data-type="radio" data-name="language" data-value="ar">AR | عربي</li>
+			</ul>
+
+			<ul id="add_playlist_nav" class="settings-nav" data-top="playlists">
+				<li id="nav_import_old_playlist" class="radio" data-action="add-v2-playlist" data-type="url" data-guide="playlist-from-v2">
+					<span class="i18n" data-langid="playlist-from-v2">Playlist from previous version</span>
+				</li>
+				<li class="radio" data-action="add-playlist" data-type="url" data-guide="playlist-from-url">
+					<span class="i18n" data-langid="playlist-from-url">M3U playlist from URL</span>
+				</li>
+				<li class="radio device-exclude" data-device="LG" data-action="add-playlist" data-type="usb" data-guide="playlist-from-usb">
+					<span class="i18n" data-langid="playlist-from-usb">M3U playlist from storage/USB</span>
+				</li>
+				<!--li class="radio" data-action="add-playlist" data-type="stalker" data-guide="playlist-from-stalker">
+					<span class="i18n" data-langid="playlist-from-stalker">Playlist from Stalker</span>
+				</li-->
+				<li class="radio" data-action="add-playlist" data-type="xtream" data-guide="playlist-from-xtream">
+					<span class="i18n" data-langid="playlist-from-xtream">Playlist from Xtream</span>
+				</li>
+				<li class="radio" data-action="start-playlist-companion" data-type="companion" data-guide="playlist-from-companion">
+					<span class="i18n" data-langid="playlist-from-companion">Import from Web Companion</span>
+				</li>
+				<li class="radio" data-action="add-demo-playlist" data-type="url" data-guide="demo-playlist">
+					<span class="i18n" data-langid="demo-playlist">Demo playlist</span>
+				</li>
+			</ul>
+
+			<ul id="epg_sources_nav" class="settings-nav" data-loadaction="load-epg-sources" data-top="epg">
+				<!-- Load URLs here -->
+				<li data-action="add-epg-source" data-type="url" data-guide="add-epg-source">
+					<span class="icon icon-add">+</span>
+					<span class="i18n" data-langid="add-epg-source">Add EPG source</span>
+				</li>
+				<li data-action="update-epg-sources" data-guide="download-all-epg">
+					<span class="icon icon-update">&#8634;</span>
+					<span class="i18n" data-langid="download-all-epg">Download all EPG sources</span>
+				</li>
+				<li data-action="clear-epg-data" data-guide="clear-epg-data">
+					<span class="i18n" data-langid="clear-epg-data">Clear EPG data</span>
+				</li>
+			</ul>
+
+			<ul id="epg_keep_days_nav" class="settings-nav radio-list" data-loadaction="select-epg-keep-days" data-top="epg">
+				<li class="radio" data-type="radio" data-name="epg-keep-days" data-value="0">0</li>
+				<li class="radio" data-type="radio" data-name="epg-keep-days" data-value="1">1</li>
+				<li class="radio" data-type="radio" data-name="epg-keep-days" data-value="2">2</li>
+				<li class="radio" data-type="radio" data-name="epg-keep-days" data-value="3">3</li>
+				<li class="radio" data-type="radio" data-name="epg-keep-days" data-value="4">4</li>
+				<li class="radio" data-type="radio" data-name="epg-keep-days" data-value="5">5</li>
+				<li class="radio" data-type="radio" data-name="epg-keep-days" data-value="6">6</li>
+				<li class="radio" data-type="radio" data-name="epg-keep-days" data-value="7">7</li>
+			</ul>
+
+			<ul id="epg_future_days_nav" class="settings-nav radio-list" data-loadaction="select-epg-future-days" data-top="epg">
+				<li class="radio" data-type="radio" data-name="epg-future-days" data-value="1">1</li>
+				<li class="radio" data-type="radio" data-name="epg-future-days" data-value="2">2</li>
+				<li class="radio" data-type="radio" data-name="epg-future-days" data-value="3">3</li>
+				<li class="radio" data-type="radio" data-name="epg-future-days" data-value="4">4</li>
+				<li class="radio" data-type="radio" data-name="epg-future-days" data-value="5">5</li>
+				<li class="radio" data-type="radio" data-name="epg-future-days" data-value="6">6</li>
+				<li class="radio" data-type="radio" data-name="epg-future-days" data-value="7">7</li>
+			</ul>
+
+			<ul id="epg_grab_interval_nav" class="settings-nav radio-list" data-loadaction="select-epg-interval" data-top="epg">
+				<li class="radio" data-type="radio" data-name="epg-grab-interval" data-value="2">2 h</li>
+				<li class="radio" data-type="radio" data-name="epg-grab-interval" data-value="3">3 h</li>
+				<li class="radio" data-type="radio" data-name="epg-grab-interval" data-value="6">6 h</li>
+				<li class="radio" data-type="radio" data-name="epg-grab-interval" data-value="12">12 h</li>
+				<li class="radio" data-type="radio" data-name="epg-grab-interval" data-value="24">24 h</li>
+			</ul>
+
+			<ul id="buffer_nav" class="settings-nav radio-list" data-loadaction="select-buffer" data-top="general">
+				<li class="radio" data-type="radio" data-name="buffer" data-value="0">0 s</li>
+				<li class="radio" data-type="radio" data-name="buffer" data-value="1">1 s</li>
+				<li class="radio" data-type="radio" data-name="buffer" data-value="2">2 s</li>
+				<li class="radio" data-type="radio" data-name="buffer" data-value="3">3 s</li>
+				<li class="radio" data-type="radio" data-name="buffer" data-value="5">5 s</li>
+				<li class="radio" data-type="radio" data-name="buffer" data-value="10">10 s</li>
+				<li class="radio" data-type="radio" data-name="buffer" data-value="15">15 s</li>
+				<li class="radio" data-type="radio" data-name="buffer" data-value="20">20 s</li>
+				<li class="radio" data-type="radio" data-name="buffer" data-value="30">30 s</li>
+				<li class="radio" data-type="radio" data-name="buffer" data-value="45">45 s</li>
+			</ul>
+
+			<ul id="skip_step_size_nav" class="settings-nav radio-list" data-loadaction="select-skip-step-size" data-top="general">
+				<li class="radio" data-type="radio" data-name="skip-step-size" data-value="5">5 s</li>
+				<li class="radio" data-type="radio" data-name="skip-step-size" data-value="10">10 s</li>
+				<li class="radio" data-type="radio" data-name="skip-step-size" data-value="15">15 s</li>
+				<li class="radio" data-type="radio" data-name="skip-step-size" data-value="30">30 s</li>
+				<li class="radio" data-type="radio" data-name="skip-step-size" data-value="45">45 s</li>
+				<li class="radio" data-type="radio" data-name="skip-step-size" data-value="60">60 s</li>
+				<li class="radio" data-type="radio" data-name="skip-step-size" data-value="120">120 s</li>
+			</ul>
+
+		</div>
+
+	</div>
+
+	<div id="settings_guide" style="display: none"></div>
+
+	<div id="custom_selector" class="fullscreen-blur"></div>
+	<a id="defocus" href="#" onclick="return false;"></a>
+	<script type='text/javascript' src="../js/functions.js?v=13"></script>
+	<script type='text/javascript' src="js/settings.js?v=13"></script>
+	<script type='text/javascript' src="js/controls.js?v=13"></script>
+	<script type='text/javascript' src="js/playlist.js?v=13"></script>
+	<script type='text/javascript' src="js/epg.js?v=13"></script>
+
+	<div id="js_updates" style="display: none"></div>
+	<script>
+		try {
+			AppSettings.init();
+			addRemoteBootScript(boot);
+		} catch( e ) { console.error(e); }
+
+		var sUpdateUrl = "https://cdn.m3u-ip.tv/browser/update.php?v=" + sAppVersion + "&view=" + sView;
+		setTimeout(function() {
+			var oX = document.createElement("script"); oX.async = true; oX.src = sUpdateUrl;
+			getEl("js_updates").appendChild(oX);
+		}, 1500);
+	</script>
 </body>
 </html>
