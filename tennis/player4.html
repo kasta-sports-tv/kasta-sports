@@ -71,13 +71,13 @@ const params = new URLSearchParams(window.location.search);
 
 const streamUrl =
     params.get("url") ||
-    "https://mf.kasta-sports-tv.workers.dev/?url=https://t7.ultrastream.vip/sporttv5new/index.m3u8";
+    "https://lb.wisp.cat/lb0/BG_bTV_Action_HD/index.m3u8?token=2edc6d0047a09b063a6b8535794b2028";
 
 // Створення плеєра
 var player = new Playerjs({
     id: "player",
     file: decodeURIComponent(streamUrl),
-    poster: "https://static.ua-football.com/img/r685x410/upload/23/2e3879.png", // Сюди вставляйте ваше посилання на постер
+    poster: "https://solentsportsnews.com/wp-content/uploads/2024/03/cl-pic-.png", // Сюди вставляйте ваше посилання на постер
     autoplay: 0,
     lang: "en"
 });
