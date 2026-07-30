@@ -1,338 +1,351 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Olympic Streams</title>
+  <meta charset="UTF-8">
+  <title>2x1 Мультиплєєр (Video.js)</title>
 
-<style>
+  <!-- Стилі Video.js -->
+  <link href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.css" rel="stylesheet" />
 
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#0b0f1a;
-  color:white;
-  overflow:hidden; /* сторінка не скролиться */
-  height:100vh;
-}
+  <!-- Скрипти Video.js -->
+  <script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
+  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
 
-/* HEADER */
-header{
-  background:#070917; /* темніше за фон сайту */
-  padding:10px 0;
-  text-align:center;
-}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
 
-.header-content{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:10px;
-}
+    /* Головний контейнер (завжди 16:9) */
+    .mega-player {
+      position: relative;
+      width: 100vw;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      background-image: url('https://sport-express.ua/img/news/Football/le_lk45.webp');
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-header .logo{
-  width:100px;
-  height:auto;
-}
+    /* РЕЖИМ 1: 50/50 (Збільшено розмір плеєрів) */
+    .mega-player.split-mode {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      padding: 10px;
+      justify-content: center;
+      align-items: center;
+    }
 
-header .title{
-  width:100px;
-  height:auto;
-}
+    @media (max-width: 767px) {
+      .mega-player.split-mode {
+        flex-direction: column;
+        gap: 8px;
+        padding: 5px;
+      }
+    }
 
-/* MAIN LAYOUT */
-.container{
-  display:flex;
-  padding:15px;
-  gap:15px;
-  height:calc(100vh - 90px); /* висота контейнера мінус header */
-}
+    /* Бокси для плеєрів */
+    .player-box {
+      position: relative;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      overflow: hidden;
+    }
 
-/* MAIN PLAYER */
-.main-player{
-  flex:3;
-  display:flex;
-  flex-direction:column;
-}
+    .player-box.has-sound {
+      border-color: rgba(255, 255, 255, 0.8);
+    }
 
-.main-player .iframe-wrap iframe{
-  width:100%;
-  height:100%;
-  border:none;
-  border-radius:12px;
-  background:black;
-}
+    .mega-player.split-mode .player-box {
+      width: 48.5%;
+      aspect-ratio: 16 / 9;
+    }
 
-/* SIDE PLAYERS */
-.side-players{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  overflow-y:auto; /* вертикальний скрол */
-}
+    @media (max-width: 767px) {
+      .mega-player.split-mode .player-box {
+        width: 90%;
+      }
+    }
 
-.side-player{
-  cursor:pointer;
-  background:#1b2235;
-  padding:5px;
-  border-radius:10px;
-  transition:0.3s;
-  display:flex;
-  flex-direction:column;
-}
+    /* РЕЖИМ 2: PiP */
+    .mega-player.pip-mode .player-box.main-player {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      border: none;
+    }
 
-.side-player:hover{
-  background:#2a3555;
-}
+    .mega-player.pip-mode .player-box.pip-player {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      width: 25%;
+      aspect-ratio: 16 / 9;
+      z-index: 10;
+      box-shadow: 0 0 15px rgba(0,0,0,0.8);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+    }
 
-.side-player .iframe-wrap iframe{
-  width:100%;
-  height:100%;
-  border:none;
-  border-radius:8px;
-  pointer-events:none; /* клік проходить до батька */
-}
+    .mega-player.pip-mode .player-box.pip-player:hover {
+      border-color: #fff;
+    }
 
-/* ПРОГРАМА */
-.program-container{
-  margin-top:10px;
-  background: rgba(0,0,0,0.55);
-  border-radius:10px;
-  padding:10px;
-  flex-shrink:0;
-  overflow-y:auto;     /* вертикальний скрол */
-  max-height:100px;    /* ПК */
-}
+    /* Стилі Video.js та приховування спінера/кнопок */
+    .video-js {
+      width: 100% !important;
+      height: 100% !important;
+      padding-top: 0 !important;
+      background-color: #000;
+    }
 
-/* Кожен рядок програми окремий div */
-.program-container .schedule div {
-  margin-bottom:4px;
-}
+    .vjs-tech {
+      object-fit: contain !important;
+      pointer-events: none;
+    }
 
-/* MOBILE */
-@media(max-width:900px){
-  .container{
-    flex-direction:column;
-    height:auto;
-  }
+    /* Видаляємо повністю спінер буферизації */
+    .vjs-loading-spinner,
+    .vjs-big-play-button,
+    .vjs-control-bar {
+      display: none !important;
+    }
 
-  .side-players{
-    flex-direction:row;
-    overflow-x:auto;
-    height:auto;
-  }
+    .watermark {
+      color: white;
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-shadow: 0 0 4px black;
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 3px 8px;
+      border-radius: 4px;
+      z-index: 5;
+      pointer-events: none;
+    }
 
-  .side-player{
-    min-width:200px;
-  }
+    .mega-player.pip-mode .pip-player .watermark {
+      display: none;
+    }
 
-  .program-container{
-    max-height:120px; /* мобільний скрол */
-  }
-}
+    /* Кнопка "Повний екран" */
+    .controls-panel {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+    }
 
-/* Обгортка 16:9 */
-.iframe-wrap{
-  position:relative;
-  height:0;
-  padding-bottom:56.25%;
-}
+    .btn {
+      background: rgba(0, 0, 0, 0.65);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 7px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
 
-.iframe-wrap iframe{
-  position:absolute;
-  left:0;
-  top:0;
-  width:100%;
-  height:100%;
-  border:none;
-}
-
-</style>
+    .btn:hover {
+      background: rgba(0, 0, 0, 0.95);
+      border-color: #fff;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <div class="header-content">
-    <img src="https://imgpx.com/pac5ubK1RSvf.png" alt="Логотип" class="logo">
-    <img src="https://imgpx.com/l5sFEQqt3mz0.png" alt="Назва" class="title">
-  </div>
-</header>
-
-<div class="container">
-
-  <!-- MAIN PLAYER -->
-  <div class="main-player">
-
-    <div class="iframe-wrap">
-      <iframe 
-        id="mainFrame"
-        frameborder="0"
-        scrolling="no"
-        sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
-        allowfullscreen="allowfullscreen">
-      </iframe>
+  <div class="mega-player split-mode" id="megaPlayer">
+    
+    <div class="controls-panel">
+      <button class="btn" id="fullscreenBtn">Повний екран (PiP)</button>
     </div>
 
-    <!-- ПРОГРАМА -->
-    <div class="program-container" id="programContainer">
-      <div id="playerTitle">Плеєр 1</div>
-      <div class="schedule" id="scheduleBox"></div>
+    <!-- Плеєр 1 -->
+    <div class="player-box main-player" id="box1">
+      <video id="vjs-player1" class="video-js vjs-16-9" playsinline></video>
+      <div class="watermark">Команда А</div>
     </div>
+    
+    <!-- Плеєр 2 -->
+    <div class="player-box pip-player" id="box2">
+      <video id="vjs-player2" class="video-js vjs-16-9" playsinline></video>
+      <div class="watermark">Команда B</div>
+    </div>
+
   </div>
 
-  <!-- SIDE PLAYERS -->
-  <div class="side-players" id="sidePlayers"></div>
+  <script>
+    const streams = [
+      "https://mf.kasta-sports-tv.workers.dev/?url=https://t6.ultrastream.vip/reserv-3/index.m3u8",
+      "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8"
+    ];
 
-</div>
+    const vjsPlayers = [];
+    let activeSoundIndex = null; // Зберігає індекс плеєра, в якого увімкнений звук
 
-<script>
+    const megaPlayer = document.getElementById("megaPlayer");
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    
+    const box1 = document.getElementById("box1");
+    const box2 = document.getElementById("box2");
 
-const players = [
+    function initVideoJS() {
+      streams.forEach((src, index) => {
+        const playerId = `vjs-player${index + 1}`;
+        
+        const player = videojs(playerId, {
+          autoplay: 'any',
+          controls: false,
+          muted: true, // Всі стартують без звуку
+          preload: 'auto',
+          html5: {
+            vhs: {
+              overrideNative: true,
+              bandwidth: 100000000, // Примусовий запуск з найвищої бітрейт-якості
+              smoothQualityChange: true
+            }
+          },
+          sources: [{
+            src: src,
+            type: 'application/x-mpegURL'
+          }]
+        });
 
-{
-  title:"24/7",
-  src:"https://kasta-sports.vercel.app/videojs.html?url=&poster=https%3A%2F%2Fexplainer.ua%2Fwp-content%2Fuploads%2F2026%2F01%2Fmain-1-920x537.jpg",
-  schedule:[
-    "---------------6 лютого---------------",
-    "11:30 | Фрістайл. Слоупстайл. Жінки. Кваліфікація",
-    "12:30 | Гірськолижний спорт. Швидкісний спуск. Чоловіки. Фінал",
-    "14:00 | Лижні перегони. Скіатлон. Жінки. Фінал",
-    "17:00 | Ковзанярський спорт. Жінки, 3000 м. Фінали",
-    "18:00 | Санний спорт. Чоловіки. Одномісні сани. 1, 2 заїзди",
-    "19:40 | Стрибки з трампліна. Жінки. Фінал",
-    "23:00 | Фігурне катання. Командні змагання. Танці на льоду. Довільний танець"
-  ]
-},
+        player.ready(() => {
+          const promise = player.play();
+          if (promise !== undefined) {
+            promise.catch(() => {});
+          }
 
-{
-  title:"Плеєр 1",
-  src:"https://kasta-sports.vercel.app/videojs.html?url=&poster=https://i.postimg.cc/MZQbdzSz/997f3b91-d6f7-497f-b72c-6567ace34d8d.jpg",
-  schedule:[
-    "---------------7 лютого---------------",
-    "11:00 | Керлінг. Змішані команди. Груповий етап. Велика Британія - Канада",
-    "13:00 | Хокей. Жінки. Груповий етап. Німеччина - Японія",
-    "15:30 | Керлінг. Змішані команди. Груповий етап. Естонія - Норвегія",
-    "17:30 | Хокей. Жінки. Груповий етап. США - Фінляндія",
-    "20:45 | Фігурне катання. Командні змагання. Чоловіки. Коротка програма",
-    "23:00 | Фігурне катання. Командні змагання. Танці на льоду. Довільний танець"
-  ]
-},
+          // Примусово вибираємо найвищий рівень якості після завантаження маніфесту
+          player.tech().on('loadedmetadata', () => {
+            const vhs = player.tech().vhs;
+            if (vhs && vhs.representations) {
+              const reps = vhs.representations();
+              if (reps && reps.length > 0) {
+                // Вмикаємо найвищу якість за замовчуванням
+                reps.forEach(r => r.enabled(true));
+              }
+            }
+          });
+        });
 
-{
-  title:"Плеєр 2",
-  src:"https://kasta-sports.vercel.app/videojs.html?url=&poster=https://i.postimg.cc/BnLq17Fm/43992d44-93f2-4fa1-8da6-6c45bf33307e.jpg",
-  schedule:[
-    "---------------7 лютого---------------",
-    "11:00 | Керлінг. Змішані команди. Груповий етап. Швейцарія - Швеція",
-    "14:00 | Лижні перегони. Скіатлон. Жінки. Фінал",
-    "15:30 | Керлінг. Змішані команди. Груповий етап. Велика Британія - США",
-    "18:00 | Санний спорт. Чоловіки. Одномісні сани. 1, 2 заїзди",
-    "20:30 | Сноубординг. Біг-ейр. Чоловіки. Фінал"
-  ]
-},
-
-{
-  title:"Плеєр 3",
-  src:"https://kasta-sports.vercel.app/videojs.html?url=&poster=https://i.postimg.cc/ZRcZh1GQ/e80389b0-f321-4be3-9f61-ce6928c15b16.jpg",
-  schedule:[
-    "---------------7 лютого---------------",
-    "11:30 | Фрістайл. Слоупстайл. Жінки. Кваліфікація",
-    "15:30 | Хокей. Жінки. Груповий етап. Швеція - Італія",
-    "19:40 | Стрибки з трампліна. Жінки. Фінал",
-    "22:00 | Хокей. Жінки. Груповий етап. Швейцарія - Канада"
-  ]
-},
-
-{
-  title:"Плеєр 4",
-  src:"https://kasta-sports.vercel.app/videojs.html?url=&poster=",
-  schedule:[
-    "---------------7 лютого---------------",
-    "12:30 | Гірськолижний спорт. Швидкісний спуск. Чоловіки. Фінал",
-    "17:00 | Ковзанярський спорт. Жінки, 3000 м. Фінали",
-    "20:00 | Керлінг. Змішані команди. Груповий етап. Норвегія - Італія"
-  ]
-}
-
-];
-
-let mainIndex = 0;
-
-const mainFrame = document.getElementById("mainFrame");
-const sideContainer = document.getElementById("sidePlayers");
-const scheduleBox = document.getElementById("scheduleBox");
-const playerTitle = document.getElementById("playerTitle");
-
-function render(){
-
-  // MAIN
-  mainFrame.src = players[mainIndex].src;
-  playerTitle.innerText = players[mainIndex].title;
-
-  // очищаємо schedule і додаємо кожен рядок в div
-  scheduleBox.innerHTML = "";
-  players[mainIndex].schedule.forEach(line => {
-    const div = document.createElement("div");
-    div.innerText = line;
-    scheduleBox.appendChild(div);
-  });
-
-  // SIDE
-  sideContainer.innerHTML = "";
-
-  players.forEach((p,index)=>{
-
-    if(index === mainIndex) return;
-
-    const div = document.createElement("div");
-    div.className="side-player";
-
-    div.innerHTML = `
-      <div class="iframe-wrap">
-        <iframe
-          src="${p.src}"
-          frameborder="0"
-          scrolling="no"
-          sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
-          allowfullscreen="allowfullscreen">
-        </iframe>
-      </div>
-      <div style="padding:5px">${p.title}</div>
-    `;
-
-    div.onclick = ()=>{
-      mainIndex = index;
-      render();
-    };
-
-    sideContainer.appendChild(div);
-
-  });
-
-}
-
-render();
-
-/* Авто поворот fullscreen */
-document.addEventListener("fullscreenchange", handleFullscreen);
-document.addEventListener("webkitfullscreenchange", handleFullscreen);
-
-function handleFullscreen(){
-
-  if(document.fullscreenElement){
-    if(screen.orientation && screen.orientation.lock){
-      screen.orientation.lock("landscape").catch(()=>{});
+        vjsPlayers[index] = player;
+      });
     }
-  } else {
-    if(screen.orientation && screen.orientation.unlock){
-      screen.orientation.unlock();
+
+    // Оновлення стану звуку (вмикаємо тільки на вибраному index)
+    function setActiveAudio(index) {
+      activeSoundIndex = index;
+
+      vjsPlayers.forEach((player, i) => {
+        if (!player) return;
+        if (i === index) {
+          player.muted(false);
+        } else {
+          player.muted(true);
+        }
+      });
+
+      // Візуальна індикація
+      box1.classList.toggle('has-sound', index === 0);
+      box2.classList.toggle('has-sound', index === 1);
     }
-  }
 
-}
+    function toggleFullscreenMode(goFullscreen) {
+      if (goFullscreen) {
+        megaPlayer.classList.remove('split-mode');
+        megaPlayer.classList.add('pip-mode');
+        // За замовчуванням у PiP робимо звук у великого плеєра, якщо раніше звук не вмикали
+        if (activeSoundIndex === null) {
+          setActiveAudio(box1.classList.contains('main-player') ? 0 : 1);
+        }
+      } else {
+        megaPlayer.classList.remove('pip-mode');
+        megaPlayer.classList.add('split-mode');
+        box1.className = "player-box main-player" + (activeSoundIndex === 0 ? " has-sound" : "");
+        box2.className = "player-box pip-player" + (activeSoundIndex === 1 ? " has-sound" : "");
+      }
+    }
 
-</script>
+    // Обробник кліків/тапів по плеєру
+    function handleBoxClick(index, currentBox) {
+      // 1. Увімкнути звук саме в цьому плеєрі
+      setActiveAudio(index);
 
+      // 2. Якщо це режим PiP — поміняти місцями, якщо клікнули на малий
+      if (megaPlayer.classList.contains('pip-mode')) {
+        if (!currentBox.classList.contains('main-player')) {
+          if (box1.classList.contains('main-player')) {
+            box1.className = "player-box pip-player";
+            box2.className = "player-box main-player";
+          } else {
+            box1.className = "player-box main-player";
+            box2.className = "player-box pip-player";
+          }
+          // Оновлюємо рамки
+          box1.classList.toggle('has-sound', activeSoundIndex === 0);
+          box2.classList.toggle('has-sound', activeSoundIndex === 1);
+        }
+      }
+    }
+
+    box1.addEventListener('click', () => handleBoxClick(0, box1));
+    box2.addEventListener('click', () => handleBoxClick(1, box2));
+
+    fullscreenBtn.addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        if (megaPlayer.requestFullscreen) megaPlayer.requestFullscreen();
+        else if (megaPlayer.webkitRequestFullscreen) megaPlayer.webkitRequestFullscreen();
+        toggleFullscreenMode(true);
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      const isFs = !!document.fullscreenElement;
+      fullscreenBtn.textContent = isFs ? 'Повернутись у 50/50' : 'Повний екран (PiP)';
+      if (!isFs) {
+        toggleFullscreenMode(false);
+      }
+    });
+
+    // Запуск
+    initVideoJS();
+  </script>
 </body>
 </html>
