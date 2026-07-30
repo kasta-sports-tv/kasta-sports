@@ -46,12 +46,12 @@
       justify-content: center;
     }
 
-    /* РЕЖИМ 1: 50/50 (Завжди в один рядок!) */
+    /* РЕЖИМ 1: 50/50 */
     .mega-player.split-mode {
       display: flex !important;
       flex-direction: row !important;
-      gap: 8px !important;
-      padding: 8px !important;
+      gap: 6px !important;
+      padding: 2px !important;
       justify-content: center;
       align-items: center;
     }
@@ -64,19 +64,27 @@
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      border: 2px solid transparent;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .player-box.has-sound {
-      border-color: rgba(255, 255, 255, 0.85);
     }
 
     .mega-player.split-mode .player-box {
-      width: 48.5% !important;
+      width: 49.5% !important;
       height: auto !important;
+    }
+
+    /* Обгортка навколо плеєра для рамки виділення */
+    .vjs-wrapper {
+      position: relative;
+      width: 100%;
       aspect-ratio: 16 / 9;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      overflow: hidden;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    .player-box.has-sound .vjs-wrapper {
+      border-color: rgba(255, 255, 255, 0.9);
     }
 
     /* РЕЖИМ 2: PiP */
@@ -87,7 +95,11 @@
       width: 100% !important;
       height: 100% !important;
       z-index: 1;
-      border: none;
+    }
+
+    .mega-player.pip-mode .main-player .vjs-wrapper {
+      border: none !important;
+      border-radius: 0;
     }
 
     .mega-player.pip-mode .player-box.pip-player {
@@ -98,14 +110,17 @@
       aspect-ratio: 16 / 9;
       z-index: 10;
       box-shadow: 0 0 15px rgba(0,0,0,0.8);
+    }
+
+    .mega-player.pip-mode .pip-player .vjs-wrapper {
       border: 2px solid rgba(255, 255, 255, 0.6);
     }
 
-    .mega-player.pip-mode .player-box.pip-player:hover {
+    .mega-player.pip-mode .pip-player:hover .vjs-wrapper {
       border-color: #fff;
     }
 
-    /* Стилі Video.js та приховування спінера/кнопок */
+    /* Стилі Video.js */
     .video-js {
       width: 100% !important;
       height: 100% !important;
@@ -118,33 +133,57 @@
       pointer-events: none;
     }
 
-    /* Видаляємо повністю спінер буферизації */
     .vjs-loading-spinner,
     .vjs-big-play-button,
     .vjs-control-bar {
       display: none !important;
     }
 
+    /* НАЗВИ КОМАНД */
     .watermark {
       color: white;
-      font-size: 0.8rem;
       font-weight: bold;
       text-shadow: 0 0 4px black;
-      position: absolute;
-      bottom: 6px;
-      left: 6px;
-      background: rgba(0, 0, 0, 0.65);
-      padding: 2px 6px;
-      border-radius: 3px;
-      z-index: 5;
+      margin-top: 3px;
+      text-align: center;
       pointer-events: none;
+      background: rgba(0, 0, 0, 0.65);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem; /* Розмір для мобільного у 50/50 */
+    }
+
+    @media (min-width: 768px) {
+      .watermark {
+        font-size: 0.95rem; /* Розмір для ПК у 50/50 */
+        margin-top: 4px;
+        padding: 3px 12px;
+      }
+    }
+
+    /* Назва команди в режимі PiP (поверх великого відео) */
+    .mega-player.pip-mode .main-player .watermark {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      margin-top: 0;
+      z-index: 5;
+      font-size: 0.85rem; /* Більша на мобільному в PiP */
+      padding: 4px 10px;
+    }
+
+    @media (min-width: 768px) {
+      .mega-player.pip-mode .main-player .watermark {
+        font-size: 1.1rem; /* Ще більша на ПК в PiP */
+        padding: 5px 14px;
+      }
     }
 
     .mega-player.pip-mode .pip-player .watermark {
       display: none;
     }
 
-    /* Кнопка "Повний екран" */
+    /* КНОПКИ КЕРУВАННЯ */
     .controls-panel {
       position: absolute;
       top: 8px;
@@ -170,25 +209,63 @@
       background: rgba(0, 0, 0, 0.95);
       border-color: #fff;
     }
+
+    /* Кнопка розгортання 50/50 на весь екран (справа внизу) */
+    .split-fullscreen-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      z-index: 90;
+      background: rgba(0, 0, 0, 0.75);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.4);
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+
+    .split-fullscreen-btn:hover {
+      background: rgba(0, 0, 0, 0.95);
+      border-color: #fff;
+    }
+
+    /* Ховаємо кнопчку 50/50 в режимі PiP */
+    .mega-player.pip-mode .split-fullscreen-btn {
+      display: none;
+    }
   </style>
 </head>
 <body>
 
   <div class="mega-player split-mode" id="megaPlayer">
     
+    <!-- Верхні кнопки -->
     <div class="controls-panel">
-      <button class="btn" id="fullscreenBtn">Повний екран (PiP)</button>
+      <button class="btn" id="pipBtn">Повний екран (PiP)</button>
     </div>
+
+    <!-- Кнопка 50/50 на весь екран (справа внизу) -->
+    <div class="split-fullscreen-btn" id="splitFsBtn" title="50/50 На весь екран">⛶</div>
 
     <!-- Плеєр 1 -->
     <div class="player-box main-player" id="box1">
-      <video id="vjs-player1" class="video-js vjs-16-9" playsinline></video>
+      <div class="vjs-wrapper">
+        <video id="vjs-player1" class="video-js vjs-16-9" playsinline></video>
+      </div>
       <div class="watermark">Команда А</div>
     </div>
     
     <!-- Плеєр 2 -->
     <div class="player-box pip-player" id="box2">
-      <video id="vjs-player2" class="video-js vjs-16-9" playsinline></video>
+      <div class="vjs-wrapper">
+        <video id="vjs-player2" class="video-js vjs-16-9" playsinline></video>
+      </div>
       <div class="watermark">Команда B</div>
     </div>
 
@@ -196,7 +273,7 @@
 
   <script>
     const streams = [
-      "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8",
+      "https://mf.kasta-sports-tv.workers.dev/?url=https://t6.ultrastream.vip/reserv-3/index.m3u8",
       "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8"
     ];
 
@@ -204,7 +281,8 @@
     let activeSoundIndex = null;
 
     const megaPlayer = document.getElementById("megaPlayer");
-    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const pipBtn = document.getElementById("pipBtn");
+    const splitFsBtn = document.getElementById("splitFsBtn");
     
     const box1 = document.getElementById("box1");
     const box2 = document.getElementById("box2");
@@ -268,8 +346,8 @@
       box2.classList.toggle('has-sound', index === 1);
     }
 
-    function toggleFullscreenMode(goFullscreen) {
-      if (goFullscreen) {
+    function togglePipMode(goPip) {
+      if (goPip) {
         megaPlayer.classList.remove('split-mode');
         megaPlayer.classList.add('pip-mode');
         if (activeSoundIndex === null) {
@@ -304,21 +382,39 @@
     box1.addEventListener('click', () => handleBoxClick(0, box1));
     box2.addEventListener('click', () => handleBoxClick(1, box2));
 
-    fullscreenBtn.addEventListener("click", () => {
+    // Кнопка "Повний екран (PiP)"
+    pipBtn.addEventListener("click", () => {
+      if (!megaPlayer.classList.contains('pip-mode')) {
+        if (!document.fullscreenElement) {
+          if (megaPlayer.requestFullscreen) megaPlayer.requestFullscreen();
+          else if (megaPlayer.webkitRequestFullscreen) megaPlayer.webkitRequestFullscreen();
+        }
+        togglePipMode(true);
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        togglePipMode(false);
+      }
+    });
+
+    // Кнопка "50/50 На весь екран" (справа внизу)
+    splitFsBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
       if (!document.fullscreenElement) {
         if (megaPlayer.requestFullscreen) megaPlayer.requestFullscreen();
         else if (megaPlayer.webkitRequestFullscreen) megaPlayer.webkitRequestFullscreen();
-        toggleFullscreenMode(true);
       } else {
         if (document.exitFullscreen) document.exitFullscreen();
       }
     });
 
+    // Слухач зміни стану фулскріну
     document.addEventListener('fullscreenchange', () => {
       const isFs = !!document.fullscreenElement;
-      fullscreenBtn.textContent = isFs ? '×' : 'Мультиплеєр (PiP)';
-      if (!isFs) {
-        toggleFullscreenMode(false);
+      pipBtn.textContent = isFs && megaPlayer.classList.contains('pip-mode') ? '✖' : 'Повний екран (PiP)';
+      splitFsBtn.textContent = isFs ? '⛶' : '⛶';
+      
+      if (!isFs && megaPlayer.classList.contains('pip-mode')) {
+        togglePipMode(false);
       }
     });
 
