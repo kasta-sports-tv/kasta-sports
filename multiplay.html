@@ -316,7 +316,7 @@
 
     document.addEventListener('fullscreenchange', () => {
       const isFs = !!document.fullscreenElement;
-      fullscreenBtn.textContent = isFs ? 'Повернутись у 50/50' : 'Повний екран (PiP)';
+      fullscreenBtn.textContent = isFs ? '×' : 'Мультиплеєр (PiP)';
       if (!isFs) {
         toggleFullscreenMode(false);
       }
