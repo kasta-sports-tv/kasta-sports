@@ -31,11 +31,12 @@
       overflow: hidden;
     }
 
-    /* Головний контейнер (завжди 16:9) */
+    /* Головний контейнер (завжди зберігає 16:9) */
     .mega-player {
       position: relative;
       width: 100vw;
       max-width: 100%;
+      max-height: 100vh;
       aspect-ratio: 16 / 9;
       background-image: url('https://sport-express.ua/img/news/Football/le_lk45.webp');
       background-size: cover;
@@ -44,6 +45,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      margin: auto;
+    }
+
+    /* Стилі для справжнього повного екрана (Full Screen API) */
+    .mega-player:fullscreen,
+    .mega-player:-webkit-full-screen {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      object-fit: contain;
     }
 
     /* РЕЖИМ 1: 50/50 */
@@ -150,12 +162,12 @@
       background: rgba(0, 0, 0, 0.65);
       padding: 2px 8px;
       border-radius: 4px;
-      font-size: 0.75rem; /* Розмір для мобільного у 50/50 */
+      font-size: 0.75rem;
     }
 
     @media (min-width: 768px) {
       .watermark {
-        font-size: 0.95rem; /* Розмір для ПК у 50/50 */
+        font-size: 0.95rem;
         margin-top: 4px;
         padding: 3px 12px;
       }
@@ -168,13 +180,13 @@
       left: 12px;
       margin-top: 0;
       z-index: 5;
-      font-size: 0.85rem; /* Більша на мобільному в PiP */
+      font-size: 0.85rem;
       padding: 4px 10px;
     }
 
     @media (min-width: 768px) {
       .mega-player.pip-mode .main-player .watermark {
-        font-size: 1.1rem; /* Ще більша на ПК в PiP */
+        font-size: 1.1rem;
         padding: 5px 14px;
       }
     }
@@ -183,14 +195,15 @@
       display: none;
     }
 
-    /* КНОПКИ КЕРУВАННЯ */
+    /* КНОПКИ КЕРУВАННЯ ВЕРХУ */
     .controls-panel {
       position: absolute;
       top: 8px;
       right: 8px;
       z-index: 100;
       display: flex;
-      gap: 8px;
+      align-items: center;
+      gap: 6px;
     }
 
     .btn {
@@ -202,7 +215,11 @@
       cursor: pointer;
       font-size: 0.75rem;
       font-weight: bold;
-      transition: background 0.2s;
+      transition: background 0.2s, border-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
     }
 
     .btn:hover {
@@ -210,34 +227,9 @@
       border-color: #fff;
     }
 
-    /* Кнопка розгортання 50/50 на весь екран (справа внизу) */
-    .split-fullscreen-btn {
-      position: absolute;
-      bottom: 8px;
-      right: 8px;
-      z-index: 90;
-      background: rgba(0, 0, 0, 0.75);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.4);
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: background 0.2s;
-    }
-
-    .split-fullscreen-btn:hover {
-      background: rgba(0, 0, 0, 0.95);
-      border-color: #fff;
-    }
-
-    /* Ховаємо кнопчку 50/50 в режимі PiP */
-    .mega-player.pip-mode .split-fullscreen-btn {
-      display: none;
+    .btn-icon {
+      font-size: 0.9rem;
+      padding: 0 8px;
     }
   </style>
 </head>
@@ -245,13 +237,11 @@
 
   <div class="mega-player split-mode" id="megaPlayer">
     
-    <!-- Верхні кнопки -->
+    <!-- Верхні кнопки: Спочатку 50/50 Fullscreen, потім PiP -->
     <div class="controls-panel">
+      <button class="btn btn-icon" id="splitFsBtn" title="50/50 На весь екран">⛶</button>
       <button class="btn" id="pipBtn">Повний екран (PiP)</button>
     </div>
-
-    <!-- Кнопка 50/50 на весь екран (справа внизу) -->
-    <div class="split-fullscreen-btn" id="splitFsBtn" title="50/50 На весь екран">⛶</div>
 
     <!-- Плеєр 1 -->
     <div class="player-box main-player" id="box1">
@@ -346,6 +336,17 @@
       box2.classList.toggle('has-sound', index === 1);
     }
 
+    function updateButtonsUI() {
+      const isFs = !!document.fullscreenElement;
+      const isPip = megaPlayer.classList.contains('pip-mode');
+
+      if (isPip) {
+        pipBtn.textContent = isFs ? '✖' : 'Вийти з PiP';
+      } else {
+        pipBtn.textContent = 'Повний екран (PiP)';
+      }
+    }
+
     function togglePipMode(goPip) {
       if (goPip) {
         megaPlayer.classList.remove('split-mode');
@@ -359,6 +360,7 @@
         box1.className = "player-box main-player" + (activeSoundIndex === 0 ? " has-sound" : "");
         box2.className = "player-box pip-player" + (activeSoundIndex === 1 ? " has-sound" : "");
       }
+      updateButtonsUI();
     }
 
     function handleBoxClick(index, currentBox) {
@@ -383,22 +385,33 @@
     box2.addEventListener('click', () => handleBoxClick(1, box2));
 
     // Кнопка "Повний екран (PiP)"
-    pipBtn.addEventListener("click", () => {
-      if (!megaPlayer.classList.contains('pip-mode')) {
+    pipBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isPip = megaPlayer.classList.contains('pip-mode');
+
+      if (!isPip) {
         if (!document.fullscreenElement) {
           if (megaPlayer.requestFullscreen) megaPlayer.requestFullscreen();
           else if (megaPlayer.webkitRequestFullscreen) megaPlayer.webkitRequestFullscreen();
         }
         togglePipMode(true);
       } else {
-        if (document.exitFullscreen) document.exitFullscreen();
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen();
+        }
         togglePipMode(false);
       }
     });
 
-    // Кнопка "50/50 На весь екран" (справа внизу)
+    // Кнопка "50/50 На весь екран" (лівіше від PiP)
     splitFsBtn.addEventListener("click", (e) => {
       e.stopPropagation();
+      
+      // Якщо були в PiP — повертаємося у 50/50
+      if (megaPlayer.classList.contains('pip-mode')) {
+        togglePipMode(false);
+      }
+
       if (!document.fullscreenElement) {
         if (megaPlayer.requestFullscreen) megaPlayer.requestFullscreen();
         else if (megaPlayer.webkitRequestFullscreen) megaPlayer.webkitRequestFullscreen();
@@ -407,14 +420,15 @@
       }
     });
 
-    // Слухач зміни стану фулскріну
+    // Відстеження стану екрана
     document.addEventListener('fullscreenchange', () => {
       const isFs = !!document.fullscreenElement;
-      pipBtn.textContent = isFs && megaPlayer.classList.contains('pip-mode') ? '✖' : 'Повний екран (PiP)';
-      splitFsBtn.textContent = isFs ? '⛶' : '⛶';
       
+      // Якщо вийшли з фулскріну і були в PiP — скидаємо в 50/50
       if (!isFs && megaPlayer.classList.contains('pip-mode')) {
         togglePipMode(false);
+      } else {
+        updateButtonsUI();
       }
     });
 
