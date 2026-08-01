@@ -71,13 +71,13 @@ const params = new URLSearchParams(window.location.search);
 
 const streamUrl =
     params.get("url") ||
-    "https://lb.wisp.cat/lb0/CZ_RTSV_Sport_HD/video.m3u8?token=1d86d76cac48eae37c295f3d49a67e1c";
+    "https://cors.orestlutij9.workers.dev/?url=https://hls.sweet.tv/stream/9qazdnzw8u3t73dztr22c78g6a6hsr595an7pyuxmujvjpcx69q7bfqnug3h2jc4pp57wqei4f4hyvgh6fxcswq9fst8wdmdde4nzs5rqspv23tfriirpgmakwgjzzs6waf9tzch2rzrb4wkybpcs58mrydid832q67t3bsbazrugsmsm45tppid2uagn3jskc37gvij.m3u8";
 
 // Створення плеєра
 var player = new Playerjs({
     id: "player",
     file: decodeURIComponent(streamUrl),
-    poster: "https://solentsportsnews.com/wp-content/uploads/2024/03/cl-pic-.png", // Сюди вставляйте ваше посилання на постер
+    poster: "https://r2.thesportsdb.com/images/media/league/badge/bewnz31717531281.png/medium", // Сюди вставляйте ваше посилання на постер
     autoplay: 0,
     lang: "en"
 });
