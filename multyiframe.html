@@ -50,8 +50,7 @@ body {
     background: #000;
 }
 
-#player iframe,
-#player video {
+#player iframe {
     width: 100% !important;
     height: 100% !important;
     border: 0 !important;
@@ -104,7 +103,7 @@ body {
 
     opacity: 0;
     pointer-events: none;
-    transition: .25s ease;
+    transition: opacity .25s ease;
 }
 
 #liveMenu.show {
@@ -120,14 +119,15 @@ body {
     padding: 10px 12px;
     border-radius: 10px;
 
-    background: rgba(0,0,0,0.35);
+    background: rgba(0,0,0,0.65);
     border: 1px solid rgba(255,255,255,0.25);
     color: #fff;
 
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     font-size: 14px;
 
     cursor: pointer;
+    user-select: none;
 }
 
 .live-btn img {
@@ -141,6 +141,17 @@ body {
     border-color: red;
     color: red;
     box-shadow: 0 0 10px rgba(255,0,0,0.6);
+}
+
+/* Зона ловлі кліків навколо меню (щоб викликати меню при наведенні/дотику) */
+#menu-trigger-zone {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30%;
+    height: 100%;
+    z-index: 15000;
+    background: transparent;
 }
 
 /* ========================= MOBILE FIX ========================= */
@@ -173,13 +184,6 @@ body {
     line-height: normal !important;
 }
 
-#player [class*="quality"],
-#player [class*="menu"],
-#player [class*="settings"] {
-    writing-mode: horizontal-tb !important;
-    white-space: nowrap !important;
-}
-
 </style>
 </head>
 
@@ -188,6 +192,9 @@ body {
 <div id="player-wrapper">
 
     <div id="player"></div>
+
+    <!-- Прозора зона зліва для ловлі кліків поверх iframe -->
+    <div id="menu-trigger-zone"></div>
 
     <img id="myImage"
          src="https://terrikon.com/i/0/1200/logos/tourns/fifa_world_cup2026.jpg">
@@ -199,33 +206,33 @@ body {
 </div>
 
 <script>
-// Вставляйте сюди свої iframe коди у поле iframe
 const streams = [
     {
         name: "Stream 1",
         flag: "https://img.magnific.com/free-photo/abstract-surface-textures-white-concrete-stone-wall_74190-8189.jpg?ga=GA1.1.535729813.1781203597&semt=ais_hybrid&w=740&q=80",
-        iframe: `<iframe src="https://kasta-sports.vercel.app/multyiframe/player1.html" frameborder="0" allowfullscreen></iframe>`
+        iframe: `<iframe src="https://www.youtube.com/embed/live_stream?channel=CHANNEL_ID" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
     },
     {
         name: "Stream 2",
         flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Flag_of_the_USA.png/330px-Flag_of_the_USA.png",
-        iframe: `<iframe src="https://kasta-sports.vercel.app/multyiframe/player2.html" frameborder="0" allowfullscreen></iframe>`
+        iframe: `<iframe src="https://example.com/embed/stream2" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
     },
     {
         name: "Stream 3",
         flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Flag_of_the_USA.png/330px-Flag_of_the_USA.png",
-        iframe: `<iframe src="https://kasta-sports.vercel.app/multyiframe/player3.html" frameborder="0" allowfullscreen></iframe>`
+        iframe: `<iframe src="https://example.com/embed/stream3" allow="autoplay; encrypted-media" allowfullscreen></iframe>`
     }
 ];
 
 let current = 0;
 const menu = document.getElementById("liveMenu");
 const playerContainer = document.getElementById("player");
+const triggerZone = document.getElementById("menu-trigger-zone");
 
 function loadStream(i) {
     current = i;
 
-    // Очищаємо контейнер (це зупиняє попереднє відео та аудіо)
+    // Повністю очищаємо контейнер (це перериває і зупиняє звук від попереднього iframe)
     playerContainer.innerHTML = "";
 
     // Вставляємо новий iframe
@@ -252,7 +259,11 @@ function buildMenu() {
         btn.appendChild(img);
         btn.appendChild(text);
 
-        btn.onclick = () => loadStream(i);
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            loadStream(i);
+            showMenu(); // Перезапускаємо таймер при виборі
+        };
 
         menu.appendChild(btn);
     });
@@ -266,7 +277,7 @@ function updateActive() {
     });
 }
 
-/* menu */
+/* Логіка меню */
 let hideTimer;
 
 function showMenu() {
@@ -278,27 +289,30 @@ function showMenu() {
     }, 3000);
 }
 
-document.addEventListener("pointerdown", showMenu);
+// Події викликають показування меню
+triggerZone.addEventListener("pointerdown", showMenu);
+triggerZone.addEventListener("mouseenter", showMenu);
+menu.addEventListener("mouseenter", showMenu);
 
 /* INIT */
 buildMenu();
 
 window.addEventListener("load", () => {
     loadStream(0);
+    showMenu(); // Показуємо меню при старті
 });
-</script>
 
-<script>
+/* Приховування постера та спінера */
 const img = document.getElementById("myImage");
 const spinner = document.getElementById("spinner");
 
 setTimeout(() => {
-    img.style.opacity = "0";
-    spinner.style.opacity = "0";
+    if (img) img.style.opacity = "0";
+    if (spinner) spinner.style.opacity = "0";
 
     setTimeout(() => {
-        img.remove();
-        spinner.remove();
+        if (img) img.remove();
+        if (spinner) spinner.remove();
     }, 800);
 }, 3000);
 </script>
