@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<style>
+:root {
+    --logo-width: 14%;
+    --logo-top: 2.8%;
+    --logo-right: 5.2%;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+}
+
+/* =========================
+   JW STYLE WRAPPER (16:9 CONTAINER)
+========================= */
+#player-wrapper {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+}
+
+/* fallback */
+@supports not (aspect-ratio: 16 / 9) {
+    #player-wrapper {
+        height: calc(100vw * 9 / 16);
+    }
+}
+
+/* =========================
+   PLAYER AREA
+========================= */
+#player {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background: #000;
+}
+
+/* VK PLAYER FIX */
+#player iframe,
+#player video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #000 !important;
+}
+
+/* =========================
+   PLAYER LOGO STYLES
+========================= */
+#playerLogo {
+    position: absolute;
+    top: var(--logo-top);
+    right: var(--logo-right);
+    width: var(--logo-width);
+    z-index: 9999999;
+    pointer-events: none;
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+    #playerLogo.fullscreen-mobile {
+        top: var(--logo-top);
+        right: calc(var(--logo-right) + 6.8%);
+        width: calc(var(--logo-width) - 2%);
+    }
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
+    #playerLogo.fullscreen-mobile {
+        top: calc(var(--logo-top) + 34.74%);
+        right: calc(var(--logo-right) - 0.01%);
+        width: calc(var(--logo-width) - 0.1%);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="player-wrapper">
+    <div id="player"></div>
+    <img id="playerLogo" src="https://kasta-sports-tv.github.io/iptv/logo/player-logo.png" alt="Logo">
+</div>
+
+<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+
+const streamUrl =
+    params.get("url") ||
+    "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
+
+// Створення плеєра
+var player = new Playerjs({
+    id: "player",
+    file: decodeURIComponent(streamUrl),
+    poster: "https://ichef.bbci.co.uk/images/ic/1008x567/p0m5wskq.jpg",
+    autoplay: 0,
+    lang: "en"
+});
+
+// АЛЬТЕРНАТИВНИЙ І НАЙНАДІЙНІШИЙ СПОСІБ ДЛЯ PLAYERJS
+function PlayerjsEvents(event, id, info) {
+    if (event == "play") {
+        if (typeof player !== 'undefined' && player.api) {
+            player.api("poster", "none"); 
+            player.api("hideposter");
+        }
+        
+        const posterImg = document.querySelector("#player img[src*='poster'], #player [class*='poster']");
+        if (posterImg) {
+            posterImg.style.display = "none";
+            posterImg.style.opacity = "0";
+        }
+    }
+}
+
+/* =========================
+   FULLSCREEN LOGO HANDLER
+========================= */
+const logo = document.getElementById('playerLogo');
+
+function handleFullscreen() {
+    const fs = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fs) {
+        fs.appendChild(logo);
+        logo.style.position = 'fixed';
+        if (window.innerWidth <= 900) {
+            logo.classList.add('fullscreen-mobile');
+        }
+    } else {
+        const container = document.getElementById('player-wrapper');
+        container.appendChild(logo);
+        logo.style.position = 'absolute';
+        logo.classList.remove('fullscreen-mobile');
+    }
+}
+
+document.addEventListener('fullscreenchange', handleFullscreen);
+document.addEventListener('webkitfullscreenchange', handleFullscreen);
+</script>
+
+</body>
+</html>
