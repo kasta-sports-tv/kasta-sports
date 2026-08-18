@@ -71,13 +71,13 @@ const params = new URLSearchParams(window.location.search);
 
 const streamUrl =
     params.get("url") ||
-    "https://mf.kasta-sports-tv.workers.dev/?url=https://t6.ultrastream.vip/reserv1/index.m3u8";
+    "https://bitcdn-kronehit.bitmovin.com/v2/hls/chunklist.m3u8";
 
 // Створення плеєра
 var player = new Playerjs({
     id: "player",
     file: decodeURIComponent(streamUrl),
-    poster: "https://kasta-sports-tv.pages.dev/logo/kastasports.png", // Сюди вставляйте ваше посилання на постер
+    poster: "https://ichef.bbci.co.uk/images/ic/1008x567/p0m5wskq.jpg", // Сюди вставляйте ваше посилання на постер
     autoplay: 0,
     lang: "en"
 });
