@@ -71,13 +71,13 @@ const params = new URLSearchParams(window.location.search);
 
 const streamUrl =
     params.get("url") ||
-    "https://flus-footballive.pp.ua/stream3/video.m3u8?token=FZnkF9GGINbq41";
+    "https://lb.wisp.cat/lb0/jk_GoT/video.m3u8?token=3eb9e442e9e3d001ed0e4b2ba64c2e9c";
 
 // Створення плеєра
 var player = new Playerjs({
     id: "player",
     file: decodeURIComponent(streamUrl),
-    poster: "https://kasta-sports-tv.pages.dev/logo/kastasports.png", // Сюди вставляйте ваше посилання на постер
+    poster: "https://ichef.bbci.co.uk/images/ic/1008x567/p0m5wskq.jpg", // Сюди вставляйте ваше посилання на постер
     autoplay: 0,
     lang: "en"
 });
