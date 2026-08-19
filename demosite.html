@@ -28,24 +28,11 @@ html, body {
 #player-wrapper {
     position: relative;
     width: 100%;
-    margin: 0 auto;
+    margin: 0;
     padding: 0;
     aspect-ratio: 16 / 9;
     background: #000;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Центрування кадру 16:9 у фулскріні на будь-яких моніторах */
-#player-wrapper:fullscreen,
-#player-wrapper:-webkit-full-screen {
-    width: 100vw;
-    height: 100vh;
-    max-width: calc(100vh * 16 / 9);
-    max-height: calc(100vw * 9 / 16);
-    aspect-ratio: 16 / 9;
 }
 
 /* fallback */
@@ -147,34 +134,49 @@ function PlayerjsEvents(event, id, info) {
 }
 
 /* =========================
-   FULLSCREEN LOGO HANDLER
+   FULLSCREEN LOGO HANDLER WITH LETTERBOX FIX
 ========================= */
 const logo = document.getElementById('playerLogo');
 
 function handleFullscreen() {
     const fs = document.fullscreenElement || document.webkitFullscreenElement;
     if (fs) {
-        // Якщо плеєр викликав фулскрін не для всього контейнера, перепідключаємо логотип до елемента фулскріну
-        if (fs.id !== 'player-wrapper') {
-            fs.appendChild(logo);
-            logo.style.position = 'fixed';
+        fs.appendChild(logo);
+        logo.style.position = 'fixed';
+        
+        // Розрахунок висоти чорних смуг для екранів з іншим співвідношенням ніж 16:9 (наприклад, 16:10)
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const videoHeight = screenWidth * (9 / 16);
+        
+        if (screenHeight > videoHeight) {
+            // Якщо є чорні смуги зверху і знизу
+            const blackBarHeight = (screenHeight - videoHeight) / 2;
+            // Додаємо висоту чорної смуги до відступу логотипа
+            logo.style.top = `calc(${blackBarHeight}px + var(--logo-top))`;
         } else {
-            logo.style.position = 'absolute';
+            logo.style.top = 'var(--logo-top)';
         }
 
-        if (window.innerWidth <= 900) {
+        if (screenWidth <= 900) {
             logo.classList.add('fullscreen-mobile');
         }
     } else {
         const container = document.getElementById('player-wrapper');
         container.appendChild(logo);
         logo.style.position = 'absolute';
+        logo.style.top = 'var(--logo-top)';
         logo.classList.remove('fullscreen-mobile');
     }
 }
 
 document.addEventListener('fullscreenchange', handleFullscreen);
 document.addEventListener('webkitfullscreenchange', handleFullscreen);
+window.addEventListener('resize', () => {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        handleFullscreen();
+    }
+});
 </script>
 
 </body>
