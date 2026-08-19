@@ -28,11 +28,24 @@ html, body {
 #player-wrapper {
     position: relative;
     width: 100%;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
     aspect-ratio: 16 / 9;
     background: #000;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Центрування кадру 16:9 у фулскріні на будь-яких моніторах */
+#player-wrapper:fullscreen,
+#player-wrapper:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    max-width: calc(100vh * 16 / 9);
+    max-height: calc(100vw * 9 / 16);
+    aspect-ratio: 16 / 9;
 }
 
 /* fallback */
@@ -141,11 +154,14 @@ const logo = document.getElementById('playerLogo');
 function handleFullscreen() {
     const fs = document.fullscreenElement || document.webkitFullscreenElement;
     if (fs) {
-        // Прив'язуємо лого до контейнера плеєра і зберігаємо absolute позиціонування
-        const target = document.getElementById('player') || fs;
-        target.appendChild(logo);
-        logo.style.position = 'absolute';
-        
+        // Якщо плеєр викликав фулскрін не для всього контейнера, перепідключаємо логотип до елемента фулскріну
+        if (fs.id !== 'player-wrapper') {
+            fs.appendChild(logo);
+            logo.style.position = 'fixed';
+        } else {
+            logo.style.position = 'absolute';
+        }
+
         if (window.innerWidth <= 900) {
             logo.classList.add('fullscreen-mobile');
         }
