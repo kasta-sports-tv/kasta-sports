@@ -213,7 +213,7 @@ setTimeout(() => {
     img.style.opacity = "0";
     spinner.style.opacity = "0";
     
-    // Показываємо логотип тільки після завершення завантаження та зникання спінера
+    // Показуємо логотип тільки після завершення завантаження та зникання спінера
     logo.style.opacity = "1";
 
     setTimeout(() => {
@@ -256,11 +256,20 @@ function PlayerjsEvents(event, id, info) {
 }
 
 /* =========================
-   FULLSCREEN LOGO HANDLER WITH LETTERBOX FIX
+   FULLSCREEN LOGO & ORIENTATION HANDLER
 ========================= */
 function handleFullscreen() {
     const fs = document.fullscreenElement || document.webkitFullscreenElement;
+    
     if (fs) {
+        // 1. Автоповорот екрана у горизонтальне положення
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(() => {
+                // Ігноруємо помилку, якщо пристрій/браузер блокує примусовий поворот
+            });
+        }
+
+        // 2. Логіка логотипа
         fs.appendChild(logo);
         logo.style.position = 'fixed';
         
@@ -279,6 +288,12 @@ function handleFullscreen() {
             logo.classList.add('fullscreen-mobile');
         }
     } else {
+        // 1. Розблокування орієнтації екрана при виході з фулскріну
+        if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+        }
+
+        // 2. Скидання логіки логотипа
         const container = document.getElementById('player-wrapper');
         container.appendChild(logo);
         logo.style.position = 'absolute';
