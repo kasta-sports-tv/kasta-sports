@@ -3,36 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Sports Center — Онлайн Трансляції</title>
+  <title>ULTRA SPORT LIVE — Спортивні Трансляції Преміум</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg-main: #0d0f12;
-      --bg-card: #161920;
-      --bg-card-hover: #1f242d;
-      --accent-red: #ff3b30;
-      --accent-blue: #007aff;
-      --accent-green: #34c759;
-      --text-main: #f2f4f8;
-      --text-muted: #8e8ea0;
-      --border-color: rgba(255, 255, 255, 0.08);
-      --glass-bg: rgba(22, 25, 32, 0.85);
-      --radius: 12px;
+      --bg-body: #08090c;
+      --bg-card: #12141c;
+      --bg-glass: rgba(18, 20, 28, 0.75);
+      --accent-red: #ff2a55;
+      --accent-red-glow: rgba(255, 42, 85, 0.4);
+      --accent-blue: #2d62ff;
+      --accent-gold: #ffb800;
+      --text-primary: #ffffff;
+      --text-secondary: #9499b1;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.2);
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
     body {
-      background-color: var(--bg-main);
-      color: var(--text-main);
+      background-color: var(--bg-body);
+      color: var(--text-primary);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -44,227 +48,279 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--glass-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color);
-      padding: 1rem 1.5rem;
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.8rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
       gap: 1rem;
     }
 
-    .logo {
+    .brand {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 1.25rem;
+      gap: 0.6rem;
+      font-size: 1.3rem;
       font-weight: 800;
-      color: var(--text-main);
+      color: #fff;
       text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--accent-red), #ff6b00);
+      color: #fff;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.7rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
-    .logo span {
-      color: var(--accent-red);
-    }
-
-    .stats-badge {
+    .header-right {
       display: flex;
-      gap: 0.75rem;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .clock-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
       font-size: 0.85rem;
       font-weight: 600;
-    }
-
-    .badge {
-      padding: 0.35rem 0.75rem;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
       display: flex;
       align-items: center;
       gap: 0.4rem;
     }
 
-    .badge.live {
-      color: var(--accent-red);
-      border-color: rgba(255, 59, 48, 0.3);
-      background: rgba(255, 59, 48, 0.1);
-    }
+    .clock-box span { color: #fff; }
 
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: currentColor;
-    }
-
-    .dot.pulse {
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.2); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    /* MAIN CONTAINER */
+    /* MAIN CONTENT */
     main {
-      max-width: 1280px;
+      max-width: 1400px;
       width: 100%;
       margin: 0 auto;
       padding: 1.5rem;
       flex: 1;
     }
 
-    /* CONTROLS BAR */
-    .controls-bar {
+    /* FILTER SECTION */
+    .filter-section {
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
-    @media (min-width: 768px) {
-      .controls-bar {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
-    }
-
-    .tabs {
+    /* Sports Carousel */
+    .sports-bar {
       display: flex;
-      background: var(--bg-card);
-      padding: 4px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border-color);
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      scrollbar-width: none;
     }
+    .sports-bar::-webkit-scrollbar { display: none; }
 
-    .tab-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      padding: 0.6rem 1.2rem;
-      font-size: 0.9rem;
+    .sport-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      border-radius: 8px;
+      white-space: nowrap;
       transition: all 0.2s ease;
-      flex: 1;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
     }
 
-    .tab-btn.active {
-      background: var(--accent-blue);
+    .sport-btn:hover {
+      border-color: var(--border-hover);
       color: #fff;
     }
 
-    .search-box {
-      position: relative;
-      width: 100%;
-      max-width: 400px;
+    .sport-btn.active {
+      background: #fff;
+      color: #000;
+      border-color: #fff;
+      font-weight: 700;
     }
 
-    .search-box input {
-      width: 100%;
-      padding: 0.7rem 1rem 0.7rem 2.5rem;
+    /* Secondary Controls Bar */
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
       background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      color: var(--text-main);
-      font-size: 0.9rem;
+      padding: 0.6rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+    }
+
+    .date-tabs, .status-tabs {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .sub-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-md);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sub-tab.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .sub-tab.live-tab.active {
+      background: var(--accent-red);
+      color: #fff;
+      box-shadow: 0 0 12px var(--accent-red-glow);
+    }
+
+    .search-input {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-md);
+      color: #fff;
+      font-size: 0.85rem;
       outline: none;
+      width: 220px;
       transition: border-color 0.2s;
     }
 
-    .search-box input:focus {
+    .search-input:focus {
       border-color: var(--accent-blue);
     }
 
-    .search-icon {
-      position: absolute;
-      left: 0.9rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      pointer-events: none;
-    }
-
-    /* MATCHES GRID */
+    /* GRID & CARDS */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.2rem;
     }
 
     .card {
       background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      padding: 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-      cursor: pointer;
       position: relative;
-      overflow: hidden;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      cursor: pointer;
     }
 
     .card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      background: var(--bg-card-hover);
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
     }
 
-    .card-header {
+    /* Poster Container */
+    .card-poster {
+      width: 100%;
+      height: 140px;
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      background-color: #1a1d28;
+    }
+
+    .card-poster::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(18,20,28,0.2) 0%, rgba(18,20,28,0.95) 100%);
+    }
+
+    /* Live Badge & Pulsing */
+    .badge-live {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
+      background: var(--accent-red);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      gap: 0.35rem;
+      box-shadow: 0 0 12px var(--accent-red-glow);
+      text-transform: uppercase;
     }
 
-    .league-tag {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-weight: 500;
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: #fff;
+      border-radius: 50%;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.4); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .badge-league {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      color: var(--text-secondary);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.1);
+      max-width: 130px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 170px;
     }
 
-    .status-tag {
-      font-weight: 700;
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-    }
-
-    .status-tag.live {
-      background: rgba(255, 59, 48, 0.15);
-      color: var(--accent-red);
-    }
-
-    .status-tag.upcoming {
-      background: rgba(0, 122, 255, 0.15);
-      color: var(--accent-blue);
+    .card-content {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
     }
 
     .match-title {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      line-height: 1.4;
-      margin-bottom: 1rem;
+      line-height: 1.35;
+      color: #fff;
+      margin-bottom: 0.8rem;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -275,35 +331,41 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 0.5rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border-color);
-      font-size: 0.85rem;
-      color: var(--text-muted);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+      padding-top: 0.6rem;
     }
 
-    .btn-watch {
-      background: var(--accent-blue);
+    .match-time {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 600;
+      color: var(--accent-gold);
+    }
+
+    .btn-play {
+      background: rgba(255, 255, 255, 0.08);
       color: #fff;
       border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.75rem;
       transition: background 0.2s;
     }
 
-    .card:hover .btn-watch {
-      background: #0062cc;
+    .card:hover .btn-play {
+      background: var(--accent-blue);
     }
 
-    /* MODAL PLAYER */
+    /* MODAL CINEMA PLAYER */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(12px);
       z-index: 1000;
       display: flex;
       align-items: center;
@@ -311,7 +373,7 @@
       padding: 1rem;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.25s ease;
     }
 
     .modal-overlay.active {
@@ -319,84 +381,71 @@
       pointer-events: all;
     }
 
-    .modal-container {
+    .modal-box {
       background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 960px;
+      max-width: 1000px;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.8);
     }
 
     .modal-header {
-      padding: 1rem;
+      padding: 0.8rem 1.2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-color);
+      background: rgba(255,255,255,0.02);
+      border-bottom: 1px solid var(--border);
     }
 
     .modal-title {
       font-weight: 700;
-      font-size: 1.1rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 80%;
+      font-size: 1rem;
+      color: #fff;
     }
 
     .close-btn {
       background: none;
       border: none;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       font-size: 1.5rem;
       cursor: pointer;
-      line-height: 1;
     }
-
     .close-btn:hover { color: #fff; }
 
-    .player-wrapper {
+    .iframe-container {
       position: relative;
-      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      padding-top: 56.25%;
       background: #000;
     }
 
-    .player-wrapper iframe {
+    .iframe-container iframe {
       position: absolute;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
       border: none;
     }
 
-    .server-bar {
-      padding: 0.75rem 1rem;
-      background: #111317;
+    .server-selector {
+      padding: 0.8rem 1.2rem;
+      background: rgba(0,0,0,0.4);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
       overflow-x: auto;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .server-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-right: 0.5rem;
     }
 
     .server-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 0.35rem 0.75rem;
-      border-radius: 6px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 0.35rem 0.8rem;
+      border-radius: var(--radius-sm);
       font-size: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
     }
@@ -404,29 +453,14 @@
     .server-btn.active {
       background: var(--accent-blue);
       border-color: var(--accent-blue);
+      color: #fff;
     }
 
-    /* EMPTY / LOADING STATES */
     .state-msg {
       text-align: center;
-      padding: 4rem 1rem;
-      color: var(--text-muted);
+      padding: 5rem 1rem;
+      color: var(--text-secondary);
       grid-column: 1 / -1;
-    }
-
-    .spinner {
-      border: 3px solid rgba(255,255,255,0.1);
-      border-radius: 50%;
-      border-top: 3px solid var(--accent-blue);
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -434,227 +468,275 @@
 
   <!-- HEADER -->
   <header>
-    <a href="#" class="logo"><span>⚡</span> SportStream</a>
-    
-    <div class="stats-badge">
-      <div class="badge live">
-        <span class="dot pulse"></span>
-        <span id="count-live">0</span> LIVE
-      </div>
-      <div class="badge">
-        <span class="dot"></span>
-        <span id="count-upcoming">0</span> Незабаром
+    <a href="#" class="brand">
+      <span class="brand-badge">PRO</span> ULTRA SPORT
+    </a>
+
+    <div class="header-right">
+      <div class="clock-box">
+        🕒 <span id="live-clock">00:00:00</span> (Київ)
       </div>
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
   <main>
-    <div class="controls-bar">
-      <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab-btn active" data-filter="all">Усі матчі</button>
-        <button class="tab-btn" data-filter="Live">🔴 LIVE</button>
-        <button class="tab-btn" data-filter="Upcoming">⏰ Незабаром</button>
+    <!-- FILTER SECTION -->
+    <div class="filter-section">
+      <!-- Dynamic Sports Carousel -->
+      <div class="sports-bar" id="sports-bar">
+        <!-- Завантажується скриптом -->
       </div>
 
-      <!-- Search -->
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" placeholder="Пошук команди, ліги чи спорту...">
+      <!-- Controls Row (Date, Status, Search) -->
+      <div class="controls-row">
+        <!-- Status Tabs -->
+        <div class="status-tabs">
+          <button class="sub-tab active" data-status="all">Усі</button>
+          <button class="sub-tab live-tab" data-status="Live">🔴 LIVE</button>
+          <button class="sub-tab" data-status="Upcoming">⏰ Незабаром</button>
+        </div>
+
+        <!-- Date Tabs -->
+        <div class="date-tabs">
+          <button class="sub-tab active" data-date="all">Усі дати</button>
+          <button class="sub-tab" data-date="today">Сьогодні</button>
+          <button class="sub-tab" data-date="tomorrow">Завтра</button>
+        </div>
+
+        <!-- Search -->
+        <input type="text" id="search-input" class="search-input" placeholder="Пошук матчу чи ліги...">
       </div>
     </div>
 
-    <!-- Grid -->
+    <!-- MATCHES GRID -->
     <div id="matches-grid" class="grid">
-      <div class="state-msg">
-        <div class="spinner"></div>
-        Завантаження трансляцій...
-      </div>
+      <div class="state-msg">Завантаження розкладу...</div>
     </div>
   </main>
 
   <!-- MODAL PLAYER -->
   <div class="modal-overlay" id="player-modal">
-    <div class="modal-container">
+    <div class="modal-box">
       <div class="modal-header">
-        <div class="modal-title" id="modal-match-title">Назва матчу</div>
+        <div class="modal-title" id="modal-title">Трансляція</div>
         <button class="close-btn" id="modal-close">&times;</button>
       </div>
-      <div class="player-wrapper">
+      <div class="iframe-container">
         <iframe id="player-iframe" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
       </div>
-      <div class="server-bar" id="modal-servers">
-        <!-- Сервери завантажуються динамічно -->
-      </div>
+      <div class="server-selector" id="modal-servers"></div>
     </div>
   </div>
 
   <script>
     const API_URL = 'https://august.ppvtv.icu/api/matches.json';
-    
-    let matchesData = [];
-    let currentFilter = 'all';
+    const DEFAULT_POSTER = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80';
+
+    let rawMatches = [];
+    let selectedSport = 'all';
+    let selectedStatus = 'all';
+    let selectedDate = 'all';
     let searchQuery = '';
 
-    // DOM елементи
-    const gridEl = document.getElementById('matches-grid');
-    const countLiveEl = document.getElementById('count-live');
-    const countUpcomingEl = document.getElementById('count-upcoming');
-    const searchInput = document.getElementById('search-input');
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    
-    // Елементи модального вікна
-    const modalEl = document.getElementById('player-modal');
-    const modalTitle = document.getElementById('modal-match-title');
-    const modalIframe = document.getElementById('player-iframe');
-    const modalServers = document.getElementById('modal-servers');
-    const modalClose = document.getElementById('modal-close');
+    // Спирти з іконками
+    const SPORT_ICONS = {
+      'Football': '⚽', 'Basketball': '🏀', 'Tennis': '🎾', 'Hockey': '🏒',
+      'Ice Hockey': '🏒', 'Baseball': '⚾', 'Motorsport': '🏎️', 'MMA': '🥊',
+      'Boxing': '🥊', 'Volleyball': '🏐', 'Rugby': '🏉', 'Cricket': '🏏'
+    };
 
-    // Отримання даних з API
-    async function fetchMatches() {
+    // Оновлення живого годинника (Київський час)
+    function updateClock() {
+      const now = new Date();
+      const options = { timeZone: 'Europe/Kyiv', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      document.getElementById('live-clock').textContent = new Intl.DateTimeFormat('uk-UA', options).format(now);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Завантаження даних
+    async function loadData() {
       try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('Помилка мережі');
-        const data = await response.json();
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        rawMatches = data.matches || [];
         
-        matchesData = data.matches || [];
-        
-        // Оновлення лічильників
-        countLiveEl.textContent = data.live || 0;
-        countUpcomingEl.textContent = data.upcoming || 0;
-
-        renderMatches();
-      } catch (err) {
-        console.error('Fetch error:', err);
-        if (matchesData.length === 0) {
-          gridEl.innerHTML = `<div class="state-msg">Помилка завантаження даних. Спробуйте пізніше.</div>`;
-        }
+        buildSportsBar();
+        render();
+      } catch (e) {
+        console.error(e);
+        document.getElementById('matches-grid').innerHTML = `<div class="state-msg">Помилка оновлення даних.</div>`;
       }
     }
 
-    // Відображення списку матчів
-    function renderMatches() {
-      const filtered = matchesData.filter(match => {
-        const matchesStatus = currentFilter === 'all' || match.status === currentFilter;
+    // Динамічна побудова списку видів спорту
+    function buildSportsBar() {
+      const sportsBar = document.getElementById('sports-bar');
+      const categories = ['all', ...new Set(rawMatches.map(m => m.category).filter(Boolean))];
+
+      sportsBar.innerHTML = categories.map(cat => {
+        const isAll = cat === 'all';
+        const label = isAll ? '🌐 Усі види' : `${SPORT_ICONS[cat] || '🏆'} ${cat}`;
+        const activeClass = selectedSport === cat ? 'active' : '';
+        return `<button class="sport-btn ${activeClass}" onclick="setSport('${cat}')">${label}</button>`;
+      }).join('');
+    }
+
+    function setSport(cat) {
+      selectedSport = cat;
+      buildSportsBar();
+      render();
+    }
+
+    // Фільтрація та рендеринг
+    function render() {
+      const grid = document.getElementById('matches-grid');
+      
+      const nowKyiv = new Date();
+      
+      const filtered = rawMatches.filter(m => {
+        // Спорт
+        if (selectedSport !== 'all' && m.category !== selectedSport) return false;
         
-        const query = searchQuery.toLowerCase();
-        const matchesSearch = match.title.toLowerCase().includes(query) ||
-                              (match.league && match.league.toLowerCase().includes(query)) ||
-                              (match.category && match.category.toLowerCase().includes(query));
-                              
-        return matchesStatus && matchesSearch;
+        // Статус
+        if (selectedStatus !== 'all' && m.status !== selectedStatus) return false;
+
+        // Пошук
+        if (searchQuery) {
+          const q = searchQuery.toLowerCase();
+          const matchText = `${m.title} ${m.league} ${m.category}`.toLowerCase();
+          if (!matchText.includes(q)) return false;
+        }
+
+        // Дати
+        if (selectedDate !== 'all' && m.start_time) {
+          const matchDate = new Date(m.start_time);
+          const isToday = matchDate.toDateString() === nowKyiv.toDateString();
+          
+          const tomorrow = new Date(nowKyiv);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const isTomorrow = matchDate.toDateString() === tomorrow.toDateString();
+
+          if (selectedDate === 'today' && !isToday) return false;
+          if (selectedDate === 'tomorrow' && !isTomorrow) return false;
+        }
+
+        return true;
       });
 
       if (filtered.length === 0) {
-        gridEl.innerHTML = `<div class="state-msg">Матчів не знайдено</div>`;
+        grid.innerHTML = `<div class="state-msg">За вашим запитом матчів не знайдено</div>`;
         return;
       }
 
-      gridEl.innerHTML = filtered.map(match => {
-        const isLive = match.status === 'Live';
-        const statusClass = isLive ? 'live' : 'upcoming';
-        const statusText = isLive ? '🔴 LIVE' : formatTime(match.start_time);
+      grid.innerHTML = filtered.map(m => {
+        const isLive = m.status === 'Live';
+        const posterUrl = m.poster && m.poster.trim() !== '' ? m.poster : DEFAULT_POSTER;
+        const formattedTime = formatKyivTime(m.start_time);
 
         return `
-          <div class="card" onclick="openPlayer('${match.id}')">
-            <div>
-              <div class="card-header">
-                <span class="league-tag">${match.category || 'Спорт'} • ${match.league || ''}</span>
-                <span class="status-tag ${statusClass}">${statusText}</span>
-              </div>
-              <div class="match-title">${escapeHtml(match.title)}</div>
+          <div class="card" onclick="openPlayer('${m.id}')">
+            <div class="card-poster" style="background-image: url('${posterUrl}')">
+              ${isLive 
+                ? `<div class="badge-live"><span class="pulse-dot"></span> LIVE</div>` 
+                : `<div class="badge-league">${escapeHtml(m.league || m.category)}</div>`
+              }
             </div>
-            <div class="card-footer">
-              <span>${match.servers ? match.servers.length : 1} серв.</span>
-              <button class="btn-watch">Дивитися</button>
+            <div class="card-content">
+              <div class="match-title">${escapeHtml(m.title)}</div>
+              <div class="card-footer">
+                <div class="match-time">
+                  ${isLive ? '🔴 Прямий ефір' : `⏰ ${formattedTime}`}
+                </div>
+                <button class="btn-play">Дивитися</button>
+              </div>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    // Відкриття плеєра
+    // Форматування UTC дати в український час
+    function formatKyivTime(isoString) {
+      if (!isoString) return 'Скоро';
+      const d = new Date(isoString);
+      const dayMonth = d.toLocaleDateString('uk-UA', { day: '2-digit', month: 'short' });
+      const time = d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+      return `${dayMonth}, ${time}`;
+    }
+
+    // Плеєр
     function openPlayer(matchId) {
-      const match = matchesData.find(m => m.id === matchId);
+      const match = rawMatches.find(m => m.id === matchId);
       if (!match) return;
 
-      modalTitle.textContent = match.title;
+      document.getElementById('modal-title').textContent = match.title;
       
-      // Налаштування серверів
-      const servers = match.servers && match.servers.length > 0 
+      const servers = (match.servers && match.servers.length > 0) 
         ? match.servers 
-        : [{ name: 'Основний сервер', embed_url: match.embed_url }];
+        : [{ name: 'Сервер 1', embed_url: match.embed_url }];
 
-      modalServers.innerHTML = '<span class="server-label">Сервер:</span>' + 
+      const serversContainer = document.getElementById('modal-servers');
+      serversContainer.innerHTML = '<span style="font-size:0.8rem; color:var(--text-secondary)">Сервер:</span>' + 
         servers.map((s, idx) => `
-          <button class="server-btn ${idx === 0 ? 'active' : ''}" 
-                  onclick="changeServer('${s.embed_url}', this)">
+          <button class="server-btn ${idx === 0 ? 'active' : ''}" onclick="switchServer('${s.embed_url}', this)">
             ${s.name}
           </button>
         `).join('');
 
-      // Встановлення джерела iframe (перший сервер за замовчуванням)
-      modalIframe.src = servers[0].embed_url;
-      modalEl.classList.add('active');
-      document.body.style.overflow = 'hidden'; // Заборонити скрол сторінки
+      document.getElementById('player-iframe').src = servers[0].embed_url;
+      document.getElementById('player-modal').classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
-    // Зміна сервера у модальному вікні
-    function changeServer(url, btn) {
-      modalIframe.src = url;
+    function switchServer(url, btn) {
+      document.getElementById('player-iframe').src = url;
       document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     }
 
-    // Закриття модального вікна
     function closeModal() {
-      modalEl.classList.remove('active');
-      modalIframe.src = ''; // Зупинка відтворення аудіо/відео
+      document.getElementById('player-modal').classList.remove('active');
+      document.getElementById('player-iframe').src = '';
       document.body.style.overflow = '';
     }
 
-    // Допоміжні функції
-    function formatTime(isoString) {
-      if (!isoString) return 'Скоро';
-      const date = new Date(isoString);
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
     function escapeHtml(str) {
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    // Слухачі подій
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
-        renderMatches();
+    // Event Listeners
+    document.querySelectorAll('.status-tabs .sub-tab').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.status-tabs .sub-tab').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        selectedStatus = e.target.dataset.status;
+        render();
       });
     });
 
-    searchInput.addEventListener('input', (e) => {
+    document.querySelectorAll('.date-tabs .sub-tab').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.date-tabs .sub-tab').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        selectedDate = e.target.dataset.date;
+        render();
+      });
+    });
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
       searchQuery = e.target.value;
-      renderMatches();
+      render();
     });
 
-    modalClose.addEventListener('click', closeModal);
-    
-    modalEl.addEventListener('click', (e) => {
-      if (e.target === modalEl) closeModal();
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('player-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'player-modal') closeModal();
     });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modalEl.classList.contains('active')) {
-        closeModal();
-      }
-    });
-
-    // Ініціалізація та оновлення кожні 30 секунд
-    fetchMatches();
-    setInterval(fetchMatches, 30000);
+    // Init
+    loadData();
+    setInterval(loadData, 30000); // Оновлення API кожні 30 сек
   </script>
 </body>
 </html>
