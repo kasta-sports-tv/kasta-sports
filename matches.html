@@ -1,622 +1,660 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0e1118">
-<title>Kasta Sports — Live Sports</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Sports Center — Онлайн Трансляції</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-main: #0d0f12;
+      --bg-card: #161920;
+      --bg-card-hover: #1f242d;
+      --accent-red: #ff3b30;
+      --accent-blue: #007aff;
+      --accent-green: #34c759;
+      --text-main: #f2f4f8;
+      --text-muted: #8e8ea0;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --glass-bg: rgba(22, 25, 32, 0.85);
+      --radius: 12px;
+    }
 
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;background:#0e1118;color:#eef1f7;font-family:Arial,Helvetica,sans-serif}
-body{min-height:100vh}
-button,input,select{font:inherit}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
 
-:root{
-  --bg:#0e1118;
-  --panel:#151a23;
-  --panel2:#1b212c;
-  --line:#2a3240;
-  --muted:#8e99aa;
-  --accent:#e31b23;
-  --accent2:#ff3942;
-  --green:#24d17e;
-}
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
 
-.header{
-  position:sticky;top:0;z-index:50;
-  height:68px;
-  display:flex;align-items:center;
-  padding:0 22px;
-  background:rgba(14,17,24,.96);
-  border-bottom:1px solid var(--line);
-  backdrop-filter:blur(12px);
-}
-.logo{
-  display:flex;align-items:center;gap:10px;
-  font-weight:800;font-size:21px;letter-spacing:.4px;
-}
-.logo-mark{
-  width:35px;height:35px;border-radius:9px;
-  display:grid;place-items:center;
-  background:linear-gradient(145deg,#ff3942,#a80008);
-  box-shadow:0 0 22px rgba(227,27,35,.25);
-}
-.logo-mark:before{
-  content:"▶";font-size:15px;color:white;margin-left:2px
-}
-.header-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.live-count{
-  display:flex;align-items:center;gap:7px;
-  padding:8px 12px;border:1px solid var(--line);
-  border-radius:10px;background:#121720;color:#cdd4df;font-size:13px
-}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
 
-.layout{
-  width:min(1450px,100%);
-  margin:auto;
-  padding:22px;
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 360px;
-  gap:20px;
-}
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-.main{min-width:0}
-.toolbar{
-  display:flex;gap:10px;align-items:center;
-  margin-bottom:18px;flex-wrap:wrap
-}
-.search{
-  flex:1;min-width:210px;
-  background:var(--panel);border:1px solid var(--line);
-  color:#fff;border-radius:11px;padding:12px 14px;outline:none
-}
-.search:focus{border-color:#4a5567}
-.filter{
-  background:var(--panel);border:1px solid var(--line);
-  color:#dce2eb;border-radius:11px;padding:12px 13px;outline:none
-}
-.tabs{display:flex;gap:7px}
-.tab{
-  cursor:pointer;border:1px solid var(--line);
-  background:var(--panel);color:#aeb7c6;
-  padding:10px 14px;border-radius:10px
-}
-.tab.active{background:#291317;border-color:#7f252b;color:#fff}
+    .logo span {
+      color: var(--accent-red);
+    }
 
-.section-title{
-  display:flex;align-items:center;justify-content:space-between;
-  margin:4px 0 12px
-}
-.section-title h1{font-size:20px;margin:0}
-.updated{font-size:12px;color:var(--muted)}
+    .stats-badge {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
 
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:13px;
-}
-.card{
-  position:relative;
-  overflow:hidden;
-  background:linear-gradient(145deg,#171d27,#121720);
-  border:1px solid var(--line);
-  border-radius:15px;
-  cursor:pointer;
-  transition:.18s transform,.18s border-color,.18s box-shadow;
-}
-.card:hover{
-  transform:translateY(-2px);
-  border-color:#454f60;
-  box-shadow:0 12px 35px rgba(0,0,0,.24)
-}
-.card-top{
-  height:105px;
-  background:#10151d;
-  position:relative;
-  overflow:hidden
-}
-.card-top img.poster{
-  width:100%;height:100%;object-fit:cover;opacity:.28
-}
-.card-top:after{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(90deg,#10151dcc,#10151d55,#10151dcc)
-}
-.status{
-  position:absolute;z-index:2;left:11px;top:10px;
-  padding:5px 8px;border-radius:7px;
-  font-size:10px;font-weight:800;letter-spacing:.5px;
-  text-transform:uppercase
-}
-.status.live{background:#49151a;color:#ff6670;border:1px solid #7b262d}
-.status.upcoming{background:#252b35;color:#bac3d0;border:1px solid #384250}
+    .badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-.card-body{padding:13px}
-.league{font-size:11px;color:#8792a3;text-transform:uppercase;letter-spacing:.5px}
-.match-title{font-size:15px;font-weight:700;margin:7px 0 11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.teams{display:grid;grid-template-columns:1fr 28px 1fr;align-items:center;gap:5px}
-.team{display:flex;align-items:center;gap:7px;min-width:0}
-.team.away{justify-content:flex-end;text-align:right}
-.team-name{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.team-logo{
-  width:27px;height:27px;object-fit:contain;border-radius:5px;
-  background:#202733;padding:3px
-}
-.vs{text-align:center;font-size:10px;color:#6f7988;font-weight:700}
-.card-bottom{
-  margin-top:12px;padding-top:10px;
-  border-top:1px solid #242b36;
-  display:flex;align-items:center;justify-content:space-between
-}
-.time{font-size:12px;color:#aeb7c5}
-.watch{
-  border:0;border-radius:8px;padding:7px 10px;
-  background:#252c38;color:#fff;font-size:11px;font-weight:700
-}
-.card.live-card .watch{background:var(--accent)}
-.empty{
-  padding:45px 20px;text-align:center;
-  color:#7e899a;border:1px dashed #303948;border-radius:14px
-}
+    .badge.live {
+      color: var(--accent-red);
+      border-color: rgba(255, 59, 48, 0.3);
+      background: rgba(255, 59, 48, 0.1);
+    }
 
-.player-panel{
-  background:#0a0d12;border:1px solid var(--line);
-  border-radius:15px;overflow:hidden;
-  position:sticky;top:88px;
-}
-.player-head{
-  padding:13px 14px;border-bottom:1px solid var(--line);
-  display:flex;align-items:center;gap:10px
-}
-.player-head strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.player-close{
-  margin-left:auto;border:0;background:#252b35;color:#bfc7d3;
-  width:30px;height:30px;border-radius:8px;cursor:pointer
-}
-.player-wrap{
-  position:relative;width:100%;aspect-ratio:16/9;background:#000
-}
-.player-wrap iframe{
-  width:100%;height:100%;border:0;display:block;background:#000
-}
-.player-empty{
-  position:absolute;inset:0;display:grid;place-items:center;
-  color:#657082;font-size:13px;background:#090c11
-}
-.player-info{padding:13px 14px}
-.player-info .big{font-weight:700;margin-bottom:5px}
-.player-info .small{font-size:12px;color:#7f8998}
-.server-row{
-  display:flex;gap:7px;flex-wrap:wrap;margin-top:12px
-}
-.server-btn{
-  cursor:pointer;border:1px solid var(--line);background:#171d26;
-  color:#aeb7c4;padding:8px 10px;border-radius:8px;font-size:11px
-}
-.server-btn.active{background:#3a171b;border-color:#8c272e;color:#fff}
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
 
-.note{
-  margin-top:12px;padding:11px 13px;
-  background:#121720;border:1px solid #242c38;
-  color:#747f90;border-radius:10px;font-size:11px;line-height:1.5
-}
+    .dot.pulse {
+      animation: pulse 1.5s infinite;
+    }
 
-.footer{
-  width:min(1450px,100%);margin:auto;padding:5px 22px 25px;
-  color:#596474;font-size:11px;text-align:center
-}
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
 
-.loader{
-  padding:50px;text-align:center;color:#768194
-}
-.spinner{
-  width:28px;height:28px;margin:0 auto 12px;border-radius:50%;
-  border:3px solid #2b3340;border-top-color:var(--accent);
-  animation:spin .8s linear infinite
-}
-@keyframes spin{to{transform:rotate(360deg)}}
+    /* MAIN CONTAINER */
+    main {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      flex: 1;
+    }
 
-@media(max-width:900px){
-  .layout{grid-template-columns:1fr;padding:14px}
-  .player-panel{position:relative;top:auto;order:-1}
-  .cards{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
-}
-@media(max-width:600px){
-  .header{height:60px;padding:0 13px}
-  .logo{font-size:18px}
-  .logo-mark{width:31px;height:31px}
-  .live-count{padding:7px 9px;font-size:11px}
-  .layout{padding:10px;gap:12px}
-  .toolbar{margin-bottom:12px}
-  .tabs{width:100%}
-  .tab{flex:1}
-  .cards{grid-template-columns:1fr;gap:10px}
-  .card-top{height:95px}
-  .player-head{padding:10px}
-  .footer{padding:4px 10px 18px}
-}
-</style>
+    /* CONTROLS BAR */
+    .controls-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .controls-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .tabs {
+      display: flex;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      flex: 1;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+
+    .search-box {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.7rem 1rem 0.7rem 2.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* MATCHES GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      background: var(--bg-card-hover);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .league-tag {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 170px;
+    }
+
+    .status-tag {
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .status-tag.live {
+      background: rgba(255, 59, 48, 0.15);
+      color: var(--accent-red);
+    }
+
+    .status-tag.upcoming {
+      background: rgba(0, 122, 255, 0.15);
+      color: var(--accent-blue);
+    }
+
+    .match-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-watch {
+      background: var(--accent-blue);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .card:hover .btn-watch {
+      background: #0062cc;
+    }
+
+    /* MODAL PLAYER */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 960px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+
+    .modal-header {
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 80%;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close-btn:hover { color: #fff; }
+
+    .player-wrapper {
+      position: relative;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      background: #000;
+    }
+
+    .player-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .server-bar {
+      padding: 0.75rem 1rem;
+      background: #111317;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow-x: auto;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .server-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-right: 0.5rem;
+    }
+
+    .server-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .server-btn.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    /* EMPTY / LOADING STATES */
+    .state-msg {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+    }
+
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      border-top: 3px solid var(--accent-blue);
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
-
 <body>
 
-<header class="header">
-  <div class="logo">
-    <div class="logo-mark"></div>
-    <span>KASTA SPORTS</span>
-  </div>
-  <div class="header-right">
-    <div class="live-count">
-      <span class="dot"></span>
-      <span id="liveCount">LIVE: —</span>
+  <!-- HEADER -->
+  <header>
+    <a href="#" class="logo"><span>⚡</span> SportStream</a>
+    
+    <div class="stats-badge">
+      <div class="badge live">
+        <span class="dot pulse"></span>
+        <span id="count-live">0</span> LIVE
+      </div>
+      <div class="badge">
+        <span class="dot"></span>
+        <span id="count-upcoming">0</span> Незабаром
+      </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<div class="layout">
-
-  <main class="main">
-    <div class="toolbar">
-      <input id="search" class="search" type="search" placeholder="Пошук матчу, команди або ліги...">
-      <select id="sportFilter" class="filter">
-        <option value="all">Усі види спорту</option>
-      </select>
+  <!-- MAIN CONTENT -->
+  <main>
+    <div class="controls-bar">
+      <!-- Tabs -->
       <div class="tabs">
-        <button class="tab active" data-mode="all">Усі</button>
-        <button class="tab" data-mode="live">LIVE</button>
-        <button class="tab" data-mode="upcoming">Скоро</button>
+        <button class="tab-btn active" data-filter="all">Усі матчі</button>
+        <button class="tab-btn" data-filter="Live">🔴 LIVE</button>
+        <button class="tab-btn" data-filter="Upcoming">⏰ Незабаром</button>
+      </div>
+
+      <!-- Search -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Пошук команди, ліги чи спорту...">
       </div>
     </div>
 
-    <div class="section-title">
-      <h1 id="sectionTitle">Матчі</h1>
-      <span id="updated" class="updated">Завантаження...</span>
-    </div>
-
-    <div id="cards" class="cards">
-      <div class="loader">
+    <!-- Grid -->
+    <div id="matches-grid" class="grid">
+      <div class="state-msg">
         <div class="spinner"></div>
-        Завантаження матчів...
+        Завантаження трансляцій...
       </div>
     </div>
   </main>
 
-  <aside class="player-panel">
-    <div class="player-head">
-      <strong id="playerTitle">Оберіть матч</strong>
-      <button class="player-close" id="closePlayer" title="Очистити плеєр">×</button>
-    </div>
-
-    <div class="player-wrap">
-      <div class="player-empty" id="playerEmpty">
-        Виберіть матч зі списку
+  <!-- MODAL PLAYER -->
+  <div class="modal-overlay" id="player-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-match-title">Назва матчу</div>
+        <button class="close-btn" id="modal-close">&times;</button>
       </div>
-      <iframe
-        id="player"
-        src="about:blank"
-        title="Kasta Sports Player"
-        allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade">
-      </iframe>
-    </div>
-
-    <div class="player-info">
-      <div class="big" id="playerMatch">Матч не вибрано</div>
-      <div class="small" id="playerLeague">—</div>
-      <div class="server-row" id="servers"></div>
-
-      <div class="note">
-        Плеєр завантажується через офіційний embed URL, який повертає API.
-        Sandbox навмисно не використовується за замовчуванням: жорсткий sandbox
-        може зламати JavaScript, fullscreen, autoplay або саме відтворення.
-        Sandbox також не є способом видалення реклами з чужого iframe.
+      <div class="player-wrapper">
+        <iframe id="player-iframe" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="server-bar" id="modal-servers">
+        <!-- Сервери завантажуються динамічно -->
       </div>
     </div>
-  </aside>
+  </div>
 
-</div>
+  <script>
+    const API_URL = 'https://august.ppvtv.icu/api/matches.json';
+    
+    let matchesData = [];
+    let currentFilter = 'all';
+    let searchQuery = '';
 
-<footer class="footer">
-  Kasta Sports • Автоматичний каталог спортивних трансляцій
-</footer>
+    // DOM елементи
+    const gridEl = document.getElementById('matches-grid');
+    const countLiveEl = document.getElementById('count-live');
+    const countUpcomingEl = document.getElementById('count-upcoming');
+    const searchInput = document.getElementById('search-input');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    
+    // Елементи модального вікна
+    const modalEl = document.getElementById('player-modal');
+    const modalTitle = document.getElementById('modal-match-title');
+    const modalIframe = document.getElementById('player-iframe');
+    const modalServers = document.getElementById('modal-servers');
+    const modalClose = document.getElementById('modal-close');
 
-<script>
-const API_URL = "https://august.ppvtv.icu/api/matches.json";
+    // Отримання даних з API
+    async function fetchMatches() {
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Помилка мережі');
+        const data = await response.json();
+        
+        matchesData = data.matches || [];
+        
+        // Оновлення лічильників
+        countLiveEl.textContent = data.live || 0;
+        countUpcomingEl.textContent = data.upcoming || 0;
 
-let matches = [];
-let mode = "all";
-let selectedMatch = null;
-
-const cards = document.getElementById("cards");
-const search = document.getElementById("search");
-const sportFilter = document.getElementById("sportFilter");
-const liveCount = document.getElementById("liveCount");
-const updated = document.getElementById("updated");
-const sectionTitle = document.getElementById("sectionTitle");
-
-const player = document.getElementById("player");
-const playerEmpty = document.getElementById("playerEmpty");
-const playerTitle = document.getElementById("playerTitle");
-const playerMatch = document.getElementById("playerMatch");
-const playerLeague = document.getElementById("playerLeague");
-const servers = document.getElementById("servers");
-const closePlayer = document.getElementById("closePlayer");
-
-function escapeHtml(value){
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-function formatTime(iso){
-  if(!iso) return "—";
-  const d = new Date(iso);
-  if(Number.isNaN(d.getTime())) return "—";
-
-  return new Intl.DateTimeFormat("uk-UA",{
-    day:"2-digit",
-    month:"2-digit",
-    hour:"2-digit",
-    minute:"2-digit"
-  }).format(d);
-}
-
-function safeUrl(url){
-  try{
-    const u = new URL(url);
-    if(u.protocol === "https:" || u.protocol === "http:") return u.href;
-  }catch(e){}
-  return "";
-}
-
-function getPoster(m){
-  return safeUrl(m.poster || "");
-}
-
-function getLogo(team){
-  return safeUrl(team?.logo || "");
-}
-
-function imageOrPlaceholder(url, alt){
-  if(!url){
-    return `<div class="team-logo" aria-label="${escapeHtml(alt)}"></div>`;
-  }
-  return `<img class="team-logo" src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" loading="lazy" onerror="this.style.visibility='hidden'">`;
-}
-
-function renderSports(){
-  const sports = [...new Set(
-    matches.map(m => m.category).filter(Boolean)
-  )].sort();
-
-  sportFilter.innerHTML =
-    `<option value="all">Усі види спорту</option>` +
-    sports.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
-}
-
-function getFiltered(){
-  const q = search.value.trim().toLowerCase();
-  const sport = sportFilter.value;
-
-  return matches.filter(m => {
-    if(mode === "live" && String(m.status).toLowerCase() !== "live") return false;
-    if(mode === "upcoming" && String(m.status).toLowerCase() !== "upcoming") return false;
-    if(sport !== "all" && m.category !== sport) return false;
-
-    if(q){
-      const text = [
-        m.title,m.category,m.league,
-        m.teams?.home?.name,m.teams?.away?.name
-      ].join(" ").toLowerCase();
-
-      if(!text.includes(q)) return false;
+        renderMatches();
+      } catch (err) {
+        console.error('Fetch error:', err);
+        if (matchesData.length === 0) {
+          gridEl.innerHTML = `<div class="state-msg">Помилка завантаження даних. Спробуйте пізніше.</div>`;
+        }
+      }
     }
 
-    return true;
-  });
-}
+    // Відображення списку матчів
+    function renderMatches() {
+      const filtered = matchesData.filter(match => {
+        const matchesStatus = currentFilter === 'all' || match.status === currentFilter;
+        
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = match.title.toLowerCase().includes(query) ||
+                              (match.league && match.league.toLowerCase().includes(query)) ||
+                              (match.category && match.category.toLowerCase().includes(query));
+                              
+        return matchesStatus && matchesSearch;
+      });
 
-function render(){
-  const list = getFiltered();
+      if (filtered.length === 0) {
+        gridEl.innerHTML = `<div class="state-msg">Матчів не знайдено</div>`;
+        return;
+      }
 
-  sectionTitle.textContent =
-    mode === "live" ? "LIVE матчі" :
-    mode === "upcoming" ? "Найближчі матчі" :
-    "Матчі";
+      gridEl.innerHTML = filtered.map(match => {
+        const isLive = match.status === 'Live';
+        const statusClass = isLive ? 'live' : 'upcoming';
+        const statusText = isLive ? '🔴 LIVE' : formatTime(match.start_time);
 
-  if(!list.length){
-    cards.innerHTML = `<div class="empty">Нічого не знайдено.</div>`;
-    return;
-  }
-
-  cards.innerHTML = list.map(m => {
-    const live = String(m.status).toLowerCase() === "live";
-    const poster = getPoster(m);
-    const home = m.teams?.home || {};
-    const away = m.teams?.away || {};
-
-    return `
-      <article class="card ${live ? "live-card" : ""}" data-id="${escapeHtml(m.id)}">
-        <div class="card-top">
-          ${poster ? `<img class="poster" src="${escapeHtml(poster)}" alt="" loading="lazy">` : ""}
-          <div class="status ${live ? "live" : "upcoming"}">
-            ${live ? "● LIVE" : "UPCOMING"}
-          </div>
-        </div>
-
-        <div class="card-body">
-          <div class="league">${escapeHtml(m.category || "Sport")} • ${escapeHtml(m.league || "")}</div>
-          <div class="match-title">${escapeHtml(m.title || "Матч")}</div>
-
-          <div class="teams">
-            <div class="team">
-              ${imageOrPlaceholder(getLogo(home), home.name || "Home")}
-              <span class="team-name">${escapeHtml(home.name || "Home")}</span>
+        return `
+          <div class="card" onclick="openPlayer('${match.id}')">
+            <div>
+              <div class="card-header">
+                <span class="league-tag">${match.category || 'Спорт'} • ${match.league || ''}</span>
+                <span class="status-tag ${statusClass}">${statusText}</span>
+              </div>
+              <div class="match-title">${escapeHtml(match.title)}</div>
             </div>
-
-            <div class="vs">VS</div>
-
-            <div class="team away">
-              <span class="team-name">${escapeHtml(away.name || "Away")}</span>
-              ${imageOrPlaceholder(getLogo(away), away.name || "Away")}
+            <div class="card-footer">
+              <span>${match.servers ? match.servers.length : 1} серв.</span>
+              <button class="btn-watch">Дивитися</button>
             </div>
           </div>
-
-          <div class="card-bottom">
-            <span class="time">${live ? "Прямий ефір" : formatTime(m.start_time)}</span>
-            <button class="watch">${live ? "ДИВИТИСЯ" : "ВІДКРИТИ"}</button>
-          </div>
-        </div>
-      </article>
-    `;
-  }).join("");
-
-  cards.querySelectorAll(".card").forEach(card => {
-    card.addEventListener("click", () => {
-      const m = matches.find(x => String(x.id) === card.dataset.id);
-      if(m) openMatch(m);
-    });
-  });
-}
-
-function openMatch(m){
-  selectedMatch = m;
-
-  playerEmpty.style.display = "none";
-  playerTitle.textContent = m.title || "Матч";
-  playerMatch.textContent = m.title || "Матч";
-  playerLeague.textContent =
-    `${m.category || "Sport"} • ${m.league || ""}`;
-
-  servers.innerHTML = "";
-
-  const list = Array.isArray(m.servers) && m.servers.length
-    ? m.servers
-    : [{name:"Server 1", embed_url:m.embed_url}];
-
-  list.forEach((s,index) => {
-    const btn = document.createElement("button");
-    btn.className = "server-btn" + (index === 0 ? " active" : "");
-    btn.textContent = s.name || `Server ${index+1}`;
-
-    btn.addEventListener("click", e => {
-      e.stopPropagation();
-      loadServer(s.embed_url, btn);
-    });
-
-    servers.appendChild(btn);
-  });
-
-  loadServer(list[0]?.embed_url, servers.querySelector(".server-btn"));
-
-  if(window.innerWidth <= 900){
-    document.querySelector(".player-panel").scrollIntoView({
-      behavior:"smooth",
-      block:"start"
-    });
-  }
-}
-
-function loadServer(url, activeButton){
-  const finalUrl = safeUrl(url);
-  if(!finalUrl) return;
-
-  player.src = finalUrl;
-
-  servers.querySelectorAll(".server-btn").forEach(b => b.classList.remove("active"));
-  if(activeButton) activeButton.classList.add("active");
-}
-
-closePlayer.addEventListener("click", () => {
-  player.src = "about:blank";
-  playerEmpty.style.display = "grid";
-  playerTitle.textContent = "Оберіть матч";
-  playerMatch.textContent = "Матч не вибрано";
-  playerLeague.textContent = "—";
-  servers.innerHTML = "";
-  selectedMatch = null;
-});
-
-document.querySelectorAll(".tab").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
-    btn.classList.add("active");
-    mode = btn.dataset.mode;
-    render();
-  });
-});
-
-search.addEventListener("input", render);
-sportFilter.addEventListener("change", render);
-
-async function loadMatches(){
-  try{
-    const response = await fetch(API_URL, {
-      cache:"no-store"
-    });
-
-    if(!response.ok){
-      throw new Error("HTTP " + response.status);
+        `;
+      }).join('');
     }
 
-    const data = await response.json();
+    // Відкриття плеєра
+    function openPlayer(matchId) {
+      const match = matchesData.find(m => m.id === matchId);
+      if (!match) return;
 
-    matches = Array.isArray(data.matches) ? data.matches : [];
+      modalTitle.textContent = match.title;
+      
+      // Налаштування серверів
+      const servers = match.servers && match.servers.length > 0 
+        ? match.servers 
+        : [{ name: 'Основний сервер', embed_url: match.embed_url }];
 
-    liveCount.textContent =
-      `LIVE: ${Number.isFinite(data.live) ? data.live : matches.filter(m => m.status === "Live").length}`;
+      modalServers.innerHTML = '<span class="server-label">Сервер:</span>' + 
+        servers.map((s, idx) => `
+          <button class="server-btn ${idx === 0 ? 'active' : ''}" 
+                  onclick="changeServer('${s.embed_url}', this)">
+            ${s.name}
+          </button>
+        `).join('');
 
-    if(data.updated){
-      updated.textContent =
-        "Оновлено: " +
-        new Intl.DateTimeFormat("uk-UA",{
-          hour:"2-digit",
-          minute:"2-digit",
-          second:"2-digit"
-        }).format(new Date(data.updated));
-    }else{
-      updated.textContent = "Оновлено щойно";
+      // Встановлення джерела iframe (перший сервер за замовчуванням)
+      modalIframe.src = servers[0].embed_url;
+      modalEl.classList.add('active');
+      document.body.style.overflow = 'hidden'; // Заборонити скрол сторінки
     }
 
-    renderSports();
-    render();
+    // Зміна сервера у модальному вікні
+    function changeServer(url, btn) {
+      modalIframe.src = url;
+      document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
 
-  }catch(error){
-    console.error(error);
-    cards.innerHTML = `
-      <div class="empty">
-        <strong>Не вдалося завантажити матчі.</strong><br><br>
-        Перевірте доступ до API або відкрийте сторінку ще раз.
-      </div>
-    `;
-    updated.textContent = "Помилка API";
-    liveCount.textContent = "LIVE: —";
-  }
-}
+    // Закриття модального вікна
+    function closeModal() {
+      modalEl.classList.remove('active');
+      modalIframe.src = ''; // Зупинка відтворення аудіо/відео
+      document.body.style.overflow = '';
+    }
 
-loadMatches();
+    // Допоміжні функції
+    function formatTime(isoString) {
+      if (!isoString) return 'Скоро';
+      const date = new Date(isoString);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
 
-/* Оновлення каталогу кожні 60 секунд.
-   Відкритий плеєр при цьому не перезавантажується. */
-setInterval(loadMatches, 60000);
-</script>
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
 
+    // Слухачі подій
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderMatches();
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderMatches();
+    });
+
+    modalClose.addEventListener('click', closeModal);
+    
+    modalEl.addEventListener('click', (e) => {
+      if (e.target === modalEl) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modalEl.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Ініціалізація та оновлення кожні 30 секунд
+    fetchMatches();
+    setInterval(fetchMatches, 30000);
+  </script>
 </body>
 </html>
-=== "Live").length}`;
-
-    if(data.updated){
-      updated.textContent =
-        "Оновлено: " +
-        new Intl.DateTimeFormat("uk-UA",{
-          hour:"2-digit",
-          minute:"2-digit",
-          second:"2-digit"
-        }).format(new Date(data.updated));
-    }else{
