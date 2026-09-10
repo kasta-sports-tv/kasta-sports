@@ -12,7 +12,7 @@
     :root {
       --bg-body: #08090c;
       --bg-card: #12141c;
-      --bg-glass: rgba(18, 20, 28, 0.75);
+      --bg-glass: rgba(18, 20, 28, 0.85);
       --accent-red: #ff2a55;
       --accent-red-glow: rgba(255, 42, 85, 0.4);
       --accent-blue: #2d62ff;
@@ -529,7 +529,7 @@
   </div>
 
   <script>
-    const API_URL = 'https://august.ppvtv.icu/api/matches.json';
+    const TARGET_API_URL = 'https://august.ppvtv.icu/api/matches.json';
     const DEFAULT_POSTER = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80';
 
     let rawMatches = [];
@@ -538,14 +538,13 @@
     let selectedDate = 'all';
     let searchQuery = '';
 
-    // Спирти з іконками
     const SPORT_ICONS = {
       'Football': '⚽', 'Basketball': '🏀', 'Tennis': '🎾', 'Hockey': '🏒',
       'Ice Hockey': '🏒', 'Baseball': '⚾', 'Motorsport': '🏎️', 'MMA': '🥊',
       'Boxing': '🥊', 'Volleyball': '🏐', 'Rugby': '🏉', 'Cricket': '🏏'
     };
 
-    // Оновлення живого годинника (Київський час)
+    // Оновлення живого годинника (Київ)
     function updateClock() {
       const now = new Date();
       const options = { timeZone: 'Europe/Kyiv', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -554,18 +553,59 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Завантаження даних
+    // Завантаження даних із робастною трирівневою обробкою
     async function loadData() {
-      try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
-        rawMatches = data.matches || [];
-        
+      const endpoints = [
+        TARGET_API_URL,                                                  // 1. Прямий запит
+        `https://corsproxy.io/?${encodeURIComponent(TARGET_API_URL)}`,   // 2. CorsProxy.io
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(TARGET_API_URL)}` // 3. AllOrigins
+      ];
+
+      let data = null;
+
+      for (let i = 0; i < endpoints.length; i++) {
+        try {
+          console.log(`Спроба завантаження #${i + 1}: ${endpoints[i]}`);
+          const res = await fetch(endpoints[i], {
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store'
+          });
+
+          if (res.ok) {
+            const text = await res.text();
+            // Перевіряємо чи отримали ми дійсно JSON, а не HTML-сторінку з помилкою
+            if (text.trim().startsWith('{') || text.trim().startsWith('[')) {
+              data = JSON.parse(text);
+              console.log(`Успішно завантажено через джерело #${i + 1}`);
+              break;
+            }
+          }
+        } catch (e) {
+          console.warn(`Джерело #${i + 1} повернуло помилку:`, e);
+        }
+      }
+
+      // Обробка результату
+      if (data && data.matches) {
+        rawMatches = data.matches;
         buildSportsBar();
         render();
-      } catch (e) {
-        console.error(e);
-        document.getElementById('matches-grid').innerHTML = `<div class="state-msg">Помилка оновлення даних.</div>`;
+      } else if (rawMatches.length === 0) {
+        document.getElementById('matches-grid').innerHTML = `
+          <div class="state-msg">
+            <p style="font-size: 1.1rem; color: var(--accent-red); font-weight: 700;">⚠️ Не вдалося завантажити дані зaugust.ppvtv.icu</p>
+            <p style="font-size: 0.85rem; margin-top: 0.5rem; color: #8e8ea0; max-width: 600px; margin-left: auto; margin-right: auto;">
+              Браузер на ПК блокує прямому та проксі-запитам доступ до домену через політику CORS або Cloudflare.
+            </p>
+            <div style="margin-top: 1.5rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+              <button onclick="loadData()" style="padding: 0.6rem 1.2rem; background: var(--accent-blue); color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight:600;">
+                🔄 Спробувати ще раз
+              </button>
+              <a href="${TARGET_API_URL}" target="_blank" style="padding: 0.6rem 1.2rem; background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
+                🔗 Відкрити JSON у новій вкладці (Авторизувати сертифікат)
+              </a>
+            </div>
+          </div>`;
       }
     }
 
@@ -591,24 +631,18 @@
     // Фільтрація та рендеринг
     function render() {
       const grid = document.getElementById('matches-grid');
-      
       const nowKyiv = new Date();
       
       const filtered = rawMatches.filter(m => {
-        // Спорт
         if (selectedSport !== 'all' && m.category !== selectedSport) return false;
-        
-        // Статус
         if (selectedStatus !== 'all' && m.status !== selectedStatus) return false;
 
-        // Пошук
         if (searchQuery) {
           const q = searchQuery.toLowerCase();
           const matchText = `${m.title} ${m.league} ${m.category}`.toLowerCase();
           if (!matchText.includes(q)) return false;
         }
 
-        // Дати
         if (selectedDate !== 'all' && m.start_time) {
           const matchDate = new Date(m.start_time);
           const isToday = matchDate.toDateString() === nowKyiv.toDateString();
@@ -656,7 +690,6 @@
       }).join('');
     }
 
-    // Форматування UTC дати в український час
     function formatKyivTime(isoString) {
       if (!isoString) return 'Скоро';
       const d = new Date(isoString);
@@ -665,7 +698,6 @@
       return `${dayMonth}, ${time}`;
     }
 
-    // Плеєр
     function openPlayer(matchId) {
       const match = rawMatches.find(m => m.id === matchId);
       if (!match) return;
@@ -736,7 +768,7 @@
 
     // Init
     loadData();
-    setInterval(loadData, 30000); // Оновлення API кожні 30 сек
+    setInterval(loadData, 30000);
   </script>
 </body>
 </html>
