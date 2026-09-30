@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Football Live Pro - Футбол Онлайн</title>
+  <title>Football Live Pro - Прямі Трансляції Футбол</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     body {
-      background-color: #0d0f12;
+      background-color: #0f1115;
       color: #e2e8f0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     }
     .card-matte {
-      background: #151821;
-      border: 1px solid #222736;
+      background: #161920;
+      border: 1px solid #232733;
       transition: all 0.2s ease-in-out;
     }
     .card-matte:hover {
@@ -24,25 +24,27 @@
     .stat-card-active {
       border-color: #10b981 !important;
       background: #1a222d !important;
+      box-shadow: 0 4px 20px -5px rgba(16, 185, 129, 0.2);
     }
     .badge-live {
-      background-color: rgba(239, 68, 68, 0.15);
+      background-color: rgba(239, 68, 68, 0.2);
       color: #ef4444;
       border: 1px solid rgba(239, 68, 68, 0.4);
     }
     .badge-upcoming {
-      background-color: rgba(16, 185, 129, 0.15);
-      color: #10b981;
-      border: 1px solid rgba(16, 185, 129, 0.4);
+      background-color: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.4);
     }
     ::-webkit-scrollbar {
       width: 8px;
+      height: 8px;
     }
     ::-webkit-scrollbar-track {
-      background: #0d0f12;
+      background: #0f1115;
     }
     ::-webkit-scrollbar-thumb {
-      background: #222736;
+      background: #232733;
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
@@ -50,33 +52,36 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased">
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-600 selection:text-white">
 
   <!-- Sticky Header -->
-  <header class="sticky top-0 z-40 bg-[#12151d]/95 backdrop-blur-md border-b border-[#222736]">
+  <header class="sticky top-0 z-40 bg-[#12151c]/95 backdrop-blur-md border-b border-[#232733] shadow-lg shadow-black/20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         
         <!-- Logo -->
         <div class="flex items-center gap-3 cursor-pointer" onclick="setFilter('all')">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <i data-lucide="activity" class="w-6 h-6 text-white"></i>
+            <i data-lucide="activity" class="w-5 h-5 text-white"></i>
           </div>
           <div>
-            <span class="text-xl font-black tracking-wider text-white">FOOTBALL<span class="text-emerald-500">LIVE</span></span>
-            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 ml-2 font-mono">UA TIME</span>
+            <span class="text-xl font-bold tracking-wider text-white">FOOTBALL<span class="text-emerald-500">PRO</span></span>
+            <span class="hidden sm:inline-block text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 ml-2 font-mono">LIVE UA</span>
           </div>
         </div>
 
-        <!-- Live Kyiv Time & Refresh -->
-        <div class="flex items-center gap-4">
-          <div class="hidden sm:flex items-center gap-2 bg-[#171b26] border border-[#222736] px-3 py-1.5 rounded-lg text-xs font-mono text-emerald-400">
+        <!-- Right Controls: Kyiv Clock & Manual Refresh -->
+        <div class="flex items-center gap-3">
+          
+          <!-- Clock Header -->
+          <div class="flex items-center gap-2 bg-[#161920] border border-[#232733] px-3 py-1.5 rounded-lg text-xs font-mono text-emerald-400 shadow-inner">
             <i data-lucide="clock" class="w-4 h-4 text-emerald-500"></i>
-            <span id="kyiv-clock">--:--:--</span>
-            <span class="text-gray-500 text-[10px]">KYIV</span>
+            <span id="kyiv-clock" class="font-bold">--:--:--</span>
+            <span class="text-gray-500 text-[10px] hidden sm:inline">KYIV</span>
           </div>
 
-          <button onclick="loadSoccerEvents()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#171b26] hover:bg-[#202535] text-sm text-gray-300 transition-colors border border-[#222736]">
+          <!-- Refresh Button -->
+          <button onclick="loadSoccerEvents()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1c202b] hover:bg-[#252a38] text-sm text-gray-300 transition-colors border border-[#2b3040]">
             <i data-lucide="refresh-cw" id="refresh-icon" class="w-4 h-4"></i>
             <span class="hidden sm:inline">Оновити</span>
           </button>
@@ -86,13 +91,13 @@
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- Main Content Layout -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
 
-    <!-- Interactive Interactive Stat Cards (Serving as Filter Buttons) -->
+    <!-- Interactive Top Info Stats Bar (Clickable Filter Buttons) -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
       
-      <div onclick="setFilter('all')" id="stat-btn-all" class="card-matte stat-card-active rounded-xl p-3.5 flex items-center gap-3 cursor-pointer select-none">
+      <div onclick="setFilter('all')" id="stat-btn-all" class="card-matte stat-card-active rounded-xl p-3.5 flex items-center gap-3 cursor-pointer select-none transition-all">
         <div class="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="trophy" class="w-5 h-5"></i></div>
         <div>
           <div class="text-xs text-gray-400 font-medium">Усі на 2 дні</div>
@@ -100,15 +105,15 @@
         </div>
       </div>
 
-      <div onclick="setFilter('live')" id="stat-btn-live" class="card-matte rounded-xl p-3.5 flex items-center gap-3 cursor-pointer select-none">
+      <div onclick="setFilter('live')" id="stat-btn-live" class="card-matte rounded-xl p-3.5 flex items-center gap-3 cursor-pointer select-none transition-all">
         <div class="p-2.5 rounded-lg bg-red-500/10 text-red-400"><i data-lucide="radio" class="w-5 h-5"></i></div>
         <div>
-          <div class="text-xs text-gray-400 font-medium">Прямий ефір</div>
+          <div class="text-xs text-gray-400 font-medium">Прямий ефір (Live)</div>
           <div class="text-lg font-bold text-white" id="count-live">0</div>
         </div>
       </div>
 
-      <div onclick="setFilter('today')" id="stat-btn-today" class="card-matte rounded-xl p-3.5 flex items-center gap-3 cursor-pointer select-none">
+      <div onclick="setFilter('today')" id="stat-btn-today" class="card-matte rounded-xl p-3.5 flex items-center gap-3 cursor-pointer select-none transition-all">
         <div class="p-2.5 rounded-lg bg-blue-500/10 text-blue-400"><i data-lucide="calendar" class="w-5 h-5"></i></div>
         <div>
           <div class="text-xs text-gray-400 font-medium">Скоро (Сьогодні)</div>
@@ -116,7 +121,7 @@
         </div>
       </div>
 
-      <div onclick="setFilter('tomorrow')" id="stat-btn-tomorrow" class="card-matte rounded-xl p-3.5 flex items-center gap-3 cursor-pointer select-none">
+      <div onclick="setFilter('tomorrow')" id="stat-btn-tomorrow" class="card-matte rounded-xl p-3.5 flex items-center gap-3 cursor-pointer select-none transition-all">
         <div class="p-2.5 rounded-lg bg-purple-500/10 text-purple-400"><i data-lucide="calendar-days" class="w-5 h-5"></i></div>
         <div>
           <div class="text-xs text-gray-400 font-medium">Завтра</div>
@@ -126,17 +131,17 @@
 
     </div>
 
-    <!-- Search Bar -->
-    <div class="flex items-center justify-between gap-4 bg-[#151821] p-3 rounded-xl border border-[#222736]">
+    <!-- Search Input Bar -->
+    <div class="flex items-center justify-between gap-4 bg-[#161920] p-3 rounded-xl border border-[#232733]">
       <div class="relative w-full">
         <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        <input type="text" id="search-input" oninput="renderFilteredEvents()" placeholder="Пошук команди, країни або турніру..." class="w-full bg-[#0d0f12] border border-[#222736] rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors">
+        <input type="text" id="search-input" oninput="renderFilteredEvents()" placeholder="Пошук команди, країни чи турніру..." class="w-full bg-[#0f1115] border border-[#232733] rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors">
       </div>
     </div>
 
     <!-- Events Layout Section -->
     <div id="events-container" class="flex flex-col gap-8">
-      <!-- Dynamically generated sections -->
+      <!-- Dynamically rendered match lists -->
     </div>
 
     <!-- Loading State -->
@@ -147,21 +152,21 @@
 
     <!-- Empty State -->
     <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 text-center">
-      <div class="w-16 h-16 rounded-full bg-[#151821] flex items-center justify-center text-gray-500 mb-3 border border-[#222736]">
+      <div class="w-16 h-16 rounded-full bg-[#161920] flex items-center justify-center text-gray-500 mb-3 border border-[#232733]">
         <i data-lucide="search-x" class="w-8 h-8"></i>
       </div>
-      <h3 class="text-lg font-semibold text-white">Матчів не знайдено</h3>
-      <p class="text-sm text-gray-400 max-w-sm mt-1">Немає доступних матчів за обраним фільтром на сьогодні та завтра.</p>
+      <h3 class="text-lg font-semibold text-white">Нічого не знайдено</h3>
+      <p class="text-sm text-gray-400 max-w-sm mt-1">Немає матчів за обраним фільтром на сьогодні та завтра.</p>
     </div>
 
   </main>
 
-  <!-- Stream Player Modal -->
-  <div id="player-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
-    <div class="bg-[#12151d] border border-[#222736] rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh]">
+    <!-- Stream Player Modal -->
+  <div id="player-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-[#12151c] border border-[#232733] rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh]">
       
       <!-- Modal Header -->
-      <div class="px-4 py-3 border-b border-[#222736] flex items-center justify-between bg-[#151821]">
+      <div class="px-4 py-3 border-b border-[#232733] flex items-center justify-between bg-[#161920]">
         <div class="flex items-center gap-3 overflow-hidden">
           <span class="flex h-2.5 w-2.5 relative">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -169,7 +174,7 @@
           </span>
           <h3 id="modal-title" class="font-bold text-white truncate text-sm sm:text-base">Трансляція матчу</h3>
         </div>
-        <button onclick="closePlayer()" class="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-[#222736] transition-colors">
+        <button onclick="closePlayer()" class="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-[#232733] transition-colors">
           <i data-lucide="x" class="w-6 h-6"></i>
         </button>
       </div>
@@ -180,10 +185,10 @@
       </div>
 
       <!-- Channels List Footer -->
-      <div class="p-4 bg-[#151821] border-t border-[#222736] flex flex-col gap-2">
+      <div class="p-4 bg-[#161920] border-t border-[#232733] flex flex-col gap-2">
         <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Оберіть канал трансляції:</div>
         <div id="modal-channels" class="flex flex-wrap gap-2 max-h-28 overflow-y-auto pr-1">
-          <!-- Channels loaded via JS -->
+          <!-- Channels list -->
         </div>
       </div>
 
@@ -191,31 +196,42 @@
   </div>
 
   <!-- Footer -->
-  <footer class="mt-auto border-t border-[#222736] bg-[#12151d] py-6">
+  <footer class="mt-auto border-t border-[#232733] bg-[#12151c] py-6">
     <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
-      <p>© 2026 FOOTBALL LIVE PRO. Автоматична конвертація за київським часом.</p>
+      <p>© 2026 FOOTBALL PRO LIVE. Автоматичний перелічено на київський час. Автооновлення кожні 5 хв.</p>
     </div>
   </footer>
 
   <script>
     const API_URL = 'https://api.cdnlivetv.tv/api/v1/events/sports/soccer/?user=cdnlivetv&plan=free';
-    const fallbackLogo = 'https://via.placeholder.com/40/151821/9ca3af?text=VS';
+    const fallbackLogo = 'https://via.placeholder.com/40/1f2937/9ca3af?text=VS';
 
     let rawEventsList = [];
     let processedEvents = [];
-    let currentFilter = 'all'; // all, live, today, tomorrow
+    let currentFilter = 'all';
 
     document.addEventListener('DOMContentLoaded', () => {
       startClock();
       loadSoccerEvents();
+
+      // Auto Refresh Every 5 Minutes (300,000 ms)
+      setInterval(() => {
+        loadSoccerEvents();
+      }, 300000);
     });
 
-    // Kyiv Live Clock
+    // Kyiv Time Live Clock Display
     function startClock() {
       const update = () => {
         const now = new Date();
-        const timeStr = now.toLocaleTimeString('uk-UA', { timeZone: 'Europe/Kyiv', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        document.getElementById('kyiv-clock').innerText = timeStr;
+        const timeStr = now.toLocaleTimeString('uk-UA', { 
+          timeZone: 'Europe/Kyiv', 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          second: '2-digit' 
+        });
+        const clockEl = document.getElementById('kyiv-clock');
+        if (clockEl) clockEl.innerText = timeStr;
       };
       update();
       setInterval(update, 1000);
@@ -227,10 +243,10 @@
       const empty = document.getElementById('empty-state');
       const refreshIcon = document.getElementById('refresh-icon');
 
-      loading.classList.remove('hidden');
-      container.innerHTML = '';
-      empty.classList.add('hidden');
-      refreshIcon.classList.add('animate-spin');
+      if (loading) loading.classList.remove('hidden');
+      if (container) container.innerHTML = '';
+      if (empty) empty.classList.add('hidden');
+      if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
       try {
         const response = await fetch(API_URL);
@@ -242,10 +258,12 @@
         processAndFilterEvents();
       } catch (error) {
         console.error('Помилка завантаження даних:', error);
-        container.innerHTML = `<div class="text-center py-10 text-red-400">Не вдалося завантажити розклад. Перевірте з'єднання з мережею.</div>`;
+        if (container) {
+          container.innerHTML = `<div class="text-center py-10 text-red-400">Не вдалося завантажити розклад. Перевірте з'єднання з мережею.</div>`;
+        }
       } finally {
-        loading.classList.add('hidden');
-        refreshIcon.classList.remove('animate-spin');
+        if (loading) loading.classList.add('hidden');
+        if (refreshIcon) refreshIcon.classList.remove('animate-spin');
       }
     }
 
@@ -262,26 +280,30 @@
       rawEventsList.forEach(item => {
         if (!item.start) return;
 
-        // Parse UTC / API start date
+        // Parse UTC start time safely
         const startDateObj = new Date(item.start.replace(' ', 'T') + 'Z');
         
-        // Convert to Kyiv date & time strings
+        // Convert to Kyiv date & time string
         const eventKyivDateStr = getKyivDateString(startDateObj);
-        const eventKyivTimeStr = startDateObj.toLocaleTimeString('uk-UA', { timeZone: 'Europe/Kyiv', hour: '2-digit', minute: '2-digit' });
+        const eventKyivTimeStr = startDateObj.toLocaleTimeString('uk-UA', { 
+          timeZone: 'Europe/Kyiv', 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
 
-        // Filter out past / finished events & events beyond tomorrow
+        // Strict 2 days check
         const isToday = (eventKyivDateStr === todayStr);
         const isTomorrow = (eventKyivDateStr === tomorrowStr);
 
-        if (!isToday && !isTomorrow) return; // Keep strictly Today and Tomorrow
+        if (!isToday && !isTomorrow) return;
 
         const statusLower = (item.status || '').toLowerCase();
         const hasChannels = item.channels && item.channels.length > 0;
         
-        // Strict LIVE checking: status is active AND has broadcast channels
         const isFinished = statusLower === 'finished' || statusLower === 'ft';
-        if (isFinished) return; // Do not show finished games
+        if (isFinished) return; // Hide finished matches
 
+        // Strict Live Condition: status isn't Not Started AND channels exist
         const isLive = (statusLower !== 'ns' && statusLower !== 'not started' && hasChannels);
 
         processedEvents.push({
@@ -316,16 +338,17 @@
       return `${y}-${m}-${d}`;
     }
 
-    function setFilter(type) {
+        function setFilter(type) {
       currentFilter = type;
 
-      // Update stat cards highlight styling
       ['all', 'live', 'today', 'tomorrow'].forEach(id => {
         const el = document.getElementById(`stat-btn-${id}`);
-        if (id === type) {
-          el.classList.add('stat-card-active');
-        } else {
-          el.classList.remove('stat-card-active');
+        if (el) {
+          if (id === type) {
+            el.classList.add('stat-card-active');
+          } else {
+            el.classList.remove('stat-card-active');
+          }
         }
       });
 
@@ -337,7 +360,6 @@
       const empty = document.getElementById('empty-state');
       const search = document.getElementById('search-input').value.toLowerCase().trim();
 
-      // Filter events based on active tab & search query
       let list = processedEvents.filter(event => {
         if (search) {
           const home = (event.homeTeam || '').toLowerCase();
@@ -364,7 +386,7 @@
 
       empty.classList.add('hidden');
 
-      // Group into LIVE, TODAY, and TOMORROW sections
+      // Strict Sorting: Live first, then by time
       const liveList = list.filter(e => e.isLive).sort((a, b) => a.timestamp - b.timestamp);
       const todayList = list.filter(e => e.isToday && !e.isLive).sort((a, b) => a.timestamp - b.timestamp);
       const tomorrowList = list.filter(e => e.isTomorrow && !e.isLive).sort((a, b) => a.timestamp - b.timestamp);
@@ -390,9 +412,9 @@
     function renderSection(title, events, isLiveSection) {
       return `
         <div class="flex flex-col gap-3">
-          <div class="flex items-center gap-2 border-b border-[#222736] pb-2">
+          <div class="flex items-center gap-2 border-b border-[#232733] pb-2">
             <h2 class="text-base font-bold text-white tracking-wide">${title}</h2>
-            <span class="text-xs bg-[#1f2433] text-gray-400 px-2 py-0.5 rounded-full font-mono">${events.length}</span>
+            <span class="text-xs bg-[#1c202b] text-gray-400 px-2.5 py-0.5 rounded-full font-mono border border-[#2b3040]">${events.length}</span>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             ${events.map(e => renderMatchCard(e, isLiveSection)).join('')}
@@ -406,41 +428,48 @@
       const channelsJson = JSON.stringify(event.channels || []).replace(/"/g, '&quot;');
       const matchTitle = `${event.homeTeam || 'Home'} vs ${event.awayTeam || 'Away'}`.replace(/'/g, "\\'");
 
+      let statusBadge = '';
+      if (isLive) {
+        statusBadge = `<span class="badge-live px-2 py-0.5 rounded text-xs font-semibold flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+          LIVE (${event.status || '1H'}) • ${event.kyivTimeStr}
+        </span>`;
+      } else {
+        statusBadge = `<span class="badge-upcoming px-2 py-0.5 rounded text-xs font-mono font-medium">🕒 ${event.kyivTimeStr}</span>`;
+      }
+
       return `
         <div class="card-matte rounded-2xl p-4 flex flex-col justify-between gap-4">
           
-          <!-- Top info bar -->
-          <div class="flex items-center justify-between text-xs text-gray-400 pb-2 border-b border-[#222736]">
-            <div class="flex items-center gap-1.5 truncate max-w-[65%]">
+          <!-- Card Header: Tournament & Status with Kyiv Time -->
+          <div class="flex items-center justify-between text-xs text-gray-400 pb-2 border-b border-[#232733]">
+            <div class="flex items-center gap-1.5 truncate max-w-[60%]">
               ${event.countryIMG ? `<img src="${event.countryIMG}" class="w-4 h-3 object-cover rounded-sm" alt="" onerror="this.style.display='none'">` : ''}
               <span class="truncate font-medium text-gray-300" title="${event.tournament}">${event.tournament || event.country || 'Футбол'}</span>
             </div>
-            ${isLive 
-              ? `<span class="badge-live px-2 py-0.5 rounded text-xs font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>LIVE (${event.status})</span>`
-              : `<span class="badge-upcoming px-2 py-0.5 rounded text-xs font-mono font-medium">🕒 ${event.kyivTimeStr}</span>`
-            }
+            ${statusBadge}
           </div>
 
-          <!-- Teams and Flags -->
+          <!-- Teams Section -->
           <div class="grid grid-cols-5 items-center gap-2 py-1">
             <div class="col-span-2 flex flex-col items-center text-center gap-2">
-              <img src="${event.homeTeamIMG || fallbackLogo}" onerror="this.src='${fallbackLogo}'" class="w-12 h-12 object-contain p-1.5 rounded-xl bg-[#0d0f12] border border-[#222736]" alt="">
+              <img src="${event.homeTeamIMG || fallbackLogo}" onerror="this.src='${fallbackLogo}'" class="w-12 h-12 object-contain p-1 rounded-xl bg-[#0f1115] border border-[#232733]" alt="">
               <span class="text-xs font-semibold text-white line-clamp-2">${event.homeTeam || 'Команда 1'}</span>
             </div>
 
             <div class="col-span-1 flex flex-col items-center justify-center">
-              <span class="text-xs font-black text-gray-600 tracking-widest">VS</span>
+              <span class="text-xs font-black text-gray-600 uppercase tracking-widest">VS</span>
               <span class="text-[10px] font-mono text-gray-500 mt-1">${event.isToday ? 'Сьогодні' : 'Завтра'}</span>
             </div>
 
             <div class="col-span-2 flex flex-col items-center text-center gap-2">
-              <img src="${event.awayTeamIMG || fallbackLogo}" onerror="this.src='${fallbackLogo}'" class="w-12 h-12 object-contain p-1.5 rounded-xl bg-[#0d0f12] border border-[#222736]" alt="">
+              <img src="${event.awayTeamIMG || fallbackLogo}" onerror="this.src='${fallbackLogo}'" class="w-12 h-12 object-contain p-1 rounded-xl bg-[#0f1115] border border-[#232733]" alt="">
               <span class="text-xs font-semibold text-white line-clamp-2">${event.awayTeam || 'Команда 2'}</span>
             </div>
           </div>
 
-          <!-- Footer & Action Button -->
-          <div class="pt-2 border-t border-[#222736] flex items-center justify-between">
+          <!-- Card Footer & Action Button -->
+          <div class="pt-2 border-t border-[#232733] flex items-center justify-between">
             <span class="text-xs text-gray-400 flex items-center gap-1">
               <i data-lucide="tv" class="w-3.5 h-3.5 text-emerald-400"></i>
               ${channelsCount} ${channelsCount === 1 ? 'канал' : 'каналів'}
@@ -470,14 +499,14 @@
       if (channels && channels.length > 0) {
         channels.forEach((ch, idx) => {
           const btn = document.createElement('button');
-          btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors border ${idx === 0 ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-[#171b26] text-gray-300 border-[#222736] hover:bg-[#202535]'}`;
+          btn.className = `px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors border ${idx === 0 ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-[#1c202b] text-gray-300 border-[#2b3040] hover:bg-[#252a38]'}`;
           btn.innerHTML = `
             ${ch.image ? `<img src="${ch.image}" class="w-4 h-4 object-contain rounded" onerror="this.style.display='none'">` : ''}
             <span>${ch.channel_name || 'Канал ' + (idx + 1)}</span>
           `;
           btn.onclick = () => {
             document.querySelectorAll('#modal-channels button').forEach(b => {
-              b.className = 'px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors border bg-[#171b26] text-gray-300 border-[#222736] hover:bg-[#202535]';
+              b.className = 'px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors border bg-[#1c202b] text-gray-300 border-[#2b3040] hover:bg-[#252a38]';
             });
             btn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors border bg-emerald-600 text-white border-emerald-500';
             setStreamUrl(ch.url);
