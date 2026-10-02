@@ -1,39 +1,46 @@
+```html
 <!DOCTYPE html>
 <html lang="uk" class="dark h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Matchora Sports Live</title>
+  <title>LiveStream Football Portal — Прямі футбольні трансляції</title>
   
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <!-- Google Fonts Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script>
+    // Tailwind Config Customizing Dark Matte Theme Colors
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           colors: {
             brand: {
+              50: '#eef2ff',
               500: '#6366f1',
               600: '#4f46e5',
+              700: '#4338ca',
             },
             matte: {
-              bg: '#0a0a0c',
-              card: '#121216',
-              hover: '#191920',
-              border: '#22222a',
-              accent: '#2a2a35',
+              bg: '#09090b',       /* Pitch dark background */
+              card: '#121215',     /* Card matte container */
+              hover: '#18181c',    /* Hover state surface */
+              border: '#222228',   /* Subtle grid borders */
+              accent: '#272730',   /* Deep zinc accents */
             }
           },
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
+          },
+          animation: {
+            'pulse-fast': 'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           }
         }
       }
@@ -41,413 +48,560 @@
   </script>
 
   <style>
-    body {
-      background-color: #0a0a0c;
+    html, body {
+      background-color: #09090b;
       color: #f4f4f5;
       font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
     }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0a0a0c; }
-    ::-webkit-scrollbar-thumb { background: #22222a; border-radius: 4px; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Custom Matte Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #222228;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #33333e;
+    }
+
+    .glass-nav {
+      background: rgba(18, 18, 21, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .card-glow:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px 0 rgba(99, 102, 241, 0.1);
+    }
+
+    /* Custom scrollbar for channel list inside card footer */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   </style>
 </head>
-<body class="h-full flex flex-col min-h-screen antialiased">
+<body class="h-full flex flex-col antialiased selection:bg-brand-600 selection:text-white">
 
-  <!-- HEADER -->
-  <header class="sticky top-0 z-40 bg-[#121216]/90 backdrop-blur-md border-b border-matte-border">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      
-      <!-- LOGO -->
-      <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-lg shadow-brand-600/30">
-          <i class="fa-solid fa-bolt text-base"></i>
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="sticky top-0 z-40 glass-nav border-b border-matte-border transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-4">
+        
+        <!-- Logo Branding -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-lg shadow-brand-600/30">
+            <i class="fa-solid font-bold fa-futbol text-lg"></i>
+          </div>
+          <div>
+            <span class="text-xl font-extrabold tracking-tight text-white block leading-none">
+              FOOTBALL<span class="text-brand-500">LIVE</span>
+            </span>
+            <span class="text-[10px] uppercase font-bold tracking-widest text-zinc-400">KASTA SPORTS</span>
+          </div>
         </div>
-        <div>
-          <span class="text-lg font-black tracking-wider text-white block leading-none">
-            MATCHORA<span class="text-brand-500">.TO</span>
-          </span>
-          <span class="text-[9px] uppercase font-bold tracking-widest text-zinc-400">Live Sports Hub</span>
+
+        <!-- Desktop Search Bar -->
+        <div class="hidden md:flex flex-1 max-w-md mx-4">
+          <div class="relative w-full">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-sm"></i>
+            <input type="text" id="searchInput" oninput="handleSearch(this.value)" 
+              placeholder="Пошук команд, турнірів чи країн..." 
+              class="w-full bg-matte-accent/50 text-sm text-zinc-100 placeholder-zinc-500 rounded-xl pl-10 pr-10 py-2 border border-matte-border focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all" />
+            <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          </div>
         </div>
+
+        <!-- Controls, Kyiv Clock & Refresh Status -->
+        <div class="flex items-center gap-3">
+          <!-- Kyiv Clock HH:MM -->
+          <div class="flex items-center gap-2 bg-matte-card border border-matte-border px-3 py-1.5 rounded-xl text-xs font-mono text-brand-500">
+            <i class="fa-regular fa-clock"></i>
+            <span id="kyivClock" class="font-bold text-white text-sm">--:--</span>
+          </div>
+
+          <button onclick="fetchSoccerData()" id="refreshBtn" 
+            class="flex items-center gap-2 bg-matte-accent hover:bg-matte-hover border border-matte-border text-zinc-200 text-xs font-semibold py-2 px-3.5 rounded-xl transition-all active:scale-95">
+            <i class="fa-solid fa-arrows-rotate text-brand-500" id="refreshIcon"></i>
+            <span class="hidden sm:inline">Оновити</span>
+          </button>
+        </div>
+
       </div>
 
-      <!-- SEARCH BAR -->
-      <div class="hidden md:flex flex-1 max-w-xs">
+      <!-- Mobile Search Bar -->
+      <div class="pb-3 md:hidden">
         <div class="relative w-full">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-          <input type="text" id="searchInput" oninput="handleSearch(this.value)" 
-            placeholder="Пошук матчу або ліги..." 
-            class="w-full bg-matte-bg text-xs text-zinc-200 placeholder-zinc-500 rounded-xl pl-9 pr-3 py-2 border border-matte-border focus:outline-none focus:border-brand-500" />
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-sm"></i>
+          <input type="text" id="searchInputMobile" oninput="handleSearch(this.value)" 
+            placeholder="Пошук матчу або команди..." 
+            class="w-full bg-matte-accent/50 text-sm text-zinc-100 placeholder-zinc-500 rounded-xl pl-10 pr-4 py-2 border border-matte-border focus:outline-none focus:border-brand-500" />
         </div>
       </div>
-
-      <!-- TIME & REFRESH -->
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2 bg-matte-bg border border-matte-border px-3 py-1.5 rounded-xl text-xs font-mono text-zinc-300">
-          <i class="fa-regular fa-clock text-brand-500"></i>
-          <span id="kyivClock" class="font-bold">--:--</span>
-        </div>
-        <button onclick="loadAllEvents()" id="refreshBtn" 
-          class="bg-matte-card hover:bg-matte-hover border border-matte-border text-zinc-200 text-xs font-semibold px-3 py-2 rounded-xl transition-all active:scale-95 flex items-center gap-2">
-          <i class="fa-solid fa-arrows-rotate text-brand-500" id="refreshIcon"></i>
-          <span class="hidden sm:inline">Оновити</span>
-        </button>
-      </div>
-
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-5 flex flex-col gap-5">
+  <!-- MAIN LAYOUT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
 
-    <!-- SPORTS & DATE NAVIGATION TABS -->
-    <div class="flex flex-col gap-3">
+    <!-- CATEGORY TABS & FILTER BAR -->
+    <div class="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between border-b border-matte-border pb-4">
       
-      <!-- Date Tabs -->
-      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-        <button onclick="setDateTab('all')" id="date-all" class="date-tab px-4 py-2 rounded-xl text-xs font-bold border bg-brand-600 border-brand-500 text-white shrink-0">
-          🔥 Усі події
+      <!-- Day Tabs (All / Today / Tomorrow) -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1" id="dayTabs">
+        <button onclick="setDayFilter('all')" id="day-all" 
+          class="day-tab px-3.5 py-2 rounded-xl text-xs font-semibold shrink-0 flex items-center gap-2 border transition-all bg-brand-600 border-brand-500 text-white shadow-md shadow-brand-600/20">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>Усі на 2 дні</span>
+          <span class="px-1.5 py-0.5 text-[10px] rounded-md bg-white/20 text-white font-bold" id="count-all">0</span>
         </button>
-        <button onclick="setDateTab('live')" id="date-live" class="date-tab px-4 py-2 rounded-xl text-xs font-bold border bg-matte-card border-matte-border text-zinc-400 hover:text-white shrink-0 flex items-center gap-2">
+        <button onclick="setDayFilter('today')" id="day-today" 
+          class="day-tab px-3.5 py-2 rounded-xl text-xs font-semibold shrink-0 flex items-center gap-2 border transition-all bg-matte-card border-matte-border text-zinc-400 hover:text-white hover:bg-matte-hover">
+          <i class="fa-solid fa-calendar-day"></i>
+          <span>Сьогодні</span>
+          <span class="px-1.5 py-0.5 text-[10px] rounded-md bg-matte-accent text-zinc-300 font-bold" id="count-today">0</span>
+        </button>
+        <button onclick="setDayFilter('tomorrow')" id="day-tomorrow" 
+          class="day-tab px-3.5 py-2 rounded-xl text-xs font-semibold shrink-0 flex items-center gap-2 border transition-all bg-matte-card border-matte-border text-zinc-400 hover:text-white hover:bg-matte-hover">
+          <i class="fa-solid fa-forward"></i>
+          <span>Завтра</span>
+          <span class="px-1.5 py-0.5 text-[10px] rounded-md bg-matte-accent text-zinc-300 font-bold" id="count-tomorrow">0</span>
+        </button>
+      </div>
+
+      <!-- Match Status Sub-Filters -->
+      <div class="flex items-center bg-matte-card p-1 rounded-xl border border-matte-border self-start md:self-auto shrink-0">
+        <button onclick="setStatusFilter('all')" id="status-all"
+          class="status-tab text-xs font-medium px-3 py-1.5 rounded-lg text-white bg-brand-600 transition-all">
+          Усі
+        </button>
+        <button onclick="setStatusFilter('live')" id="status-live"
+          class="status-tab text-xs font-medium px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-all flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-          LIVE Прямий ефір
+          LIVE (<span id="count-status-live">0</span>)
         </button>
-        <button onclick="setDateTab('today')" id="date-today" class="date-tab px-4 py-2 rounded-xl text-xs font-bold border bg-matte-card border-matte-border text-zinc-400 hover:text-white shrink-0">
-          📅 Сьогодні
-        </button>
-        <button onclick="setDateTab('tomorrow')" id="date-tomorrow" class="date-tab px-4 py-2 rounded-xl text-xs font-bold border bg-matte-card border-matte-border text-zinc-400 hover:text-white shrink-0">
-          ⏩ Завтра
+        <button onclick="setStatusFilter('upcoming')" id="status-upcoming"
+          class="status-tab text-xs font-medium px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-all">
+          Скоро
         </button>
       </div>
 
-      <!-- Sports Category Pills -->
-      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar" id="sportFilters">
-        <!-- Injected via JS -->
+    </div>
+
+    <!-- METRICS SUMMARY BANNER -->
+    <div id="metricsBar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+      <!-- Generated via JS -->
+    </div>
+
+    <!-- CONTENT DISPLAY AREA -->
+    <section class="flex-1">
+      
+      <!-- Loading Skeleton State -->
+      <div id="loadingState" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <script>
+          document.write(Array(6).fill(0).map(() => `
+            <div class="bg-matte-card border border-matte-border rounded-2xl p-4 animate-pulse flex flex-col gap-4">
+              <div class="flex justify-between items-center">
+                <div class="h-4 w-28 bg-matte-accent rounded"></div>
+                <div class="h-4 w-12 bg-matte-accent rounded-full"></div>
+              </div>
+              <div class="flex items-center justify-between py-3">
+                <div class="flex items-center gap-3"><div class="w-10 h-10 bg-matte-accent rounded-full"></div><div class="h-4 w-20 bg-matte-accent rounded"></div></div>
+                <div class="h-5 w-8 bg-matte-accent rounded"></div>
+                <div class="flex items-center gap-3"><div class="h-4 w-20 bg-matte-accent rounded"></div><div class="w-10 h-10 bg-matte-accent rounded-full"></div></div>
+              </div>
+              <div class="h-10 bg-matte-accent rounded-xl w-full"></div>
+            </div>
+          `).join(''));
+        </script>
       </div>
 
-    </div>
+      <!-- Error State View -->
+      <div id="errorState" class="hidden flex-col items-center justify-center py-16 text-center">
+        <div class="w-16 h-16 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl flex items-center justify-center mb-4 text-2xl">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Не вдалося завантажити дані</h3>
+        <p class="text-sm text-zinc-400 max-w-md mb-6" id="errorMessage">Не вдалося підключитися до футбольного API. Перевірте з'єднання з мережею.</p>
+        <button onclick="fetchSoccerData()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition-all shadow-lg shadow-brand-600/20">
+          Спробувати знову
+        </button>
+      </div>
 
-    <!-- LOADING STATE -->
-    <div id="loadingState" class="py-20 text-center flex flex-col items-center justify-center">
-      <div class="w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-      <p class="text-xs font-semibold text-zinc-400">Завантаження розкладу подій Matchora...</p>
-    </div>
+      <!-- Empty Filter State -->
+      <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center">
+        <div class="w-16 h-16 bg-matte-accent text-zinc-500 rounded-2xl flex items-center justify-center mb-4 text-2xl border border-matte-border">
+          <i class="fa-solid fa-futbol"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-1">Матчів не знайдено</h3>
+        <p class="text-sm text-zinc-400">Немає доступних футбольних матчів за вашим запитом.</p>
+      </div>
 
-    <!-- EMPTY / ERROR STATE -->
-    <div id="emptyState" class="hidden py-16 text-center flex-col items-center justify-center bg-matte-card border border-matte-border rounded-2xl">
-      <i class="fa-solid fa-calendar-xmark text-3xl text-zinc-600 mb-3"></i>
-      <h3 class="text-sm font-bold text-white mb-1">Подій не знайдено</h3>
-      <p class="text-xs text-zinc-500">Немає запланованих трансляцій за вибраними фільтрами на сьогодні/завтра.</p>
-    </div>
+      <!-- Event Grid Container -->
+      <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Match Cards Rendered Here -->
+      </div>
 
-    <!-- MATCHES GROUPED BY LEAGUE -->
-    <div id="eventsContainer" class="flex flex-col gap-6">
-      <!-- Injected grouped cards here -->
-    </div>
+    </section>
 
   </main>
 
-  <!-- STREAM MODAL -->
-  <div id="playerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-4">
+  <!-- VIDEO STREAM MODAL -->
+  <div id="playerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-4 md:p-6">
+    <!-- Backdrop overlay -->
     <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closePlayerModal()"></div>
 
-    <div class="relative w-full max-w-4xl bg-matte-card border border-matte-border rounded-2xl overflow-hidden shadow-2xl flex flex-col z-10">
+    <!-- Modal Box Container -->
+    <div class="relative w-full max-w-5xl bg-matte-card border border-matte-border rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh] z-10">
       
+      <!-- Modal Header -->
       <div class="flex items-center justify-between px-4 py-3 bg-matte-bg border-b border-matte-border">
-        <div class="truncate">
-          <h4 id="modalMatchTitle" class="text-xs sm:text-sm font-bold text-white truncate">Matchora Stream</h4>
-          <p id="modalMatchSubtitle" class="text-[10px] text-zinc-400 truncate"></p>
+        <div class="flex items-center gap-3 overflow-hidden">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shrink-0"></span>
+          <div class="truncate">
+            <h4 id="modalMatchTitle" class="text-sm sm:text-base font-bold text-white truncate">Match Streaming</h4>
+            <p id="modalMatchSubtitle" class="text-xs text-zinc-400 truncate">Channel Stream Player</p>
+          </div>
         </div>
-        <button onclick="closePlayerModal()" class="w-8 h-8 rounded-lg bg-matte-accent hover:bg-red-500/20 hover:text-red-400 text-zinc-300 flex items-center justify-center text-xs">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        
+        <div class="flex items-center gap-2 shrink-0">
+          <button onclick="toggleModalFullscreen()" title="Повний екран" class="w-8 h-8 rounded-lg bg-matte-accent hover:bg-matte-hover text-zinc-300 flex items-center justify-center text-xs transition-colors">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+          <button onclick="closePlayerModal()" title="Закрити" class="w-8 h-8 rounded-lg bg-matte-accent hover:bg-red-500/20 hover:text-red-400 text-zinc-300 flex items-center justify-center text-xs transition-colors">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
       </div>
 
-      <div class="relative w-full aspect-video bg-black">
-        <iframe id="streamIframe" class="w-full h-full border-0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"></iframe>
+      <!-- Video Player Iframe Container -->
+      <div class="relative w-full aspect-video bg-black flex items-center justify-center overflow-hidden" id="iframeContainer">
+        <iframe id="streamIframe" class="w-full h-full border-0" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+        
+        <!-- Stream Loader Indicator -->
+        <div id="iframeLoader" class="absolute inset-0 bg-black/90 flex flex-col items-center justify-center gap-3 pointer-events-none transition-opacity duration-300">
+          <div class="w-10 h-10 border-4 border-brand-600 border-t-transparent rounded-full animate-spin"></div>
+          <span class="text-xs font-semibold text-zinc-400">Підключення до трансляції...</span>
+        </div>
       </div>
 
-      <div class="p-3 bg-matte-bg border-t border-matte-border flex items-center justify-between flex-wrap gap-2">
-        <span class="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Джерела трансляції:</span>
-        <div id="modalChannelsList" class="flex flex-wrap gap-2"></div>
+      <!-- Modal Footer (Available Channels Selector) -->
+      <div class="p-4 bg-matte-bg border-t border-matte-border">
+        <div class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Канали даної трансляції:</div>
+        <div id="modalChannelsList" class="flex flex-wrap gap-2 max-h-28 overflow-y-auto pr-1">
+          <!-- Channel buttons dynamically injected -->
+        </div>
       </div>
 
     </div>
   </div>
 
   <script>
-    const API_LIVE = 'https://matchora.to/api/v1/live';
-    const API_SCHEDULE = 'https://matchora.to/api/v1/schedule';
-
-    const PROXIES = [
-      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      url => url
-    ];
-
-    const SPORTS_LIST = [
-      { id: 'all', name: 'Усі види', icon: 'fa-globe' },
-      { id: 'football', name: 'Футбол', icon: 'fa-futbol' },
-      { id: 'basketball', name: 'Баскетбол', icon: 'fa-basketball' },
-      { id: 'tennis', name: 'Теніс', icon: 'fa-table-tennis-paddle-ball' },
-      { id: 'hockey', name: 'Хокей', icon: 'fa-hockey-puck' },
-      { id: 'mma', name: 'Бокс/MMA', icon: 'fa-hand-fist' },
-      { id: 'motorsport', name: 'Автоспорт', icon: 'fa-flag-checkered' }
-    ];
-
-    let rawEventsList = [];
-    let activeDateFilter = 'all';
-    let activeSportFilter = 'all';
+    // GLOBAL APP STATE & API CONFIGURATION
+    const API_URL = 'https://august.ppvtv.icu/api/v1/events/sports/soccer/?user=cdnlivetv&plan=free';
+    
+    let rawSoccerData = [];
+    let processedEventsList = [];
+    let currentDayFilter = 'all';      // 'all', 'today', 'tomorrow'
+    let currentStatusFilter = 'all';   // 'all', 'live', 'upcoming'
     let searchQuery = '';
+    let currentActiveMatch = null;
 
+    // Initialize application on load
     window.addEventListener('DOMContentLoaded', () => {
-      startClock();
-      renderSportFilters();
-      loadAllEvents();
+      startKyivClock();
+      fetchSoccerData();
+
+      // Auto-refresh data every 5 minutes (300,000 ms)
+      setInterval(fetchSoccerData, 300000);
     });
 
-    function startClock() {
-      const update = () => {
+    // Kyiv Clock display (HH:MM)
+    function startKyivClock() {
+      const updateClock = () => {
         const now = new Date();
-        document.getElementById('kyivClock').innerText = now.toLocaleTimeString('uk-UA', {
-          timeZone: 'Europe/Kyiv', hour: '2-digit', minute: '2-digit'
+        const timeStr = now.toLocaleTimeString('uk-UA', {
+          timeZone: 'Europe/Kyiv',
+          hour: '2-digit',
+          minute: '2-digit'
         });
+        const clockEl = document.getElementById('kyivClock');
+        if (clockEl) clockEl.innerText = timeStr;
       };
-      update();
-      setInterval(update, 1000);
+      updateClock();
+      setInterval(updateClock, 1000);
     }
 
-    function renderSportFilters() {
-      const container = document.getElementById('sportFilters');
-      container.innerHTML = SPORTS_LIST.map(s => `
-        <button onclick="setSportFilter('${s.id}')" id="sport-${s.id}" 
-          class="sport-btn px-3 py-1.5 rounded-xl text-xs font-semibold border bg-matte-card border-matte-border text-zinc-400 hover:text-white shrink-0 flex items-center gap-2 transition-all">
-          <i class="fa-solid ${s.icon} text-brand-500"></i>
-          <span>${s.name}</span>
-        </button>
-      `).join('');
-      setSportFilter('all');
-    }
-
-    async function fetchWithFallback(url) {
-      for (const p of PROXIES) {
-        try {
-          const res = await fetch(p(url));
-          if (!res.ok) continue;
-          let data = await res.json();
-          if (typeof data === 'string') data = JSON.parse(data);
-          return data;
-        } catch (e) { console.warn('Proxy retry:', e); }
-      }
-      return null;
-    }
-
-    async function loadAllEvents() {
-      document.getElementById('refreshIcon').classList.add('animate-spin');
-      document.getElementById('loadingState').classList.remove('hidden');
-      document.getElementById('eventsContainer').innerHTML = '';
-      document.getElementById('emptyState').classList.add('hidden');
+    // FETCH SOCCER DATA FROM UPDATED API
+    async function fetchSoccerData() {
+      const refreshIcon = document.getElementById('refreshIcon');
+      if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
       try {
-        const [liveRes, schedRes] = await Promise.all([
-          fetchWithFallback(API_LIVE),
-          fetchWithFallback(API_SCHEDULE)
-        ]);
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+        
+        const data = await response.json();
+        // Parse JSON root object 'august.ppvtv.icu' -> 'Soccer'
+        const root = data['august.ppvtv.icu'] || data['cdnlivetv.tv'] || data['cdn-live-tv'] || {};
+        rawSoccerData = root.Soccer || root.soccer || [];
+        
+        processAndFilterData();
 
-        const rawLive = parseDataArray(liveRes);
-        const rawSched = parseDataArray(schedRes);
-
-        const mergedMap = new Map();
-
-        // Parse Live
-        rawLive.forEach((item, idx) => {
-          const parsed = normalizeEvent(item, true, idx);
-          if (parsed) mergedMap.set(parsed.id, parsed);
-        });
-
-        // Parse Schedule (Only Today and Tomorrow to prevent 3500+ items lagging)
-        const now = new Date();
-        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-        const endOfTomorrow = startOfToday + (48 * 60 * 60 * 1000);
-
-        rawSched.forEach((item, idx) => {
-          const parsed = normalizeEvent(item, Boolean(item.live), idx);
-          if (parsed) {
-            // FILTER ONLY TODAY & TOMORROW EVENTS OR LIVE
-            if (parsed.isLive || (parsed.timestamp >= startOfToday && parsed.timestamp <= endOfTomorrow)) {
-              if (!mergedMap.has(parsed.id)) {
-                mergedMap.set(parsed.id, parsed);
-              }
-            }
-          }
-        });
-
-        rawEventsList = Array.from(mergedMap.values());
-        applyFiltersAndRender();
-
-      } catch (err) {
-        console.error('Data loading error:', err);
-      } finally {
         document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('refreshIcon').classList.remove('animate-spin');
+        document.getElementById('errorState').classList.add('hidden');
+      } catch (err) {
+        console.error('Soccer API Fetch Error:', err);
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('errorState').classList.remove('hidden');
+        document.getElementById('eventsGrid').innerHTML = '';
+        document.getElementById('errorMessage').innerText = `Помилка завантаження API: ${err.message}`;
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('animate-spin');
       }
     }
 
-    function parseDataArray(res) {
-      if (!res) return [];
-      if (Array.isArray(res)) return res;
-      if (Array.isArray(res.data)) return res.data;
-      if (Array.isArray(res.events)) return res.events;
-      if (typeof res === 'object') return Object.values(res).filter(v => typeof v === 'object' && v !== null);
-      return [];
-    }
+    // PROCESS AND FILTER EVENTS FOR 2 DAYS (TODAY & TOMORROW IN KYIV TIME)
+    function processAndFilterData() {
+      const nowKyiv = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Kyiv" }));
+      
+      const todayStr = getKyivDateString(nowKyiv);
+      const tomorrowObj = new Date(nowKyiv);
+      tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+      const tomorrowStr = getKyivDateString(tomorrowObj);
 
-    function normalizeEvent(item, isLiveFlag, idx) {
-      if (!item) return null;
+      processedEventsList = [];
 
-      const home = item.home || item.home_team || item.team1 || 'Команда 1';
-      const away = item.away || item.away_team || item.team2 || 'Команда 2';
-      const league = item.league || item.tournament || item.category || 'Різні турніри';
-      const id = String(item.id || item.event_id || `${home}-${away}-${idx}`);
+      rawSoccerData.forEach((item, index) => {
+        if (!item.start) return;
 
-      let timestamp = Date.now();
-      let timeFormatted = '--:--';
-      const dateVal = item.date || item.start_time || item.time || item.start;
+        // Parse UTC timestamp safely
+        const startDateObj = new Date(item.start.replace(' ', 'T') + 'Z');
+        
+        const eventKyivDateStr = getKyivDateString(startDateObj);
+        const eventKyivTimeStr = startDateObj.toLocaleTimeString('uk-UA', {
+          timeZone: 'Europe/Kyiv',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
 
-      if (dateVal) {
-        const parsedDate = new Date(dateVal);
-        if (!isNaN(parsedDate.getTime())) {
-          timestamp = parsedDate.getTime();
-          timeFormatted = parsedDate.toLocaleTimeString('uk-UA', {
-            timeZone: 'Europe/Kyiv', hour: '2-digit', minute: '2-digit'
-          });
+        const isToday = (eventKyivDateStr === todayStr);
+        const isTomorrow = (eventKyivDateStr === tomorrowStr);
+
+        // Strict filter: only today & tomorrow
+        if (!isToday && !isTomorrow) return;
+
+        const statusRaw = (item.status || '').trim();
+        const statusLower = statusRaw.toLowerCase();
+        const hasChannels = item.channels && Array.isArray(item.channels) && item.channels.length > 0;
+
+        // Ignore finished matches (FT / finished)
+        if (statusLower === 'finished' || statusLower === 'ft') return;
+
+        // Determine Live Status
+        const isLive = (statusLower !== 'ns' && statusLower !== 'not started' && hasChannels);
+
+        // Score resolution from API
+        let scoreStr = '';
+        if (item.score) {
+          scoreStr = item.score;
+        } else if (item.homeScore !== undefined && item.awayScore !== undefined) {
+          scoreStr = `${item.homeScore} - ${item.awayScore}`;
         }
-      }
 
-      const status = item.status || (isLiveFlag ? 'LIVE' : 'NS');
-      const isLive = Boolean(item.live || isLiveFlag || status.toLowerCase().includes('live'));
-
-      // Clean score rendering
-      let scoreHome = '-';
-      let scoreAway = '-';
-      if (item.score && typeof item.score === 'string' && item.score.includes('-')) {
-        const parts = item.score.split('-');
-        scoreHome = parts[0].trim();
-        scoreAway = parts[1].trim();
-      } else if (item.home_score !== undefined && item.away_score !== undefined) {
-        scoreHome = item.home_score;
-        scoreAway = item.away_score;
-      }
-
-      // Sport Category Inference
-      let sport = 'football';
-      const leagueLower = league.toLowerCase();
-      if (leagueLower.includes('nba') || leagueLower.includes('basket')) sport = 'basketball';
-      else if (leagueLower.includes('atp') || leagueLower.includes('wta') || leagueLower.includes('tennis')) sport = 'tennis';
-      else if (leagueLower.includes('nhl') || leagueLower.includes('hockey')) sport = 'hockey';
-      else if (leagueLower.includes('ufc') || leagueLower.includes('mma') || leagueLower.includes('box')) sport = 'mma';
-      else if (leagueLower.includes('f1') || leagueLower.includes('moto')) sport = 'motorsport';
-
-      return {
-        id,
-        home,
-        away,
-        league,
-        sport,
-        isLive,
-        status,
-        minute: item.minute || item.time_played || '',
-        scoreHome,
-        scoreAway,
-        channelCount: item.channel_count || (item.channels ? item.channels.length : 1),
-        embedUrl: item.embed_url || `https://matchora.to/embed/match/${id}`,
-        channels: item.channels || [],
-        timestamp,
-        timeFormatted,
-        homeLogo: item.home_logo || getAvatar(home),
-        awayLogo: item.away_logo || getAvatar(away)
-      };
-    }
-
-    function getAvatar(name) {
-      const char = (name || 'T').charAt(0).toUpperCase();
-      return `https://placehold.co/60x60/1a1a22/818cf8?text=${encodeURIComponent(char)}`;
-    }
-
-    function setDateTab(tab) {
-      activeDateFilter = tab;
-      document.querySelectorAll('.date-tab').forEach(b => {
-        b.classList.remove('bg-brand-600', 'border-brand-500', 'text-white');
-        b.classList.add('bg-matte-card', 'border-matte-border', 'text-zinc-400');
+        processedEventsList.push({
+          ...item,
+          id: item.gameID || item.id || `match-${index}`,
+          kyivDateStr: eventKyivDateStr,
+          kyivTimeStr: eventKyivTimeStr,
+          isToday,
+          isTomorrow,
+          isLive,
+          scoreStr,
+          timestamp: startDateObj.getTime()
+        });
       });
-      const activeBtn = document.getElementById(`date-${tab}`);
-      if (activeBtn) {
-        activeBtn.classList.add('bg-brand-600', 'border-brand-500', 'text-white');
-        activeBtn.classList.remove('bg-matte-card', 'border-matte-border', 'text-zinc-400');
-      }
+
+      updateCountersAndMetrics();
       applyFiltersAndRender();
     }
 
-    function setSportFilter(sportId) {
-      activeSportFilter = sportId;
-      document.querySelectorAll('.sport-btn').forEach(b => {
-        b.classList.remove('bg-brand-600/20', 'border-brand-500', 'text-white');
-        b.classList.add('bg-matte-card', 'border-matte-border', 'text-zinc-400');
+    function getKyivDateString(dateObj) {
+      const y = dateObj.toLocaleDateString('en-US', { timeZone: 'Europe/Kyiv', year: 'numeric' });
+      const m = dateObj.toLocaleDateString('en-US', { timeZone: 'Europe/Kyiv', month: '2-digit' });
+      const d = dateObj.toLocaleDateString('en-US', { timeZone: 'Europe/Kyiv', day: '2-digit' });
+      return `${y}-${m}-${d}`;
+    }
+
+    // UPDATE METRICS & COUNTERS
+    function updateCountersAndMetrics() {
+      const totalAll = processedEventsList.length;
+      const totalToday = processedEventsList.filter(e => e.isToday).length;
+      const totalTomorrow = processedEventsList.filter(e => e.isTomorrow).length;
+      const liveCount = processedEventsList.filter(e => e.isLive).length;
+
+      document.getElementById('count-all').innerText = totalAll;
+      document.getElementById('count-today').innerText = totalToday;
+      document.getElementById('count-tomorrow').innerText = totalTomorrow;
+      document.getElementById('count-status-live').innerText = liveCount;
+
+      const bar = document.getElementById('metricsBar');
+      bar.innerHTML = `
+        <div class="bg-matte-card border border-matte-border p-3 rounded-xl flex items-center justify-between">
+          <span class="text-zinc-400">Усі на 2 дні</span>
+          <span class="font-bold text-white text-sm">${totalAll}</span>
+        </div>
+        <div class="bg-matte-card border border-matte-border p-3 rounded-xl flex items-center justify-between">
+          <span class="text-zinc-400 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Прямий ефір
+          </span>
+          <span class="font-bold text-red-400 text-sm">${liveCount}</span>
+        </div>
+        <div class="bg-matte-card border border-matte-border p-3 rounded-xl flex items-center justify-between">
+          <span class="text-zinc-400">Сьогодні скоро</span>
+          <span class="font-bold text-amber-400 text-sm">${processedEventsList.filter(e => e.isToday && !e.isLive).length}</span>
+        </div>
+        <div class="bg-matte-card border border-matte-border p-3 rounded-xl flex items-center justify-between">
+          <span class="text-zinc-400">Матчі завтра</span>
+          <span class="font-bold text-indigo-400 text-sm">${totalTomorrow}</span>
+        </div>
+      `;
+    }
+
+    // FILTER HANDLERS
+    function setDayFilter(day) {
+      currentDayFilter = day;
+      
+      document.querySelectorAll('.day-tab').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'border-brand-500', 'text-white', 'shadow-md', 'shadow-brand-600/20');
+        btn.classList.add('bg-matte-card', 'border-matte-border', 'text-zinc-400');
       });
-      const activeBtn = document.getElementById(`sport-${sportId}`);
+
+      const activeBtn = document.getElementById(`day-${day}`);
       if (activeBtn) {
-        activeBtn.classList.add('bg-brand-600/20', 'border-brand-500', 'text-white');
+        activeBtn.classList.add('bg-brand-600', 'border-brand-500', 'text-white', 'shadow-md', 'shadow-brand-600/20');
         activeBtn.classList.remove('bg-matte-card', 'border-matte-border', 'text-zinc-400');
       }
+
+      applyFiltersAndRender();
+    }
+
+    function setStatusFilter(status) {
+      currentStatusFilter = status;
+      document.querySelectorAll('.status-tab').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white');
+        btn.classList.add('text-zinc-400');
+      });
+
+      const activeBtn = document.getElementById(`status-${status}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-brand-600', 'text-white');
+        activeBtn.classList.remove('text-zinc-400');
+      }
+
       applyFiltersAndRender();
     }
 
     function handleSearch(val) {
       searchQuery = val.trim().toLowerCase();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) {
+        if (searchQuery.length > 0) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
       applyFiltersAndRender();
     }
 
-    function applyFiltersAndRender() {
-      let filtered = [...rawEventsList];
-
-      const now = new Date();
-      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-      const startOfTomorrow = startOfToday + (24 * 60 * 60 * 1000);
-      const endOfTomorrow = startOfToday + (48 * 60 * 60 * 1000);
-
-      // Date Filter
-      if (activeDateFilter === 'live') {
-        filtered = filtered.filter(e => e.isLive);
-      } else if (activeDateFilter === 'today') {
-        filtered = filtered.filter(e => e.timestamp >= startOfToday && e.timestamp < startOfTomorrow);
-      } else if (activeDateFilter === 'tomorrow') {
-        filtered = filtered.filter(e => e.timestamp >= startOfTomorrow && e.timestamp <= endOfTomorrow);
-      }
-
-      // Sport Filter
-      if (activeSportFilter !== 'all') {
-        filtered = filtered.filter(e => e.sport === activeSportFilter);
-      }
-
-      // Search Query
-      if (searchQuery) {
-        filtered = filtered.filter(e => 
-          e.home.toLowerCase().includes(searchQuery) ||
-          e.away.toLowerCase().includes(searchQuery) ||
-          e.league.toLowerCase().includes(searchQuery)
-        );
-      }
-
-      renderGroupedEvents(filtered);
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchInputMobile').value = '';
+      searchQuery = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      applyFiltersAndRender();
     }
 
-    function renderGroupedEvents(events) {
-      const container = document.getElementById('eventsContainer');
+    function resetFilters() {
+      currentDayFilter = 'all';
+      currentStatusFilter = 'all';
+      clearSearch();
+      setDayFilter('all');
+      setStatusFilter('all');
+    }
+
+    // APPLY ALL FILTERS & RENDER MATCH CARDS
+    function applyFiltersAndRender() {
+      let filtered = [...processedEventsList];
+
+      // 1. Day Filter
+      if (currentDayFilter === 'today') {
+        filtered = filtered.filter(e => e.isToday);
+      } else if (currentDayFilter === 'tomorrow') {
+        filtered = filtered.filter(e => e.isTomorrow);
+      }
+
+      // 2. Status Filter
+      if (currentStatusFilter === 'live') {
+        filtered = filtered.filter(e => e.isLive);
+      } else if (currentStatusFilter === 'upcoming') {
+        filtered = filtered.filter(e => !e.isLive);
+      }
+
+      // 3. Search Filter
+      if (searchQuery) {
+        filtered = filtered.filter(e => {
+          const home = (e.homeTeam || '').toLowerCase();
+          const away = (e.awayTeam || '').toLowerCase();
+          const tour = (e.tournament || '').toLowerCase();
+          const country = (e.country || '').toLowerCase();
+          return home.includes(searchQuery) || away.includes(searchQuery) || tour.includes(searchQuery) || country.includes(searchQuery);
+        });
+      }
+
+      // Sort: Live events first, then by timestamp
+      filtered.sort((a, b) => {
+        if (a.isLive && !b.isLive) return -1;
+        if (!a.isLive && b.isLive) return 1;
+        return a.timestamp - b.timestamp;
+      });
+
+      renderEventsGrid(filtered);
+    }
+
+    // HELPER TO FORMAT CHANNEL NAME/LABEL
+    function getChannelLabel(channel, index) {
+      if (channel.name) return channel.name;
+      if (channel.channelName) return channel.channelName;
+      if (channel.lang) return `${channel.lang.toUpperCase()} Stream`;
+      if (channel.language) return `${channel.language.toUpperCase()} Stream`;
+      return `Канал ${index + 1}`;
+    }
+
+    // HELPER TO EXTRACT STREAM URL
+    function getChannelUrl(channel) {
+      if (typeof channel === 'string') return channel;
+      return channel.url || channel.stream_url || channel.embedUrl || channel.link || channel.iframe || '';
+    }
+
+    // RENDER EVENTS GRID HTML
+    function renderEventsGrid(events) {
+      const grid = document.getElementById('eventsGrid');
       const emptyState = document.getElementById('emptyState');
 
       if (events.length === 0) {
-        container.innerHTML = '';
+        grid.innerHTML = '';
         emptyState.classList.remove('hidden');
         emptyState.classList.add('flex');
         return;
@@ -456,31 +610,122 @@
       emptyState.classList.add('hidden');
       emptyState.classList.remove('flex');
 
-      // Group Events by League
-      const grouped = {};
-      events.forEach(e => {
-        if (!grouped[e.league]) grouped[e.league] = [];
-        grouped[e.league].push(e);
-      });
+      grid.innerHTML = events.map(event => {
+        const isLive = event.isLive;
+        const channels = (event.channels && Array.isArray(event.channels)) ? event.channels : [];
+        const channelsCount = channels.length;
 
-      container.innerHTML = Object.keys(grouped).map(leagueName => {
-        const leagueMatches = grouped[leagueName];
+        const homeImg = event.homeTeamIMG || 'https://placehold.co/80x80/18181c/6366f1?text=TEAM';
+        const awayImg = event.awayTeamIMG || 'https://placehold.co/80x80/18181c/6366f1?text=TEAM';
+        const flagImg = event.countryIMG || '';
+
+        // Status Badge: Minute/Status on top right for LIVE, start time for upcoming
+        let statusBadge = '';
+        if (isLive) {
+          const liveMinuteText = event.status ? `LIVE (${event.status})` : 'LIVE';
+          statusBadge = `
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-500/10 text-red-400 border border-red-500/30">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+              ${liveMinuteText} • ${event.kyivTimeStr}
+            </span>
+          `;
+        } else {
+          statusBadge = `
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              🕒 ${event.kyivTimeStr}
+            </span>
+          `;
+        }
+
+        // Center VS section: Live score or Start Time / Today / Tomorrow
+        let centerDisplay = '';
+        if (isLive && event.scoreStr) {
+          centerDisplay = `
+            <span class="text-sm font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${event.scoreStr}</span>
+            <span class="text-[10px] text-zinc-400 font-mono mt-1">Прямий ефір</span>
+          `;
+        } else {
+          centerDisplay = `
+            <span class="text-xs font-black text-zinc-600">VS</span>
+            <span class="text-[10px] text-zinc-500 font-mono mt-1">${event.isToday ? 'Сьогодні' : 'Завтра'}</span>
+          `;
+        }
+
+        // Generate Channel Buttons for Card Footer
+        let channelsFooterHtml = '';
+        if (channelsCount > 0) {
+          const channelButtons = channels.map((ch, idx) => {
+            const label = getChannelLabel(ch, idx);
+            return `
+              <button onclick="openChannelStream('${event.id}', ${idx})" 
+                class="px-2.5 py-1 bg-brand-600/90 hover:bg-brand-600 text-white font-medium rounded-lg text-xs transition-all flex items-center gap-1 shrink-0 active:scale-95 border border-brand-500/30 shadow-sm">
+                <i class="fa-solid fa-play text-[9px]"></i>
+                <span class="truncate max-w-[110px]">${label}</span>
+              </button>
+            `;
+          }).join('');
+
+          channelsFooterHtml = `
+            <div class="flex flex-col gap-1.5">
+              <div class="flex items-center justify-between text-[11px] text-zinc-400">
+                <span class="font-medium flex items-center gap-1">
+                  <i class="fa-solid fa-tv text-brand-500"></i> Доступні канали (${channelsCount}):
+                </span>
+              </div>
+              <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                ${channelButtons}
+              </div>
+            </div>
+          `;
+        } else {
+          channelsFooterHtml = `
+            <div class="text-center py-1.5 text-[11px] text-zinc-500 font-medium bg-matte-bg/50 rounded-lg border border-matte-border/40">
+              Очікується трансляція
+            </div>
+          `;
+        }
 
         return `
-          <div class="bg-matte-card border border-matte-border rounded-2xl overflow-hidden shadow-lg">
+          <div class="bg-matte-card border border-matte-border rounded-2xl p-4 flex flex-col justify-between transition-all duration-200 card-glow hover:-translate-y-0.5">
             
-            <!-- League Header -->
-            <div class="bg-matte-bg/80 px-4 py-2.5 border-b border-matte-border flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-trophy text-amber-500 text-xs"></i>
-                <h3 class="text-xs font-extrabold text-zinc-200 uppercase tracking-wider">${leagueName}</h3>
+            <!-- Card Header: Country & Tournament -->
+            <div class="flex items-center justify-between pb-3 border-b border-matte-border/60 gap-2">
+              <div class="flex items-center gap-2 truncate">
+                ${flagImg ? `<img src="${flagImg}" alt="${event.country || ''}" class="w-5 h-3.5 object-cover rounded-sm shrink-0" onerror="this.style.display='none'" />` : ''}
+                <span class="text-xs font-semibold text-zinc-300 truncate" title="${event.tournament || event.country}">${event.tournament || event.country || 'Футбол'}</span>
               </div>
-              <span class="text-[10px] text-zinc-500 font-bold bg-matte-accent px-2 py-0.5 rounded-full">${leagueMatches.length}</span>
+              <div>${statusBadge}</div>
             </div>
 
-            <!-- Matches List -->
-            <div class="divide-y divide-matte-border/50">
-              ${leagueMatches.map(m => renderMatchRow(m)).join('')}
+            <!-- Teams VS Match Display -->
+            <div class="py-4 grid grid-cols-7 items-center text-center gap-2">
+              
+              <!-- Home Team -->
+              <div class="col-span-3 flex flex-col items-center gap-2">
+                <div class="w-12 h-12 rounded-xl bg-matte-bg border border-matte-border p-1.5 flex items-center justify-center">
+                  <img src="${homeImg}" alt="${event.homeTeam || ''}" class="max-w-full max-h-full object-contain" onerror="this.src='https://placehold.co/80x80/18181c/a1a1aa?text=TEAM'" />
+                </div>
+                <span class="text-xs font-bold text-white line-clamp-2 leading-tight">${event.homeTeam || 'Команда 1'}</span>
+              </div>
+
+              <!-- Center Score / VS Display -->
+              <div class="col-span-1 flex flex-col items-center justify-center">
+                ${centerDisplay}
+              </div>
+
+              <!-- Away Team -->
+              <div class="col-span-3 flex flex-col items-center gap-2">
+                <div class="w-12 h-12 rounded-xl bg-matte-bg border border-matte-border p-1.5 flex items-center justify-center">
+                  <img src="${awayImg}" alt="${event.awayTeam || ''}" class="max-w-full max-h-full object-contain" onerror="this.src='https://placehold.co/80x80/18181c/a1a1aa?text=TEAM'" />
+                </div>
+                <span class="text-xs font-bold text-white line-clamp-2 leading-tight">${event.awayTeam || 'Команда 2'}</span>
+              </div>
+
+            </div>
+
+            <!-- Card Action Footer (Broadcast Channels Direct List) -->
+            <div class="pt-3 border-t border-matte-border/60">
+              ${channelsFooterHtml}
             </div>
 
           </div>
@@ -488,116 +733,117 @@
       }).join('');
     }
 
-    function renderMatchRow(m) {
-      let centerContent = '';
+    // OPEN VIDEO PLAYER MODAL & LOAD SPECIFIC CHANNEL
+    function openChannelStream(eventId, selectedChannelIdx = 0) {
+      const match = processedEventsList.find(e => e.id === eventId);
+      if (!match || !match.channels || match.channels.length === 0) return;
 
-      if (m.isLive) {
-        centerContent = `
-          <div class="flex flex-col items-center justify-center">
-            <div class="flex items-center gap-2 bg-black/40 border border-emerald-500/30 px-3 py-1 rounded-xl">
-              <span class="text-sm font-black text-emerald-400">${m.scoreHome}</span>
-              <span class="text-xs text-zinc-600 font-bold">:</span>
-              <span class="text-sm font-black text-emerald-400">${m.scoreAway}</span>
-            </div>
-            <span class="text-[10px] text-red-400 font-bold flex items-center gap-1 mt-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-              ${m.minute ? m.minute + "'" : 'LIVE'}
-            </span>
-          </div>
-        `;
-      } else {
-        centerContent = `
-          <div class="flex flex-col items-center justify-center">
-            <span class="text-xs font-extrabold text-zinc-300 bg-matte-bg border border-matte-border px-2.5 py-1 rounded-xl">
-              🕒 ${m.timeFormatted}
-            </span>
-          </div>
-        `;
-      }
+      currentActiveMatch = match;
 
-      return `
-        <div class="p-3 sm:p-4 hover:bg-matte-hover transition-all flex items-center justify-between gap-3">
-          
-          <!-- Teams Display -->
-          <div class="flex-1 grid grid-cols-11 items-center gap-2">
-            
-            <!-- Home Team -->
-            <div class="col-span-4 flex items-center justify-end gap-2.5 text-right">
-              <span class="text-xs font-bold text-white leading-tight truncate">${m.home}</span>
-              <img src="${m.homeLogo}" alt="${m.home}" class="w-7 h-7 sm:w-8 sm:h-8 object-contain rounded-lg bg-matte-bg p-0.5 shrink-0 border border-matte-border" onerror="this.src='https://placehold.co/60x60/1a1a22/a1a1aa?text=T'" />
-            </div>
+      const modal = document.getElementById('playerModal');
+      const matchTitle = document.getElementById('modalMatchTitle');
+      const matchSubtitle = document.getElementById('modalMatchSubtitle');
+      
+      matchTitle.innerText = `${match.homeTeam || 'Команда 1'} vs ${match.awayTeam || 'Команда 2'}`;
+      matchSubtitle.innerText = `${match.tournament || match.country || 'Футбол'} • ${match.kyivTimeStr}`;
 
-            <!-- Score / Time Center -->
-            <div class="col-span-3">
-              ${centerContent}
-            </div>
+      // Render channel buttons inside modal footer
+      renderModalChannelsList(match.channels, selectedChannelIdx);
 
-            <!-- Away Team -->
-            <div class="col-span-4 flex items-center justify-start gap-2.5 text-left">
-              <img src="${m.awayLogo}" alt="${m.away}" class="w-7 h-7 sm:w-8 sm:h-8 object-contain rounded-lg bg-matte-bg p-0.5 shrink-0 border border-matte-border" onerror="this.src='https://placehold.co/60x60/1a1a22/a1a1aa?text=T'" />
-              <span class="text-xs font-bold text-white leading-tight truncate">${m.away}</span>
-            </div>
+      // Load selected channel iframe
+      loadModalStreamChannel(selectedChannelIdx);
 
-          </div>
-
-          <!-- Watch Stream Button -->
-          <button onclick="openPlayerModal('${m.id}')" 
-            class="shrink-0 px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-brand-600/20 active:scale-95 transition-all">
-            <i class="fa-solid fa-play text-[9px]"></i>
-            <span class="hidden sm:inline">Дивитися</span>
-          </button>
-
-        </div>
-      `;
-    }
-
-    function openPlayerModal(eventId) {
-      const match = rawEventsList.find(e => e.id === eventId);
-      if (!match) return;
-
-      document.getElementById('modalMatchTitle').innerText = `${match.home} vs ${match.away}`;
-      document.getElementById('modalMatchSubtitle').innerText = `${match.league} • Matchora Stream`;
-
-      const channelsList = document.getElementById('modalChannelsList');
-      let channelsHtml = '';
-
-      const count = Math.max(1, match.channelCount);
-      for (let i = 1; i <= count; i++) {
-        const streamUrl = `${match.embedUrl}${i > 1 ? '?stream=' + i : ''}`;
-        channelsHtml += `
-          <button onclick="switchStreamUrl('${streamUrl}', this)" 
-            class="channel-btn px-3 py-1 rounded-xl border border-matte-border bg-matte-accent hover:bg-brand-600/30 text-xs text-zinc-200 transition-all ${i === 1 ? 'border-brand-500 bg-brand-600/20 font-bold text-white' : ''}">
-            Потік #${i}
-          </button>
-        `;
-      }
-      channelsList.innerHTML = channelsHtml;
-
-      switchStreamUrl(match.embedUrl);
-      document.getElementById('playerModal').classList.remove('hidden');
+      // Show Modal
+      modal.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     }
 
-    function switchStreamUrl(url, btn) {
-      if (btn) {
-        document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('border-brand-500', 'bg-brand-600/20', 'font-bold'));
-        btn.classList.add('border-brand-500', 'bg-brand-600/20', 'font-bold');
+    // RENDER CHANNEL SELECTOR BUTTONS IN MODAL
+    function renderModalChannelsList(channels, activeIndex) {
+      const channelsList = document.getElementById('modalChannelsList');
+      
+      channelsList.innerHTML = channels.map((channel, idx) => {
+        const label = getChannelLabel(channel, idx);
+        const isActive = (idx === activeIndex);
+        
+        const activeClasses = 'bg-brand-600 border-brand-500 text-white shadow-md shadow-brand-600/30';
+        const inactiveClasses = 'bg-matte-card border-matte-border text-zinc-300 hover:bg-matte-hover hover:text-white';
+
+        return `
+          <button onclick="switchModalChannel(${idx})" 
+            class="px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 ${isActive ? activeClasses : inactiveClasses}">
+            <i class="fa-solid ${isActive ? 'fa-circle-play text-white' : 'fa-play text-brand-500'}"></i>
+            <span>${label}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    // SWITCH CHANNEL INSIDE OPEN MODAL
+    function switchModalChannel(channelIdx) {
+      if (!currentActiveMatch || !currentActiveMatch.channels) return;
+      renderModalChannelsList(currentActiveMatch.channels, channelIdx);
+      loadModalStreamChannel(channelIdx);
+    }
+
+    // SET IFRAME SRC WITH LOADER HANDLING
+    function loadModalStreamChannel(channelIdx) {
+      if (!currentActiveMatch || !currentActiveMatch.channels) return;
+      
+      const channel = currentActiveMatch.channels[channelIdx];
+      if (!channel) return;
+
+      const streamUrl = getChannelUrl(channel);
+      const iframe = document.getElementById('streamIframe');
+      const loader = document.getElementById('iframeLoader');
+
+      if (loader) loader.style.opacity = '1';
+
+      if (streamUrl) {
+        iframe.src = streamUrl;
+      } else {
+        iframe.src = 'about:blank';
       }
-      document.getElementById('streamIframe').src = url;
+
+      // Hide loading spinner after load event or timeout
+      iframe.onload = () => {
+        if (loader) loader.style.opacity = '0';
+      };
+
+      setTimeout(() => {
+        if (loader) loader.style.opacity = '0';
+      }, 2500);
     }
 
+    // CLOSE PLAYER MODAL
     function closePlayerModal() {
-      document.getElementById('streamIframe').src = '';
-      document.getElementById('playerModal').classList.add('hidden');
-      document.body.style.overflow = '';
+      const modal = document.getElementById('playerModal');
+      const iframe = document.getElementById('streamIframe');
+      
+      if (iframe) iframe.src = '';
+      if (modal) modal.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+      currentActiveMatch = null;
     }
 
-    function resetFilters() {
-      searchQuery = '';
-      document.getElementById('searchInput').value = '';
-      setDateTab('all');
-      setSportFilter('all');
+    // TOGGLE FULLSCREEN MODAL PLAYER
+    function toggleModalFullscreen() {
+      const container = document.getElementById('iframeContainer');
+      if (!container) return;
+
+      if (!document.fullscreenElement) {
+        if (container.requestFullscreen) {
+          container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
     }
   </script>
 </body>
 </html>
+```
