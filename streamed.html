@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Matchora Sports Portal — Прямі спортивні трансляції</title>
+  <title>Matchora Live Portal — Спортивні трансляції</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -27,7 +27,7 @@
               700: '#4338ca',
             },
             matte: {
-              bg: '#09090b',       /* Deep pitch background */
+              bg: '#09090b',       /* Pitch dark background */
               card: '#121215',     /* Matte surface card */
               hover: '#18181c',    /* Hover state background */
               border: '#222228',   /* Grid and card borders */
@@ -50,7 +50,6 @@
       overflow-x: hidden;
     }
 
-    /* Matte Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -77,7 +76,6 @@
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px 0 rgba(99, 102, 241, 0.1);
     }
 
-    /* Hide scrollbar for Chrome, Safari and Opera */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -156,7 +154,7 @@
     <!-- TABS AND FILTERS -->
     <div class="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between border-b border-matte-border pb-4">
       
-      <!-- Day Tabs -->
+      <!-- Filters -->
       <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1" id="dayTabs">
         <button onclick="setTabFilter('all')" id="tab-all" 
           class="filter-tab px-3.5 py-2 rounded-xl text-xs font-semibold shrink-0 flex items-center gap-2 border transition-all bg-brand-600 border-brand-500 text-white shadow-md shadow-brand-600/20">
@@ -178,7 +176,7 @@
         </button>
       </div>
 
-      <!-- Quick League Filter Indicator -->
+      <!-- Quick Info -->
       <div class="text-xs text-zinc-400 flex items-center gap-2 self-end md:self-auto shrink-0">
         <i class="fa-solid fa-trophy text-amber-500"></i>
         <span>Знайдено турнірів: <strong id="tournamentsCount" class="text-white">0</strong></span>
@@ -219,8 +217,8 @@
         <div class="w-16 h-16 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl flex items-center justify-center mb-4 text-2xl">
           <i class="fa-solid fa-triangle-exclamation"></i>
         </div>
-        <h3 class="text-lg font-bold text-white mb-2">Не вдалося завантажити API Matchora</h3>
-        <p class="text-sm text-zinc-400 max-w-md mb-6" id="errorMessage">Перевірте з'єднання або доступність API сервера.</p>
+        <h3 class="text-lg font-bold text-white mb-2">Помилка завантаження даних</h3>
+        <p class="text-sm text-zinc-400 max-w-md mb-6" id="errorMessage">Не вдалося отримати дані з API сервера Matchora.</p>
         <button onclick="fetchAllData()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition-all shadow-lg shadow-brand-600/20">
           Спробувати знову
         </button>
@@ -232,7 +230,7 @@
           <i class="fa-solid fa-futbol"></i>
         </div>
         <h3 class="text-lg font-bold text-white mb-1">Матчів не знайдено</h3>
-        <p class="text-sm text-zinc-400">Немає доступних спортивних подій за обраним фільтром.</p>
+        <p class="text-sm text-zinc-400">Немає доступних спортивних подій за вашим запитом.</p>
       </div>
 
       <!-- Events Grid -->
@@ -246,10 +244,8 @@
 
   <!-- STREAM MODAL WITH AD-BLOCK SANDBOX -->
   <div id="playerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-4 md:p-6">
-    <!-- Overlay backdrop -->
     <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="closePlayerModal()"></div>
 
-    <!-- Modal Box Container -->
     <div class="relative w-full max-w-5xl bg-matte-card border border-matte-border rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[95vh] z-10">
       
       <!-- Header Modal -->
@@ -272,7 +268,7 @@
         </div>
       </div>
 
-      <!-- Video Player Frame with SANDBOX to block ads -->
+      <!-- Video Player Frame with SANDBOX -->
       <div class="relative w-full aspect-video bg-black flex items-center justify-center overflow-hidden">
         <iframe id="streamIframe" 
           class="w-full h-full border-0" 
@@ -291,11 +287,11 @@
       <!-- Modal Footer Channel List -->
       <div class="p-4 bg-matte-bg border-t border-matte-border">
         <div class="flex items-center justify-between mb-2">
-          <div class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Доступні джерела / Канали:</div>
-          <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20"><i class="fa-solid fa-shield-halved mr-1"></i> Sandbox Реклама Блокована</span>
+          <div class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Джерела трансляції:</div>
+          <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20"><i class="fa-solid fa-shield-halved mr-1"></i> Sandbox Активовано (Без реклами)</span>
         </div>
         <div id="modalChannelsList" class="flex flex-wrap gap-2 max-h-28 overflow-y-auto pr-1">
-          <!-- Channel buttons dynamically injected -->
+          <!-- Channel buttons injected here -->
         </div>
       </div>
 
@@ -303,23 +299,27 @@
   </div>
 
   <script>
-    // MATCHORA API ENDPOINTS
-    const API_SCHEDULE = 'https://matchora.to/api/v1/schedule';
-    const API_LIVE = 'https://matchora.to/api/v1/live';
+    // MATCHORA API DIRECT & PROXY URLS
+    const API_LIVE_ORIGINAL = 'https://matchora.to/api/v1/live';
+    const API_SCHEDULE_ORIGINAL = 'https://matchora.to/api/v1/schedule';
+
+    // CORS Proxy helpers for reliable browser fetching
+    const CORS_PROXIES = [
+      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      url => url
+    ];
 
     let allEvents = [];
-    let currentTabFilter = 'all'; // 'all', 'live', 'schedule'
+    let currentTabFilter = 'all'; 
     let searchQuery = '';
 
     window.addEventListener('DOMContentLoaded', () => {
       startKyivClock();
       fetchAllData();
-
-      // Auto refresh data every 3 minutes
-      setInterval(fetchAllData, 180000);
+      setInterval(fetchAllData, 180000); // 3-min auto-refresh
     });
 
-    // Clock HH:MM Kyiv Time
     function startKyivClock() {
       const updateClock = () => {
         const now = new Date();
@@ -335,62 +335,89 @@
       setInterval(updateClock, 1000);
     }
 
-    // FETCH ALL MATCTORA API DATA
+    // ROBUST FETCH WITH CORS PROXY FALLBACK
+    async function fetchWithFallback(targetUrl) {
+      for (const proxyGen of CORS_PROXIES) {
+        try {
+          const fetchUrl = proxyGen(targetUrl);
+          const response = await fetch(fetchUrl, { headers: { 'Accept': 'application/json' } });
+          if (!response.ok) continue;
+
+          let data = await response.json();
+          // Handle stringified JSON responses from proxies
+          if (typeof data === 'string') {
+            data = JSON.parse(data);
+          }
+          return data;
+        } catch (err) {
+          console.warn(`Proxy failed for ${targetUrl}:`, err);
+        }
+      }
+      throw new Error(`Не вдалося завантажити ${targetUrl}`);
+    }
+
+    // MAIN FETCH DATA FUNCTION
     async function fetchAllData() {
       const refreshIcon = document.getElementById('refreshIcon');
       if (refreshIcon) refreshIcon.classList.add('animate-spin');
 
       try {
-        // Fetch Live and Schedule concurrently
         const [resLive, resSchedule] = await Promise.allSettled([
-          fetch(API_LIVE),
-          fetch(API_SCHEDULE)
+          fetchWithFallback(API_LIVE_ORIGINAL),
+          fetchWithFallback(API_SCHEDULE_ORIGINAL)
         ]);
 
         let liveData = [];
         let scheduleData = [];
 
-        if (resLive.status === 'fulfilled' && resLive.value.ok) {
-          liveData = await resLive.value.json();
+        if (resLive.status === 'fulfilled' && resLive.value) {
+          liveData = extractEventsArray(resLive.value);
         }
-        if (resSchedule.status === 'fulfilled' && resSchedule.value.ok) {
-          scheduleData = await resSchedule.value.json();
+        if (resSchedule.status === 'fulfilled' && resSchedule.value) {
+          scheduleData = extractEventsArray(resSchedule.value);
         }
 
-        // Ensure array format
-        liveData = Array.isArray(liveData) ? liveData : (liveData.data || []);
-        scheduleData = Array.isArray(scheduleData) ? scheduleData : (scheduleData.data || []);
-
-        // Process and deduplicate match data
         processEventsData(liveData, scheduleData);
 
         document.getElementById('loadingState').classList.add('hidden');
         document.getElementById('errorState').classList.add('hidden');
       } catch (err) {
-        console.error('Matchora API Error:', err);
+        console.error('Matchora Fetch Error:', err);
         document.getElementById('loadingState').classList.add('hidden');
         document.getElementById('errorState').classList.remove('hidden');
-        document.getElementById('errorMessage').innerText = `Помилка запиту до Matchora API: ${err.message}`;
+        document.getElementById('errorMessage').innerText = `Помилка запиту до API Matchora: ${err.message}`;
       } finally {
         if (refreshIcon) refreshIcon.classList.remove('animate-spin');
       }
     }
 
-    // PROCESS MATCTORA DATA
+    // UNIFY API ARRAY PARSING
+    function extractEventsArray(rawResponse) {
+      if (!rawResponse) return [];
+      if (Array.isArray(rawResponse)) return rawResponse;
+      if (Array.isArray(rawResponse.data)) return rawResponse.data;
+      if (Array.isArray(rawResponse.events)) return rawResponse.events;
+      if (typeof rawResponse === 'object') {
+        return Object.values(rawResponse).filter(v => typeof v === 'object' && v !== null && (v.home || v.id));
+      }
+      return [];
+    }
+
+    // PROCESS & DEDUPLICATE EVENTS
     function processEventsData(liveList, scheduleList) {
       const eventsMap = new Map();
 
-      // 1. Process Live events first
+      // Process Live events
       liveList.forEach((item, index) => {
-        const id = String(item.id || item.event_id || `live-${index}`);
-        eventsMap.set(id, normalizeMatchoraItem(item, true));
+        const norm = normalizeMatchoraItem(item, true, index);
+        if (norm) eventsMap.set(norm.id, norm);
       });
 
-      // 2. Process Schedule events
+      // Process Schedule events
       scheduleList.forEach((item, index) => {
-        const id = String(item.id || item.event_id || `sch-${index}`);
-        if (!eventsMap.has(id)) {
-          eventsMap.set(id, normalizeMatchoraItem(item, Boolean(item.live)));
+        const norm = normalizeMatchoraItem(item, Boolean(item.live), index);
+        if (norm && !eventsMap.has(norm.id)) {
+          eventsMap.set(norm.id, norm);
         }
       });
 
@@ -400,23 +427,28 @@
       applyFiltersAndRender();
     }
 
-    // NORMALIZE MATCTORA EVENT ITEM
-    function normalizeMatchoraItem(item, isLiveFlag) {
-      const home = item.home || item.home_team || 'Команда A';
-      const away = item.away || item.away_team || 'Команда B';
-      const league = item.league || item.tournament || 'Спортивна Подія';
+    // NORMALIZE MATCHORA ITEM STRUCTURE
+    function normalizeMatchoraItem(item, isLiveFlag, fallbackIdx) {
+      if (!item) return null;
+
+      const home = item.home || item.home_team || item.team1 || 'Команда A';
+      const away = item.away || item.away_team || item.team2 || 'Команда B';
+      const league = item.league || item.tournament || item.category || 'Спортивна Подія';
+      const id = String(item.id || item.event_id || `${home}-${away}-${fallbackIdx}`);
+
       const status = item.status || (isLiveFlag ? 'LIVE' : 'NS');
-      const minute = item.minute || '';
+      const minute = item.minute || item.time_played || '';
       const score = item.score || '-';
       const channelCount = item.channel_count || item.channels_count || (item.channels ? item.channels.length : 1);
-      const embedUrl = item.embed_url || `https://matchora.to/embed/match/${item.id}`;
+      const embedUrl = item.embed_url || `https://matchora.to/embed/match/${id}`;
 
-      // Time handling
+      // Date parsing
       let timeFormatted = '--:--';
       let timestamp = Date.now();
-      if (item.date || item.start_time || item.time) {
-        const rawTime = item.date || item.start_time || item.time;
-        const parsedDate = new Date(rawTime);
+      const timeVal = item.date || item.start_time || item.time || item.start;
+      
+      if (timeVal) {
+        const parsedDate = new Date(timeVal);
         if (!isNaN(parsedDate.getTime())) {
           timestamp = parsedDate.getTime();
           timeFormatted = parsedDate.toLocaleTimeString('uk-UA', {
@@ -425,19 +457,19 @@
             minute: '2-digit'
           });
         } else {
-          timeFormatted = String(rawTime);
+          timeFormatted = String(timeVal);
         }
       }
 
       return {
-        id: String(item.id),
+        id,
         home,
         away,
         league,
         status,
         minute,
         score,
-        isLive: Boolean(item.live || isLiveFlag),
+        isLive: Boolean(item.live || isLiveFlag || status.toLowerCase().includes('live')),
         channelCount,
         embedUrl,
         channels: item.channels || [],
@@ -448,18 +480,15 @@
       };
     }
 
-    // GENERATE INITIAL AVATAR IF IMAGE NOT SUPPLIED
     function generateTeamAvatar(name) {
       const initial = (name || 'T').charAt(0).toUpperCase();
       return `https://placehold.co/80x80/18181c/6366f1?text=${encodeURIComponent(initial)}`;
     }
 
-    // COUNTERS & METRICS
     function updateMetricsAndCounters() {
       const totalAll = allEvents.length;
       const liveCount = allEvents.filter(e => e.isLive).length;
       const scheduleCount = allEvents.filter(e => !e.isLive).length;
-
       const uniqueLeagues = new Set(allEvents.map(e => e.league)).size;
 
       document.getElementById('count-all').innerText = totalAll;
@@ -490,7 +519,6 @@
       `;
     }
 
-    // FILTER LOGIC
     function setTabFilter(tab) {
       currentTabFilter = tab;
       document.querySelectorAll('.filter-tab').forEach(btn => {
@@ -534,14 +562,12 @@
     function applyFiltersAndRender() {
       let filtered = [...allEvents];
 
-      // Tab filter
       if (currentTabFilter === 'live') {
         filtered = filtered.filter(e => e.isLive);
       } else if (currentTabFilter === 'schedule') {
         filtered = filtered.filter(e => !e.isLive);
       }
 
-      // Search filter
       if (searchQuery) {
         filtered = filtered.filter(e => {
           return e.home.toLowerCase().includes(searchQuery) ||
@@ -550,7 +576,6 @@
         });
       }
 
-      // Sort: LIVE matches on top, then scheduled
       filtered.sort((a, b) => {
         if (a.isLive && !b.isLive) return -1;
         if (!a.isLive && b.isLive) return 1;
@@ -560,7 +585,6 @@
       renderEventsGrid(filtered);
     }
 
-    // RENDER CARDS GRID
     function renderEventsGrid(events) {
       const grid = document.getElementById('eventsGrid');
       const emptyState = document.getElementById('emptyState');
@@ -578,7 +602,6 @@
       grid.innerHTML = events.map(event => {
         const isLive = event.isLive;
 
-        // Badge Status
         let statusBadge = '';
         if (isLive) {
           const minuteDisplay = event.minute ? `(${event.minute}')` : '';
@@ -596,7 +619,6 @@
           `;
         }
 
-        // Score vs Time Display
         let centerDisplay = '';
         if (isLive && event.score && event.score !== '-') {
           centerDisplay = `
@@ -613,7 +635,6 @@
         return `
           <div class="bg-matte-card border border-matte-border rounded-2xl p-4 flex flex-col justify-between transition-all duration-200 card-glow hover:-translate-y-0.5">
             
-            <!-- Card Header: League and Status -->
             <div class="flex items-center justify-between pb-3 border-b border-matte-border/60 gap-2">
               <div class="flex items-center gap-2 truncate">
                 <i class="fa-solid fa-trophy text-amber-500 text-xs shrink-0"></i>
@@ -622,10 +643,7 @@
               <div>${statusBadge}</div>
             </div>
 
-            <!-- Match Teams & Score Grid -->
             <div class="py-4 grid grid-cols-7 items-center text-center gap-2">
-              
-              <!-- Home Team -->
               <div class="col-span-3 flex flex-col items-center gap-2">
                 <div class="w-12 h-12 rounded-xl bg-matte-bg border border-matte-border p-1.5 flex items-center justify-center">
                   <img src="${event.homeLogo}" alt="${event.home}" class="max-w-full max-h-full object-contain" onerror="this.src='https://placehold.co/80x80/18181c/a1a1aa?text=TEAM'" />
@@ -633,22 +651,18 @@
                 <span class="text-xs font-bold text-white line-clamp-2 leading-tight">${event.home}</span>
               </div>
 
-              <!-- Center Score / VS -->
               <div class="col-span-1 flex flex-col items-center justify-center">
                 ${centerDisplay}
               </div>
 
-              <!-- Away Team -->
               <div class="col-span-3 flex flex-col items-center gap-2">
                 <div class="w-12 h-12 rounded-xl bg-matte-bg border border-matte-border p-1.5 flex items-center justify-center">
                   <img src="${event.awayLogo}" alt="${event.away}" class="max-w-full max-h-full object-contain" onerror="this.src='https://placehold.co/80x80/18181c/a1a1aa?text=TEAM'" />
                 </div>
                 <span class="text-xs font-bold text-white line-clamp-2 leading-tight">${event.away}</span>
               </div>
-
             </div>
 
-            <!-- Card Action Footer -->
             <div class="pt-3 border-t border-matte-border/60 flex items-center justify-between gap-2">
               <span class="text-[11px] text-zinc-400 font-medium">
                 <i class="fa-solid fa-tv text-brand-500 mr-1"></i> ${event.channelCount} ${event.channelCount === 1 ? 'канал' : 'канали'}
@@ -675,9 +689,8 @@
       const channelsList = document.getElementById('modalChannelsList');
 
       matchTitle.innerText = `${match.home} vs ${match.away}`;
-      matchSubtitle.innerText = `${match.league} • Matchora Live Stream`;
+      matchSubtitle.innerText = `${match.league} • Matchora Stream`;
 
-      // Build Channel Stream Selectors
       let channelsHtml = '';
       if (match.channels && match.channels.length > 0) {
         channelsHtml = match.channels.map((ch, idx) => `
@@ -688,7 +701,6 @@
           </button>
         `).join('');
       } else {
-        // Fallback multiple stream buttons based on channel_count
         const count = Math.max(1, match.channelCount);
         for (let i = 1; i <= count; i++) {
           const streamUrl = `${match.embedUrl}${i > 1 ? '?stream=' + i : ''}`;
@@ -696,7 +708,7 @@
             <button onclick="switchStreamUrl('${streamUrl}', this)" 
               class="channel-btn px-3 py-1.5 rounded-xl border border-matte-border bg-matte-accent hover:bg-brand-600/30 text-xs text-zinc-200 flex items-center gap-2 transition-all ${i === 1 ? 'border-brand-500 bg-brand-600/20 text-white font-bold' : ''}">
               <i class="fa-solid fa-satellite-dish text-brand-500 text-[10px]"></i>
-              <span>Потік Matchora #${i}</span>
+              <span>Потік #${i}</span>
             </button>
           `;
         }
@@ -704,14 +716,12 @@
 
       channelsList.innerHTML = channelsHtml;
 
-      // Load Primary Embed URL
       switchStreamUrl(match.embedUrl);
 
       modal.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     }
 
-    // SWITCH STREAM IFRAME URL
     function switchStreamUrl(url, element) {
       const iframe = document.getElementById('streamIframe');
       const loader = document.getElementById('iframeLoader');
@@ -731,17 +741,15 @@
       };
     }
 
-    // CLOSE PLAYER MODAL
     function closePlayerModal() {
       const modal = document.getElementById('playerModal');
       const iframe = document.getElementById('streamIframe');
       
-      iframe.src = ''; // Terminate stream process
+      iframe.src = ''; 
       modal.classList.add('hidden');
       document.body.style.overflow = '';
     }
 
-    // TOGGLE FULLSCREEN MODAL
     function toggleModalFullscreen() {
       const modalBox = document.querySelector('#playerModal > div:nth-child(2)');
       if (!document.fullscreenElement) {
