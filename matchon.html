@@ -1,1245 +1,1144 @@
-<!DOCTYPE html>
-<html lang="uk">
+<!DOCTYPE html><html lang="uk" class="dark h-full">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080a0f">
-<meta name="description" content="Kasta Sports — Live Sports, Match Center and Sports TV">
-
-<title>Kasta Sports — Premium Sports Center</title>
-
-<style>
-:root{
-    --bg:#080a0f;
-    --bg2:#0d1017;
-    --panel:#11151e;
-    --panel2:#151a24;
-    --border:rgba(255,255,255,.08);
-    --border2:rgba(255,255,255,.13);
-    --text:#f3f5f8;
-    --muted:#8d96a6;
-    --red:#e32636;
-    --red2:#ff4050;
-    --green:#19c37d;
-    --gold:#e7b85c;
-    --shadow:0 20px 60px rgba(0,0,0,.38);
-    --radius:18px;
-}
-
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-html{
-    scroll-behavior:smooth;
-}
-
-body{
-    background:
-        radial-gradient(circle at 20% -10%,rgba(227,38,54,.12),transparent 32%),
-        radial-gradient(circle at 90% 20%,rgba(70,100,160,.08),transparent 28%),
-        var(--bg);
-    color:var(--text);
-    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    min-height:100vh;
-}
-
-button,
-input,
-select{
-    font:inherit;
-}
-
-button{
-    cursor:pointer;
-}
-
-img{
-    max-width:100%;
-}
-
-/* ================= HEADER ================= */
-
-.header{
-    position:sticky;
-    top:0;
-    z-index:1000;
-    height:68px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 24px;
-    background:rgba(8,10,15,.88);
-    border-bottom:1px solid var(--border);
-    backdrop-filter:blur(18px);
-}
-
-.logo{
-    display:flex;
-    align-items:center;
-    gap:11px;
-    font-weight:900;
-    letter-spacing:-.5px;
-    font-size:20px;
-    white-space:nowrap;
-}
-
-.logo-mark{
-    width:36px;
-    height:36px;
-    border-radius:11px;
-    display:grid;
-    place-items:center;
-    background:linear-gradient(135deg,var(--red),#8c0d19);
-    box-shadow:0 8px 28px rgba(227,38,54,.28);
-    font-size:18px;
-}
-
-.logo span{
-    color:#fff;
-}
-
-.logo b{
-    color:var(--red2);
-}
-
-.nav{
-    display:flex;
-    align-items:center;
-    gap:6px;
-}
-
-.nav button{
-    border:0;
-    background:transparent;
-    color:var(--muted);
-    padding:10px 14px;
-    border-radius:10px;
-    transition:.2s;
-}
-
-.nav button:hover,
-.nav button.active{
-    background:rgba(255,255,255,.06);
-    color:#fff;
-}
-
-.header-right{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.live-pill{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    padding:8px 12px;
-    border-radius:999px;
-    background:rgba(25,195,125,.08);
-    border:1px solid rgba(25,195,125,.18);
-    color:#5de0aa;
-    font-size:12px;
-    font-weight:800;
-}
-
-.live-dot{
-    width:7px;
-    height:7px;
-    background:#25d890;
-    border-radius:50%;
-    box-shadow:0 0 12px #25d890;
-    animation:pulse 1.5s infinite;
-}
-
-@keyframes pulse{
-    50%{opacity:.35;transform:scale(.75)}
-}
-
-.menu-btn{
-    display:none;
-    width:40px;
-    height:40px;
-    border:1px solid var(--border);
-    background:var(--panel);
-    color:white;
-    border-radius:10px;
-}
-
-/* ================= HERO ================= */
-
-.hero{
-    max-width:1500px;
-    margin:auto;
-    padding:42px 24px 22px;
-}
-
-.hero-inner{
-    min-height:230px;
-    border:1px solid var(--border);
-    border-radius:26px;
-    overflow:hidden;
-    position:relative;
-    background:
-        linear-gradient(110deg,rgba(9,11,17,.98),rgba(9,11,17,.73)),
-        radial-gradient(circle at 85% 50%,rgba(227,38,54,.24),transparent 35%);
-    box-shadow:var(--shadow);
-}
-
-.hero-inner:after{
-    content:"";
-    position:absolute;
-    width:430px;
-    height:430px;
-    right:-160px;
-    top:-210px;
-    border-radius:50%;
-    border:1px solid rgba(255,255,255,.05);
-    box-shadow:
-        0 0 0 50px rgba(255,255,255,.015),
-        0 0 0 100px rgba(255,255,255,.01);
-}
-
-.hero-content{
-    position:relative;
-    z-index:2;
-    padding:38px 42px;
-    max-width:780px;
-}
-
-.eyebrow{
-    color:var(--red2);
-    font-size:11px;
-    font-weight:900;
-    letter-spacing:2px;
-    text-transform:uppercase;
-    margin-bottom:10px;
-}
-
-.hero h1{
-    font-size:clamp(30px,4vw,54px);
-    line-height:1;
-    letter-spacing:-2px;
-    margin-bottom:14px;
-}
-
-.hero p{
-    color:var(--muted);
-    max-width:650px;
-    line-height:1.6;
-}
-
-.hero-stats{
-    display:flex;
-    gap:10px;
-    margin-top:25px;
-    flex-wrap:wrap;
-}
-
-.stat{
-    padding:10px 14px;
-    background:rgba(255,255,255,.045);
-    border:1px solid var(--border);
-    border-radius:12px;
-}
-
-.stat b{
-    font-size:16px;
-}
-
-.stat span{
-    color:var(--muted);
-    font-size:11px;
-    margin-left:5px;
-}
-
-/* ================= CONTROLS ================= */
-
-.controls-wrap{
-    max-width:1500px;
-    margin:auto;
-    padding:0 24px 18px;
-}
-
-.controls{
-    display:grid;
-    grid-template-columns:1fr auto auto;
-    gap:10px;
-}
-
-.search{
-    position:relative;
-}
-
-.search input{
-    width:100%;
-    height:46px;
-    background:var(--panel);
-    color:white;
-    border:1px solid var(--border);
-    outline:0;
-    border-radius:12px;
-    padding:0 16px 0 43px;
-}
-
-.search input:focus{
-    border-color:rgba(227,38,54,.45);
-}
-
-.search-icon{
-    position:absolute;
-    left:15px;
-    top:13px;
-    color:var(--muted);
-}
-
-.select{
-    height:46px;
-    border-radius:12px;
-    padding:0 14px;
-    color:#fff;
-    background:var(--panel);
-    border:1px solid var(--border);
-    outline:0;
-}
-
-.date-input{
-    height:46px;
-    border-radius:12px;
-    padding:0 12px;
-    color:#fff;
-    background:var(--panel);
-    border:1px solid var(--border);
-    outline:0;
-    color-scheme:dark;
-}
-
-/* ================= MAIN ================= */
-
-.main{
-    max-width:1500px;
-    margin:auto;
-    padding:0 24px 60px;
-}
-
-.section-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:15px;
-    margin:18px 0 14px;
-}
-
-.section-title{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.section-title h2{
-    font-size:20px;
-    letter-spacing:-.4px;
-}
-
-.section-count{
-    color:var(--muted);
-    font-size:12px;
-}
-
-.status{
-    color:var(--muted);
-    font-size:12px;
-}
-
-/* ================= LAYOUT ================= */
-
-.content-grid{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 390px;
-    gap:18px;
-    align-items:start;
-}
-
-/* ================= MATCH LIST ================= */
-
-.matches{
-    display:grid;
-    gap:9px;
-}
-
-.match{
-    display:grid;
-    grid-template-columns:70px minmax(0,1fr) auto;
-    align-items:center;
-    gap:14px;
-    min-height:94px;
-    padding:13px 15px;
-    background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018));
-    border:1px solid var(--border);
-    border-radius:16px;
-    transition:.2s;
-    cursor:pointer;
-}
-
-.match:hover{
-    border-color:rgba(227,38,54,.35);
-    transform:translateY(-1px);
-    background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
-}
-
-.match.selected{
-    border-color:rgba(227,38,54,.55);
-    box-shadow:0 0 0 1px rgba(227,38,54,.08);
-}
-
-.match-time{
-    text-align:center;
-}
-
-.match-time strong{
-    display:block;
-    font-size:13px;
-}
-
-.match-time small{
-    color:var(--muted);
-    font-size:10px;
-}
-
-.match-live{
-    color:#ff5361!important;
-}
-
-.match-main{
-    min-width:0;
-}
-
-.league{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    color:var(--muted);
-    font-size:10px;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-    margin-bottom:8px;
-}
-
-.league img{
-    width:17px;
-    height:17px;
-    object-fit:contain;
-}
-
-.teams{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:0;
-}
-
-.team{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    min-width:0;
-    flex:1;
-}
-
-.team.away{
-    justify-content:flex-start;
-}
-
-.team img{
-    width:30px;
-    height:30px;
-    object-fit:contain;
-    flex:none;
-}
-
-.team-name{
-    font-size:14px;
-    font-weight:700;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-}
-
-.vs{
-    color:#5f6878;
-    font-size:10px;
-    font-weight:900;
-}
-
-.score{
-    min-width:70px;
-    text-align:center;
-    font-size:16px;
-    font-weight:900;
-}
-
-.match-meta{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    justify-content:flex-end;
-}
-
-.badge{
-    padding:5px 7px;
-    border-radius:7px;
-    background:rgba(255,255,255,.06);
-    color:#aeb6c5;
-    font-size:9px;
-    font-weight:800;
-    white-space:nowrap;
-}
-
-.badge.red{
-    color:#ff6370;
-    background:rgba(227,38,54,.1);
-}
-
-.badge.green{
-    color:#59dfaa;
-    background:rgba(25,195,125,.09);
-}
-
-/* ================= PLAYER ================= */
-
-.player-card{
-    position:sticky;
-    top:86px;
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:var(--shadow);
-}
-
-.player-head{
-    padding:14px 15px;
-    border-bottom:1px solid var(--border);
-}
-
-.player-title{
-    font-size:14px;
-    font-weight:800;
-}
-
-.player-sub{
-    color:var(--muted);
-    font-size:11px;
-    margin-top:4px;
-}
-
-.player{
-    width:100%;
-    aspect-ratio:16/9;
-    background:#020305;
-    position:relative;
-}
-
-.player iframe{
-    width:100%;
-    height:100%;
-    border:0;
-    display:block;
-    background:#000;
-}
-
-.player-empty{
-    position:absolute;
-    inset:0;
-    display:grid;
-    place-items:center;
-    text-align:center;
-    padding:30px;
-    color:var(--muted);
-    background:
-        radial-gradient(circle,rgba(227,38,54,.08),transparent 55%),
-        #030406;
-}
-
-.player-empty strong{
-    display:block;
-    color:#fff;
-    font-size:16px;
-    margin-bottom:5px;
-}
-
-.player-info{
-    padding:15px;
-}
-
-.selected-match{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-}
-
-.selected-team{
-    display:flex;
-    align-items:center;
-    gap:9px;
-    font-size:13px;
-    font-weight:700;
-}
-
-.selected-team img{
-    width:32px;
-    height:32px;
-    object-fit:contain;
-}
-
-.selected-score{
-    font-size:20px;
-    font-weight:900;
-}
-
-.channels{
-    margin-top:15px;
-}
-
-.channels-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:8px;
-}
-
-.channels-head b{
-    font-size:12px;
-}
-
-.channels-head span{
-    font-size:10px;
-    color:var(--muted);
-}
-
-.channel-list{
-    display:grid;
-    gap:7px;
-    max-height:330px;
-    overflow:auto;
-    padding-right:2px;
-}
-
-.channel{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    width:100%;
-    text-align:left;
-    padding:10px;
-    border:1px solid var(--border);
-    border-radius:11px;
-    background:rgba(255,255,255,.025);
-    color:#fff;
-    transition:.18s;
-}
-
-.channel:hover,
-.channel.active{
-    border-color:rgba(227,38,54,.45);
-    background:rgba(227,38,54,.07);
-}
-
-.channel-status{
-    width:7px;
-    height:7px;
-    border-radius:50%;
-    background:#555d6c;
-    flex:none;
-}
-
-.channel-status.on{
-    background:#28d98f;
-    box-shadow:0 0 8px #28d98f;
-}
-
-.channel-name{
-    flex:1;
-    min-width:0;
-}
-
-.channel-name strong{
-    display:block;
-    font-size:11px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-
-.channel-name small{
-    color:var(--muted);
-    font-size:9px;
-}
-
-.channel-right{
-    display:flex;
-    gap:4px;
-}
-
-.mini{
-    padding:3px 5px;
-    border-radius:5px;
-    background:rgba(255,255,255,.06);
-    color:#aeb5c2;
-    font-size:8px;
-}
-
-/* ================= SPORTS TV ================= */
-
-.tv-section{
-    margin-top:40px;
-}
-
-.tv-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:10px;
-}
-
-.tv-card{
-    min-height:100px;
-    padding:15px;
-    background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
-    border:1px solid var(--border);
-    border-radius:15px;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.tv-card:hover{
-    border-color:rgba(227,38,54,.38);
-    transform:translateY(-2px);
-}
-
-.tv-card.featured{
-    border-color:rgba(231,184,92,.22);
-}
-
-.tv-top{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    margin-bottom:12px;
-}
-
-.tv-icon{
-    width:36px;
-    height:36px;
-    border-radius:10px;
-    display:grid;
-    place-items:center;
-    background:rgba(227,38,54,.1);
-    color:#ff5865;
-    font-size:17px;
-}
-
-.tv-quality{
-    color:#71dfa9;
-    font-size:9px;
-    font-weight:900;
-}
-
-.tv-name{
-    font-size:12px;
-    font-weight:800;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-
-.tv-country{
-    color:var(--muted);
-    font-size:10px;
-    margin-top:4px;
-}
-
-/* ================= EMPTY / LOADING ================= */
-
-.loading{
-    min-height:180px;
-    display:grid;
-    place-items:center;
-    color:var(--muted);
-    border:1px dashed var(--border);
-    border-radius:16px;
-}
-
-.spinner{
-    width:27px;
-    height:27px;
-    border:2px solid rgba(255,255,255,.1);
-    border-top-color:var(--red);
-    border-radius:50%;
-    animation:spin .8s linear infinite;
-    margin:auto auto 12px;
-}
-
-@keyframes spin{
-    to{transform:rotate(360deg)}
-}
-
-.empty{
-    padding:45px 20px;
-    text-align:center;
-    color:var(--muted);
-    border:1px dashed var(--border);
-    border-radius:16px;
-}
-
-.error{
-    color:#ff6b76;
-    padding:18px;
-    border-radius:13px;
-    background:rgba(227,38,54,.07);
-    border:1px solid rgba(227,38,54,.15);
-    font-size:12px;
-}
-
-/* ================= FOOTER ================= */
-
-.footer{
-    border-top:1px solid var(--border);
-    padding:25px 24px 35px;
-    text-align:center;
-    color:#667080;
-    font-size:11px;
-}
-
-.footer b{
-    color:#aeb6c4;
-}
-
-/* ================= MOBILE ================= */
-
-@media(max-width:1100px){
-    .content-grid{
-        grid-template-columns:1fr;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Kasta Sports — Live Sports</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+
+      theme: {
+        extend: {
+
+          colors: {
+
+            brand: {
+              50: '#ecfdf5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46'
+            },
+
+            matte: {
+              bg: '#09090b',
+              card: '#121215',
+              hover: '#18181c',
+              border: '#222228',
+              accent: '#272730'
+            }
+
+          },
+
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          },
+
+          animation: {
+            'pulse-fast':
+              'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }
+
+        }
+      }
+    }
+  </script>
+
+  <style>
+
+    html,
+    body {
+      background-color:#09090b;
+      color:#f4f4f5;
+      font-family:'Inter',sans-serif;
+      overflow-x:hidden;
     }
 
-    .player-card{
-        position:relative;
-        top:auto;
-        order:-1;
+    body{
+      min-height:100%;
     }
 
-    .tv-grid{
-        grid-template-columns:repeat(3,1fr);
-    }
-}
-
-@media(max-width:800px){
-    .header{
-        padding:0 15px;
+    ::-webkit-scrollbar{
+      width:8px;
+      height:8px;
     }
 
-    .nav{
-        display:none;
-        position:absolute;
-        left:10px;
-        right:10px;
-        top:62px;
-        padding:8px;
-        flex-direction:column;
-        align-items:stretch;
-        background:#10141c;
-        border:1px solid var(--border);
-        border-radius:14px;
-        box-shadow:var(--shadow);
+    ::-webkit-scrollbar-track{
+      background:#09090b;
     }
 
-    .nav.open{
-        display:flex;
+    ::-webkit-scrollbar-thumb{
+      background:#222228;
+      border-radius:4px;
     }
 
-    .nav button{
-        text-align:left;
+    ::-webkit-scrollbar-thumb:hover{
+      background:#33333e;
     }
 
-    .menu-btn{
-        display:block;
+    .glass-nav{
+      background:rgba(18,18,21,.86);
+      backdrop-filter:blur(15px);
+      -webkit-backdrop-filter:blur(15px);
     }
 
-    .header-right .live-pill{
-        display:none;
+    .card-glow{
+      transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease,
+        background .2s ease;
     }
 
-    .hero{
-        padding:20px 15px 15px;
+    .card-glow:hover{
+      border-color:rgba(16,185,129,.4);
+      box-shadow:
+        0 10px 25px -5px rgba(0,0,0,.5),
+        0 0 15px rgba(16,185,129,.1);
     }
 
-    .hero-inner{
-        border-radius:20px;
+    .no-scrollbar::-webkit-scrollbar{
+      display:none;
     }
 
-    .hero-content{
-        padding:28px 24px;
+    .no-scrollbar{
+      -ms-overflow-style:none;
+      scrollbar-width:none;
     }
 
-    .controls-wrap,
-    .main{
-        padding-left:15px;
-        padding-right:15px;
+    .line-clamp-2{
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
     }
 
-    .controls{
-        grid-template-columns:1fr;
+    .player-shadow{
+      box-shadow:
+        0 25px 80px rgba(0,0,0,.65),
+        0 0 35px rgba(16,185,129,.07);
     }
 
-    .tv-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-}
-
-@media(max-width:600px){
-    .logo{
-        font-size:17px;
+    .live-glow{
+      box-shadow:
+        0 0 0 1px rgba(239,68,68,.12),
+        0 0 20px rgba(239,68,68,.08);
     }
 
-    .logo-mark{
-        width:32px;
-        height:32px;
+    .channel-active{
+      border-color:rgba(16,185,129,.8)!important;
+      background:rgba(5,150,105,.16)!important;
+      color:white!important;
     }
 
-    .hero h1{
-        font-size:34px;
-        letter-spacing:-1.4px;
+    .modal-backdrop{
+      background:rgba(0,0,0,.86);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
     }
 
-    .hero p{
-        font-size:12px;
+    .iframe-frame{
+      background:
+        radial-gradient(
+          circle at center,
+          rgba(16,185,129,.09),
+          transparent 55%
+        ),
+        #000;
     }
 
-    .match{
-        grid-template-columns:54px minmax(0,1fr);
-        gap:8px;
-        padding:12px;
+    .status-live-dot{
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:#ef4444;
+      box-shadow:0 0 10px rgba(239,68,68,.8);
     }
 
-    .match-meta{
-        grid-column:2;
-        justify-content:flex-start;
+    .quality-badge{
+      font-size:9px;
+      line-height:1;
+      padding:4px 6px;
+      border-radius:6px;
+      background:rgba(255,255,255,.06);
+      color:#a1a1aa;
+      border:1px solid rgba(255,255,255,.05);
     }
 
-    .match-time{
-        grid-row:1 / span 2;
+    .marquee-wrap{
+      overflow:hidden;
+      white-space:nowrap;
+      position:relative;
+      flex:1;
+      min-width:0;
     }
 
-    .teams{
-        flex-wrap:wrap;
+    .marquee{
+      display:inline-flex;
+      align-items:center;
+      gap:40px;
+      white-space:nowrap;
+      animation:marquee 24s linear infinite;
+      padding-left:100%;
     }
 
-    .team-name{
-        font-size:12px;
+    .marquee:hover{
+      animation-play-state:paused;
     }
 
-    .team img{
-        width:25px;
-        height:25px;
+    @keyframes marquee{
+      0%{
+        transform:translateX(0);
+      }
+      100%{
+        transform:translateX(-100%);
+      }
     }
 
-    .score{
-        min-width:auto;
+    .score-box{
+      min-width:58px;
+      width:max-content;
+      max-width:100%;
+      white-space:nowrap;
+      flex-shrink:0;
     }
 
-    .tv-grid{
-        grid-template-columns:1fr 1fr;
+    .score-text{
+      white-space:nowrap;
+      display:block;
+      text-align:center;
     }
 
-    .selected-match{
-        align-items:flex-start;
+    .tournament-heading{
+      grid-column:1 / -1;
     }
 
-    .player-info{
-        padding:12px;
-    }
-}
-
-@media(max-width:390px){
-    .tv-grid{
-        grid-template-columns:1fr;
+    #playerModal:fullscreen{
+      padding:0!important;
+      background:#000;
     }
 
-    .hero-stats{
-        display:grid;
-        grid-template-columns:1fr 1fr;
+    #playerModal:fullscreen #modalBox{
+      width:100vw!important;
+      height:100vh!important;
+      max-width:none!important;
+      max-height:none!important;
+      border-radius:0!important;
+      border:0!important;
     }
-}
-</style>
+
+    #playerModal:fullscreen #playerContainer{
+      aspect-ratio:auto!important;
+      flex:1;
+      min-height:0;
+    }
+
+    #playerModal:fullscreen #streamIframe{
+      width:100%;
+      height:100%;
+    }
+
+    @media(max-width:640px){
+
+      .mobile-card{
+        padding:13px!important;
+      }
+
+      .team-logo{
+        width:50px!important;
+        height:50px!important;
+        padding:0!important;
+      }
+
+      .team-name{
+        font-size:11px!important;
+      }
+
+      .score-box{
+        min-width:52px;
+      }
+
+      .score-text{
+        font-size:12px!important;
+      }
+
+    }
+
+  </style>
 </head>
 
-<body>
+<body class="h-full flex flex-col antialiased selection:bg-brand-600 selection:text-white">
 
-<header class="header">
+<!-- =========================================================
+     HEADER
+========================================================= -->
 
-    <div class="logo">
-        <div class="logo-mark">K</div>
-        <span>KASTA <b>SPORTS</b></span>
-    </div>
+<header class="sticky top-0 z-40 glass-nav border-b border-matte-border">
 
-    <nav class="nav" id="nav">
-        <button class="active" data-view="live">🔴 LIVE</button>
-        <button data-view="today">📅 TODAY</button>
-        <button data-view="all">🏆 ALL EVENTS</button>
-        <button data-view="tv">📺 SPORTS TV</button>
-    </nav>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <div class="header-right">
-        <div class="live-pill">
-            <span class="live-dot"></span>
-            MATCHORA LIVE
+    <div class="flex items-center justify-between h-16 gap-3">
+
+      <!-- LOGO -->
+
+      <div
+        class="flex items-center gap-3 cursor-pointer shrink-0"
+        onclick="resetFilters()"
+      >
+
+        <div
+          class="w-10 h-10 rounded-xl
+                 bg-gradient-to-tr from-brand-600 to-emerald-400
+                 flex items-center justify-center
+                 text-white shadow-lg shadow-brand-600/30"
+        >
+          <i class="fa-solid fa-trophy text-lg"></i>
         </div>
 
-        <button class="menu-btn" id="menuBtn">☰</button>
+        <div>
+
+          <span
+            class="text-xl font-extrabold tracking-tight
+                   text-white block leading-none"
+          >
+            KASTA<span class="text-brand-500">SPORTS</span>
+          </span>
+
+          <span
+            class="text-[10px] uppercase font-bold
+                   tracking-widest text-zinc-400"
+          >
+            Match Center
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- DESKTOP SEARCH -->
+
+      <div class="hidden md:flex flex-1 max-w-md mx-4">
+
+        <div class="relative w-full">
+
+          <i
+            class="fa-solid fa-magnifying-glass
+                   absolute left-3.5 top-1/2
+                   -translate-y-1/2
+                   text-zinc-400 text-sm"
+          ></i>
+
+          <input
+            type="text"
+            id="searchInput"
+            oninput="handleSearch(this.value)"
+            placeholder="Пошук команд, ліг або подій..."
+            class="w-full bg-matte-accent/50
+                   text-sm text-zinc-100
+                   placeholder-zinc-500
+                   rounded-xl pl-10 pr-10 py-2
+                   border border-matte-border
+                   focus:outline-none
+                   focus:border-brand-500
+                   focus:ring-1 focus:ring-brand-500
+                   transition-all"
+          />
+
+          <button
+            id="clearSearchBtn"
+            onclick="clearSearch()"
+            class="hidden absolute right-3
+                   top-1/2 -translate-y-1/2
+                   text-zinc-500 hover:text-zinc-300"
+          >
+            <i class="fa-solid fa-circle-xmark"></i>
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- HEADER CONTROLS -->
+
+      <div class="flex items-center gap-2">
+
+        <!-- KYIV CLOCK -->
+
+        <div
+          class="hidden sm:flex items-center gap-2
+                 bg-matte-card
+                 border border-matte-border
+                 px-3 py-1.5
+                 rounded-xl
+                 text-xs font-mono"
+        >
+
+          <i class="fa-regular fa-clock text-brand-500"></i>
+
+          <span
+            id="kyivClock"
+            class="font-bold text-white text-sm"
+          >
+            --:--
+          </span>
+
+        </div>
+
+
+        <!-- LIVE INDICATOR -->
+
+        <div
+          class="hidden lg:flex items-center gap-2
+                 bg-red-500/5
+                 border border-red-500/15
+                 px-3 py-1.5
+                 rounded-xl
+                 text-[10px]
+                 font-bold
+                 text-red-400"
+        >
+
+          <span class="status-live-dot animate-pulse"></span>
+
+          MATCHORA LIVE
+
+        </div>
+
+
+        <!-- REFRESH -->
+
+        <button
+          onclick="fetchAllData()"
+          id="refreshBtn"
+          class="flex items-center gap-2
+                 bg-matte-accent
+                 hover:bg-matte-hover
+                 border border-matte-border
+                 text-zinc-200
+                 text-xs font-semibold
+                 py-1.5 px-3
+                 rounded-xl
+                 transition-all
+                 active:scale-95"
+        >
+
+          <i
+            class="fa-solid fa-arrows-rotate
+                   text-brand-500"
+            id="refreshIcon"
+          ></i>
+
+          <span class="hidden sm:inline">
+            Оновити
+          </span>
+
+        </button>
+
+      </div>
+
     </div>
+
+
+    <!-- MOBILE SEARCH -->
+
+    <div class="pb-3 md:hidden">
+
+      <div class="relative w-full">
+
+        <i
+          class="fa-solid fa-magnifying-glass
+                 absolute left-3.5 top-1/2
+                 -translate-y-1/2
+                 text-zinc-400 text-sm"
+        ></i>
+
+        <input
+          type="text"
+          id="searchInputMobile"
+          oninput="handleSearch(this.value)"
+          placeholder="Пошук матчу або команди..."
+          class="w-full
+                 bg-matte-accent/50
+                 text-sm text-zinc-100
+                 placeholder-zinc-500
+                 rounded-xl pl-10 pr-4 py-2
+                 border border-matte-border
+                 focus:outline-none
+                 focus:border-brand-500"
+        />
+
+      </div>
+
+    </div>
+
+  </div>
 
 </header>
 
 
-<section class="hero">
+<!-- =========================================================
+     MAIN
+========================================================= -->
 
-    <div class="hero-inner">
+<main
+  class="flex-1 max-w-7xl w-full mx-auto
+         px-4 sm:px-6 lg:px-8
+         py-6 flex flex-col gap-6"
+>
 
-        <div class="hero-content">
 
-            <div class="eyebrow">Premium Sports Center</div>
+  <!-- TELEGRAM MARQUEE -->
 
-            <h1>LIVE SPORTS.<br>ONE PLACE.</h1>
+  <div
+    class="flex items-center
+           gap-3
+           bg-matte-card
+           border border-matte-border
+           rounded-xl
+           px-3 py-2
+           overflow-hidden"
+  >
 
-            <p>
-                Матчі наживо, розклад, рахунки та спортивні телеканали
-                в одному сучасному інтерфейсі.
-            </p>
+    <div
+      class="shrink-0
+             w-7 h-7
+             rounded-lg
+             bg-brand-600/15
+             text-brand-400
+             flex items-center
+             justify-center"
+    >
+      <i class="fa-brands fa-telegram"></i>
+    </div>
 
-            <div class="hero-stats">
+    <div class="marquee-wrap">
 
-                <div class="stat">
-                    <b id="heroLive">—</b>
-                    <span>LIVE</span>
-                </div>
+      <div class="marquee text-xs text-zinc-400">
 
-                <div class="stat">
-                    <b id="heroEvents">—</b>
-                    <span>EVENTS</span>
-                </div>
+        <span>
+          <i class="fa-brands fa-telegram text-brand-500 mr-1"></i>
+          Telegram: @SportKasTV
+        </span>
 
-                <div class="stat">
-                    <b id="heroChannels">—</b>
-                    <span>SPORT TV</span>
-                </div>
+        <span class="text-zinc-600">•</span>
 
-            </div>
+        <span>
+          Kasta Sports — прямі спортивні трансляції
+        </span>
 
-        </div>
+        <span class="text-zinc-600">•</span>
+
+        <span>
+          Приєднуйтесь до Telegram-групи
+        </span>
+
+        <span class="text-zinc-600">•</span>
+
+        <span>
+          @SportKasTV
+        </span>
+
+      </div>
 
     </div>
 
-</section>
+  </div>
 
 
-<section class="controls-wrap">
+  <!-- STATUS FILTER -->
 
-    <div class="controls">
+  <div
+    class="flex items-center
+           justify-between
+           gap-3
+           border-b border-matte-border
+           pb-4"
+  >
 
-        <div class="search">
+    <div
+      class="flex items-center
+             bg-matte-card
+             p-1 rounded-xl
+             border border-matte-border
+             overflow-x-auto
+             no-scrollbar"
+    >
 
-            <span class="search-icon">⌕</span>
+      <button
+        onclick="setStatusFilter('all')"
+        id="status-all"
+        class="status-tab
+               text-xs font-medium
+               px-2.5 py-1
+               rounded-lg
+               text-zinc-400
+               hover:text-white
+               transition-all
+               shrink-0
+               flex items-center gap-1.5"
+      >
+        <span>Усі</span>
+        <span id="status-count-all"
+              class="text-[9px] text-zinc-500">0</span>
+      </button>
 
-            <input
-                id="search"
-                type="search"
-                placeholder="Пошук команди, ліги або каналу..."
+
+      <button
+        onclick="setStatusFilter('live')"
+        id="status-live"
+        class="status-tab
+               text-xs font-medium
+               px-2.5 py-1
+               rounded-lg
+               text-white
+               bg-brand-600
+               transition-all
+               flex items-center gap-1.5
+               shrink-0"
+      >
+
+        <span
+          class="w-2 h-2 rounded-full
+                 bg-red-500 animate-pulse"
+        ></span>
+
+        <span>LIVE</span>
+
+        <span id="status-count-live"
+              class="text-[9px] text-emerald-100">0</span>
+
+      </button>
+
+
+      <button
+        onclick="setStatusFilter('upcoming')"
+        id="status-upcoming"
+        class="status-tab
+               text-xs font-medium
+               px-2.5 py-1
+               rounded-lg
+               text-zinc-400
+               hover:text-white
+               transition-all
+               shrink-0
+               flex items-center gap-1.5"
+      >
+        <span>Скоро</span>
+        <span id="status-count-upcoming"
+              class="text-[9px] text-zinc-500">0</span>
+      </button>
+
+
+      <button
+        onclick="setStatusFilter('tomorrow')"
+        id="status-tomorrow"
+        class="status-tab
+               text-xs font-medium
+               px-2.5 py-1
+               rounded-lg
+               text-zinc-400
+               hover:text-white
+               transition-all
+               shrink-0
+               flex items-center gap-1.5"
+      >
+        <span>Завтра</span>
+        <span id="status-count-tomorrow"
+              class="text-[9px] text-zinc-500">0</span>
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- SPORTS FILTER -->
+
+  <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+
+    <button
+      onclick="setSportFilter('all')"
+      id="sport-all"
+      class="sport-tab
+             shrink-0
+             px-3 py-1
+             rounded-lg
+             text-xs
+             font-semibold
+             bg-brand-600
+             text-white
+             border border-brand-500"
+    >
+      Усі види спорту
+    </button>
+
+    <div id="sportButtons" class="flex gap-2"></div>
+
+  </div>
+
+
+  <!-- LOADING -->
+
+  <div
+    id="loadingState"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+  >
+
+    <script>
+
+      document.write(
+        Array(6)
+          .fill(0)
+          .map(() => `
+
+            <div
+              class="bg-matte-card
+                     border border-matte-border
+                     rounded-2xl
+                     p-4
+                     animate-pulse
+                     flex flex-col gap-4"
             >
 
-        </div>
+              <div class="flex justify-between">
 
-        <select class="select" id="sportFilter">
-            <option value="all">Усі види спорту</option>
-        </select>
+                <div
+                  class="h-4 w-28
+                         bg-matte-accent rounded"
+                ></div>
 
-        <input
-            class="date-input"
-            id="dateFilter"
-            type="date"
-        >
+                <div
+                  class="h-4 w-14
+                         bg-matte-accent rounded-full"
+                ></div>
 
+              </div>
+
+              <div
+                class="flex items-center
+                       justify-between py-3"
+              >
+
+                <div
+                  class="flex items-center gap-3"
+                >
+
+                  <div
+                    class="w-11 h-11
+                           bg-matte-accent
+                           rounded-xl"
+                  ></div>
+
+                  <div
+                    class="h-4 w-20
+                           bg-matte-accent
+                           rounded"
+                  ></div>
+
+                </div>
+
+                <div
+                  class="h-5 w-8
+                         bg-matte-accent rounded"
+                ></div>
+
+                <div
+                  class="flex items-center gap-3"
+                >
+
+                  <div
+                    class="h-4 w-20
+                           bg-matte-accent rounded"
+                  ></div>
+
+                  <div
+                    class="w-11 h-11
+                           bg-matte-accent
+                           rounded-xl"
+                  ></div>
+
+                </div>
+
+              </div>
+
+              <div
+                class="h-9
+                       bg-matte-accent
+                       rounded-xl"
+              ></div>
+
+            </div>
+
+          `)
+          .join('')
+      );
+
+    </script>
+
+  </div>
+
+
+  <!-- ERROR -->
+
+  <div
+    id="errorState"
+    class="hidden flex-col
+           items-center justify-center
+           py-16 text-center"
+  >
+
+    <div
+      class="w-16 h-16
+             bg-red-500/10
+             border border-red-500/20
+             text-red-500
+             rounded-2xl
+             flex items-center justify-center
+             mb-4 text-2xl"
+    >
+      <i class="fa-solid fa-triangle-exclamation"></i>
     </div>
 
-</section>
+    <h3
+      class="text-lg font-bold text-white mb-2"
+    >
+      Не вдалося завантажити дані
+    </h3>
+
+    <p
+      class="text-sm text-zinc-400
+             max-w-md mb-6"
+      id="errorMessage"
+    >
+      Matchora API тимчасово недоступний.
+    </p>
+
+    <button
+      onclick="fetchAllData()"
+      class="px-5 py-2
+             bg-brand-600
+             hover:bg-brand-700
+             text-white
+             font-semibold
+             rounded-xl
+             text-sm
+             transition-all
+             shadow-lg shadow-brand-600/20"
+    >
+      Спробувати знову
+    </button>
+
+  </div>
 
 
-<main class="main">
+  <!-- EMPTY -->
 
-    <div class="section-head">
+  <div
+    id="emptyState"
+    class="hidden flex-col
+           items-center justify-center
+           py-16 text-center"
+  >
 
-        <div class="section-title">
-            <h2 id="sectionTitle">LIVE MATCHES</h2>
-            <span class="section-count" id="eventCount"></span>
-        </div>
-
-        <div class="status" id="apiStatus">
-            Підключення...
-        </div>
-
+    <div
+      class="w-16 h-16
+             bg-matte-accent
+             text-zinc-500
+             rounded-2xl
+             flex items-center justify-center
+             mb-4 text-2xl
+             border border-matte-border"
+    >
+      <i class="fa-solid fa-magnifying-glass"></i>
     </div>
 
+    <h3
+      class="text-lg font-bold text-white mb-1"
+    >
+      Подій не знайдено
+    </h3>
 
-    <div class="content-grid">
+    <p
+      class="text-sm text-zinc-400"
+    >
+      Спробуйте змінити фільтри або пошук.
+    </p>
 
-        <section>
-
-            <div id="matches" class="matches">
-
-                <div class="loading">
-                    <div>
-                        <div class="spinner"></div>
-                        Завантаження матчів...
-                    </div>
-                </div>
-
-            </div>
-
-        </section>
+  </div>
 
 
-        <aside class="player-card">
+  <!-- EVENTS -->
 
-            <div class="player-head">
-
-                <div class="player-title" id="playerTitle">
-                    Виберіть матч
-                </div>
-
-                <div class="player-sub" id="playerSub">
-                    Трансляція з Matchora
-                </div>
-
-            </div>
-
-
-            <div class="player">
-
-                <div class="player-empty" id="playerEmpty">
-
-                    <div>
-                        <strong>Виберіть спортивну подію</strong>
-                        <span>
-                            Після вибору матчу тут з'явиться плеєр.
-                        </span>
-                    </div>
-
-                </div>
-
-                <iframe
-                    id="playerFrame"
-                    src="about:blank"
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    allowfullscreen
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    style="display:none;">
-                </iframe>
-
-            </div>
-
-
-            <div class="player-info" id="playerInfo" style="display:none;">
-
-                <div class="selected-match">
-
-                    <div class="selected-team">
-                        <img id="homeLogo" src="" alt="">
-                        <span id="homeName"></span>
-                    </div>
-
-                    <div class="selected-score" id="selectedScore">
-                        -
-                    </div>
-
-                    <div class="selected-team">
-                        <img id="awayLogo" src="" alt="">
-                        <span id="awayName"></span>
-                    </div>
-
-                </div>
-
-
-                <div class="channels">
-
-                    <div class="channels-head">
-
-                        <b>Доступні трансляції</b>
-
-                        <span id="channelCount">
-                            0 channels
-                        </span>
-
-                    </div>
-
-                    <div
-                        class="channel-list"
-                        id="channelList">
-                    </div>
-
-                </div>
-
-            </div>
-
-        </aside>
-
-    </div>
-
-
-    <section class="tv-section" id="tvSection">
-
-        <div class="section-head">
-
-            <div class="section-title">
-                <h2>📺 SPORTS TV</h2>
-                <span class="section-count" id="tvCount"></span>
-            </div>
-
-            <div class="status">
-                24/7 CHANNELS
-            </div>
-
-        </div>
-
-        <div id="tvGrid" class="tv-grid">
-
-            <div class="loading">
-                <div>
-                    <div class="spinner"></div>
-                    Завантаження каналів...
-                </div>
-            </div>
-
-        </div>
-
-    </section>
+  <div
+    id="eventsGrid"
+    class="grid grid-cols-1
+           md:grid-cols-2
+           lg:grid-cols-3
+           gap-4"
+  ></div>
 
 </main>
 
 
-<footer class="footer">
+<!-- =========================================================
+     PLAYER MODAL
+========================================================= -->
 
-    <b>KASTA SPORTS</b> · Premium Sports Center
+<div
+  id="playerModal"
+  class="fixed inset-0 z-50 hidden
+         items-center justify-center
+         p-2 sm:p-4 md:p-6"
+>
 
-    <br><br>
+  <!-- BACKDROP -->
 
-    Дані та вбудовані трансляції надаються через Matchora API.
-    Плеєр працює у вбудованому режимі.
+  <div
+    class="absolute inset-0 modal-backdrop"
+    onclick="closePlayerModal()"
+  ></div>
 
-</footer>
 
+  <!-- MODAL -->
+
+  <div
+    id="modalBox"
+    class="relative
+           w-full max-w-6xl
+           bg-matte-card
+           border border-matte-border
+           rounded-2xl
+           overflow-hidden
+           shadow-2xl
+           flex flex-col
+           max-h-[96vh]
+           z-10"
+  >
+
+    <!-- MODAL HEADER -->
+
+    <div
+      class="flex items-center
+             justify-between
+             px-4 py-3
+             bg-matte-bg
+             border-b border-matte-border"
+    >
+
+      <div
+        class="flex items-center gap-3
+               overflow-hidden"
+      >
+
+        <span
+          id="modalLiveDot"
+          class="w-2.5 h-2.5
+                 rounded-full
+                 bg-red-500
+                 animate-pulse
+                 shrink-0"
+        ></span>
+
+        <div class="truncate">
+
+          <h4
+            id="modalMatchTitle"
+            class="text-sm sm:text-base
+                   font-bold text-white
+                   truncate"
+          >
+            Match Streaming
+          </h4>
+
+          <p
+            id="modalMatchSubtitle"
+            class="text-xs text-zinc-400 truncate"
+          >
+            Matchora Player
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="flex items-center gap-2 shrink-0"
+      >
+
+        <button
+          onclick="toggleModalFullscreen()"
+          title="Повний екран"
+          class="w-8 h-8 rounded-lg
+                 bg-matte-accent
+                 hover:bg-matte-hover
+                 text-zinc-300
+                 flex items-center justify-center
+                 text-xs transition-colors"
+        >
+
+          <i class="fa-solid fa-expand"></i>
+
+        </button>
+
+
+        <button
+          onclick="closePlayerModal()"
+          title="Закрити"
+          class="w-8 h-8 rounded-lg
+                 bg-matte-accent
+                 hover:bg-red-500/20
+                 hover:text-red-400
+                 text-zinc-300
+                 flex items-center justify-center
+                 text-xs transition-colors"
+        >
+
+          <i class="fa-solid fa-xmark text-sm"></i>
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- PLAYER -->
+
+    <div
+      id="playerContainer"
+      class="relative
+             w-full
+             aspect-video
+             bg-black
+             iframe-frame
+             flex items-center
+             justify-center
+             overflow-hidden"
+    >
+
+      <iframe
+        id="streamIframe"
+        class="w-full h-full border-0"
+        allowfullscreen
+        allow="autoplay; fullscreen; picture-in-picture; orientation-lock"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
+
+
+      <!-- LOADER -->
+
+      <div
+        id="iframeLoader"
+        class="absolute inset-0
+               bg-black/90
+               flex flex-col
+               items-center justify-center
+               gap-3
+               pointer-events-none
+               transition-opacity duration-300"
+      >
+
+        <div
+          class="w-10 h-10
+                 border-4
+                 border-brand-600
+                 border-t-transparent
+                 rounded-full
+                 animate-spin"
+        ></div>
+
+        <span
+          class="text-xs
+                 font-semibold
+                 text-zinc-400"
+        >
+          Підключення до Matchora...
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- MATCH INFO -->
+
+    <div
+      id="modalMatchInfo"
+      class="px-4 py-3
+             bg-matte-card
+             border-b border-matte-border"
+    ></div>
+
+
+    <!-- CHANNELS -->
+
+    <div
+      class="p-4
+             bg-matte-bg
+             border-t border-matte-border"
+    >
+
+      <div
+        class="flex items-center
+               justify-between
+               gap-3 mb-2"
+      >
+
+        <div
+          class="text-xs
+                 font-semibold
+                 text-zinc-400
+                 uppercase
+                 tracking-wider"
+        >
+          Канали цієї події
+        </div>
+
+        <div
+          id="modalChannelsCount"
+          class="text-[10px]
+                 text-zinc-500"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div
+        id="modalChannelsList"
+        class="flex flex-wrap gap-2
+               max-h-32
+               overflow-y-auto pr-1"
+      ></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
 
 <script>
 
@@ -1247,458 +1146,925 @@ img{
    MATCHORA API
 ========================================================= */
 
-const API = "https://matchora.to/api/v1";
+const MATCHORA_API =
+  'https://matchora.to/api/v1';
 
 
 /* =========================================================
    STATE
 ========================================================= */
 
-let events = [];
-let liveEvents = [];
-let channels = [];
+let allEvents = [];
 
-let currentView = "live";
+let currentStatusFilter = 'live';
+
+let currentSportFilter = 'all';
+
+let searchQuery = '';
+
 let currentEvent = null;
 
-let searchText = "";
-let selectedSport = "all";
-
-let loadingEvents = false;
+let isLoading = false;
 
 
 /* =========================================================
-   ELEMENTS
+   INITIALIZE
 ========================================================= */
 
-const matchesEl = document.getElementById("matches");
-const tvGrid = document.getElementById("tvGrid");
+window.addEventListener(
+  'DOMContentLoaded',
+  () => {
 
-const searchEl = document.getElementById("search");
-const sportFilter = document.getElementById("sportFilter");
-const dateFilter = document.getElementById("dateFilter");
+    startKyivClock();
 
-const eventCount = document.getElementById("eventCount");
-const tvCount = document.getElementById("tvCount");
+    fetchAllData();
 
-const apiStatus = document.getElementById("apiStatus");
-
-const sectionTitle = document.getElementById("sectionTitle");
-
-const playerFrame = document.getElementById("playerFrame");
-const playerEmpty = document.getElementById("playerEmpty");
-const playerInfo = document.getElementById("playerInfo");
-
-const playerTitle = document.getElementById("playerTitle");
-const playerSub = document.getElementById("playerSub");
-
-const homeLogo = document.getElementById("homeLogo");
-const awayLogo = document.getElementById("awayLogo");
-
-const homeName = document.getElementById("homeName");
-const awayName = document.getElementById("awayName");
-
-const selectedScore = document.getElementById("selectedScore");
-
-const channelList = document.getElementById("channelList");
-const channelCount = document.getElementById("channelCount");
-
-const heroLive = document.getElementById("heroLive");
-const heroEvents = document.getElementById("heroEvents");
-const heroChannels = document.getElementById("heroChannels");
-
-const tvSection = document.getElementById("tvSection");
-
-const nav = document.getElementById("nav");
-const menuBtn = document.getElementById("menuBtn");
-
-
-/* =========================================================
-   DATE
-========================================================= */
-
-function localDate(){
-
-    const d = new Date();
-
-    const year = d.getFullYear();
-    const month = String(d.getMonth()+1).padStart(2,"0");
-    const day = String(d.getDate()).padStart(2,"0");
-
-    return `${year}-${month}-${day}`;
-}
-
-dateFilter.value = localDate();
-
-
-/* =========================================================
-   FETCH API
-========================================================= */
-
-async function apiFetch(url){
-
-    const response = await fetch(url, {
-        cache:"no-store"
-    });
-
-    if(!response.ok){
-        throw new Error(
-            "HTTP " + response.status
-        );
-    }
-
-    return await response.json();
-}
-
-
-/* =========================================================
-   LOAD LIVE
-========================================================= */
-
-async function loadLive(){
-
-    if(loadingEvents) return;
-
-    loadingEvents = true;
-
-    try{
-
-        apiStatus.textContent = "Оновлення...";
-
-        const data = await apiFetch(
-            `${API}/live`
-        );
-
-        liveEvents =
-            Array.isArray(data.events)
-            ? data.events
-            : [];
-
-        events = liveEvents;
-
-        updateSports();
-
-        renderMatches();
-
-        heroLive.textContent =
-            liveEvents.length;
-
-        heroEvents.textContent =
-            liveEvents.length;
-
-        apiStatus.textContent =
-            "LIVE оновлено";
-
-    }catch(error){
-
-        console.error(error);
-
-        matchesEl.innerHTML = `
-            <div class="error">
-                Не вдалося завантажити LIVE матчі.
-                Спробуйте оновити сторінку.
-            </div>
-        `;
-
-        apiStatus.textContent =
-            "API недоступний";
-
-    }finally{
-
-        loadingEvents = false;
-
-    }
-}
-
-
-/* =========================================================
-   LOAD SCHEDULE
-========================================================= */
-
-async function loadSchedule(){
-
-    if(loadingEvents) return;
-
-    loadingEvents = true;
-
-    try{
-
-        apiStatus.textContent =
-            "Завантаження розкладу...";
-
-        const date =
-            dateFilter.value || localDate();
-
-        const data =
-            await apiFetch(
-                `${API}/schedule?date=${encodeURIComponent(date)}&watchable=1`
-            );
-
-        events =
-            Array.isArray(data.events)
-            ? data.events
-            : [];
-
-        updateSports();
-
-        renderMatches();
-
-        heroEvents.textContent =
-            events.length;
-
-        apiStatus.textContent =
-            "Розклад оновлено";
-
-    }catch(error){
-
-        console.error(error);
-
-        matchesEl.innerHTML = `
-            <div class="error">
-                Не вдалося завантажити розклад.
-            </div>
-        `;
-
-        apiStatus.textContent =
-            "API недоступний";
-
-    }finally{
-
-        loadingEvents = false;
-
-    }
-}
-
-
-/* =========================================================
-   LOAD ALL EVENTS
-========================================================= */
-
-async function loadAll(){
-
-    if(loadingEvents) return;
-
-    loadingEvents = true;
-
-    try{
-
-        apiStatus.textContent =
-            "Завантаження всіх подій...";
-
-        const data =
-            await apiFetch(
-                `${API}/schedule?watchable=1`
-            );
-
-        events =
-            Array.isArray(data.events)
-            ? data.events
-            : [];
-
-        updateSports();
-
-        renderMatches();
-
-        heroEvents.textContent =
-            events.length;
-
-        apiStatus.textContent =
-            "Події завантажено";
-
-    }catch(error){
-
-        console.error(error);
-
-        matchesEl.innerHTML = `
-            <div class="error">
-                Не вдалося завантажити події.
-            </div>
-        `;
-
-        apiStatus.textContent =
-            "API недоступний";
-
-    }finally{
-
-        loadingEvents = false;
-
-    }
-}
-
-
-/* =========================================================
-   LOAD CHANNELS
-========================================================= */
-
-async function loadChannels(){
-
-    try{
-
-        const data =
-            await apiFetch(
-                `${API}/channels`
-            );
-
-        channels =
-            Array.isArray(data.channels)
-            ? data.channels
-            : [];
-
-        /*
-           Matchora /channels містить багато каналів.
-           Тут відсіюємо не спортивні назви.
-        */
-
-        channels =
-            channels.filter(
-                isSportsChannel
-            );
-
-        renderTV();
-
-        heroChannels.textContent =
-            channels.length;
-
-        tvCount.textContent =
-            `${channels.length} channels`;
-
-    }catch(error){
-
-        console.error(error);
-
-        tvGrid.innerHTML = `
-            <div class="error">
-                Не вдалося завантажити спортивні канали.
-            </div>
-        `;
-
-    }
-
-}
-
-
-/* =========================================================
-   SPORTS CHANNEL FILTER
-========================================================= */
-
-function isSportsChannel(channel){
-
-    const text = (
-        String(channel.name || "") +
-        " " +
-        (channel.feeds || [])
-            .map(x => x.label || "")
-            .join(" ")
-    ).toLowerCase();
-
-    const sportsWords = [
-
-        "sport",
-        "sports",
-        "football",
-        "soccer",
-        "futbol",
-        "basket",
-        "basketball",
-        "nba",
-        "nfl",
-        "nhl",
-        "mlb",
-        "tennis",
-        "golf",
-        "cricket",
-        "rugby",
-        "boxing",
-        "fight",
-        "ufc",
-        "wrestling",
-        "formula",
-        "f1",
-        "motorsport",
-        "racing",
-        "hockey",
-        "dazn",
-        "bein",
-        "sky sport",
-        "sport klub",
-        "nova sport",
-        "polsat sport",
-        "ziggo sport",
-        "digisport",
-        "digi sport",
-        "premier sports",
-        "espn",
-        "fox sports",
-        "arena sport",
-        "art sport",
-        "ad sport",
-        "abu dhabi sports",
-        "fifa+",
-        "fifa",
-        "olympic",
-        "olympics",
-        "eurosport",
-        "supersport",
-        "viaplay sport",
-        "v sport",
-        "tnt sports",
-        "wwe",
-        "fight network",
-        "motor"
-    ];
-
-    return sportsWords.some(
-        word => text.includes(word)
+    setInterval(
+      fetchAllData,
+      300000
     );
-}
+
+  }
+);
 
 
 /* =========================================================
-   SPORTS FILTER
+   KYIV CLOCK
 ========================================================= */
 
-function updateSports(){
+function startKyivClock(){
 
-    const sports = [
-        ...new Set(
-            events
-                .map(x => x.sport)
-                .filter(Boolean)
-        )
-    ].sort();
+  function updateClock(){
 
-    const old =
-        selectedSport;
+    const now =
+      new Date();
 
-    sportFilter.innerHTML =
-        `<option value="all">Усі види спорту</option>`;
-
-    sports.forEach(
-        sport => {
-
-            const option =
-                document.createElement("option");
-
-            option.value = sport;
-            option.textContent = sport;
-
-            sportFilter.appendChild(option);
-
+    const time =
+      now.toLocaleTimeString(
+        'uk-UA',
+        {
+          timeZone:'Europe/Kyiv',
+          hour:'2-digit',
+          minute:'2-digit'
         }
+      );
+
+    const element =
+      document.getElementById(
+        'kyivClock'
+      );
+
+    if(element){
+      element.innerText = time;
+    }
+
+  }
+
+  updateClock();
+
+  setInterval(
+    updateClock,
+    1000
+  );
+
+}
+
+
+/* =========================================================
+   FETCH JSON
+========================================================= */
+
+async function fetchJson(url){
+
+  const response =
+    await fetch(
+      url,
+      {
+        method:'GET',
+        cache:'no-store',
+        headers:{
+          'Accept':'application/json'
+        }
+      }
     );
+
+  if(!response.ok){
+
+    throw new Error(
+      `HTTP ${response.status}`
+    );
+
+  }
+
+  return await response.json();
+
+}
+
+
+/* =========================================================
+   FETCH ALL DATA
+========================================================= */
+
+async function fetchAllData(){
+
+  if(isLoading){
+    return;
+  }
+
+  isLoading = true;
+
+  const icon =
+    document.getElementById(
+      'refreshIcon'
+    );
+
+  if(icon){
+    icon.classList.add(
+      'animate-spin'
+    );
+  }
+
+  showLoading();
+
+
+  try{
+
+    const [
+      scheduleData,
+      liveData
+    ] =
+      await Promise.all([
+
+        fetchJson(
+          `${MATCHORA_API}/schedule?watchable=1`
+        ),
+
+        fetchJson(
+          `${MATCHORA_API}/live`
+        )
+
+      ]);
+
+
+    const scheduleEvents =
+      Array.isArray(
+        scheduleData.events
+      )
+      ?
+      scheduleData.events
+      :
+      [];
+
+
+    const liveEvents =
+      Array.isArray(
+        liveData.events
+      )
+      ?
+      liveData.events
+      :
+      [];
+
+
+    const eventMap =
+      new Map();
+
+
+    scheduleEvents.forEach(
+      event => {
+
+        eventMap.set(
+          String(event.id),
+          event
+        );
+
+      }
+    );
+
+
+    liveEvents.forEach(
+      event => {
+
+        eventMap.set(
+          String(event.id),
+          event
+        );
+
+      }
+    );
+
+
+    allEvents =
+      Array.from(
+        eventMap.values()
+      );
+
+
+    allEvents =
+      allEvents.filter(
+        event =>
+          !event.finished &&
+          (
+            isToday(event.kickoff) ||
+            isTomorrow(event.kickoff)
+          )
+      );
+
+
+    buildSportButtons();
+
+    updateStatusCounts();
+
+    renderCurrentView();
+
+    hideLoading();
+
+
+    document
+      .getElementById(
+        'errorState'
+      )
+      .classList.add(
+        'hidden'
+      );
+
+
+    /*
+      Якщо LIVE більше немає,
+      автоматично переходимо на Усі.
+    */
 
     if(
-        sports.includes(old)
+      currentStatusFilter === 'live' &&
+      !allEvents.some(
+        event => event.live === true
+      )
     ){
 
-        sportFilter.value = old;
+      setStatusFilter(
+        'all'
+      );
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      'Matchora API Error:',
+      error
+    );
+
+    hideLoading();
+
+    showError(
+      `Помилка Matchora API: ${error.message}`
+    );
+
+  }finally{
+
+    isLoading = false;
+
+    if(icon){
+
+      icon.classList.remove(
+        'animate-spin'
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   SPORT TRANSLATIONS
+========================================================= */
+
+const sportTranslations = {
+
+  football: 'Футбол',
+  soccer: 'Футбол',
+  futbol: 'Футбол',
+
+  basketball: 'Баскетбол',
+  tennis: 'Теніс',
+  hockey: 'Хокей',
+  ice_hockey: 'Хокей',
+  handball: 'Гандбол',
+  volleyball: 'Волейбол',
+  baseball: 'Бейсбол',
+  american_football: 'Американський футбол',
+  nfl: 'Американський футбол',
+
+  rugby: 'Регбі',
+  cricket: 'Крикет',
+  golf: 'Гольф',
+  boxing: 'Бокс',
+  mma: 'ММА',
+  ufc: 'ММА',
+  wrestling: 'Рестлінг',
+
+  formula1: 'Формула 1',
+  'formula 1': 'Формула 1',
+  f1: 'Формула 1',
+  motorsport: 'Автоспорт',
+  racing: 'Автоспорт',
+  motogp: 'MotoGP',
+
+  darts: 'Дартс',
+  snooker: 'Снукер',
+  cycling: 'Велоспорт',
+  athletics: 'Легка атлетика',
+  swimming: 'Плавання',
+  skiing: 'Лижний спорт',
+  biathlon: 'Біатлон',
+  esports: 'Кіберспорт',
+
+  water_polo: 'Водне поло',
+  futsal: 'Футзал',
+  beach_volleyball: 'Пляжний волейбол',
+
+  badminton: 'Бадмінтон',
+  table_tennis: 'Настільний теніс',
+
+  horse_racing: 'Кінний спорт'
+
+};
+
+
+function getSportName(sport){
+
+  const key =
+    String(
+      sport || ''
+    )
+    .trim()
+    .toLowerCase();
+
+  return (
+    sportTranslations[key] ||
+    String(
+      sport || 'Інше'
+    )
+      .replaceAll(
+        '_',
+        ' '
+      )
+      .replace(
+        /\b\w/g,
+        letter =>
+          letter.toUpperCase()
+      )
+  );
+
+}
+
+
+/* =========================================================
+   SPORT ORDER
+========================================================= */
+
+const sportOrder = [
+
+  'football',
+  'soccer',
+  'futbol',
+
+  'basketball',
+  'tennis',
+  'hockey',
+  'ice_hockey',
+
+  'volleyball',
+  'handball',
+  'baseball',
+  'american_football',
+  'nfl',
+
+  'rugby',
+  'boxing',
+  'mma',
+  'ufc',
+
+  'golf',
+  'cricket',
+
+  'formula1',
+  'formula 1',
+  'f1',
+  'motorsport',
+  'motogp',
+  'racing',
+
+  'darts',
+  'snooker',
+  'cycling',
+  'athletics',
+  'swimming',
+  'skiing',
+  'biathlon',
+
+  'esports'
+
+];
+
+
+function getSportOrder(sport){
+
+  const normalized =
+    String(
+      sport || ''
+    )
+    .trim()
+    .toLowerCase();
+
+  const index =
+    sportOrder.indexOf(
+      normalized
+    );
+
+  return index === -1
+    ? 999
+    : index;
+
+}
+
+
+/* =========================================================
+   BUILD SPORTS BUTTONS
+========================================================= */
+
+function buildSportButtons(){
+
+  const container =
+    document.getElementById(
+      'sportButtons'
+    );
+
+
+  const counts =
+    new Map();
+
+
+  allEvents.forEach(
+    event => {
+
+      if(!event.sport)
+        return;
+
+      const key =
+        String(
+          event.sport
+        );
+
+
+      counts.set(
+        key,
+        (
+          counts.get(key) || 0
+        ) + 1
+      );
+
+    }
+  );
+
+
+  const sports =
+    Array.from(
+      counts.keys()
+    )
+    .sort(
+      (a,b) => {
+
+        const orderA =
+          getSportOrder(a);
+
+        const orderB =
+          getSportOrder(b);
+
+
+        if(
+          orderA !== orderB
+        ){
+
+          return (
+            orderA -
+            orderB
+          );
+
+        }
+
+
+        return getSportName(a)
+          .localeCompare(
+            getSportName(b),
+            'uk'
+          );
+
+      }
+    );
+
+
+  container.innerHTML =
+    sports
+      .map(
+        sport => `
+
+          <button
+            onclick="setSportFilter('${escapeAttr(sport)}')"
+            id="sport-${escapeAttr(sport)}"
+            class="sport-tab
+                   shrink-0
+                   px-3 py-1
+                   rounded-lg
+                   text-xs
+                   font-semibold
+                   bg-matte-card
+                   text-zinc-400
+                   border border-matte-border
+                   hover:text-white
+                   hover:bg-matte-hover
+                   transition-all
+                   flex items-center gap-1.5"
+          >
+
+            <span>
+              ${escapeHtml(
+                getSportName(sport)
+              )}
+            </span>
+
+            <span
+              class="text-[9px]
+                     text-zinc-500
+                     bg-matte-accent
+                     px-1.5 py-0.5
+                     rounded-md"
+            >
+              ${counts.get(sport)}
+            </span>
+
+          </button>
+
+        `
+      )
+      .join('');
+
+}
+
+
+/* =========================================================
+   STATUS COUNTS
+========================================================= */
+
+function updateStatusCounts(){
+
+  const all =
+    allEvents.length;
+
+
+  const live =
+    allEvents.filter(
+      event =>
+        event.live === true
+    ).length;
+
+
+  const upcoming =
+    allEvents.filter(
+      event =>
+        !event.live &&
+        isToday(
+          event.kickoff
+        )
+    ).length;
+
+
+  const tomorrow =
+    allEvents.filter(
+      event =>
+        isTomorrow(
+          event.kickoff
+        )
+    ).length;
+
+
+  const values = {
+
+    'status-count-all': all,
+
+    'status-count-live': live,
+
+    'status-count-upcoming': upcoming,
+
+    'status-count-tomorrow': tomorrow
+
+  };
+
+
+  Object.entries(
+    values
+  ).forEach(
+    ([id,value]) => {
+
+      const element =
+        document.getElementById(id);
+
+      if(element){
+
+        element.innerText =
+          value;
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SPORT FILTER
+========================================================= */
+
+function setSportFilter(sport){
+
+  currentSportFilter =
+    sport;
+
+
+  document
+    .querySelectorAll(
+      '.sport-tab'
+    )
+    .forEach(
+      button => {
+
+        button.classList.remove(
+          'bg-brand-600',
+          'text-white',
+          'border-brand-500'
+        );
+
+        button.classList.add(
+          'bg-matte-card',
+          'text-zinc-400',
+          'border-matte-border'
+        );
+
+      }
+    );
+
+
+  const active =
+    document.getElementById(
+      `sport-${sport}`
+    );
+
+
+  if(active){
+
+    active.classList.remove(
+      'bg-matte-card',
+      'text-zinc-400',
+      'border-matte-border'
+    );
+
+    active.classList.add(
+      'bg-brand-600',
+      'text-white',
+      'border-brand-500'
+    );
+
+  }else{
+
+    const all =
+      document.getElementById(
+        'sport-all'
+      );
+
+    if(all){
+
+      all.classList.remove(
+        'bg-matte-card',
+        'text-zinc-400',
+        'border-matte-border'
+      );
+
+      all.classList.add(
+        'bg-brand-600',
+        'text-white',
+        'border-brand-500'
+      );
+
+    }
+
+  }
+
+
+  renderCurrentView();
+
+}
+
+
+/* =========================================================
+   STATUS FILTER
+========================================================= */
+
+function setStatusFilter(status){
+
+  currentStatusFilter =
+    status;
+
+
+  document
+    .querySelectorAll(
+      '.status-tab'
+    )
+    .forEach(
+      button => {
+
+        button.classList.remove(
+          'bg-brand-600',
+          'text-white'
+        );
+
+        button.classList.add(
+          'text-zinc-400'
+        );
+
+      }
+    );
+
+
+  const active =
+    document.getElementById(
+      `status-${status}`
+    );
+
+
+  if(active){
+
+    active.classList.add(
+      'bg-brand-600',
+      'text-white'
+    );
+
+    active.classList.remove(
+      'text-zinc-400'
+    );
+
+  }
+
+
+  renderCurrentView();
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function handleSearch(value){
+
+  searchQuery =
+    value
+      .trim()
+      .toLowerCase();
+
+
+  const desktop =
+    document.getElementById(
+      'searchInput'
+    );
+
+  const mobile =
+    document.getElementById(
+      'searchInputMobile'
+    );
+
+
+  if(desktop &&
+     document.activeElement !== desktop){
+
+    desktop.value =
+      value;
+
+  }
+
+
+  if(mobile &&
+     document.activeElement !== mobile){
+
+    mobile.value =
+      value;
+
+  }
+
+
+  const clear =
+    document.getElementById(
+      'clearSearchBtn'
+    );
+
+
+  if(clear){
+
+    if(searchQuery){
+
+      clear.classList.remove(
+        'hidden'
+      );
 
     }else{
 
-        sportFilter.value = "all";
-        selectedSport = "all";
+      clear.classList.add(
+        'hidden'
+      );
 
     }
+
+  }
+
+
+  renderCurrentView();
+
+}
+
+
+/* =========================================================
+   CLEAR SEARCH
+========================================================= */
+
+function clearSearch(){
+
+  const desktop =
+    document.getElementById(
+      'searchInput'
+    );
+
+  const mobile =
+    document.getElementById(
+      'searchInputMobile'
+    );
+
+
+  if(desktop)
+    desktop.value = '';
+
+
+  if(mobile)
+    mobile.value = '';
+
+
+  searchQuery = '';
+
+
+  const clear =
+    document.getElementById(
+      'clearSearchBtn'
+    );
+
+
+  if(clear){
+
+    clear.classList.add(
+      'hidden'
+    );
+
+  }
+
+
+  renderCurrentView();
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetFilters(){
+
+  currentStatusFilter =
+    'live';
+
+  currentSportFilter =
+    'all';
+
+  clearSearch();
+
+  setStatusFilter(
+    'live'
+  );
+
+  setSportFilter(
+    'all'
+  );
+
 }
 
 
@@ -1708,951 +2074,2155 @@ function updateSports(){
 
 function getFilteredEvents(){
 
-    let list = [...events];
+  let list =
+    [...allEvents];
 
-    if(selectedSport !== "all"){
 
-        list =
-            list.filter(
-                x =>
-                    x.sport === selectedSport
-            );
+  if(
+    currentStatusFilter === 'live'
+  ){
 
-    }
+    list =
+      list.filter(
+        event =>
+          event.live === true
+      );
 
-    if(searchText){
+  }
 
-        const q =
-            searchText.toLowerCase();
 
-        list =
-            list.filter(x => {
+  if(
+    currentStatusFilter === 'upcoming'
+  ){
 
-                const text = [
+    list =
+      list.filter(
+        event =>
+          !event.live &&
+          isToday(
+            event.kickoff
+          )
+      );
 
-                    x.home,
-                    x.away,
-                    x.league,
-                    x.sport
+  }
 
-                ]
-                .filter(Boolean)
-                .join(" ")
-                .toLowerCase();
 
-                return text.includes(q);
+  if(
+    currentStatusFilter === 'tomorrow'
+  ){
 
-            });
+    list =
+      list.filter(
+        event =>
+          isTomorrow(
+            event.kickoff
+          )
+      );
 
-    }
+  }
 
-    return list;
-}
 
+  if(
+    currentSportFilter !== 'all'
+  ){
 
-/* =========================================================
-   RENDER MATCHES
-========================================================= */
+    list =
+      list.filter(
+        event =>
+          String(
+            event.sport || ''
+          ) ===
+          currentSportFilter
+      );
 
-function renderMatches(){
+  }
 
-    const list =
-        getFilteredEvents();
 
-    eventCount.textContent =
-        `${list.length} events`;
+  if(searchQuery){
 
-    if(currentView === "live"){
+    list =
+      list.filter(
+        event => {
 
-        sectionTitle.textContent =
-            "LIVE MATCHES";
+          const text =
+            [
 
-    }else if(currentView === "today"){
+              event.home,
+              event.away,
+              event.league,
+              getSportName(event.sport),
+              event.status
 
-        sectionTitle.textContent =
-            "TODAY'S EVENTS";
+            ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
 
-    }else{
 
-        sectionTitle.textContent =
-            "ALL EVENTS";
-
-    }
-
-
-    if(!list.length){
-
-        matchesEl.innerHTML = `
-            <div class="empty">
-                Немає подій за вибраними параметрами.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    matchesEl.innerHTML =
-        list.map(
-            (event,index) =>
-                matchHTML(event,index)
-        ).join("");
-
-
-    matchesEl
-        .querySelectorAll(".match")
-        .forEach(
-            element => {
-
-                element.addEventListener(
-                    "click",
-                    () => {
-
-                        const id =
-                            element.dataset.id;
-
-                        const event =
-                            events.find(
-                                x =>
-                                    String(x.id) ===
-                                    String(id)
-                            );
-
-                        if(event){
-                            openEvent(event);
-                        }
-
-                    }
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   MATCH HTML
-========================================================= */
-
-function matchHTML(event,index){
-
-    const kickoff =
-        new Date(
-            Number(event.kickoff) * 1000
-        );
-
-    const time =
-        kickoff.toLocaleTimeString(
-            "uk-UA",
-            {
-                hour:"2-digit",
-                minute:"2-digit"
-            }
-        );
-
-    const live =
-        Boolean(event.live);
-
-    const score =
-        event.score || "—";
-
-    const status =
-        event.status || "";
-
-    const minute =
-        event.minute
-        ? `${event.minute}'`
-        : "";
-
-    const homeLogoUrl =
-        event.home_badge || "";
-
-    const awayLogoUrl =
-        event.away_badge || "";
-
-    const leagueLogo =
-        event.league_badge || "";
-
-
-    return `
-        <article
-            class="match ${currentEvent && currentEvent.id === event.id ? "selected":""}"
-            data-id="${escapeHtml(event.id)}"
-        >
-
-            <div class="match-time">
-
-                <strong class="${live ? "match-live":""}">
-                    ${live ? "LIVE":time}
-                </strong>
-
-                <small>
-                    ${live && minute ? minute : status}
-                </small>
-
-            </div>
-
-
-            <div class="match-main">
-
-                <div class="league">
-
-                    ${
-                        leagueLogo
-                        ?
-                        `<img src="${leagueLogo}" loading="lazy" alt="">`
-                        :
-                        ""
-                    }
-
-                    <span>
-                        ${escapeHtml(event.league || event.sport || "SPORT")}
-                    </span>
-
-                </div>
-
-
-                <div class="teams">
-
-                    <div class="team">
-
-                        ${
-                            homeLogoUrl
-                            ?
-                            `<img src="${homeLogoUrl}" loading="lazy" alt="">`
-                            :
-                            ""
-                        }
-
-                        <span class="team-name">
-                            ${escapeHtml(event.home || "Home")}
-                        </span>
-
-                    </div>
-
-
-                    <span class="vs">
-                        ${live ? score : "VS"}
-                    </span>
-
-
-                    <div class="team away">
-
-                        ${
-                            awayLogoUrl
-                            ?
-                            `<img src="${awayLogoUrl}" loading="lazy" alt="">`
-                            :
-                            ""
-                        }
-
-                        <span class="team-name">
-                            ${escapeHtml(event.away || "Away")}
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="match-meta">
-
-                ${
-                    live
-                    ?
-                    `<span class="badge red">● LIVE</span>`
-                    :
-                    `<span class="badge">${time}</span>`
-                }
-
-                ${
-                    event.channel_count > 0
-                    ?
-                    `<span class="badge green">
-                        ${event.channel_count} TV
-                    </span>`
-                    :
-                    ""
-                }
-
-            </div>
-
-        </article>
-    `;
-}
-
-
-/* =========================================================
-   OPEN EVENT
-========================================================= */
-
-async function openEvent(event){
-
-    currentEvent = event;
-
-    playerEmpty.style.display =
-        "none";
-
-    playerFrame.style.display =
-        "block";
-
-    playerInfo.style.display =
-        "block";
-
-
-    playerTitle.textContent =
-        `${event.home || ""} — ${event.away || ""}`;
-
-
-    playerSub.textContent =
-        `${event.league || event.sport || "Sports"} · ${
-            event.live ? "LIVE" : "Match"
-        }`;
-
-
-    homeName.textContent =
-        event.home || "";
-
-    awayName.textContent =
-        event.away || "";
-
-
-    homeLogo.src =
-        event.home_badge || "";
-
-    awayLogo.src =
-        event.away_badge || "";
-
-
-    selectedScore.textContent =
-        event.score || "VS";
-
-
-    /*
-       Основний Matchora embed.
-       sandbox залишений навмисно.
-    */
-
-    playerFrame.src =
-        event.embed_url ||
-        `${location.origin}/`;
-
-
-    /*
-       Якщо API вже повернув channels —
-       використовуємо їх.
-
-       Якщо ні — отримуємо повну інформацію
-       через /events/{id}.
-    */
-
-    let eventData = event;
-
-    if(
-        !Array.isArray(event.channels) ||
-        !event.channels.length
-    ){
-
-        try{
-
-            eventData =
-                await apiFetch(
-                    `${API}/events/${encodeURIComponent(event.id)}`
-                );
-
-        }catch(error){
-
-            console.warn(
-                "Event details error:",
-                error
-            );
+          return text.includes(
+            searchQuery
+          );
 
         }
+      );
+
+  }
+
+
+  list.sort(
+    (a,b) => {
+
+      if(
+        a.live &&
+        !b.live
+      ){
+        return -1;
+      }
+
+      if(
+        !a.live &&
+        b.live
+      ){
+        return 1;
+      }
+
+      return (
+        Number(a.kickoff || 0)
+        -
+        Number(b.kickoff || 0)
+      );
 
     }
+  );
 
 
-    const eventChannels =
-        Array.isArray(eventData.channels)
-        ? eventData.channels
-        : [];
+  return list;
+
+}
 
 
-    renderEventChannels(
-        eventChannels
+/* =========================================================
+   TODAY CHECK
+========================================================= */
+
+function isToday(timestamp){
+
+  if(!timestamp)
+    return false;
+
+
+  const date =
+    new Date(
+      Number(timestamp) * 1000
     );
 
 
-    document
-        .querySelectorAll(".match")
-        .forEach(
-            x =>
-                x.classList.toggle(
-                    "selected",
-                    x.dataset.id ===
-                    String(event.id)
-                )
+  const now =
+    new Date();
+
+
+  return (
+    date.toLocaleDateString(
+      'uk-UA',
+      {
+        timeZone:'Europe/Kyiv'
+      }
+    )
+    ===
+    now.toLocaleDateString(
+      'uk-UA',
+      {
+        timeZone:'Europe/Kyiv'
+      }
+    )
+  );
+
+}
+
+
+/* =========================================================
+   TOMORROW CHECK
+========================================================= */
+
+function isTomorrow(timestamp){
+
+  if(!timestamp)
+    return false;
+
+
+  const date =
+    new Date(
+      Number(timestamp) * 1000
+    );
+
+
+  const tomorrow =
+    new Date();
+
+
+  tomorrow.setDate(
+    tomorrow.getDate() + 1
+  );
+
+
+  return (
+    date.toLocaleDateString(
+      'uk-UA',
+      {
+        timeZone:'Europe/Kyiv'
+      }
+    )
+    ===
+    tomorrow.toLocaleDateString(
+      'uk-UA',
+      {
+        timeZone:'Europe/Kyiv'
+      }
+    )
+  );
+
+}
+
+
+/* =========================================================
+   FORMAT TIME
+========================================================= */
+
+function formatTime(timestamp){
+
+  if(!timestamp)
+    return '--:--';
+
+
+  return new Date(
+    Number(timestamp) * 1000
+  ).toLocaleTimeString(
+    'uk-UA',
+    {
+      timeZone:'Europe/Kyiv',
+      hour:'2-digit',
+      minute:'2-digit'
+    }
+  );
+
+}
+
+
+/* =========================================================
+   FORMAT DATE
+========================================================= */
+
+function formatDate(timestamp){
+
+  if(!timestamp)
+    return '';
+
+
+  return new Date(
+    Number(timestamp) * 1000
+  ).toLocaleDateString(
+    'uk-UA',
+    {
+      timeZone:'Europe/Kyiv',
+      day:'2-digit',
+      month:'2-digit'
+    }
+  );
+
+}
+
+
+/* =========================================================
+   RENDER CURRENT VIEW
+========================================================= */
+
+function renderCurrentView(){
+
+  const grid =
+    document.getElementById(
+      'eventsGrid'
+    );
+
+  const empty =
+    document.getElementById(
+      'emptyState'
+    );
+
+
+  const filtered =
+    getFilteredEvents();
+
+
+  if(!filtered.length){
+
+    grid.innerHTML = '';
+
+    empty.classList.remove(
+      'hidden'
+    );
+
+    empty.classList.add(
+      'flex'
+    );
+
+    return;
+
+  }
+
+
+  empty.classList.add(
+    'hidden'
+  );
+
+  empty.classList.remove(
+    'flex'
+  );
+
+
+  if(
+    currentSportFilter !== 'all'
+  ){
+
+    renderGroupedEvents(
+      filtered,
+      grid
+    );
+
+    return;
+
+  }
+
+
+  grid.innerHTML =
+    filtered
+      .map(
+        renderEventCard
+      )
+      .join('');
+
+}
+
+
+/* =========================================================
+   GROUP EVENTS BY TOURNAMENT
+========================================================= */
+
+function renderGroupedEvents(
+  events,
+  grid
+){
+
+  const groups =
+    new Map();
+
+
+  events.forEach(
+    event => {
+
+      const league =
+        String(
+          event.league ||
+          'Інші турніри'
+        )
+        .trim();
+
+
+      if(!groups.has(league)){
+
+        groups.set(
+          league,
+          []
         );
+
+      }
+
+
+      groups
+        .get(league)
+        .push(event);
+
+    }
+  );
+
+
+  let html = '';
+
+
+  groups.forEach(
+    (matches,league) => {
+
+      const tournamentLogo =
+        matches[0]?.league_badge || '';
+
+
+      html += `
+
+        <div
+          class="tournament-heading
+                 flex items-center
+                 gap-3
+                 mt-1
+                 mb-1"
+        >
+
+          ${
+            tournamentLogo
+            ?
+
+            `
+              <img
+                src="${escapeAttr(tournamentLogo)}"
+                class="w-7 h-7
+                       object-contain
+                       shrink-0"
+                loading="lazy"
+                onerror="this.style.display='none'"
+              />
+            `
+
+            :
+
+            `
+              <div
+                class="w-7 h-7
+                       rounded-lg
+                       bg-brand-500/10
+                       border border-brand-500/15
+                       text-brand-500
+                       flex items-center
+                       justify-center
+                       shrink-0"
+              >
+                <i
+                  class="fa-solid
+                         fa-trophy
+                         text-[10px]"
+                ></i>
+              </div>
+            `
+          }
+
+
+          <div class="min-w-0">
+
+            <div
+              class="text-sm
+                     font-extrabold
+                     text-white
+                     truncate"
+            >
+              ${escapeHtml(league)}
+            </div>
+
+            <div
+              class="text-[9px]
+                     text-zinc-600
+                     uppercase
+                     tracking-wider"
+            >
+              ${matches.length}
+              ${
+                matches.length === 1
+                ?
+                'матч'
+                :
+                'матчів'
+              }
+            </div>
+
+          </div>
+
+
+          <div
+            class="h-px
+                   bg-matte-border
+                   flex-1"
+          ></div>
+
+        </div>
+
+      `;
+
+
+      html += matches
+        .map(
+          renderEventCard
+        )
+        .join('');
+
+    }
+  );
+
+
+  grid.innerHTML =
+    html;
+
+}
+
+
+/* =========================================================
+   EVENT CARD
+========================================================= */
+
+function renderEventCard(event){
+
+  const isLive =
+    event.live === true;
+
+
+  const channels =
+    Array.isArray(
+      event.channels
+    )
+    ?
+    event.channels
+    :
+    [];
+
+
+  const channelsCount =
+    event.channel_count ??
+    channels.length;
+
+
+  const hasTwoTeams =
+    Boolean(
+      event.home &&
+      event.away
+    );
+
+
+  const homeLogo =
+    event.home_badge ||
+    fallbackLogo(
+      event.home
+    );
+
+
+  const awayLogo =
+    event.away_badge ||
+    fallbackLogo(
+      event.away
+    );
+
+
+  const leagueLogo =
+    event.league_badge ||
+    '';
+
+
+  let statusBadge = '';
+
+
+  if(isLive){
+
+    statusBadge = `
+
+      <span
+        class="inline-flex
+               items-center gap-1.5
+               px-2.5 py-0.5
+               rounded-full
+               text-[10px]
+               font-bold
+               bg-red-500/10
+               text-red-400
+               border border-red-500/30
+               shrink-0"
+      >
+
+        <span
+          class="w-1.5 h-1.5
+                 rounded-full
+                 bg-red-500
+                 animate-pulse"
+        ></span>
+
+        LIVE
+
+        ${
+          event.minute
+          ?
+          `· ${escapeHtml(event.minute)}'`
+          :
+          ''
+        }
+
+      </span>
+
+    `;
+
+  }else{
+
+    statusBadge = `
+
+      <span
+        class="inline-flex
+               items-center
+               px-2.5 py-0.5
+               rounded-full
+               text-[10px]
+               font-semibold
+               bg-amber-500/10
+               text-amber-400
+               border border-amber-500/20
+               shrink-0"
+      >
+
+        <i
+          class="fa-regular
+                 fa-clock mr-1"
+        ></i>
+
+        ${formatTime(event.kickoff)}
+
+      </span>
+
+    `;
+
+  }
+
+
+  let center = '';
+
+
+  if(isLive){
+
+    center = `
+
+      <div class="score-box">
+
+        <span
+          class="score-text
+                 text-sm
+                 font-black
+                 text-emerald-400
+                 bg-emerald-500/10
+                 px-2 py-0.5
+                 rounded
+                 border
+                 border-emerald-500/20"
+        >
+          ${escapeHtml(
+            event.score || 'LIVE'
+          )}
+        </span>
+
+        <span
+          class="score-text
+                 text-[9px]
+                 text-zinc-500
+                 font-mono mt-1"
+        >
+          ${escapeHtml(
+            event.status || 'LIVE'
+          )}
+        </span>
+
+      </div>
+
+    `;
+
+  }else{
+
+    center = `
+
+      <div class="score-box">
+
+        <span
+          class="score-text
+                 text-xs
+                 font-black
+                 text-zinc-600"
+        >
+          VS
+        </span>
+
+        <span
+          class="score-text
+                 text-[9px]
+                 text-zinc-500
+                 font-mono mt-1"
+        >
+          ${formatDate(event.kickoff)}
+        </span>
+
+      </div>
+
+    `;
+
+  }
+
+
+  return `
+
+    <article
+      class="
+        bg-matte-card
+        border
+        ${
+          isLive
+          ?
+          'border-red-500/20 live-glow'
+          :
+          'border-matte-border'
+        }
+        rounded-2xl
+        p-4
+        mobile-card
+        flex flex-col
+        justify-between
+        card-glow
+      "
+    >
+
+
+      <!-- HEADER -->
+
+      <div
+        class="flex items-center
+               justify-between
+               pb-3
+               border-b
+               border-matte-border/60
+               gap-2"
+      >
+
+        <div
+          class="flex items-center
+                 gap-2 truncate
+                 min-w-0"
+        >
+
+          ${
+            leagueLogo
+            ?
+            `
+              <img
+                src="${escapeAttr(leagueLogo)}"
+                class="w-5 h-5
+                       object-contain
+                       shrink-0"
+                loading="lazy"
+                onerror="this.style.display='none'"
+              />
+            `
+            :
+            `
+              <div
+                class="w-5 h-5
+                       rounded-md
+                       bg-brand-500/10
+                       text-brand-500
+                       flex items-center
+                       justify-center
+                       shrink-0"
+              >
+                <i
+                  class="fa-solid
+                         fa-trophy
+                         text-[9px]"
+                ></i>
+              </div>
+            `
+          }
+
+
+          <div class="truncate">
+
+            <div
+              class="text-xs
+                     font-semibold
+                     text-zinc-300
+                     truncate"
+            >
+              ${escapeHtml(
+                event.league ||
+                getSportName(event.sport) ||
+                'SPORT'
+              )}
+            </div>
+
+            <div
+              class="text-[9px]
+                     text-zinc-600
+                     uppercase
+                     tracking-wider"
+            >
+              ${escapeHtml(
+                getSportName(event.sport)
+              )}
+            </div>
+
+          </div>
+
+        </div>
+
+
+        ${statusBadge}
+
+      </div>
+
+
+      <!-- TEAMS / EVENT -->
+
+      <div
+        class="py-3
+               grid
+               grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]
+               items-center
+               text-center
+               gap-2"
+      >
+
+
+        <!-- HOME -->
+
+        <div
+          class="min-w-0
+                 flex flex-col
+                 items-center
+                 gap-2"
+        >
+
+          <div
+            class="team-logo
+                   w-14 h-14
+                   flex items-center
+                   justify-center"
+          >
+
+            ${
+              hasTwoTeams
+              ?
+
+              `
+                <img
+                  src="${escapeAttr(homeLogo)}"
+                  alt="${escapeAttr(event.home || '')}"
+                  class="max-w-full
+                         max-h-full
+                         object-contain"
+                  loading="lazy"
+                  onerror="this.src='${fallbackLogo('HOME')}'"
+                />
+              `
+
+              :
+
+              `
+                <i
+                  class="fa-brands
+                         fa-telegram
+                         text-blue-500
+                         text-4xl"
+                ></i>
+              `
+            }
+
+          </div>
+
+
+          <span
+            class="team-name
+                   text-xs
+                   font-bold
+                   text-white
+                   line-clamp-2
+                   leading-tight
+                   max-w-full
+                   break-words"
+          >
+            ${escapeHtml(
+              event.home ||
+              event.league ||
+              getSportName(event.sport) ||
+              'Подія'
+            )}
+          </span>
+
+        </div>
+
+
+        <!-- SCORE -->
+
+        <div
+          class="flex flex-col
+                 items-center
+                 justify-center
+                 shrink-0"
+        >
+
+          ${center}
+
+        </div>
+
+
+        <!-- AWAY -->
+
+        <div
+          class="min-w-0
+                 flex flex-col
+                 items-center
+                 gap-2"
+        >
+
+          <div
+            class="team-logo
+                   w-14 h-14
+                   flex items-center
+                   justify-center"
+          >
+
+            ${
+              hasTwoTeams
+              ?
+
+              `
+                <img
+                  src="${escapeAttr(awayLogo)}"
+                  alt="${escapeAttr(event.away || '')}"
+                  class="max-w-full
+                         max-h-full
+                         object-contain"
+                  loading="lazy"
+                  onerror="this.src='${fallbackLogo('AWAY')}'"
+                />
+              `
+
+              :
+
+              `
+                <i
+                  class="fa-brands
+                         fa-telegram
+                         text-blue-500
+                         text-4xl"
+                ></i>
+              `
+            }
+
+          </div>
+
+
+          <span
+            class="team-name
+                   text-xs
+                   font-bold
+                   text-white
+                   line-clamp-2
+                   leading-tight
+                   max-w-full
+                   break-words"
+          >
+            ${escapeHtml(
+              hasTwoTeams
+              ?
+              event.away
+              :
+              event.status ||
+              getSportName(event.sport) ||
+              'Подія'
+            )}
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- FOOTER -->
+
+      <div
+        class="pt-2
+               border-t
+               border-matte-border/60"
+      >
+
+        <div
+          class="flex items-center
+                 justify-between
+                 gap-2"
+        >
+
+          <!-- CHANNEL COUNT -->
+
+          <div
+            class="flex items-center
+                   gap-1.5
+                   text-[10px]
+                   text-zinc-500"
+          >
+
+            <i
+              class="fa-solid
+                     fa-tv
+                     text-brand-500"
+            ></i>
+
+            <span>
+              ${
+                channelsCount > 0
+                ?
+                `${channelsCount} ${
+                  channelsCount === 1
+                  ?
+                  'канал'
+                  :
+                  'каналів'
+                }`
+                :
+                '0 каналів'
+              }
+            </span>
+
+          </div>
+
+
+          ${
+            channelsCount > 0
+            ?
+
+            `
+              <button
+                onclick="openEventPlayer('${escapeAttr(event.id)}')"
+                class="
+                  px-3 py-1
+                  bg-brand-600
+                  hover:bg-brand-700
+                  text-white
+                  font-semibold
+                  rounded-xl
+                  text-xs
+                  transition-all
+                  flex items-center
+                  gap-1.5
+                  shadow-md
+                  shadow-brand-600/20
+                  active:scale-95
+                "
+              >
+
+                <i
+                  class="fa-solid
+                         fa-play
+                         text-[9px]"
+                ></i>
+
+                Дивитися
+
+              </button>
+            `
+
+            :
+
+            `
+              <span
+                class="
+                  px-3 py-1
+                  bg-matte-bg
+                  text-zinc-600
+                  rounded-xl
+                  text-[10px]
+                  border
+                  border-matte-border
+                "
+              >
+                Без трансляції
+              </span>
+            `
+          }
+
+        </div>
+
+      </div>
+
+    </article>
+
+  `;
+
+}
+
+
+/* =========================================================
+   OPEN EVENT PLAYER
+========================================================= */
+
+async function openEventPlayer(eventId){
+
+  let event =
+    allEvents.find(
+      item =>
+        String(item.id) ===
+        String(eventId)
+    );
+
+
+  if(!event)
+    return;
+
+
+  if(
+    !Array.isArray(event.channels)
+  ){
+
+    try{
+
+      const details =
+        await fetchJson(
+          `${MATCHORA_API}/events/${encodeURIComponent(event.id)}`
+        );
+
+      event = {
+        ...event,
+        ...details
+      };
+
+    }catch(error){
+
+      console.warn(
+        'Event details error:',
+        error
+      );
+
+    }
+
+  }
+
+
+  currentEvent =
+    event;
+
+
+  const modal =
+    document.getElementById(
+      'playerModal'
+    );
+
+
+  const iframe =
+    document.getElementById(
+      'streamIframe'
+    );
+
+
+  const loader =
+    document.getElementById(
+      'iframeLoader'
+    );
+
+
+  const title =
+    document.getElementById(
+      'modalMatchTitle'
+    );
+
+
+  const subtitle =
+    document.getElementById(
+      'modalMatchSubtitle'
+    );
+
+
+  title.innerText =
+    `${event.home || ''} ${
+      event.away
+      ?
+      'vs ' + event.away
+      :
+      ''
+    }`;
+
+
+  subtitle.innerText =
+    [
+      event.league,
+      getSportName(event.sport),
+      event.live
+        ?
+        (
+          'LIVE' +
+          (
+            event.minute
+            ?
+            ` · ${event.minute}'`
+            :
+            ''
+          )
+        )
+        :
+        formatTime(
+          event.kickoff
+        )
+    ]
+    .filter(Boolean)
+    .join(' • ');
+
+
+  renderModalInfo(
+    event
+  );
+
+
+  renderModalChannels(
+    event
+  );
+
+
+  const embed =
+    event.embed_url ||
+    `${MATCHORA_API}/../embed/match/${event.id}`;
+
+
+  loader.style.opacity =
+    '1';
+
+
+  iframe.src =
+    embed;
+
+
+  iframe.onload =
+    () => {
+
+      loader.style.opacity =
+        '0';
+
+    };
+
+
+  modal.classList.remove(
+    'hidden'
+  );
+
+  modal.classList.add(
+    'flex'
+  );
+
+
+  document.body.style.overflow =
+    'hidden';
+
+}
+
+
+/* =========================================================
+   PLAYER ONE-TAP FULLSCREEN
+========================================================= */
+
+document.addEventListener(
+  'click',
+  async event => {
+
+    const player =
+      document.getElementById(
+        'playerContainer'
+      );
+
+    const modal =
+      document.getElementById(
+        'playerModal'
+      );
+
+
+    if(
+      !player ||
+      !modal ||
+      modal.classList.contains('hidden')
+    ){
+
+      return;
+
+    }
+
+
+    if(
+      !player.contains(
+        event.target
+      )
+    ){
+
+      return;
+
+    }
 
 
     /*
-       На мобільному плавно показуємо плеєр.
+      Не перехоплюємо клік по iframe.
+      Саме він має передати натискання
+      самому відеоплеєру.
     */
 
     if(
-        window.innerWidth <= 1100
+      event.target.closest('iframe')
     ){
 
-        document
-            .querySelector(".player-card")
-            ?.scrollIntoView({
-                behavior:"smooth",
-                block:"start"
-            });
+      return;
 
     }
 
-}
+
+    await enterPlayerFullscreen();
+
+  },
+  true
+);
 
 
 /* =========================================================
-   RENDER EVENT CHANNELS
+   ENTER PLAYER FULLSCREEN
 ========================================================= */
 
-function renderEventChannels(list){
+async function enterPlayerFullscreen(){
 
-    channelList.innerHTML = "";
-
-    channelCount.textContent =
-        `${list.length} channels`;
-
-
-    if(!list.length){
-
-        channelList.innerHTML = `
-            <div class="empty">
-                Для цієї події Matchora
-                не повернув окремий список каналів.
-                Основний embed все одно доступний.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    list.forEach(
-        (channel,index) => {
-
-            const button =
-                document.createElement("button");
-
-            button.className =
-                "channel";
-
-            button.innerHTML = `
-
-                <span class="channel-status ${
-                    channel.dead
-                    ? ""
-                    : "on"
-                }"></span>
-
-                <span class="channel-name">
-
-                    <strong>
-                        ${escapeHtml(channel.name || channel.label || "Channel")}
-                    </strong>
-
-                    <small>
-                        ${escapeHtml(channel.lang || "Unknown")}
-                        ${
-                            channel.country
-                            ? " · " + escapeHtml(channel.country)
-                            : ""
-                        }
-                    </small>
-
-                </span>
-
-                <span class="channel-right">
-
-                    ${
-                        channel.quality
-                        ?
-                        `<span class="mini">
-                            ${escapeHtml(channel.quality)}
-                        </span>`
-                        :
-                        ""
-                    }
-
-                    ${
-                        channel.watching
-                        ?
-                        `<span class="mini">
-                            ${channel.watching}
-                        </span>`
-                        :
-                        ""
-                    }
-
-                </span>
-
-            `;
-
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    if(!channel.embed_url)
-                        return;
-
-                    document
-                        .querySelectorAll(".channel")
-                        .forEach(
-                            x =>
-                                x.classList.remove(
-                                    "active"
-                                )
-                        );
-
-                    button.classList.add(
-                        "active"
-                    );
-
-
-                    /*
-                       Matchora дозволяє вибирати
-                       конкретний broadcaster через ?ch=
-                    */
-
-                    playerFrame.src =
-                        channel.embed_url;
-
-
-                }
-            );
-
-
-            channelList.appendChild(
-                button
-            );
-
-        }
+  const modal =
+    document.getElementById(
+      'playerModal'
     );
 
-}
 
+  try{
 
-/* =========================================================
-   SPORTS TV
-========================================================= */
+    if(
+      !document.fullscreenElement
+    ){
 
-function renderTV(){
+      if(
+        modal.requestFullscreen
+      ){
 
-    if(!channels.length){
+        await modal.requestFullscreen();
 
-        tvGrid.innerHTML = `
-            <div class="empty">
-                Спортивні канали не знайдені.
-            </div>
-        `;
+      }
 
-        return;
     }
 
 
     /*
-       Спочатку featured,
-       потім за назвою.
+      На Android Chrome/сумісних браузерах
+      пробуємо повернути екран горизонтально.
     */
 
-    const list =
-        [...channels].sort(
-            (a,b) => {
+    if(
+      screen.orientation &&
+      screen.orientation.lock
+    ){
 
-                if(
-                    Boolean(b.featured) !==
-                    Boolean(a.featured)
-                ){
+      try{
 
-                    return b.featured ? 1 : -1;
-
-                }
-
-                return String(a.name || "")
-                    .localeCompare(
-                        String(b.name || "")
-                    );
-
-            }
+        await screen.orientation.lock(
+          'landscape'
         );
 
+      }catch(error){
 
-    tvGrid.innerHTML =
-        list.map(
-            channel =>
-                tvHTML(channel)
-        ).join("");
-
-
-    tvGrid
-        .querySelectorAll(".tv-card")
-        .forEach(
-            card => {
-
-                card.addEventListener(
-                    "click",
-                    () => {
-
-                        const url =
-                            card.dataset.url;
-
-                        if(!url) return;
-
-
-                        playerEmpty.style.display =
-                            "none";
-
-                        playerFrame.style.display =
-                            "block";
-
-                        playerInfo.style.display =
-                            "none";
-
-                        playerTitle.textContent =
-                            card.dataset.name ||
-                            "Sports TV";
-
-                        playerSub.textContent =
-                            "24/7 Sports Channel";
-
-                        playerFrame.src =
-                            url;
-
-
-                        if(
-                            window.innerWidth <= 1100
-                        ){
-
-                            document
-                                .querySelector(".player-card")
-                                ?.scrollIntoView({
-                                    behavior:"smooth",
-                                    block:"start"
-                                });
-
-                        }
-
-                    }
-                );
-
-            }
+        console.warn(
+          'Orientation lock:',
+          error
         );
 
-}
+      }
 
-
-/* =========================================================
-   TV CARD
-========================================================= */
-
-function tvHTML(channel){
-
-    const feed =
-        Array.isArray(channel.feeds)
-        ? channel.feeds[0]
-        : null;
-
-    if(!feed){
-        return "";
     }
 
+  }catch(error){
 
-    return `
-        <article
-            class="tv-card ${
-                channel.featured
-                ? "featured"
-                : ""
-            }"
-            data-url="${escapeHtml(feed.embed_url || "")}"
-            data-name="${escapeHtml(channel.name || feed.label || "Sports TV")}"
-        >
+    console.warn(
+      'Fullscreen error:',
+      error
+    );
 
-            <div class="tv-top">
+  }
 
-                <div class="tv-icon">
-                    📺
-                </div>
-
-                <span class="tv-quality">
-                    ${escapeHtml(
-                        channel.quality ||
-                        feed.quality ||
-                        "LIVE"
-                    )}
-                </span>
-
-            </div>
-
-
-            <div class="tv-name">
-                ${escapeHtml(
-                    channel.name ||
-                    feed.label ||
-                    "Sports TV"
-                )}
-            </div>
-
-
-            <div class="tv-country">
-                ${escapeHtml(
-                    (channel.countries || []).join(" · ") ||
-                    feed.country ||
-                    "International"
-                )}
-            </div>
-
-        </article>
-    `;
 }
 
 
 /* =========================================================
-   NAVIGATION
+   MODAL INFO
 ========================================================= */
 
-document
-    .querySelectorAll(".nav button")
+function renderModalInfo(event){
+
+  const box =
+    document.getElementById(
+      'modalMatchInfo'
+    );
+
+
+  box.innerHTML = `
+
+    <div
+      class="grid
+             grid-cols-2
+             sm:grid-cols-3
+             gap-3"
+    >
+
+      <div>
+
+        <div
+          class="text-[9px]
+                 text-zinc-600
+                 uppercase
+                 tracking-wider"
+        >
+          Ліга
+        </div>
+
+        <div
+          class="text-xs
+                 text-zinc-200
+                 font-semibold
+                 mt-1 truncate"
+        >
+          ${escapeHtml(
+            event.league || '-'
+          )}
+        </div>
+
+      </div>
+
+
+      <div>
+
+        <div
+          class="text-[9px]
+                 text-zinc-600
+                 uppercase
+                 tracking-wider"
+        >
+          Вид спорту
+        </div>
+
+        <div
+          class="text-xs
+                 text-zinc-200
+                 font-semibold
+                 mt-1"
+        >
+          ${escapeHtml(
+            getSportName(event.sport)
+          )}
+        </div>
+
+      </div>
+
+
+      <div>
+
+        <div
+          class="text-[9px]
+                 text-zinc-600
+                 uppercase
+                 tracking-wider"
+        >
+          Рахунок
+        </div>
+
+        <div
+          class="text-xs
+                 text-emerald-400
+                 font-bold
+                 mt-1"
+        >
+          ${escapeHtml(
+            event.score || 'VS'
+          )}
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   MODAL CHANNELS
+========================================================= */
+
+function renderModalChannels(event){
+
+  const container =
+    document.getElementById(
+      'modalChannelsList'
+    );
+
+
+  const count =
+    document.getElementById(
+      'modalChannelsCount'
+    );
+
+
+  const channels =
+    Array.isArray(
+      event.channels
+    )
+    ?
+    event.channels
+    :
+    [];
+
+
+  count.innerText =
+    `${channels.length} каналів`;
+
+
+  if(!channels.length){
+
+    container.innerHTML = `
+
+      <div
+        class="text-xs
+               text-zinc-600"
+      >
+        Matchora не повернув
+        окремих каналів для цієї події.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    channels
+      .map(
+        (channel,index) =>
+          renderChannelButton(
+            channel,
+            index
+          )
+      )
+      .join('');
+
+}
+
+
+/* =========================================================
+   CHANNEL BUTTON
+========================================================= */
+
+function renderChannelButton(
+  channel,
+  index
+){
+
+  const working =
+    !channel.dead;
+
+
+  const playing =
+    channel.playing === true;
+
+
+  return `
+
+    <button
+      onclick="switchMatchChannel(
+        '${escapeAttr(channel.embed_url || '')}',
+        '${escapeAttr(channel.name || '')}',
+        this
+      )"
+
+      class="
+        channel-button
+        px-3 py-1
+        rounded-xl
+        border
+        ${
+          index === 0
+          ?
+          'border-brand-500 bg-brand-600/20 text-white'
+          :
+          'border-matte-border bg-matte-accent text-zinc-300'
+        }
+        text-xs
+        flex items-center
+        gap-2
+        transition-all
+        hover:border-brand-500
+      "
+    >
+
+      <span
+        class="w-1.5 h-1.5
+               rounded-full
+               ${
+                 !working
+                 ?
+                 'bg-zinc-700'
+                 :
+                 playing
+                 ?
+                 'bg-green-400 animate-pulse'
+                 :
+                 'bg-zinc-500'
+               }"
+      ></span>
+
+
+      <span
+        class="max-w-[180px]
+               truncate"
+      >
+        ${escapeHtml(
+          channel.name ||
+          `Канал ${index+1}`
+        )}
+      </span>
+
+
+      ${
+        channel.country
+        ?
+        `
+          <span
+            class="text-[10px]"
+          >
+            ${escapeHtml(
+              channel.country
+            )}
+          </span>
+        `
+        :
+        ''
+      }
+
+
+      ${
+        channel.lang
+        ?
+        `
+          <span
+            class="hidden sm:inline
+                   text-[9px]
+                   text-zinc-500"
+          >
+            ${escapeHtml(
+              channel.lang
+            )}
+          </span>
+        `
+        :
+        ''
+      }
+
+
+      ${
+        channel.quality
+        ?
+        `
+          <span
+            class="quality-badge"
+          >
+            ${escapeHtml(
+              channel.quality
+            )}
+          </span>
+        `
+        :
+        ''
+      }
+
+    </button>
+
+  `;
+
+}
+
+
+/* =========================================================
+   SWITCH CHANNEL
+========================================================= */
+
+function switchMatchChannel(
+  url,
+  name,
+  element
+){
+
+  if(!url)
+    return;
+
+
+  document
+    .querySelectorAll(
+      '.channel-button'
+    )
     .forEach(
-        button => {
+      button => {
 
-            button.addEventListener(
-                "click",
-                async () => {
+        button.classList.remove(
+          'channel-active'
+        );
 
-                    document
-                        .querySelectorAll(".nav button")
-                        .forEach(
-                            x =>
-                                x.classList.remove(
-                                    "active"
-                                )
-                        );
-
-                    button.classList.add(
-                        "active"
-                    );
-
-                    nav.classList.remove(
-                        "open"
-                    );
-
-
-                    currentView =
-                        button.dataset.view;
-
-
-                    if(
-                        currentView === "live"
-                    ){
-
-                        tvSection.style.display =
-                            "none";
-
-                        await loadLive();
-
-                    }else if(
-                        currentView === "today"
-                    ){
-
-                        tvSection.style.display =
-                            "none";
-
-                        await loadSchedule();
-
-                    }else if(
-                        currentView === "all"
-                    ){
-
-                        tvSection.style.display =
-                            "none";
-
-                        await loadAll();
-
-                    }else if(
-                        currentView === "tv"
-                    ){
-
-                        tvSection.style.display =
-                            "block";
-
-                        sectionTitle.textContent =
-                            "SPORTS TV";
-
-                        matchesEl.innerHTML =
-                            `
-                            <div class="empty">
-                                Оберіть канал нижче.
-                            </div>
-                            `;
-
-                        tvSection
-                            .scrollIntoView({
-                                behavior:"smooth"
-                            });
-
-                    }
-
-                }
-            );
-
-        }
+      }
     );
 
 
-/* =========================================================
-   MENU
-========================================================= */
+  if(element){
 
-menuBtn.addEventListener(
-    "click",
+    element.classList.add(
+      'channel-active'
+    );
+
+  }
+
+
+  const iframe =
+    document.getElementById(
+      'streamIframe'
+    );
+
+
+  const loader =
+    document.getElementById(
+      'iframeLoader'
+    );
+
+
+  const title =
+    document.getElementById(
+      'modalMatchSubtitle'
+    );
+
+
+  loader.style.opacity =
+    '1';
+
+
+  iframe.src =
+    url;
+
+
+  title.innerText =
+    `${currentEvent?.league || 'Sports'} • ${name || 'Channel'}`;
+
+
+  iframe.onload =
     () => {
 
-        nav.classList.toggle(
-            "open"
-        );
+      loader.style.opacity =
+        '0';
 
-    }
-);
+    };
+
+}
 
 
 /* =========================================================
-   SEARCH
+   CLOSE PLAYER
 ========================================================= */
 
-searchEl.addEventListener(
-    "input",
-    () => {
+function closePlayerModal(){
 
-        searchText =
-            searchEl.value.trim();
+  const modal =
+    document.getElementById(
+      'playerModal'
+    );
 
-        renderMatches();
 
-    }
-);
+  const iframe =
+    document.getElementById(
+      'streamIframe'
+    );
+
+
+  if(
+    document.fullscreenElement
+  ){
+
+    document.exitFullscreen()
+      .catch(
+        () => {}
+      );
+
+  }
+
+
+  if(
+    screen.orientation &&
+    screen.orientation.unlock
+  ){
+
+    try{
+      screen.orientation.unlock();
+    }catch(error){}
+
+  }
+
+
+  iframe.src =
+    'about:blank';
+
+
+  modal.classList.add(
+    'hidden'
+  );
+
+  modal.classList.remove(
+    'flex'
+  );
+
+
+  document.body.style.overflow =
+    '';
+
+  currentEvent =
+    null;
+
+}
 
 
 /* =========================================================
-   SPORT FILTER
+   FULLSCREEN BUTTON
 ========================================================= */
 
-sportFilter.addEventListener(
-    "change",
-    () => {
+function toggleModalFullscreen(){
 
-        selectedSport =
-            sportFilter.value;
+  if(
+    document.fullscreenElement
+  ){
 
-        renderMatches();
+    document.exitFullscreen();
+
+    if(
+      screen.orientation &&
+      screen.orientation.unlock
+    ){
+
+      try{
+        screen.orientation.unlock();
+      }catch(error){}
 
     }
-);
+
+    return;
+
+  }
+
+
+  enterPlayerFullscreen();
+
+}
 
 
 /* =========================================================
-   DATE FILTER
+   LOADING
 ========================================================= */
 
-dateFilter.addEventListener(
-    "change",
-    async () => {
+function showLoading(){
 
-        currentView =
-            "today";
+  document
+    .getElementById(
+      'loadingState'
+    )
+    .classList.remove(
+      'hidden'
+    );
 
-        document
-            .querySelectorAll(".nav button")
-            .forEach(
-                x =>
-                    x.classList.toggle(
-                        "active",
-                        x.dataset.view === "today"
-                    )
-            );
 
-        tvSection.style.display =
-            "none";
+  document
+    .getElementById(
+      'errorState'
+    )
+    .classList.add(
+      'hidden'
+    );
 
-        await loadSchedule();
+}
 
-    }
-);
+
+function hideLoading(){
+
+  document
+    .getElementById(
+      'loadingState'
+    )
+    .classList.add(
+      'hidden'
+    );
+
+}
 
 
 /* =========================================================
-   ESCAPE HTML
+   ERROR
+========================================================= */
+
+function showError(message){
+
+  const error =
+    document.getElementById(
+      'errorState'
+    );
+
+
+  error.classList.remove(
+    'hidden'
+  );
+
+  error.classList.add(
+    'flex'
+  );
+
+
+  document.getElementById(
+    'errorMessage'
+  ).innerText =
+    message;
+
+
+  document.getElementById(
+    'eventsGrid'
+  ).innerHTML =
+    '';
+
+}
+
+
+/* =========================================================
+   FALLBACK LOGO
+========================================================= */
+
+function fallbackLogo(text){
+
+  const label =
+    String(
+      text ||
+      'TEAM'
+    )
+    .substring(
+      0,
+      8
+    );
+
+
+  return (
+    'https://placehold.co/100x100/' +
+    '18181c/10b981' +
+    '?text=' +
+    encodeURIComponent(
+      label
+    )
+  );
+
+}
+
+
+/* =========================================================
+   ESCAPE
 ========================================================= */
 
 function escapeHtml(value){
 
-    return String(value ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+  return String(
+    value ?? ''
+  )
+  .replaceAll(
+    '&',
+    '&amp;'
+  )
+  .replaceAll(
+    '<',
+    '&lt;'
+  )
+  .replaceAll(
+    '>',
+    '&gt;'
+  )
+  .replaceAll(
+    '"',
+    '&quot;'
+  )
+  .replaceAll(
+    "'",
+    '&#039;'
+  );
+
+}
+
+
+function escapeAttr(value){
+
+  return String(
+    value ?? ''
+  )
+  .replaceAll(
+    '\\',
+    '\\\\'
+  )
+  .replaceAll(
+    "'",
+    "\\'"
+  )
+  .replaceAll(
+    '"',
+    '&quot;'
+  )
+  .replaceAll(
+    '<',
+    '&lt;'
+  )
+  .replaceAll(
+    '>',
+    '&gt;'
+  );
 
 }
 
 
 /* =========================================================
-   AUTO REFRESH
+   KEYBOARD
 ========================================================= */
 
-setInterval(
-    async () => {
+document.addEventListener(
+  'keydown',
+  event => {
 
-        /*
-           Під час перегляду LIVE
-           оновлюємо тільки дані.
-        */
+    if(
+      event.key === 'Escape'
+    ){
 
-        if(
-            currentView === "live"
-        ){
+      const modal =
+        document.getElementById(
+          'playerModal'
+        );
 
-            await loadLive();
 
-        }
+      if(
+        !modal.classList.contains(
+          'hidden'
+        )
+      ){
 
-    },
-    60000
+        closePlayerModal();
+
+      }
+
+    }
+
+  }
 );
 
 
 /* =========================================================
-   INITIAL
+   AUTO REFRESH LIVE DATA
 ========================================================= */
 
-(async function(){
+setInterval(
+  async () => {
 
-    tvSection.style.display =
-        "none";
+    if(
+      !document.hidden &&
+      !isLoading
+    ){
 
-    await Promise.all([
-        loadLive(),
-        loadChannels()
-    ]);
+      try{
 
-})();
+        const live =
+          await fetchJson(
+            `${MATCHORA_API}/live`
+          );
+
+
+        if(
+          Array.isArray(
+            live.events
+          )
+        ){
+
+          const liveMap =
+            new Map();
+
+
+          live.events.forEach(
+            event => {
+
+              liveMap.set(
+                String(event.id),
+                event
+              );
+
+            }
+          );
+
+
+          allEvents =
+            allEvents
+              .map(
+                event =>
+                  liveMap.has(
+                    String(event.id)
+                  )
+                  ?
+                  {
+                    ...event,
+                    ...liveMap.get(
+                      String(event.id)
+                    )
+                  }
+                  :
+                  event
+              )
+              .filter(
+                event =>
+                  !event.finished &&
+                  (
+                    isToday(event.kickoff) ||
+                    isTomorrow(event.kickoff)
+                  )
+              );
+
+
+          buildSportButtons();
+
+          updateStatusCounts();
+
+          renderCurrentView();
+
+
+          /*
+            Якщо LIVE завершився
+            і список LIVE порожній —
+            показуємо всі події.
+          */
+
+          if(
+            currentStatusFilter === 'live' &&
+            !allEvents.some(
+              event => event.live === true
+            )
+          ){
+
+            setStatusFilter(
+              'all'
+            );
+
+          }
+
+        }
+
+      }catch(error){
+
+        console.warn(
+          'LIVE refresh:',
+          error
+        );
+
+      }
+
+    }
+
+  },
+  120000
+);
 
 </script>
 
