@@ -25,12 +25,12 @@
           colors: {
 
             brand: {
-              50: '#ecfdf5',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46'
+              50: '#eef2ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3'
             },
 
             matte: {
@@ -104,10 +104,10 @@
     }
 
     .card-glow:hover{
-      border-color:rgba(16,185,129,.4);
+      border-color:rgba(99,102,241,.4);
       box-shadow:
         0 10px 25px -5px rgba(0,0,0,.5),
-        0 0 15px rgba(16,185,129,.1);
+        0 0 15px rgba(99,102,241,.1);
     }
 
     .no-scrollbar::-webkit-scrollbar{
@@ -129,7 +129,7 @@
     .player-shadow{
       box-shadow:
         0 25px 80px rgba(0,0,0,.65),
-        0 0 35px rgba(16,185,129,.07);
+        0 0 35px rgba(99,102,241,.07);
     }
 
     .live-glow{
@@ -139,8 +139,8 @@
     }
 
     .channel-active{
-      border-color:rgba(16,185,129,.8)!important;
-      background:rgba(5,150,105,.16)!important;
+      border-color:rgba(99,102,241,.8)!important;
+      background:rgba(79,70,229,.16)!important;
       color:white!important;
     }
 
@@ -154,7 +154,7 @@
       background:
         radial-gradient(
           circle at center,
-          rgba(16,185,129,.09),
+          rgba(99,102,241,.09),
           transparent 55%
         ),
         #000;
@@ -282,17 +282,11 @@
 
 <body class="h-full flex flex-col antialiased selection:bg-brand-600 selection:text-white">
 
-<!-- =========================================================
-     HEADER
-========================================================= -->
-
 <header class="sticky top-0 z-40 glass-nav border-b border-matte-border">
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
     <div class="flex items-center justify-between h-16 gap-3">
-
-      <!-- LOGO -->
 
       <div
         class="flex items-center gap-3 cursor-pointer shrink-0"
@@ -301,7 +295,7 @@
 
         <div
           class="w-10 h-10 rounded-xl
-                 bg-gradient-to-tr from-brand-600 to-emerald-400
+                 bg-gradient-to-tr from-brand-600 to-indigo-400
                  flex items-center justify-center
                  text-white shadow-lg shadow-brand-600/30"
         >
@@ -328,8 +322,6 @@
 
       </div>
 
-
-      <!-- DESKTOP SEARCH -->
 
       <div class="hidden md:flex flex-1 max-w-md mx-4">
 
@@ -373,11 +365,7 @@
       </div>
 
 
-      <!-- HEADER CONTROLS -->
-
       <div class="flex items-center gap-2">
-
-        <!-- KYIV CLOCK -->
 
         <div
           class="hidden sm:flex items-center gap-2
@@ -400,8 +388,6 @@
         </div>
 
 
-        <!-- LIVE INDICATOR -->
-
         <div
           class="hidden lg:flex items-center gap-2
                  bg-red-500/5
@@ -419,8 +405,6 @@
 
         </div>
 
-
-        <!-- REFRESH -->
 
         <button
           onclick="fetchAllData()"
@@ -453,8 +437,6 @@
 
     </div>
 
-
-    <!-- MOBILE SEARCH -->
 
     <div class="pb-3 md:hidden">
 
@@ -491,18 +473,12 @@
 </header>
 
 
-<!-- =========================================================
-     MAIN
-========================================================= -->
-
 <main
   class="flex-1 max-w-7xl w-full mx-auto
          px-4 sm:px-6 lg:px-8
          py-6 flex flex-col gap-6"
 >
 
-
-  <!-- TELEGRAM MARQUEE -->
 
   <div
     class="flex items-center
@@ -560,8 +536,6 @@
   </div>
 
 
-  <!-- STATUS FILTER -->
-
   <div
     class="flex items-center
            justify-between
@@ -584,7 +558,7 @@
         id="status-all"
         class="status-tab
                text-xs font-medium
-               px-2.5 py-1
+               px-3 py-1.5
                rounded-lg
                text-zinc-400
                hover:text-white
@@ -603,7 +577,7 @@
         id="status-live"
         class="status-tab
                text-xs font-medium
-               px-2.5 py-1
+               px-3 py-1.5
                rounded-lg
                text-white
                bg-brand-600
@@ -620,7 +594,7 @@
         <span>LIVE</span>
 
         <span id="status-count-live"
-              class="text-[9px] text-emerald-100">0</span>
+              class="text-[9px] text-indigo-100">0</span>
 
       </button>
 
@@ -630,7 +604,7 @@
         id="status-upcoming"
         class="status-tab
                text-xs font-medium
-               px-2.5 py-1
+               px-3 py-1.5
                rounded-lg
                text-zinc-400
                hover:text-white
@@ -649,7 +623,7 @@
         id="status-tomorrow"
         class="status-tab
                text-xs font-medium
-               px-2.5 py-1
+               px-3 py-1.5
                rounded-lg
                text-zinc-400
                hover:text-white
@@ -667,8 +641,6 @@
   </div>
 
 
-  <!-- SPORTS FILTER -->
-
   <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
 
     <button
@@ -676,14 +648,16 @@
       id="sport-all"
       class="sport-tab
              shrink-0
-             px-3 py-1
+             px-3.5 py-1.5
              rounded-lg
              text-xs
              font-semibold
              bg-brand-600
              text-white
-             border border-brand-500"
+             border border-brand-500
+             flex items-center gap-1.5"
     >
+      <i class="fa-solid fa-layer-group text-[11px]"></i>
       Усі види спорту
     </button>
 
@@ -691,8 +665,6 @@
 
   </div>
 
-
-  <!-- LOADING -->
 
   <div
     id="loadingState"
@@ -793,8 +765,6 @@
   </div>
 
 
-  <!-- ERROR -->
-
   <div
     id="errorState"
     class="hidden flex-col
@@ -846,8 +816,6 @@
   </div>
 
 
-  <!-- EMPTY -->
-
   <div
     id="emptyState"
     class="hidden flex-col
@@ -882,8 +850,6 @@
   </div>
 
 
-  <!-- EVENTS -->
-
   <div
     id="eventsGrid"
     class="grid grid-cols-1
@@ -895,10 +861,6 @@
 </main>
 
 
-<!-- =========================================================
-     PLAYER MODAL
-========================================================= -->
-
 <div
   id="playerModal"
   class="fixed inset-0 z-50 hidden
@@ -906,15 +868,11 @@
          p-2 sm:p-4 md:p-6"
 >
 
-  <!-- BACKDROP -->
-
   <div
     class="absolute inset-0 modal-backdrop"
     onclick="closePlayerModal()"
   ></div>
 
-
-  <!-- MODAL -->
 
   <div
     id="modalBox"
@@ -929,8 +887,6 @@
            max-h-[96vh]
            z-10"
   >
-
-    <!-- MODAL HEADER -->
 
     <div
       class="flex items-center
@@ -1018,8 +974,6 @@
     </div>
 
 
-    <!-- PLAYER -->
-
     <div
       id="playerContainer"
       class="relative
@@ -1041,8 +995,6 @@
         referrerpolicy="strict-origin-when-cross-origin"
       ></iframe>
 
-
-      <!-- LOADER -->
 
       <div
         id="iframeLoader"
@@ -1077,8 +1029,6 @@
     </div>
 
 
-    <!-- MATCH INFO -->
-
     <div
       id="modalMatchInfo"
       class="px-4 py-3
@@ -1086,8 +1036,6 @@
              border-b border-matte-border"
     ></div>
 
-
-    <!-- CHANNELS -->
 
     <div
       class="p-4
@@ -1136,23 +1084,11 @@
 </div>
 
 
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
-
 <script>
-
-/* =========================================================
-   MATCHORA API
-========================================================= */
 
 const MATCHORA_API =
   'https://matchora.to/api/v1';
 
-
-/* =========================================================
-   STATE
-========================================================= */
 
 let allEvents = [];
 
@@ -1166,10 +1102,6 @@ let currentEvent = null;
 
 let isLoading = false;
 
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
 
 window.addEventListener(
   'DOMContentLoaded',
@@ -1187,10 +1119,6 @@ window.addEventListener(
   }
 );
 
-
-/* =========================================================
-   KYIV CLOCK
-========================================================= */
 
 function startKyivClock(){
 
@@ -1230,10 +1158,6 @@ function startKyivClock(){
 }
 
 
-/* =========================================================
-   FETCH JSON
-========================================================= */
-
 async function fetchJson(url){
 
   const response =
@@ -1260,10 +1184,6 @@ async function fetchJson(url){
 
 }
 
-
-/* =========================================================
-   FETCH ALL DATA
-========================================================= */
 
 async function fetchAllData(){
 
@@ -1389,11 +1309,6 @@ async function fetchAllData(){
       );
 
 
-    /*
-      Якщо LIVE більше немає,
-      автоматично переходимо на Усі.
-    */
-
     if(
       currentStatusFilter === 'live' &&
       !allEvents.some(
@@ -1437,10 +1352,6 @@ async function fetchAllData(){
 
 }
 
-
-/* =========================================================
-   SPORT TRANSLATIONS
-========================================================= */
 
 const sportTranslations = {
 
@@ -1523,8 +1434,83 @@ function getSportName(sport){
 
 
 /* =========================================================
-   SPORT ORDER
+   SPORT ICONS
 ========================================================= */
+
+const sportIcons = {
+
+  football: 'fa-futbol',
+  soccer: 'fa-futbol',
+  futbol: 'fa-futbol',
+
+  basketball: 'fa-basketball',
+  tennis: 'fa-table-tennis-paddle-ball',
+  hockey: 'fa-hockey-puck',
+  ice_hockey: 'fa-hockey-puck',
+
+  handball: 'fa-hand',
+  volleyball: 'fa-volleyball',
+  baseball: 'fa-baseball',
+
+  american_football: 'fa-football',
+  nfl: 'fa-football',
+
+  rugby: 'fa-football',
+  cricket: 'fa-baseball',
+
+  golf: 'fa-golf-ball-tee',
+
+  boxing: 'fa-hand-fist',
+  mma: 'fa-hand-fist',
+  ufc: 'fa-hand-fist',
+  wrestling: 'fa-hand-fist',
+
+  formula1: 'fa-flag-checkered',
+  'formula 1': 'fa-flag-checkered',
+  f1: 'fa-flag-checkered',
+  motorsport: 'fa-car',
+  racing: 'fa-car',
+  motogp: 'fa-motorcycle',
+
+  darts: 'fa-bullseye',
+  snooker: 'fa-circle',
+  cycling: 'fa-bicycle',
+  athletics: 'fa-person-running',
+  swimming: 'fa-person-swimming',
+
+  skiing: 'fa-person-skiing',
+  biathlon: 'fa-person-skiing',
+
+  esports: 'fa-gamepad',
+
+  water_polo: 'fa-person-swimming',
+  futsal: 'fa-futbol',
+  beach_volleyball: 'fa-volleyball',
+
+  badminton: 'fa-table-tennis-paddle-ball',
+  table_tennis: 'fa-table-tennis-paddle-ball',
+
+  horse_racing: 'fa-horse'
+
+};
+
+
+function getSportIcon(sport){
+
+  const key =
+    String(
+      sport || ''
+    )
+    .trim()
+    .toLowerCase();
+
+  return (
+    sportIcons[key] ||
+    'fa-trophy'
+  );
+
+}
+
 
 const sportOrder = [
 
@@ -1591,10 +1577,6 @@ function getSportOrder(sport){
 
 }
 
-
-/* =========================================================
-   BUILD SPORTS BUTTONS
-========================================================= */
 
 function buildSportButtons(){
 
@@ -1677,7 +1659,7 @@ function buildSportButtons(){
             id="sport-${escapeAttr(sport)}"
             class="sport-tab
                    shrink-0
-                   px-3 py-1
+                   px-3.5 py-1.5
                    rounded-lg
                    text-xs
                    font-semibold
@@ -1689,6 +1671,12 @@ function buildSportButtons(){
                    transition-all
                    flex items-center gap-1.5"
           >
+
+            <i
+              class="fa-solid
+                     ${getSportIcon(sport)}
+                     text-[11px]"
+            ></i>
 
             <span>
               ${escapeHtml(
@@ -1714,10 +1702,6 @@ function buildSportButtons(){
 
 }
 
-
-/* =========================================================
-   STATUS COUNTS
-========================================================= */
 
 function updateStatusCounts(){
 
@@ -1784,10 +1768,6 @@ function updateStatusCounts(){
 
 }
 
-
-/* =========================================================
-   SPORT FILTER
-========================================================= */
 
 function setSportFilter(sport){
 
@@ -1869,10 +1849,6 @@ function setSportFilter(sport){
 }
 
 
-/* =========================================================
-   STATUS FILTER
-========================================================= */
-
 function setStatusFilter(status){
 
   currentStatusFilter =
@@ -1923,10 +1899,6 @@ function setStatusFilter(status){
 
 }
 
-
-/* =========================================================
-   SEARCH
-========================================================= */
 
 function handleSearch(value){
 
@@ -1995,10 +1967,6 @@ function handleSearch(value){
 }
 
 
-/* =========================================================
-   CLEAR SEARCH
-========================================================= */
-
 function clearSearch(){
 
   const desktop =
@@ -2043,10 +2011,6 @@ function clearSearch(){
 }
 
 
-/* =========================================================
-   RESET
-========================================================= */
-
 function resetFilters(){
 
   currentStatusFilter =
@@ -2067,10 +2031,6 @@ function resetFilters(){
 
 }
 
-
-/* =========================================================
-   FILTER EVENTS
-========================================================= */
 
 function getFilteredEvents(){
 
@@ -2201,10 +2161,6 @@ function getFilteredEvents(){
 }
 
 
-/* =========================================================
-   TODAY CHECK
-========================================================= */
-
 function isToday(timestamp){
 
   if(!timestamp)
@@ -2239,10 +2195,6 @@ function isToday(timestamp){
 
 }
 
-
-/* =========================================================
-   TOMORROW CHECK
-========================================================= */
 
 function isTomorrow(timestamp){
 
@@ -2284,10 +2236,6 @@ function isTomorrow(timestamp){
 }
 
 
-/* =========================================================
-   FORMAT TIME
-========================================================= */
-
 function formatTime(timestamp){
 
   if(!timestamp)
@@ -2308,10 +2256,6 @@ function formatTime(timestamp){
 }
 
 
-/* =========================================================
-   FORMAT DATE
-========================================================= */
-
 function formatDate(timestamp){
 
   if(!timestamp)
@@ -2331,10 +2275,6 @@ function formatDate(timestamp){
 
 }
 
-
-/* =========================================================
-   RENDER CURRENT VIEW
-========================================================= */
 
 function renderCurrentView(){
 
@@ -2402,10 +2342,6 @@ function renderCurrentView(){
 
 }
 
-
-/* =========================================================
-   GROUP EVENTS BY TOURNAMENT
-========================================================= */
 
 function renderGroupedEvents(
   events,
@@ -2560,10 +2496,6 @@ function renderGroupedEvents(
 }
 
 
-/* =========================================================
-   EVENT CARD
-========================================================= */
-
 function renderEventCard(event){
 
   const isLive =
@@ -2694,14 +2626,9 @@ function renderEventCard(event){
 
         <span
           class="score-text
-                 text-sm
+                 text-lg
                  font-black
-                 text-emerald-400
-                 bg-emerald-500/10
-                 px-2 py-0.5
-                 rounded
-                 border
-                 border-emerald-500/20"
+                 text-emerald-400"
         >
           ${escapeHtml(
             event.score || 'LIVE'
@@ -2731,7 +2658,7 @@ function renderEventCard(event){
 
         <span
           class="score-text
-                 text-xs
+                 text-sm
                  font-black
                  text-zinc-600"
         >
@@ -2776,8 +2703,6 @@ function renderEventCard(event){
       "
     >
 
-
-      <!-- HEADER -->
 
       <div
         class="flex items-center
@@ -2864,39 +2789,46 @@ function renderEventCard(event){
       </div>
 
 
-      <!-- TEAMS / EVENT -->
-
       <div
-        class="py-3
-               grid
-               grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]
-               items-center
-               text-center
-               gap-2"
+        class="
+          py-3
+          grid
+          ${
+            hasTwoTeams
+            ?
+            'grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'
+            :
+            'grid-cols-1'
+          }
+          items-center
+          text-center
+          gap-2
+        "
       >
 
 
-        <!-- HOME -->
+        ${
+          hasTwoTeams
+          ?
 
-        <div
-          class="min-w-0
-                 flex flex-col
-                 items-center
-                 gap-2"
-        >
+          `
 
-          <div
-            class="team-logo
-                   w-14 h-14
-                   flex items-center
-                   justify-center"
-          >
+            <!-- HOME -->
 
-            ${
-              hasTwoTeams
-              ?
+            <div
+              class="min-w-0
+                     flex flex-col
+                     items-center
+                     gap-2"
+            >
 
-              `
+              <div
+                class="team-logo
+                       w-14 h-14
+                       flex items-center
+                       justify-center"
+              >
+
                 <img
                   src="${escapeAttr(homeLogo)}"
                   alt="${escapeAttr(event.home || '')}"
@@ -2906,79 +2838,58 @@ function renderEventCard(event){
                   loading="lazy"
                   onerror="this.src='${fallbackLogo('HOME')}'"
                 />
-              `
 
-              :
-
-              `
-                <i
-                  class="fa-brands
-                         fa-telegram
-                         text-blue-500
-                         text-4xl"
-                ></i>
-              `
-            }
-
-          </div>
+              </div>
 
 
-          <span
-            class="team-name
-                   text-xs
-                   font-bold
-                   text-white
-                   line-clamp-2
-                   leading-tight
-                   max-w-full
-                   break-words"
-          >
-            ${escapeHtml(
-              event.home ||
-              event.league ||
-              getSportName(event.sport) ||
-              'Подія'
-            )}
-          </span>
+              <span
+                class="team-name
+                       text-xs
+                       font-bold
+                       text-white
+                       line-clamp-2
+                       leading-tight
+                       max-w-full
+                       break-words"
+              >
+                ${escapeHtml(
+                  event.home
+                )}
+              </span>
 
-        </div>
+            </div>
 
 
-        <!-- SCORE -->
+            <!-- SCORE -->
 
-        <div
-          class="flex flex-col
-                 items-center
-                 justify-center
-                 shrink-0"
-        >
+            <div
+              class="flex flex-col
+                     items-center
+                     justify-center
+                     shrink-0"
+            >
 
-          ${center}
+              ${center}
 
-        </div>
+            </div>
 
 
-        <!-- AWAY -->
+            <!-- AWAY -->
 
-        <div
-          class="min-w-0
-                 flex flex-col
-                 items-center
-                 gap-2"
-        >
+            <div
+              class="min-w-0
+                     flex flex-col
+                     items-center
+                     gap-2"
+            >
 
-          <div
-            class="team-logo
-                   w-14 h-14
-                   flex items-center
-                   justify-center"
-          >
+              <div
+                class="team-logo
+                       w-14 h-14
+                       flex items-center
+                       justify-center"
+              >
 
-            ${
-              hasTwoTeams
-              ?
-
-              `
                 <img
                   src="${escapeAttr(awayLogo)}"
                   alt="${escapeAttr(event.away || '')}"
@@ -2988,50 +2899,78 @@ function renderEventCard(event){
                   loading="lazy"
                   onerror="this.src='${fallbackLogo('AWAY')}'"
                 />
-              `
 
-              :
+              </div>
 
-              `
+
+              <span
+                class="team-name
+                       text-xs
+                       font-bold
+                       text-white
+                       line-clamp-2
+                       leading-tight
+                       max-w-full
+                       break-words"
+              >
+                ${escapeHtml(
+                  event.away
+                )}
+              </span>
+
+            </div>
+
+          `
+
+          :
+
+          `
+
+            <!-- NON TEAM EVENT -->
+
+            <div
+              class="flex flex-col
+                     items-center
+                     justify-center
+                     py-2
+                     gap-2"
+            >
+
+              <div
+                class="w-14 h-14
+                       flex items-center
+                       justify-center"
+              >
                 <i
-                  class="fa-brands
-                         fa-telegram
-                         text-blue-500
-                         text-4xl"
+                  class="fa-solid
+                         fa-trophy
+                         text-brand-500
+                         text-3xl"
                 ></i>
-              `
-            }
+              </div>
 
-          </div>
+              <span
+                class="text-xs
+                       font-bold
+                       text-white
+                       line-clamp-2
+                       leading-tight
+                       max-w-full"
+              >
+                ${escapeHtml(
+                  event.league ||
+                  getSportName(event.sport) ||
+                  'Подія'
+                )}
+              </span>
 
+            </div>
 
-          <span
-            class="team-name
-                   text-xs
-                   font-bold
-                   text-white
-                   line-clamp-2
-                   leading-tight
-                   max-w-full
-                   break-words"
-          >
-            ${escapeHtml(
-              hasTwoTeams
-              ?
-              event.away
-              :
-              event.status ||
-              getSportName(event.sport) ||
-              'Подія'
-            )}
-          </span>
-
-        </div>
+          `
+        }
 
       </div>
 
-
-      <!-- FOOTER -->
 
       <div
         class="pt-2
@@ -3044,8 +2983,6 @@ function renderEventCard(event){
                  justify-between
                  gap-2"
         >
-
-          <!-- CHANNEL COUNT -->
 
           <div
             class="flex items-center
@@ -3143,10 +3080,6 @@ function renderEventCard(event){
 
 }
 
-
-/* =========================================================
-   OPEN EVENT PLAYER
-========================================================= */
 
 async function openEventPlayer(eventId){
 
@@ -3306,74 +3239,7 @@ async function openEventPlayer(eventId){
 }
 
 
-/* =========================================================
-   PLAYER ONE-TAP FULLSCREEN
-========================================================= */
-
-document.addEventListener(
-  'click',
-  async event => {
-
-    const player =
-      document.getElementById(
-        'playerContainer'
-      );
-
-    const modal =
-      document.getElementById(
-        'playerModal'
-      );
-
-
-    if(
-      !player ||
-      !modal ||
-      modal.classList.contains('hidden')
-    ){
-
-      return;
-
-    }
-
-
-    if(
-      !player.contains(
-        event.target
-      )
-    ){
-
-      return;
-
-    }
-
-
-    /*
-      Не перехоплюємо клік по iframe.
-      Саме він має передати натискання
-      самому відеоплеєру.
-    */
-
-    if(
-      event.target.closest('iframe')
-    ){
-
-      return;
-
-    }
-
-
-    await enterPlayerFullscreen();
-
-  },
-  true
-);
-
-
-/* =========================================================
-   ENTER PLAYER FULLSCREEN
-========================================================= */
-
-async function enterPlayerFullscreen(){
+function enterPlayerFullscreen(){
 
   const modal =
     document.getElementById(
@@ -3391,35 +3257,7 @@ async function enterPlayerFullscreen(){
         modal.requestFullscreen
       ){
 
-        await modal.requestFullscreen();
-
-      }
-
-    }
-
-
-    /*
-      На Android Chrome/сумісних браузерах
-      пробуємо повернути екран горизонтально.
-    */
-
-    if(
-      screen.orientation &&
-      screen.orientation.lock
-    ){
-
-      try{
-
-        await screen.orientation.lock(
-          'landscape'
-        );
-
-      }catch(error){
-
-        console.warn(
-          'Orientation lock:',
-          error
-        );
+        modal.requestFullscreen();
 
       }
 
@@ -3436,10 +3274,6 @@ async function enterPlayerFullscreen(){
 
 }
 
-
-/* =========================================================
-   MODAL INFO
-========================================================= */
 
 function renderModalInfo(event){
 
@@ -3539,10 +3373,6 @@ function renderModalInfo(event){
 }
 
 
-/* =========================================================
-   MODAL CHANNELS
-========================================================= */
-
 function renderModalChannels(event){
 
   const container =
@@ -3603,10 +3433,6 @@ function renderModalChannels(event){
 
 }
 
-
-/* =========================================================
-   CHANNEL BUTTON
-========================================================= */
 
 function renderChannelButton(
   channel,
@@ -3737,10 +3563,6 @@ function renderChannelButton(
 }
 
 
-/* =========================================================
-   SWITCH CHANNEL
-========================================================= */
-
 function switchMatchChannel(
   url,
   name,
@@ -3816,10 +3638,6 @@ function switchMatchChannel(
 }
 
 
-/* =========================================================
-   CLOSE PLAYER
-========================================================= */
-
 function closePlayerModal(){
 
   const modal =
@@ -3846,18 +3664,6 @@ function closePlayerModal(){
   }
 
 
-  if(
-    screen.orientation &&
-    screen.orientation.unlock
-  ){
-
-    try{
-      screen.orientation.unlock();
-    }catch(error){}
-
-  }
-
-
   iframe.src =
     'about:blank';
 
@@ -3880,10 +3686,6 @@ function closePlayerModal(){
 }
 
 
-/* =========================================================
-   FULLSCREEN BUTTON
-========================================================= */
-
 function toggleModalFullscreen(){
 
   if(
@@ -3891,17 +3693,6 @@ function toggleModalFullscreen(){
   ){
 
     document.exitFullscreen();
-
-    if(
-      screen.orientation &&
-      screen.orientation.unlock
-    ){
-
-      try{
-        screen.orientation.unlock();
-      }catch(error){}
-
-    }
 
     return;
 
@@ -3912,10 +3703,6 @@ function toggleModalFullscreen(){
 
 }
 
-
-/* =========================================================
-   LOADING
-========================================================= */
 
 function showLoading(){
 
@@ -3952,10 +3739,6 @@ function hideLoading(){
 }
 
 
-/* =========================================================
-   ERROR
-========================================================= */
-
 function showError(message){
 
   const error =
@@ -3987,10 +3770,6 @@ function showError(message){
 }
 
 
-/* =========================================================
-   FALLBACK LOGO
-========================================================= */
-
 function fallbackLogo(text){
 
   const label =
@@ -4006,7 +3785,7 @@ function fallbackLogo(text){
 
   return (
     'https://placehold.co/100x100/' +
-    '18181c/10b981' +
+    '18181c/6366f1' +
     '?text=' +
     encodeURIComponent(
       label
@@ -4015,10 +3794,6 @@ function fallbackLogo(text){
 
 }
 
-
-/* =========================================================
-   ESCAPE
-========================================================= */
 
 function escapeHtml(value){
 
@@ -4078,10 +3853,6 @@ function escapeAttr(value){
 }
 
 
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
 document.addEventListener(
   'keydown',
   event => {
@@ -4111,10 +3882,6 @@ document.addEventListener(
   }
 );
 
-
-/* =========================================================
-   AUTO REFRESH LIVE DATA
-========================================================= */
 
 setInterval(
   async () => {
@@ -4187,12 +3954,6 @@ setInterval(
 
           renderCurrentView();
 
-
-          /*
-            Якщо LIVE завершився
-            і список LIVE порожній —
-            показуємо всі події.
-          */
 
           if(
             currentStatusFilter === 'live' &&
