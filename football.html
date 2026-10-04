@@ -1090,6 +1090,19 @@ let isLoading = false;
 let hasLoadedData = false;
 
 
+/*
+  Окремі масиви даних.
+
+  Schedule — основне джерело подій.
+  Live — швидке фонове оновлення.
+  Scores — тільки рахунок/хвилина/статус.
+*/
+
+let scheduleEventsCache = [];
+
+let liveEventsCache = [];
+
+
 window.addEventListener(
   'DOMContentLoaded',
   () => {
@@ -1172,28 +1185,53 @@ async function fetchJson(url){
 }
 
 
-function processScheduleData(scheduleData){
+/*
+  Об'єднання schedule + live.
 
-  const scheduleEvents =
-    Array.isArray(
-      scheduleData?.events
-    )
-    ?
-    scheduleData.events
-    :
-    [];
+  Schedule завжди є базою.
+  Live поверх нього оновлює
+  тільки актуальні дані.
+*/
 
+function rebuildEvents(){
 
   const eventMap =
     new Map();
 
 
-  scheduleEvents.forEach(
+  scheduleEventsCache.forEach(
     event => {
+
+      if(!event || event.id == null)
+        return;
+
 
       eventMap.set(
         String(event.id),
         event
+      );
+
+    }
+  );
+
+
+  liveEventsCache.forEach(
+    event => {
+
+      if(!event || event.id == null)
+        return;
+
+
+      const id =
+        String(event.id);
+
+
+      eventMap.set(
+        id,
+        {
+          ...(eventMap.get(id) || {}),
+          ...event
+        }
       );
 
     }
@@ -1233,14 +1271,33 @@ function processScheduleData(scheduleData){
     );
 
 
-  hasLoadedData = true;
+  hasLoadedData =
+    allEvents.length > 0 ||
+    scheduleEventsCache.length > 0;
+
+}
+
+
+function processScheduleData(scheduleData){
+
+  scheduleEventsCache =
+    Array.isArray(
+      scheduleData?.events
+    )
+    ?
+    scheduleData.events
+    :
+    [];
+
+
+  rebuildEvents();
 
 }
 
 
 function mergeLiveData(liveData){
 
-  const liveEvents =
+  liveEventsCache =
     Array.isArray(
       liveData?.events
     )
@@ -1250,66 +1307,7 @@ function mergeLiveData(liveData){
     [];
 
 
-  if(!liveEvents.length){
-    return;
-  }
-
-
-  const eventMap =
-    new Map();
-
-
-  allEvents.forEach(
-    event => {
-
-      eventMap.set(
-        String(event.id),
-        event
-      );
-
-    }
-  );
-
-
-  liveEvents.forEach(
-    event => {
-
-      eventMap.set(
-        String(event.id),
-        {
-          ...(eventMap.get(
-            String(event.id)
-          ) || {}),
-          ...event
-        }
-      );
-
-    }
-  );
-
-
-  allEvents =
-    Array.from(
-      eventMap.values()
-    );
-
-
-  allEvents =
-    allEvents.filter(
-      event =>
-        !event.finished &&
-        (
-          isToday(event.kickoff) ||
-          isTomorrow(event.kickoff)
-        )
-    );
-
-
-  buildSportButtons();
-
-  updateStatusCounts();
-
-  renderCurrentView();
+  rebuildEvents();
 
 
   if(
@@ -1327,6 +1325,167 @@ function mergeLiveData(liveData){
 
 }
 
+
+/*
+  Оновлення рахунків.
+
+  API scores може повертати тільки
+  частину полів, тому ми не замінюємо
+  самі події — лише дописуємо отримані
+  score / minute / status / live.
+*/
+
+function mergeScoreData(scoreData){
+
+  const scores =
+    Array.isArray(
+      scoreData?.events
+    )
+    ?
+    scoreData.events
+    :
+    [];
+
+
+  if(!scores.length)
+    return;
+
+
+  const scoreMap =
+    new Map();
+
+
+  scores.forEach(
+    score => {
+
+      if(
+        score &&
+        score.id != null
+      ){
+
+        scoreMap.set(
+          String(score.id),
+          score
+        );
+
+      }
+
+    }
+  );
+
+
+  if(!scoreMap.size)
+    return;
+
+
+  let changed = false;
+
+
+  allEvents =
+    allEvents.map(
+      event => {
+
+        const score =
+          scoreMap.get(
+            String(event.id)
+          );
+
+
+        if(!score)
+          return event;
+
+
+        changed = true;
+
+
+        const updated =
+          {
+            ...event
+          };
+
+
+        if(
+          score.score !== undefined
+        ){
+
+          updated.score =
+            score.score;
+
+        }
+
+
+        if(
+          score.minute !== undefined
+        ){
+
+          updated.minute =
+            score.minute;
+
+        }
+
+
+        if(
+          score.status !== undefined
+        ){
+
+          updated.status =
+            score.status;
+
+        }
+
+
+        if(
+          score.live !== undefined
+        ){
+
+          updated.live =
+            score.live;
+
+        }
+
+
+        if(
+          score.finished !== undefined
+        ){
+
+          updated.finished =
+            score.finished;
+
+        }
+
+
+        return updated;
+
+      }
+    );
+
+
+  if(!changed)
+    return;
+
+
+  updateStatusCounts();
+
+  renderCurrentView();
+
+}
+
+
+/*
+  Основне завантаження.
+
+  ВАЖЛИВО:
+
+  schedule стартує одразу.
+  live також стартує одразу,
+  але його відповідь НЕ БЛОКУЄ schedule.
+
+  Як тільки schedule прийшов —
+  картки показуються.
+
+  live приходить пізніше —
+  картки тихо оновлюються.
+*/
 
 async function fetchAllData(){
 
@@ -1352,14 +1511,6 @@ async function fetchAllData(){
   }
 
 
-  /*
-    Skeleton показуємо тільки під час
-    першого завантаження.
-
-    При наступних оновленнях уже завантажені
-    картки залишаються на екрані.
-  */
-
   if(!hasLoadedData){
 
     showLoading();
@@ -1367,12 +1518,14 @@ async function fetchAllData(){
   }
 
 
+  let scheduleLoaded = false;
+
+
   try{
 
     /*
-      Обидва запити стартують одночасно.
-      Це швидше, ніж чекати перший запит
-      перед запуском другого.
+      Обидва запити запускаються
+      практично одночасно.
     */
 
     const schedulePromise =
@@ -1388,43 +1541,112 @@ async function fetchAllData(){
 
 
     /*
-      Як тільки schedule готовий —
-      одразу показуємо події, не чекаючи live.
+      Schedule обробляємо першим,
+      щойно він реально готовий.
     */
 
-    const scheduleData =
-      await schedulePromise;
+    schedulePromise
+      .then(
+        scheduleData => {
+
+          scheduleLoaded = true;
 
 
-    processScheduleData(
-      scheduleData
-    );
+          processScheduleData(
+            scheduleData
+          );
 
 
-    hideLoading();
+          hideLoading();
+
+        }
+      )
+      .catch(
+        error => {
+
+          console.warn(
+            'Schedule data error:',
+            error
+          );
+
+        }
+      );
 
 
     /*
-      LIVE може прийти трохи пізніше.
-      Коли прийде — просто оновлюємо вже
-      показані картки.
+      Live повністю незалежний.
+
+      Якщо він повільний —
+      сторінка вже працює.
     */
 
-    try{
+    livePromise
+      .then(
+        liveData => {
 
-      const liveData =
-        await livePromise;
+          mergeLiveData(
+            liveData
+          );
 
+          hideLoading();
 
-      mergeLiveData(
-        liveData
+        }
+      )
+      .catch(
+        error => {
+
+          console.warn(
+            'LIVE data error:',
+            error
+          );
+
+          /*
+            Якщо schedule також не завантажився,
+            помилку покажемо нижче.
+          */
+
+        }
       );
 
-    }catch(liveError){
 
-      console.warn(
-        'LIVE data error:',
-        liveError
+    /*
+      Чекаємо завершення тільки для того,
+      щоб правильно визначити випадок,
+      коли ОБИДВА API впали.
+
+      Це очікування вже НЕ блокує
+      відображення schedule.
+    */
+
+    const results =
+      await Promise.allSettled(
+        [
+          schedulePromise,
+          livePromise
+        ]
+      );
+
+
+    const scheduleFailed =
+      results[0].status === 'rejected';
+
+
+    const liveFailed =
+      results[1].status === 'rejected';
+
+
+    if(
+      scheduleFailed &&
+      liveFailed &&
+      !scheduleLoaded &&
+      !hasLoadedData
+    ){
+
+      throw (
+        results[0].reason ||
+        new Error(
+          'API недоступний'
+        )
       );
 
     }
@@ -1438,14 +1660,6 @@ async function fetchAllData(){
     );
 
 
-    hideLoading();
-
-
-    /*
-      Якщо старі дані вже є,
-      не замінюємо їх помилкою.
-    */
-
     if(!hasLoadedData){
 
       showError(
@@ -1456,6 +1670,8 @@ async function fetchAllData(){
 
 
   }finally{
+
+    hideLoading();
 
     isLoading = false;
 
@@ -2933,8 +3149,6 @@ function renderEventCard(event){
 
           `
 
-            <!-- HOME -->
-
             <div
               class="min-w-0
                      flex flex-col
@@ -2980,8 +3194,6 @@ function renderEventCard(event){
             </div>
 
 
-            <!-- SCORE -->
-
             <div
               class="flex flex-col
                      items-center
@@ -2993,8 +3205,6 @@ function renderEventCard(event){
 
             </div>
 
-
-            <!-- AWAY -->
 
             <div
               class="min-w-0
@@ -3045,8 +3255,6 @@ function renderEventCard(event){
           :
 
           `
-
-            <!-- NON TEAM EVENT -->
 
             <div
               class="flex flex-col
@@ -3226,12 +3434,6 @@ async function openEventPlayer(eventId){
       '(max-width: 767px)'
     ).matches;
 
-
-  /*
-    Показуємо modal одразу після натискання.
-    На мобільному fullscreen запускається
-    без перевертання екрана.
-  */
 
   modal.classList.remove(
     'hidden'
@@ -3984,54 +4186,108 @@ document.addEventListener(
 
 
 /*
-  Окреме швидке оновлення LIVE.
+  ШВИДКЕ LIVE ОНОВЛЕННЯ.
 
-  Воно не перебудовує сторінку,
-  поки попередній API-запит ще виконується.
+  У них live перевіряється приблизно
+  кожні 45 секунд.
+
+  Запит не виконується, якщо вкладка
+  прихована.
 */
 
 setInterval(
   async () => {
 
     if(
-      !document.hidden &&
-      !isLoading &&
-      hasLoadedData
+      document.hidden ||
+      !hasLoadedData
     ){
 
-      try{
+      return;
 
-        const live =
-          await fetchJson(
-            `${SPORTS_API}/live`
-          );
+    }
 
 
-        if(
-          Array.isArray(
-            live.events
-          )
-        ){
+    try{
 
-          mergeLiveData(
-            live
-          );
+      const live =
+        await fetchJson(
+          `${SPORTS_API}/live`
+        );
 
-        }
 
-      }catch(error){
+      if(
+        Array.isArray(
+          live.events
+        )
+      ){
 
-        console.warn(
-          'LIVE refresh:',
-          error
+        mergeLiveData(
+          live
         );
 
       }
 
+    }catch(error){
+
+      console.warn(
+        'LIVE refresh:',
+        error
+      );
+
     }
 
   },
-  120000
+  45000
+);
+
+
+/*
+  SCORE ОНОВЛЕННЯ.
+
+  У них scores перевіряється кожні
+  15 секунд.
+
+  Запит працює у фоні й не блокує
+  інші дані або інтерфейс.
+*/
+
+setInterval(
+  async () => {
+
+    if(
+      document.hidden ||
+      !hasLoadedData
+    ){
+
+      return;
+
+    }
+
+
+    try{
+
+      const scores =
+        await fetchJson(
+          `${SPORTS_API}/scores`
+        );
+
+
+      mergeScoreData(
+        scores
+      );
+
+    }catch(error){
+
+      console.warn(
+        'SCORES refresh:',
+        error
+      );
+
+    }
+
+  },
+  15000
 );
 
 </script>
