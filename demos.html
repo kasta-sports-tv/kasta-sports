@@ -1,260 +1,346 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="uk" class="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Free live sports streams — schedule &amp; where to watch | Matchora Sandbox</title>
-<meta name="description" content="Today's matches with live scores and every TV channel showing each one in sandbox mode.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#0b0d10;--panel:#14171c;--panel2:#1b1f26;--line:#272c35;--text:#eef1f5;--muted:#8d95a3;
-      --red:#e50914;--green:#28d17c;--amber:#f0a020;--time:#5aa2e8;--disp:'Barlow Condensed',-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-html,body{margin:0;background:var(--bg);color:var(--text);
-  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:1100px;margin:0 auto;padding:0 18px}
-.wrap.wide{max-width:1500px}
-header.top{border-bottom:1px solid var(--line);background:rgba(11,13,16,.92);position:sticky;top:0;z-index:20;
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-header.top .wrap{display:flex;align-items:center;gap:22px;height:60px}
-.brand img{height:32px;width:auto;display:block}
-nav{display:flex;gap:18px;font-size:14px;font-weight:600}
-nav a{color:var(--muted);padding:4px 0;border-bottom:2px solid transparent;display:flex;align-items:center;gap:6px;cursor:pointer}
-nav a:hover, nav a.on{color:var(--text);border-bottom-color:var(--text)}
-.spacer{flex:1}
-h1,h2{font-family:var(--disp);letter-spacing:.3px}
-h1{font-size:30px;margin:26px 0 4px}
-h2{font-size:17px;margin:26px 0 10px}
-.sub{color:var(--muted);font-size:14px;margin-bottom:18px}
-
-/* Sandbox Banner */
-.sandbox-banner{background:rgba(240,160,32,0.15);border:1px solid var(--amber);color:var(--amber);padding:8px 16px;text-align:center;font-size:13px;font-weight:700;}
-
-/* Layout & Cards */
-.board{display:flex;gap:26px;align-items:flex-start;margin-top:20px}
-.bmain{flex:1;min-width:0}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:18px;margin-bottom:20px}
-.livegrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-bottom:26px}
-.lcard{display:flex;flex-direction:column;gap:9px;background:var(--panel);border:1px solid var(--line);
-  border-left:3px solid var(--green);border-radius:13px;padding:13px 15px;cursor:pointer;transition:transform .15s}
-.lcard:hover{background:#171b21;border-color:#3a414e;transform:translateY(-1px)}
-.lchead{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--muted)}
-.lclive{color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.lcteam{display:flex;align-items:center;gap:9px;font-weight:600;font-size:14px;min-width:0}
-.lcteam span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.lcteam .g{margin-left:auto;font-weight:700;font-family:var(--disp);font-size:16px}
-
-/* Channels list */
-.chans{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:10px}
-.chan{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--panel);
-  border:1px solid var(--line);border-radius:11px;font-size:14px;cursor:pointer}
-.chan:hover{border-color:#3a414e}
-.chan img{width:26px;height:26px;object-fit:contain;border-radius:4px;background:#000;flex:none}
-.chan .nm{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-
-/* Sandbox Player */
-.mp{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden;
-  border-radius:14px;border:1px solid var(--line);font-family:inherit;margin-bottom:20px;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff}
-.mp-msg{font-size:16px;font-weight:600;margin-top:10px;text-align:center}
-.mp-sub{color:var(--muted);font-size:12px;margin-top:4px}
-.mp-sp{width:46px;height:46px;border:3px solid rgba(255,255,255,.18);border-top-color:var(--red);
-  border-radius:50%;animation:mpspin .9s linear infinite}
-@keyframes mpspin{to{transform:rotate(360deg)}}
-
-/* Schedule table / lists */
-.evpanel{background:var(--panel);border:1px solid var(--line);border-radius:13px;overflow:hidden;margin-bottom:15px}
-.ev{display:flex;align-items:center;gap:14px;padding:12px 16px;border-top:1px solid var(--line)}
-.ev:first-child{border-top:0}
-.ev .t{min-width:56px;color:var(--time);font-size:15px;font-weight:700;font-family:var(--disp)}
-.ev .teams{flex:1;font-weight:600}
-.ev .ch{font-size:12px;color:var(--muted);background:var(--panel2);border-radius:999px;padding:3px 10px}
-
-/* Footer */
-footer{border-top:1px solid var(--line);margin-top:50px;padding:22px 0;color:var(--muted);font-size:13px;text-align:center}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matchora - Live Sports & Streaming Schedule</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                        accent: '#3b82f6',
+                        accenthover: '#2563eb',
+                        livegreen: '#22c55e'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="bg-darkbg text-slate-100 min-h-screen flex flex-col font-sans">
 
-<div class="sandbox-banner">
-  🛡️ SANDBOX MODE ACTIVE: Усі редиректи та сторонню рекламу заблоковано. Використовуються офіційні API Matchora.
-</div>
+    <!-- Header / Navbar -->
+    <header class="bg-cardbg border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <!-- Logo & Nav Links -->
+            <div class="flex items-center space-x-8">
+                <a href="#" class="text-xl font-bold tracking-wider text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-accent"></i> MATCHORA
+                </a>
+                <nav class="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-300">
+                    <a href="#" class="text-white hover:text-accent transition">Schedule</a>
+                    <a href="#" class="hover:text-accent transition">Channels</a>
+                    <a href="#" class="hover:text-accent transition">Multi</a>
+                    <a href="#" class="hover:text-accent transition">Premium</a>
+                    <a href="#" class="hover:text-accent transition">IPTV</a>
+                    <a href="#" class="hover:text-accent transition">Install App</a>
+                    <a href="/developers" class="hover:text-accent transition text-accent font-semibold">API</a>
+                </nav>
+            </div>
 
-<header class="top"><div class="wrap wide">
-  <a class="brand" href="#" onclick="switchTab('schedule')">
-    <span style="font-family:var(--disp);font-size:24px;font-weight:700;letter-spacing:1px;color:#fff;">MATCHORA <span style="color:var(--red)">SANDBOX</span></span>
-  </a>
-  <nav>
-    <a id="nav-schedule" class="on" onclick="switchTab('schedule')">Розклад</a>
-    <a id="nav-live" onclick="switchTab('live')">Наживо (Live)</a>
-    <a id="nav-channels" onclick="switchTab('channels')">Канали</a>
-  </nav>
-  <span class="spacer"></span>
-</div></header>
-
-<main class="wrap wide" id="app-content">
-  <!-- Динамічний контент завантажується сюди через JS -->
-  <div style="text-align:center;padding:50px;color:var(--muted);">Завантаження даних із Sandbox API...</div>
-</main>
-
-<footer>
-  <div class="wrap">Matchora Sandbox Clone &bull; Зроблено на основі офіційних API та наданого коду.</div>
-</footer>
-
-<script>
-// API Endpoints (Sandbox Simulation & Fetcher)
-const API = {
-  schedule: 'https://matchora.to/api/v1/schedule',
-  live: 'https://matchora.to/api/v1/live',
-  channels: 'https://matchora.to/api/v1/channels',
-  event: (id) => `https://matchora.to/api/v1/events/${id}`
-};
-
-// Захист Sandbox: перехоплення та блокування будь-яких зовнішніх переходів чи реклами
-document.addEventListener('click', (e) => {
-  const target = e.target.closest('a');
-  if (target && target.getAttribute('href')?.startsWith('http')) {
-    e.preventDefault();
-    alert('🔒 Sandbox: Зовнішній перехід заблоковано для безпеки.');
-  }
-});
-
-async function safeFetch(url) {
-  try {
-    // У разі блокування CORS стороннім сервером генеруємо демо-дані на основі структури API Matchora
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Network response was not ok');
-    return await res.json();
-  } catch (err) {
-    console.warn('API direct fetch failed or restricted by CORS, loading Sandbox fallback data structures.', err);
-    return getSandboxFallbackData(url);
-  }
-}
-
-function getSandboxFallbackData(url) {
-  if (url.includes('/live')) {
-    return [
-      { id: '2475423', league: 'NFL', home_team: 'Washington Commanders', away_team: 'Indianapolis Colts', home_score: '24', away_score: '17', status: 'LIVE', time: '4th Qtr' },
-      { id: '2606135', league: 'Basketball', home_team: 'Iraklis BC', away_team: 'Olympiacos BC', home_score: '62', away_score: '84', status: 'LIVE', time: '3rd Qtr' },
-      { id: '2564777', league: 'Basketball', home_team: 'BC Roma SPQR', away_team: 'Derthona Basket', home_score: '45', away_score: '48', status: 'LIVE', time: '2nd Half' }
-    ];
-  } else if (url.includes('/schedule')) {
-    return [
-      { id: '2442802', time: '21:45', league: 'International', match: 'Kosovo vs Austria', channel: 'Megogo Futbol' },
-      { id: '2475300', time: '22:00', league: 'International', match: 'Malta vs Andorra', channel: 'Setanta Sports' },
-      { id: '2571741', time: '22:30', league: 'Basketball', match: 'Baskonia vs Bàsquet Girona', channel: 'NBA TV' }
-    ];
-  } else if (url.includes('/channels')) {
-    return [
-      { id: 'matchtv', name: 'Match TV', category: 'Sports', quality: 'HD' },
-      { id: 'setanta', name: 'Setanta Sports UA', category: 'Sports', quality: 'FHD' },
-      { id: 'megogo', name: 'Megogo Futbol 1', category: 'Football', quality: 'HD' },
-      { id: 'eurosport', name: 'Eurosport 1', category: 'Multi-Sport', quality: 'HD' }
-    ];
-  }
-  return { id: 'sandbox-event', title: 'Sandbox Stream Event', details: 'Stream secure playback active.' };
-}
-
-async function switchTab(tab) {
-  document.querySelectorAll('header nav a').forEach(el => el.classList.remove('on'));
-  const activeNav = document.getElementById(`nav-${tab}`);
-  if (activeNav) activeNav.classList.add('on');
-
-  const container = document.getElementById('app-content');
-  container.innerHTML = '<div style="text-align:center;padding:50px;"><div class="mp-sp" style="margin:0 auto;"></div><div class="mp-msg">Завантаження з API...</div></div>';
-
-  if (tab === 'schedule') {
-    const data = await safeFetch(API.schedule);
-    renderSchedule(data, container);
-  } else if (tab === 'live') {
-    const data = await safeFetch(API.live);
-    renderLive(data, container);
-  } else if (tab === 'channels') {
-    const data = await safeFetch(API.channels);
-    renderChannels(data, container);
-  }
-}
-
-function renderSchedule(data, container) {
-  let html = `<h1>Розклад подій</h1><p class="sub">Найближі спортивні трансляції з бази API matchora</p><div class="evpanel">`;
-  const items = Array.isArray(data) ? data : (data.events || data.schedule || [data]);
-  
-  items.forEach(ev => {
-    html += `
-      <div class="ev" onclick="openPlayer('${ev.id || 'demo'}', '${ev.match || ev.home_team + " vs " + ev.away_team}')" style="cursor:pointer;">
-        <div class="t">${ev.time || '20:00'}</div>
-        <div class="teams"><b>${ev.match || (ev.home_team + ' — ' + ev.away_team)}</b> <span style="font-weight:normal;color:var(--muted);font-size:13px;">(${ev.league || 'General'})</span></div>
-        <div class="ch">${ev.channel || 'Stream TV'}</div>
-      </div>
-    `;
-  });
-  html += `</div>`;
-  container.innerHTML = html;
-}
-
-function renderLive(data, container) {
-  let html = `<h1>Події наживо (Live)</h1><p class="sub">Оновлюється в реальному часі через /api/v1/live</p><div class="livegrid">`;
-  const items = Array.isArray(data) ? data : [data];
-
-  items.forEach(item => {
-    html += `
-      <div class="lcard" onclick="openPlayer('${item.id}', '${item.home_team} vs ${item.away_team}')">
-        <div class="lchead">
-          <span class="lclive">● LIVE (${item.time || '1st Half'})</span>
-          <span>${item.league}</span>
+            <!-- Right Actions (Search & Socials) -->
+            <div class="flex items-center space-x-4">
+                <div class="relative hidden sm:block">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="Search matches, teams..." class="bg-slate-900 border border-slate-700 text-xs rounded-full pl-9 pr-4 py-2 focus:outline-none focus:border-accent text-slate-200 w-48 lg:w-64 transition">
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400">
+                    <a href="https://t.me" target="_blank" class="hover:text-white transition"><i class="fa-brands fa-telegram text-lg"></i></a>
+                    <a href="https://discord.com" target="_blank" class="hover:text-white transition"><i class="fa-brands fa-discord text-lg"></i></a>
+                </div>
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="md:hidden text-slate-300 hover:text-white focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
         </div>
-        <div class="lcteam"><span>${item.home_team}</span><span class="g">${item.home_score || '0'}</span></div>
-        <div class="lcteam"><span>${item.away_team}</span><span class="g">${item.away_score || '0'}</span></div>
-      </div>
-    `;
-  });
-  html += `</div>`;
-  container.innerHTML = html;
-}
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-cardbg border-b border-slate-800 px-4 pt-2 pb-4 space-y-2 text-sm">
+            <a href="#" class="block py-1.5 text-white">Schedule</a>
+            <a href="#" class="block py-1.5 text-slate-300">Channels</a>
+            <a href="#" class="block py-1.5 text-slate-300">Multi</a>
+            <a href="#" class="block py-1.5 text-slate-300">Premium</a>
+            <a href="#" class="block py-1.5 text-slate-300">IPTV</a>
+            <a href="#" class="block py-1.5 text-slate-300">Install App</a>
+            <a href="/developers" class="block py-1.5 text-accent font-semibold">API Docs</a>
+        </div>
+    </header>
 
-function renderChannels(data, container) {
-  let html = `<h1>Телеканали</h1><p class="sub">Список доступних каналів через /api/v1/channels</p><div class="chans">`;
-  const items = Array.isArray(data) ? data : [data];
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full flex flex-col md:flex-row gap-6">
+        
+        <!-- Sidebar: Sports & Categories Filter -->
+        <aside class="w-full md:w-64 shrink-0 space-y-6">
+            <div class="bg-cardbg rounded-xl p-4 border border-slate-800">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Sports</h3>
+                <div id="sportsList" class="space-y-1 text-sm">
+                    <button onclick="filterSport('all')" class="sport-btn w-full flex items-center justify-between px-3 py-2 rounded-lg bg-accent text-white font-medium transition">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-globe w-5 text-center"></i> All Sports</span>
+                        <span class="text-xs bg-slate-900/40 px-2 py-0.5 rounded-full" id="count-all">0</span>
+                    </button>
+                    <button onclick="filterSport('football')" class="sport-btn w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-futbol w-5 text-center text-emerald-400"></i> Football</span>
+                        <span class="text-xs bg-slate-800 px-2 py-0.5 rounded-full text-slate-400" id="count-football">0</span>
+                    </button>
+                    <button onclick="filterSport('basketball')" class="sport-btn w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-basketball w-5 text-center text-amber-500"></i> Basketball</span>
+                        <span class="text-xs bg-slate-800 px-2 py-0.5 rounded-full text-slate-400" id="count-basketball">0</span>
+                    </button>
+                    <button onclick="filterSport('hockey')" class="sport-btn w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-hockey-puck w-5 text-center text-cyan-400"></i> Ice Hockey</span>
+                        <span class="text-xs bg-slate-800 px-2 py-0.5 rounded-full text-slate-400" id="count-hockey">0</span>
+                    </button>
+                    <button onclick="filterSport('american-football')" class="sport-btn w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-football w-5 text-center text-orange-500"></i> American Football</span>
+                        <span class="text-xs bg-slate-800 px-2 py-0.5 rounded-full text-slate-400" id="count-american-football">0</span>
+                    </button>
+                    <button onclick="filterSport('motorsport')" class="sport-btn w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-flag-checkered w-5 text-center text-purple-400"></i> Motorsport</span>
+                        <span class="text-xs bg-slate-800 px-2 py-0.5 rounded-full text-slate-400" id="count-motorsport">0</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
 
-  items.forEach(ch => {
-    html += `
-      <div class="chan" onclick="openPlayer('${ch.id}', '${ch.name}')">
-        <div class="nm"><b>${ch.name}</b><br><small style="color:var(--muted);">${ch.category || 'TV'} &bull; ${ch.quality || 'HD'}</small></div>
-      </div>
-    `;
-  });
-  html += `</div>`;
-  container.innerHTML = html;
-}
+        <!-- Content Area -->
+        <main class="flex-1 space-y-6">
+            
+            <!-- Day Bar (Date Selector) -->
+            <div id="daybar" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+                <!-- Dynamically populated dates -->
+            </div>
 
-async function openPlayer(id, title) {
-  const container = document.getElementById('app-content');
-  const eventDetails = await safeFetch(API.event(id));
+            <!-- LIVE Matches Section -->
+            <section id="liveSection" class="hidden space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-red-500 flex items-center gap-2">
+                        <span class="relative flex h-2.5 w-2.5">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                        </span>
+                        Live Now
+                    </h2>
+                </div>
+                <div id="liveContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Live matches rendered here -->
+                </div>
+            </section>
 
-  container.innerHTML = `
-    <button onclick="switchTab('schedule')" style="background:var(--panel);border:1px solid var(--line);color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;margin-bottom:15px;">← Назад до списку</button>
-    <h1>${title}</h1>
-    <p class="sub">Sandbox Stream ID: ${id}</p>
-    
-    <div class="mp">
-      <div class="mp-sp"></div>
-      <div class="mp-msg">Безпечне підключення до Sandbox Stream...</div>
-      <div class="mp-sub">Реклама та переходи заблоковані</div>
+            <!-- Schedule Grid / Leagues -->
+            <section class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400">Schedule & Leagues</h2>
+                    <span id="matchCountBadge" class="text-xs text-slate-400 bg-cardbg px-2.5 py-1 rounded-md border border-slate-800">Loading matches...</span>
+                </div>
+                
+                <div id="scheduleContainer" class="space-y-4">
+                    <!-- Schedule dynamic content -->
+                    <div class="text-center py-12 text-slate-500">
+                        <i class="fa-solid fa-circle-notch fa-spin text-2xl mb-2"></i>
+                        <p class="text-sm">Fetching schedule from API...</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
     </div>
 
-    <div class="panel">
-      <h3>Інформація про трансляцію (API /events/{id})</h3>
-      <pre><code>${JSON.stringify(eventDetails, null, 2)}</code></pre>
-    </div>
-  `;
-}
+    <!-- Footer -->
+    <footer class="bg-cardbg border-t border-slate-800 mt-auto py-6 text-center text-xs text-slate-500">
+        <p>&copy; 2026 Matchora. All rights reserved. Powered by Matchora API.</p>
+    </footer>
 
-// Початкове завантаження вкладки розкладу
-switchTab('schedule');
-</script>
+    <!-- JavaScript Application Logic -->
+    <script>
+        const API_BASE = 'https://matchora.to/api/v1';
+        let currentSport = 'all';
+        let selectedDate = new Date().toISOString().split('T')[0];
 
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            initDayBar();
+            fetchLiveData();
+            fetchScheduleData();
+
+            // Setup search filter listener
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                filterMatchesBySearch(term);
+            });
+        });
+
+        // Build horizontal date bar (today +/- 3 days)
+        function initDayBar() {
+            const daybar = document.getElementById('daybar');
+            daybar.innerHTML = '';
+            
+            for (let i = -2; i <= 4; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() + i);
+                const dateStr = d.toISOString().split('T')[0];
+                const displayLabel = i === 0 ? 'Today' : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-2.5 rounded-xl text-xs font-medium whitespace-nowrap transition border ${dateStr === selectedDate ? 'bg-accent border-accent text-white shadow-lg shadow-accent/20' : 'bg-cardbg border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'}`;
+                btn.innerText = displayLabel;
+                btn.onclick = () => {
+                    selectedDate = dateStr;
+                    initDayBar();
+                    fetchScheduleData();
+                };
+                daybar.appendChild(btn);
+            }
+        }
+
+        // Fetch Live Matches from /api/v1/live
+        async function fetchLiveData() {
+            try {
+                const res = await fetch(`${API_BASE}/live`);
+                const data = await res.json();
+                renderLiveMatches(data.matches || data);
+            } catch (err) {
+                console.error("Failed to load live matches:", err);
+                // Fallback mock view if CORS or API is unreachable directly
+                renderLiveMatches([]);
+            }
+        }
+
+        // Fetch Schedule from /api/v1/schedule
+        async function fetchScheduleData() {
+            const container = document.getElementById('scheduleContainer');
+            try {
+                const res = await fetch(`${API_BASE}/schedule?date=${selectedDate}`);
+                const data = await res.json();
+                renderSchedule(data.leagues || data);
+            } catch (err) {
+                console.error("Failed to load schedule:", err);
+                container.innerHTML = `
+                    <div class="bg-cardbg border border-slate-800 rounded-xl p-8 text-center text-slate-400 space-y-3">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 text-2xl"></i>
+                        <p class="text-sm">Could not fetch data directly due to browser CORS policy or endpoint restrictions.</p>
+                        <p class="text-xs text-slate-500">Ensure your Cloudflare Worker or backend proxy handles CORS headers if needed.</p>
+                    </div>`;
+                document.getElementById('matchCountBadge').innerText = '0 matches';
+            }
+        }
+
+        function renderLiveMatches(matches) {
+            const section = document.getElementById('liveSection');
+            const container = document.getElementById('liveContainer');
+            
+            if (!matches || matches.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            section.classList.remove('hidden');
+            container.innerHTML = matches.map(m => `
+                <a href="/events/${m.id}" class="bg-cardbg border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition block space-y-3">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span class="flex items-center gap-1.5"><img src="${m.league_logo || ''}" class="w-4 h-4 object-contain" onerror="this.src='https://via.placeholder.com/16'">${m.league_name}</span>
+                        <span class="text-red-400 font-semibold uppercase animate-pulse">LIVE ${m.minute || ''}'</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="${m.home_logo || ''}" class="w-7 h-7 object-contain" onerror="this.src='https://via.placeholder.com/28'">
+                            <span class="text-sm font-medium text-white">${m.home_team}</span>
+                        </div>
+                        <span class="text-sm font-bold text-accent bg-slate-900/60 px-2.5 py-1 rounded">${m.home_score ?? 0} - ${m.away_score ?? 0}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="${m.away_logo || ''}" class="w-7 h-7 object-contain" onerror="this.src='https://via.placeholder.com/28'">
+                            <span class="text-sm font-medium text-white">${m.away_team}</span>
+                        </div>
+                        <span class="text-xs text-slate-500"><i class="fa-solid fa-tv"></i> ${m.channels_count || 1} channels</span>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        function renderSchedule(leagues) {
+            const container = document.getElementById('scheduleContainer');
+            if (!leagues || leagues.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-500 text-sm">No matches scheduled for this date.</div>`;
+                document.getElementById('matchCountBadge').innerText = '0 matches';
+                return;
+            }
+
+            let totalMatches = 0;
+            container.innerHTML = leagues.map(league => {
+                const matches = league.matches.filter(m => currentSport === 'all' || m.sport === currentSport);
+                if (matches.length === 0) return '';
+                totalMatches += matches.length;
+
+                return `
+                    <div class="bg-cardbg border border-slate-800 rounded-xl overflow-hidden">
+                        <div class="bg-slate-900/50 px-4 py-3 border-b border-slate-800 flex items-center gap-3">
+                            <img src="${league.logo || ''}" class="w-5 h-5 object-contain" onerror="this.src='https://via.placeholder.com/20'">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">${league.name}</h3>
+                        </div>
+                        <div class="divide-y divide-slate-800/60">
+                            ${matches.map(m => `
+                                <a href="/events/${m.id}" class="flex items-center justify-between px-4 py-3 hover:bg-slate-800/40 transition">
+                                    <div class="flex items-center gap-4 text-xs text-slate-400 w-20 shrink-0">
+                                        <span class="font-mono text-slate-300">${m.time || '19:00'}</span>
+                                        <span class="uppercase text-[10px] bg-slate-800 px-1.5 py-0.5 rounded">${m.status || 'NS'}</span>
+                                    </div>
+                                    <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2 px-2">
+                                        <div class="flex items-center gap-2.5">
+                                            <img src="${m.home_logo || ''}" class="w-5 h-5 object-contain" onerror="this.src='https://via.placeholder.com/20'">
+                                            <span class="text-sm font-medium text-white truncate">${m.home_team}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2.5">
+                                            <img src="${m.away_logo || ''}" class="w-5 h-5 object-contain" onerror="this.src='https://via.placeholder.com/20'">
+                                            <span class="text-sm font-medium text-white truncate">${m.away_team}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs text-slate-400 shrink-0 pl-2">
+                                        <span class="hidden sm:inline bg-slate-900 px-2 py-1 rounded text-slate-300"><i class="fa-solid fa-tv text-accent mr-1"></i> ${m.channel_name || 'Stream'}</span>
+                                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                                    </div>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('matchCountBadge').innerText = `${totalMatches} matches`;
+        }
+
+        function filterSport(sport) {
+            currentSport = sport;
+            document.querySelectorAll('.sport-btn').forEach(btn => {
+                btn.className = "sport-btn w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 transition";
+            });
+            event.currentTarget.className = "sport-btn w-full flex items-center justify-between px-3 py-2 rounded-lg bg-accent text-white font-medium transition";
+            fetchScheduleData();
+        }
+
+        function filterMatchesBySearch(term) {
+            const rows = document.querySelectorAll('#scheduleContainer a');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(term) ? 'flex' : 'none';
+            });
+        }
+    </script>
 </body>
 </html>
