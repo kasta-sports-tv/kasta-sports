@@ -4,13 +4,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Kasta Sports — Live Sports</title>
 
+  <link rel="preconnect" href="https://matchora.to" crossorigin>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <script src="https://cdn.tailwindcss.com"></script>
 
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
@@ -1008,37 +1011,6 @@
         referrerpolicy="strict-origin-when-cross-origin"
       ></iframe>
 
-
-      <div
-        id="iframeLoader"
-        class="absolute inset-0
-               bg-black/90
-               flex flex-col
-               items-center justify-center
-               gap-3
-               pointer-events-none
-               transition-opacity duration-300"
-      >
-
-        <div
-          class="w-10 h-10
-                 border-4
-                 border-brand-600
-                 border-t-transparent
-                 rounded-full
-                 animate-spin"
-        ></div>
-
-        <span
-          class="text-xs
-                 font-semibold
-                 text-zinc-400"
-        >
-          Завантаження трансляції...
-        </span>
-
-      </div>
-
     </div>
 
 
@@ -1099,7 +1071,7 @@
 
 <script>
 
-const MATCHORA_API =
+const SPORTS_API =
   'https://matchora.to/api/v1';
 
 
@@ -1114,6 +1086,8 @@ let searchQuery = '';
 let currentEvent = null;
 
 let isLoading = false;
+
+let hasLoadedData = false;
 
 
 window.addEventListener(
@@ -1198,6 +1172,162 @@ async function fetchJson(url){
 }
 
 
+function processScheduleData(scheduleData){
+
+  const scheduleEvents =
+    Array.isArray(
+      scheduleData?.events
+    )
+    ?
+    scheduleData.events
+    :
+    [];
+
+
+  const eventMap =
+    new Map();
+
+
+  scheduleEvents.forEach(
+    event => {
+
+      eventMap.set(
+        String(event.id),
+        event
+      );
+
+    }
+  );
+
+
+  allEvents =
+    Array.from(
+      eventMap.values()
+    );
+
+
+  allEvents =
+    allEvents.filter(
+      event =>
+        !event.finished &&
+        (
+          isToday(event.kickoff) ||
+          isTomorrow(event.kickoff)
+        )
+    );
+
+
+  buildSportButtons();
+
+  updateStatusCounts();
+
+  renderCurrentView();
+
+
+  document
+    .getElementById(
+      'errorState'
+    )
+    .classList.add(
+      'hidden'
+    );
+
+
+  hasLoadedData = true;
+
+}
+
+
+function mergeLiveData(liveData){
+
+  const liveEvents =
+    Array.isArray(
+      liveData?.events
+    )
+    ?
+    liveData.events
+    :
+    [];
+
+
+  if(!liveEvents.length){
+    return;
+  }
+
+
+  const eventMap =
+    new Map();
+
+
+  allEvents.forEach(
+    event => {
+
+      eventMap.set(
+        String(event.id),
+        event
+      );
+
+    }
+  );
+
+
+  liveEvents.forEach(
+    event => {
+
+      eventMap.set(
+        String(event.id),
+        {
+          ...(eventMap.get(
+            String(event.id)
+          ) || {}),
+          ...event
+        }
+      );
+
+    }
+  );
+
+
+  allEvents =
+    Array.from(
+      eventMap.values()
+    );
+
+
+  allEvents =
+    allEvents.filter(
+      event =>
+        !event.finished &&
+        (
+          isToday(event.kickoff) ||
+          isTomorrow(event.kickoff)
+        )
+    );
+
+
+  buildSportButtons();
+
+  updateStatusCounts();
+
+  renderCurrentView();
+
+
+  if(
+    currentStatusFilter === 'live' &&
+    !allEvents.some(
+      event => event.live === true
+    )
+  ){
+
+    setStatusFilter(
+      'all'
+    );
+
+  }
+
+}
+
+
 async function fetchAllData(){
 
   if(isLoading){
@@ -1206,131 +1336,95 @@ async function fetchAllData(){
 
   isLoading = true;
 
+
   const icon =
     document.getElementById(
       'refreshIcon'
     );
 
+
   if(icon){
+
     icon.classList.add(
       'animate-spin'
     );
+
   }
 
-  showLoading();
+
+  /*
+    Skeleton показуємо тільки під час
+    першого завантаження.
+
+    При наступних оновленнях уже завантажені
+    картки залишаються на екрані.
+  */
+
+  if(!hasLoadedData){
+
+    showLoading();
+
+  }
 
 
   try{
 
-    const [
-      scheduleData,
-      liveData
-    ] =
-      await Promise.all([
+    /*
+      Обидва запити стартують одночасно.
+      Це швидше, ніж чекати перший запит
+      перед запуском другого.
+    */
 
-        fetchJson(
-          `${MATCHORA_API}/schedule?watchable=1`
-        ),
-
-        fetchJson(
-          `${MATCHORA_API}/live`
-        )
-
-      ]);
-
-
-    const scheduleEvents =
-      Array.isArray(
-        scheduleData.events
-      )
-      ?
-      scheduleData.events
-      :
-      [];
-
-
-    const liveEvents =
-      Array.isArray(
-        liveData.events
-      )
-      ?
-      liveData.events
-      :
-      [];
-
-
-    const eventMap =
-      new Map();
-
-
-    scheduleEvents.forEach(
-      event => {
-
-        eventMap.set(
-          String(event.id),
-          event
-        );
-
-      }
-    );
-
-
-    liveEvents.forEach(
-      event => {
-
-        eventMap.set(
-          String(event.id),
-          event
-        );
-
-      }
-    );
-
-
-    allEvents =
-      Array.from(
-        eventMap.values()
+    const schedulePromise =
+      fetchJson(
+        `${SPORTS_API}/schedule?watchable=1`
       );
 
 
-    allEvents =
-      allEvents.filter(
-        event =>
-          !event.finished &&
-          (
-            isToday(event.kickoff) ||
-            isTomorrow(event.kickoff)
-          )
+    const livePromise =
+      fetchJson(
+        `${SPORTS_API}/live`
       );
 
 
-    buildSportButtons();
+    /*
+      Як тільки schedule готовий —
+      одразу показуємо події, не чекаючи live.
+    */
 
-    updateStatusCounts();
+    const scheduleData =
+      await schedulePromise;
 
-    renderCurrentView();
+
+    processScheduleData(
+      scheduleData
+    );
+
 
     hideLoading();
 
 
-    document
-      .getElementById(
-        'errorState'
-      )
-      .classList.add(
-        'hidden'
+    /*
+      LIVE може прийти трохи пізніше.
+      Коли прийде — просто оновлюємо вже
+      показані картки.
+    */
+
+    try{
+
+      const liveData =
+        await livePromise;
+
+
+      mergeLiveData(
+        liveData
       );
 
+    }catch(liveError){
 
-    if(
-      currentStatusFilter === 'live' &&
-      !allEvents.some(
-        event => event.live === true
-      )
-    ){
-
-      setStatusFilter(
-        'all'
+      console.warn(
+        'LIVE data error:',
+        liveError
       );
 
     }
@@ -1343,15 +1437,28 @@ async function fetchAllData(){
       error
     );
 
+
     hideLoading();
 
-    showError(
-      `Помилка завантаження даних: ${error.message}`
-    );
+
+    /*
+      Якщо старі дані вже є,
+      не замінюємо їх помилкою.
+    */
+
+    if(!hasLoadedData){
+
+      showError(
+        `Помилка завантаження даних: ${error.message}`
+      );
+
+    }
+
 
   }finally{
 
     isLoading = false;
+
 
     if(icon){
 
@@ -3116,37 +3223,32 @@ async function openEventPlayer(eventId){
 
   const isMobile =
     window.matchMedia(
-      '(max-width: 640px)'
+      '(max-width: 767px)'
     ).matches;
 
 
   /*
-    На мобільному fullscreen запускаємо
-    одразу з натискання кнопки "Дивитися".
-    Перевертання екрана НЕ використовується.
+    Показуємо modal одразу після натискання.
+    На мобільному fullscreen запускається
+    без перевертання екрана.
   */
+
+  modal.classList.remove(
+    'hidden'
+  );
+
+  modal.classList.add(
+    'flex'
+  );
+
+
+  document.body.style.overflow =
+    'hidden';
+
 
   if(isMobile){
 
-    try{
-
-      if(
-        !document.fullscreenElement &&
-        modal.requestFullscreen
-      ){
-
-        await modal.requestFullscreen();
-
-      }
-
-    }catch(error){
-
-      console.warn(
-        'Mobile fullscreen error:',
-        error
-      );
-
-    }
+    enterPlayerFullscreen();
 
   }
 
@@ -3159,7 +3261,7 @@ async function openEventPlayer(eventId){
 
       const details =
         await fetchJson(
-          `${MATCHORA_API}/events/${encodeURIComponent(event.id)}`
+          `${SPORTS_API}/events/${encodeURIComponent(event.id)}`
         );
 
       event = {
@@ -3186,12 +3288,6 @@ async function openEventPlayer(eventId){
   const iframe =
     document.getElementById(
       'streamIframe'
-    );
-
-
-  const loader =
-    document.getElementById(
-      'iframeLoader'
     );
 
 
@@ -3254,37 +3350,11 @@ async function openEventPlayer(eventId){
 
   const embed =
     event.embed_url ||
-    `${MATCHORA_API}/../embed/match/${event.id}`;
-
-
-  loader.style.opacity =
-    '1';
+    `${SPORTS_API}/../embed/match/${event.id}`;
 
 
   iframe.src =
     embed;
-
-
-  iframe.onload =
-    () => {
-
-      loader.style.opacity =
-        '0';
-
-    };
-
-
-  modal.classList.remove(
-    'hidden'
-  );
-
-  modal.classList.add(
-    'flex'
-  );
-
-
-  document.body.style.overflow =
-    'hidden';
 
 }
 
@@ -3652,20 +3722,10 @@ function switchMatchChannel(
     );
 
 
-  const loader =
-    document.getElementById(
-      'iframeLoader'
-    );
-
-
   const title =
     document.getElementById(
       'modalMatchSubtitle'
     );
-
-
-  loader.style.opacity =
-    '1';
 
 
   iframe.src =
@@ -3674,15 +3734,6 @@ function switchMatchChannel(
 
   title.innerText =
     `${currentEvent?.league || 'Sports'} • ${name || 'Channel'}`;
-
-
-  iframe.onload =
-    () => {
-
-      loader.style.opacity =
-        '0';
-
-    };
 
 }
 
@@ -3932,19 +3983,27 @@ document.addEventListener(
 );
 
 
+/*
+  Окреме швидке оновлення LIVE.
+
+  Воно не перебудовує сторінку,
+  поки попередній API-запит ще виконується.
+*/
+
 setInterval(
   async () => {
 
     if(
       !document.hidden &&
-      !isLoading
+      !isLoading &&
+      hasLoadedData
     ){
 
       try{
 
         const live =
           await fetchJson(
-            `${MATCHORA_API}/live`
+            `${SPORTS_API}/live`
           );
 
 
@@ -3954,68 +4013,9 @@ setInterval(
           )
         ){
 
-          const liveMap =
-            new Map();
-
-
-          live.events.forEach(
-            event => {
-
-              liveMap.set(
-                String(event.id),
-                event
-              );
-
-            }
+          mergeLiveData(
+            live
           );
-
-
-          allEvents =
-            allEvents
-              .map(
-                event =>
-                  liveMap.has(
-                    String(event.id)
-                  )
-                  ?
-                  {
-                    ...event,
-                    ...liveMap.get(
-                      String(event.id)
-                    )
-                  }
-                  :
-                  event
-              )
-              .filter(
-                event =>
-                  !event.finished &&
-                  (
-                    isToday(event.kickoff) ||
-                    isTomorrow(event.kickoff)
-                  )
-              );
-
-
-          buildSportButtons();
-
-          updateStatusCounts();
-
-          renderCurrentView();
-
-
-          if(
-            currentStatusFilter === 'live' &&
-            !allEvents.some(
-              event => event.live === true
-            )
-          ){
-
-            setStatusFilter(
-              'all'
-            );
-
-          }
 
         }
 
