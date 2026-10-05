@@ -163,6 +163,21 @@
         #000;
     }
 
+    /*
+      Блокуємо будь-які тапи/кліки
+      безпосередньо по сторонньому iframe.
+
+      Плеєр при цьому продовжує
+      завантажуватися та автоматично
+      відтворювати відео.
+    */
+    #streamIframe{
+      pointer-events:none;
+      touch-action:none;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+
     .status-live-dot{
       width:7px;
       height:7px;
@@ -289,6 +304,14 @@
         max-height:none!important;
         border-radius:0!important;
         border:0!important;
+      }
+
+      #modalMatchInfo{
+        padding:10px 12px!important;
+      }
+
+      #modalFullscreenBtn{
+        min-width:38px;
       }
 
     }
@@ -954,22 +977,6 @@
       >
 
         <button
-          onclick="toggleModalFullscreen()"
-          title="Повний екран"
-          class="w-8 h-8 rounded-lg
-                 bg-matte-accent
-                 hover:bg-matte-hover
-                 text-zinc-300
-                 flex items-center justify-center
-                 text-xs transition-colors"
-        >
-
-          <i class="fa-solid fa-expand"></i>
-
-        </button>
-
-
-        <button
           onclick="closePlayerModal()"
           title="Закрити"
           class="w-8 h-8 rounded-lg
@@ -1089,155 +1096,9 @@ let isLoading = false;
 let hasLoadedData = false;
 
 
-/*
-  Окремі масиви даних.
-
-  Schedule — основне джерело подій.
-  Live — швидке фонове оновлення.
-  Scores — тільки рахунок/хвилина/статус.
-*/
-
 let scheduleEventsCache = [];
 
 let liveEventsCache = [];
-
-
-/* =========================================================
-   TEST: ЗАХИСТ IFRAME ВІД РЕКЛАМНИХ ПЕРЕХОДІВ
-========================================================= */
-
-let protectedPlayerUrl = '';
-
-let iframeInitialLoad = false;
-
-let iframeResetTimer = null;
-
-
-/*
-  Запам'ятовуємо URL поточного плеєра.
-
-  iframe залишається повністю клікабельним.
-  sandbox НЕ використовується.
-*/
-
-function protectIframeNavigation(url){
-
-  protectedPlayerUrl =
-    String(
-      url || ''
-    );
-
-  iframeInitialLoad =
-    false;
-
-
-  if(iframeResetTimer){
-
-    clearTimeout(
-      iframeResetTimer
-    );
-
-    iframeResetTimer =
-      null;
-
-  }
-
-}
-
-
-/*
-  Стежимо за повторним завантаженням iframe.
-
-  Перше load = нормальне завантаження плеєра.
-
-  Якщо iframe після цього знову завантажується,
-  тестово повертаємо його на початковий URL.
-
-  Це НЕ блокує клік по самому плеєру.
-*/
-
-window.addEventListener(
-  'DOMContentLoaded',
-  () => {
-
-    const iframe =
-      document.getElementById(
-        'streamIframe'
-      );
-
-
-    if(!iframe)
-      return;
-
-
-    iframe.addEventListener(
-      'load',
-      () => {
-
-        if(!protectedPlayerUrl)
-          return;
-
-
-        if(!iframeInitialLoad){
-
-          iframeInitialLoad =
-            true;
-
-          return;
-
-        }
-
-
-        if(iframeResetTimer){
-
-          clearTimeout(
-            iframeResetTimer
-          );
-
-        }
-
-
-        iframeResetTimer =
-          setTimeout(
-            () => {
-
-              if(
-                !protectedPlayerUrl
-              ){
-
-                return;
-
-              }
-
-
-              /*
-                Повертаємо плеєр.
-
-                Клік користувача при цьому
-                не блокується.
-              */
-
-              iframe.src =
-                protectedPlayerUrl;
-
-
-              iframeInitialLoad =
-                false;
-
-            },
-            150
-          );
-
-      }
-    );
-
-  }
-);
-
-
-/* =========================================================
-   КІНЕЦЬ TEST IFRAME PROTECTION
-========================================================= */
 
 
 window.addEventListener(
@@ -1251,6 +1112,21 @@ window.addEventListener(
     setInterval(
       fetchAllData,
       300000
+    );
+
+    /*
+      Слідкуємо за зміною fullscreen,
+      щоб кнопка під плеєром завжди
+      показувала правильний стан.
+    */
+    document.addEventListener(
+      'fullscreenchange',
+      updateFullscreenButton
+    );
+
+    document.addEventListener(
+      'webkitfullscreenchange',
+      updateFullscreenButton
     );
 
   }
@@ -3498,11 +3374,14 @@ async function openEventPlayer(eventId){
     );
 
 
-  const isMobile =
-    window.matchMedia(
-      '(max-width: 767px)'
-    ).matches;
+  /*
+    ВАЖЛИВО:
+    Автоматичний fullscreen на мобільному
+    прибраний.
 
+    Тепер fullscreen вмикається
+    ТІЛЬКИ кнопкою під плеєром.
+  */
 
   modal.classList.remove(
     'hidden'
@@ -3515,13 +3394,6 @@ async function openEventPlayer(eventId){
 
   document.body.style.overflow =
     'hidden';
-
-
-  if(isMobile){
-
-    enterPlayerFullscreen();
-
-  }
 
 
   if(
@@ -3624,18 +3496,11 @@ async function openEventPlayer(eventId){
     `${SPORTS_API}/../embed/match/${event.id}`;
 
 
-  /*
-    Запам'ятовуємо саме цей URL
-    перед завантаженням iframe.
-  */
-
-  protectIframeNavigation(
-    embed
-  );
-
-
   iframe.src =
     embed;
+
+
+  updateFullscreenButton();
 
 }
 
@@ -3658,7 +3523,26 @@ function enterPlayerFullscreen(){
         modal.requestFullscreen
       ){
 
-        modal.requestFullscreen();
+        const result =
+          modal.requestFullscreen();
+
+        if(
+          result &&
+          typeof result.catch === 'function'
+        ){
+
+          result.catch(
+            error => {
+
+              console.warn(
+                'Fullscreen error:',
+                error
+              );
+
+            }
+          );
+
+        }
 
       }
 
@@ -3676,6 +3560,84 @@ function enterPlayerFullscreen(){
 }
 
 
+function updateFullscreenButton(){
+
+  const button =
+    document.getElementById(
+      'modalFullscreenBtn'
+    );
+
+
+  if(!button)
+    return;
+
+
+  const icon =
+    button.querySelector(
+      'i'
+    );
+
+
+  const text =
+    button.querySelector(
+      'span'
+    );
+
+
+  const fullscreen =
+    Boolean(
+      document.fullscreenElement
+    );
+
+
+  if(fullscreen){
+
+    if(icon){
+
+      icon.className =
+        'fa-solid fa-compress';
+
+    }
+
+
+    if(text){
+
+      text.innerText =
+        'Вийти';
+
+    }
+
+
+    button.title =
+      'Вийти з повного екрана';
+
+
+  }else{
+
+    if(icon){
+
+      icon.className =
+        'fa-solid fa-expand';
+
+    }
+
+
+    if(text){
+
+      text.innerText =
+        'Повний екран';
+
+    }
+
+
+    button.title =
+      'Повний екран';
+
+  }
+
+}
+
+
 function renderModalInfo(event){
 
   const box =
@@ -3687,89 +3649,135 @@ function renderModalInfo(event){
   box.innerHTML = `
 
     <div
-      class="grid
-             grid-cols-2
-             sm:grid-cols-3
+      class="flex flex-col sm:flex-row
+             items-stretch sm:items-center
+             justify-between
              gap-3"
     >
 
-      <div>
+      <div
+        class="grid
+               grid-cols-2
+               sm:grid-cols-3
+               gap-3
+               flex-1
+               min-w-0"
+      >
 
-        <div
-          class="text-[9px]
-                 text-zinc-600
-                 uppercase
-                 tracking-wider"
-        >
-          Ліга
+        <div>
+
+          <div
+            class="text-[9px]
+                   text-zinc-600
+                   uppercase
+                   tracking-wider"
+          >
+            Ліга
+          </div>
+
+          <div
+            class="text-xs
+                   text-zinc-200
+                   font-semibold
+                   mt-1 truncate"
+          >
+            ${escapeHtml(
+              event.league || '-'
+            )}
+          </div>
+
         </div>
 
-        <div
-          class="text-xs
-                 text-zinc-200
-                 font-semibold
-                 mt-1 truncate"
-        >
-          ${escapeHtml(
-            event.league || '-'
-          )}
+
+        <div>
+
+          <div
+            class="text-[9px]
+                   text-zinc-600
+                   uppercase
+                   tracking-wider"
+          >
+            Вид спорту
+          </div>
+
+          <div
+            class="text-xs
+                   text-zinc-200
+                   font-semibold
+                   mt-1"
+          >
+            ${escapeHtml(
+              getSportName(event.sport)
+            )}
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div
+            class="text-[9px]
+                   text-zinc-600
+                   uppercase
+                   tracking-wider"
+          >
+            Рахунок
+          </div>
+
+          <div
+            class="text-xs
+                   text-brand-400
+                   font-bold
+                   mt-1"
+          >
+            ${escapeHtml(
+              event.score || 'VS'
+            )}
+          </div>
+
         </div>
 
       </div>
 
 
-      <div>
+      <button
+        id="modalFullscreenBtn"
+        onclick="toggleModalFullscreen()"
+        title="Повний екран"
+        class="
+          shrink-0
+          self-stretch sm:self-auto
+          px-3 py-2
+          rounded-xl
+          bg-brand-600
+          hover:bg-brand-700
+          text-white
+          font-semibold
+          text-xs
+          transition-all
+          flex items-center
+          justify-center
+          gap-2
+          shadow-md
+          shadow-brand-600/20
+          active:scale-95
+        "
+      >
 
-        <div
-          class="text-[9px]
-                 text-zinc-600
-                 uppercase
-                 tracking-wider"
-        >
-          Вид спорту
-        </div>
+        <i class="fa-solid fa-expand"></i>
 
-        <div
-          class="text-xs
-                 text-zinc-200
-                 font-semibold
-                 mt-1"
-        >
-          ${escapeHtml(
-            getSportName(event.sport)
-          )}
-        </div>
+        <span>
+          Повний екран
+        </span>
 
-      </div>
-
-
-      <div>
-
-        <div
-          class="text-[9px]
-                 text-zinc-600
-                 uppercase
-                 tracking-wider"
-        >
-          Рахунок
-        </div>
-
-        <div
-          class="text-xs
-                 text-brand-400
-                 font-bold
-                 mt-1"
-        >
-          ${escapeHtml(
-            event.score || 'VS'
-          )}
-        </div>
-
-      </div>
+      </button>
 
     </div>
 
   `;
+
+  updateFullscreenButton();
 
 }
 
@@ -4009,15 +4017,6 @@ function switchMatchChannel(
     );
 
 
-  /*
-    Новий канал = новий захищений URL.
-  */
-
-  protectIframeNavigation(
-    url
-  );
-
-
   iframe.src =
     url;
 
@@ -4046,22 +4045,21 @@ function closePlayerModal(){
     document.fullscreenElement
   ){
 
-    document.exitFullscreen()
-      .catch(
+    const exitPromise =
+      document.exitFullscreen();
+
+    if(
+      exitPromise &&
+      typeof exitPromise.catch === 'function'
+    ){
+
+      exitPromise.catch(
         () => {}
       );
 
+    }
+
   }
-
-
-  /*
-    При закритті повністю скидаємо
-    захищений URL.
-  */
-
-  protectIframeNavigation(
-    ''
-  );
 
 
   iframe.src =
@@ -4092,7 +4090,26 @@ function toggleModalFullscreen(){
     document.fullscreenElement
   ){
 
-    document.exitFullscreen();
+    const result =
+      document.exitFullscreen();
+
+    if(
+      result &&
+      typeof result.catch === 'function'
+    ){
+
+      result.catch(
+        error => {
+
+          console.warn(
+            'Exit fullscreen error:',
+            error
+          );
+
+        }
+      );
+
+    }
 
     return;
 
@@ -4273,6 +4290,36 @@ document.addEventListener(
         )
       ){
 
+        /*
+          Якщо зараз fullscreen —
+          Escape спочатку тільки виходить
+          з fullscreen.
+
+          Саме вікно плеєра не закриваємо.
+        */
+        if(
+          document.fullscreenElement
+        ){
+
+          const result =
+            document.exitFullscreen();
+
+          if(
+            result &&
+            typeof result.catch === 'function'
+          ){
+
+            result.catch(
+              () => {}
+            );
+
+          }
+
+          return;
+
+        }
+
+
         closePlayerModal();
 
       }
@@ -4282,6 +4329,10 @@ document.addEventListener(
   }
 );
 
+
+/*
+  ШВИДКЕ LIVE ОНОВЛЕННЯ.
+*/
 
 setInterval(
   async () => {
@@ -4329,6 +4380,10 @@ setInterval(
   45000
 );
 
+
+/*
+  SCORE ОНОВЛЕННЯ.
+*/
 
 setInterval(
   async () => {
