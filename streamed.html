@@ -163,6 +163,79 @@
         #000;
     }
 
+    /*
+      Блокуємо будь-які тапи/кліки
+      безпосередньо по сторонньому iframe.
+
+      Плеєр при цьому продовжує
+      завантажуватися та автоматично
+      відтворювати відео.
+    */
+    #streamIframe{
+      pointer-events:none;
+      touch-action:none;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+
+    /*
+      Кнопка "Назад" у fullscreen.
+      Сам iframe залишається повністю
+      неклікабельним.
+    */
+    #playerFullscreenBack{
+      display:none;
+      position:absolute;
+      top:calc(12px + env(safe-area-inset-top));
+      left:12px;
+      z-index:30;
+      pointer-events:auto;
+    }
+
+    #playerContainer:fullscreen{
+      width:100vw!important;
+      height:100vh!important;
+      min-height:100vh!important;
+      max-height:none!important;
+      aspect-ratio:auto!important;
+      border-radius:0!important;
+      padding:0!important;
+      margin:0!important;
+      background:#000!important;
+    }
+
+    #playerContainer:fullscreen #streamIframe{
+      width:100%!important;
+      height:100%!important;
+      max-width:none!important;
+      max-height:none!important;
+    }
+
+    #playerContainer:fullscreen #playerFullscreenBack{
+      display:flex;
+    }
+
+    #playerContainer:-webkit-full-screen{
+      width:100vw!important;
+      height:100vh!important;
+      min-height:100vh!important;
+      max-height:none!important;
+      aspect-ratio:auto!important;
+      border-radius:0!important;
+      padding:0!important;
+      margin:0!important;
+      background:#000!important;
+    }
+
+    #playerContainer:-webkit-full-screen #streamIframe{
+      width:100%!important;
+      height:100%!important;
+    }
+
+    #playerContainer:-webkit-full-screen #playerFullscreenBack{
+      display:flex;
+    }
+
     .status-live-dot{
       width:7px;
       height:7px;
@@ -177,7 +250,7 @@
       padding:4px 6px;
       border-radius:6px;
       background:rgba(255,255,255,.06);
-      color:#a1a1aa;
+      color:#a1a1a1;
       border:1px solid rgba(255,255,255,.05);
     }
 
@@ -229,103 +302,6 @@
       grid-column:1 / -1;
     }
 
-
-    /* =========================================================
-       PLAYER FULLSCREEN
-    ========================================================= */
-
-    #modalBox:fullscreen{
-      width:100vw!important;
-      height:100vh!important;
-      max-width:none!important;
-      max-height:none!important;
-      border-radius:0!important;
-      border:0!important;
-      background:#000!important;
-      overflow:hidden!important;
-    }
-
-    #modalBox:fullscreen #playerContainer{
-      aspect-ratio:auto!important;
-      width:100%!important;
-      height:100%!important;
-      flex:1!important;
-      min-height:0!important;
-    }
-
-    #modalBox:fullscreen #streamIframe{
-      width:100%!important;
-      height:100%!important;
-    }
-
-    #modalBox:fullscreen .player-fullscreen-hide{
-      display:none!important;
-    }
-
-    #modalBox:fullscreen #fullscreenBackButton{
-      display:flex!important;
-    }
-
-    #fullscreenBackButton{
-      display:none;
-      position:absolute;
-      top:14px;
-      left:14px;
-      z-index:100;
-      align-items:center;
-      justify-content:center;
-      gap:7px;
-      height:38px;
-      padding:0 13px;
-      border-radius:10px;
-      background:rgba(18,18,21,.88);
-      border:1px solid rgba(255,255,255,.12);
-      color:#fff;
-      font-size:12px;
-      font-weight:600;
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-      box-shadow:0 5px 20px rgba(0,0,0,.45);
-    }
-
-    #fullscreenBackButton:hover{
-      background:rgba(39,39,48,.95);
-    }
-
-    #modalBox.custom-player-fullscreen{
-      position:fixed!important;
-      inset:0!important;
-      width:100vw!important;
-      height:100dvh!important;
-      max-width:none!important;
-      max-height:none!important;
-      border-radius:0!important;
-      border:0!important;
-      z-index:99999!important;
-      background:#000!important;
-    }
-
-    #modalBox.custom-player-fullscreen .player-fullscreen-hide{
-      display:none!important;
-    }
-
-    #modalBox.custom-player-fullscreen #playerContainer{
-      width:100%!important;
-      height:100%!important;
-      aspect-ratio:auto!important;
-      flex:1!important;
-    }
-
-    #modalBox.custom-player-fullscreen #streamIframe{
-      width:100%!important;
-      height:100%!important;
-    }
-
-    #modalBox.custom-player-fullscreen #fullscreenBackButton{
-      display:flex!important;
-    }
-
-
     @media(max-width:640px){
 
       .mobile-card{
@@ -350,22 +326,51 @@
         font-size:12px!important;
       }
 
+      /*
+        Мобільний modal не впирається
+        у верхню safe-area.
+      */
       #playerModal{
-        padding:0!important;
+        padding:
+          max(8px, env(safe-area-inset-top))
+          8px
+          max(8px, env(safe-area-inset-bottom))
+          8px!important;
+        align-items:flex-start!important;
       }
 
       #playerModal #modalBox{
-        width:100vw!important;
-        height:100vh!important;
+        width:100%!important;
+        height:auto!important;
         max-width:none!important;
-        max-height:none!important;
-        border-radius:0!important;
-        border:0!important;
+        max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px)!important;
+        border-radius:16px!important;
+        border:1px solid #222228!important;
+        margin-top:0!important;
       }
 
-      #fullscreenBackButton{
-        top:12px;
-        left:12px;
+      #modalMatchInfo{
+        padding:10px 12px!important;
+      }
+
+      #modalFullscreenBtn{
+        min-width:38px;
+      }
+
+      #playerContainer{
+        max-height:none;
+      }
+
+      #playerContainer:fullscreen{
+        width:100vw!important;
+        height:100dvh!important;
+        min-height:100dvh!important;
+      }
+
+      #playerContainer:-webkit-full-screen{
+        width:100vw!important;
+        height:100dvh!important;
+        min-height:100dvh!important;
       }
 
     }
@@ -981,24 +986,12 @@
            z-10"
   >
 
-    <!-- Кнопка повернення у fullscreen -->
-    <button
-      id="fullscreenBackButton"
-      onclick="exitPlayerFullscreen()"
-      title="Вийти з повного екрана"
-    >
-      <i class="fa-solid fa-arrow-left"></i>
-      <span>Назад</span>
-    </button>
-
-
     <div
       class="flex items-center
              justify-between
              px-4 py-3
              bg-matte-bg
-             border-b border-matte-border
-             player-fullscreen-hide"
+             border-b border-matte-border"
     >
 
       <div
@@ -1043,22 +1036,6 @@
       >
 
         <button
-          onclick="toggleModalFullscreen()"
-          title="Повний екран"
-          class="w-8 h-8 rounded-lg
-                 bg-matte-accent
-                 hover:bg-matte-hover
-                 text-zinc-300
-                 flex items-center justify-center
-                 text-xs transition-colors"
-        >
-
-          <i class="fa-solid fa-expand"></i>
-
-        </button>
-
-
-        <button
           onclick="closePlayerModal()"
           title="Закрити"
           class="w-8 h-8 rounded-lg
@@ -1099,6 +1076,36 @@
         referrerpolicy="strict-origin-when-cross-origin"
       ></iframe>
 
+      <!--
+        Кнопка працює поверх iframe.
+        Сам iframe залишається pointer-events:none.
+      -->
+      <button
+        id="playerFullscreenBack"
+        onclick="exitPlayerFullscreen()"
+        title="Назад"
+        aria-label="Назад"
+        class="
+          items-center
+          justify-center
+          gap-2
+          px-4 py-2
+          rounded-xl
+          bg-black/75
+          hover:bg-black/90
+          border border-white/15
+          text-white
+          text-sm
+          font-semibold
+          shadow-xl
+          backdrop-blur-md
+          active:scale-95
+        "
+      >
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Назад</span>
+      </button>
+
     </div>
 
 
@@ -1106,16 +1113,14 @@
       id="modalMatchInfo"
       class="px-4 py-3
              bg-matte-card
-             border-b border-matte-border
-             player-fullscreen-hide"
+             border-b border-matte-border"
     ></div>
 
 
     <div
       class="p-4
              bg-matte-bg
-             border-t border-matte-border
-             player-fullscreen-hide"
+             border-t border-matte-border"
     >
 
       <div
@@ -1180,14 +1185,6 @@ let isLoading = false;
 let hasLoadedData = false;
 
 
-/*
-  Окремі масиви даних.
-
-  Schedule — основне джерело подій.
-  Live — швидке фонове оновлення.
-  Scores — тільки рахунок/хвилина/статус.
-*/
-
 let scheduleEventsCache = [];
 
 let liveEventsCache = [];
@@ -1204,6 +1201,20 @@ window.addEventListener(
     setInterval(
       fetchAllData,
       300000
+    );
+
+    /*
+      Слідкуємо за зміною fullscreen,
+      щоб правильно відновлювати стан.
+    */
+    document.addEventListener(
+      'fullscreenchange',
+      updateFullscreenButton
+    );
+
+    document.addEventListener(
+      'webkitfullscreenchange',
+      updateFullscreenButton
     );
 
   }
@@ -1274,14 +1285,6 @@ async function fetchJson(url){
 
 }
 
-
-/*
-  Об'єднання schedule + live.
-
-  Schedule завжди є базою.
-  Live поверх нього оновлює
-  тільки актуальні дані.
-*/
 
 function rebuildEvents(){
 
@@ -1415,15 +1418,6 @@ function mergeLiveData(liveData){
 
 }
 
-
-/*
-  Оновлення рахунків.
-
-  API scores може повертати тільки
-  частину полів, тому ми не замінюємо
-  самі події — лише дописуємо отримані
-  score / minute / status / live.
-*/
 
 function mergeScoreData(scoreData){
 
@@ -1561,22 +1555,6 @@ function mergeScoreData(scoreData){
 }
 
 
-/*
-  Основне завантаження.
-
-  ВАЖЛИВО:
-
-  schedule стартує одразу.
-  live також стартує одразу,
-  але його відповідь НЕ БЛОКУЄ schedule.
-
-  Як тільки schedule прийшов —
-  картки показуються.
-
-  live приходить пізніше —
-  картки тихо оновлюються.
-*/
-
 async function fetchAllData(){
 
   if(isLoading){
@@ -1613,11 +1591,6 @@ async function fetchAllData(){
 
   try{
 
-    /*
-      Обидва запити запускаються
-      практично одночасно.
-    */
-
     const schedulePromise =
       fetchJson(
         `${SPORTS_API}/schedule?watchable=1`
@@ -1629,11 +1602,6 @@ async function fetchAllData(){
         `${SPORTS_API}/live`
       );
 
-
-    /*
-      Schedule обробляємо першим,
-      щойно він реально готовий.
-    */
 
     schedulePromise
       .then(
@@ -1663,13 +1631,6 @@ async function fetchAllData(){
       );
 
 
-    /*
-      Live повністю незалежний.
-
-      Якщо він повільний —
-      сторінка вже працює.
-    */
-
     livePromise
       .then(
         liveData => {
@@ -1690,23 +1651,9 @@ async function fetchAllData(){
             error
           );
 
-          /*
-            Якщо schedule також не завантажився,
-            помилку покажемо нижче.
-          */
-
         }
       );
 
-
-    /*
-      Чекаємо завершення тільки для того,
-      щоб правильно визначити випадок,
-      коли ОБИДВА API впали.
-
-      Це очікування вже НЕ блокує
-      відображення schedule.
-    */
 
     const results =
       await Promise.allSettled(
@@ -1858,10 +1805,6 @@ function getSportName(sport){
 
 }
 
-
-/* =========================================================
-   SPORT ICONS
-========================================================= */
 
 const sportIcons = {
 
@@ -3635,103 +3578,110 @@ async function openEventPlayer(eventId){
   iframe.src =
     embed;
 
+
+  updateFullscreenButton();
+
 }
 
 
-/*
-  Вхід у fullscreen саме для modalBox.
-
-  Це дозволяє сховати всю панель,
-  залишивши тільки плеєр і кнопку "Назад".
-*/
-
 async function enterPlayerFullscreen(){
 
-  const modalBox =
+  const player =
     document.getElementById(
-      'modalBox'
+      'playerContainer'
     );
 
 
-  if(
-    document.fullscreenElement
-  ){
-
+  if(!player)
     return;
-
-  }
 
 
   try{
 
     if(
-      modalBox.requestFullscreen
+      !document.fullscreenElement
     ){
 
-      await modalBox.requestFullscreen({
-        navigationUI:'hide'
-      });
+      if(
+        player.requestFullscreen
+      ){
 
-      return;
+        await player.requestFullscreen();
+
+      }else if(
+        player.webkitRequestFullscreen
+      ){
+
+        player.webkitRequestFullscreen();
+
+      }
+
+
+      /*
+        На мобільному намагаємося
+        автоматично розвернути
+        fullscreen у landscape.
+      */
+      if(
+        screen.orientation &&
+        screen.orientation.lock
+      ){
+
+        try{
+
+          await screen.orientation.lock(
+            'landscape'
+          );
+
+        }catch(error){
+
+          console.warn(
+            'Orientation lock unavailable:',
+            error
+          );
+
+        }
+
+      }
 
     }
 
   }catch(error){
 
     console.warn(
-      'Fullscreen API error:',
+      'Fullscreen error:',
       error
     );
 
   }
 
 
-  /*
-    Запасний варіант для браузерів,
-    де Fullscreen API недоступний.
-  */
-
-  modalBox.classList.add(
-    'custom-player-fullscreen'
-  );
-
-
-  handlePlayerFullscreenChange();
+  updateFullscreenButton();
 
 }
 
 
-/*
-  Вихід із fullscreen.
-
-  Спочатку пробуємо нативний fullscreen,
-  потім прибираємо запасний CSS-режим.
-*/
-
 async function exitPlayerFullscreen(){
-
-  const modalBox =
-    document.getElementById(
-      'modalBox'
-    );
-
 
   try{
 
     if(
-      document.fullscreenElement ===
-      modalBox
+      document.fullscreenElement
     ){
 
       await document.exitFullscreen();
 
-    }else{
+    }else if(
+      document.webkitFullscreenElement
+    ){
 
-      modalBox.classList.remove(
-        'custom-player-fullscreen'
-      );
+      if(
+        document.webkitExitFullscreen
+      ){
 
-      handlePlayerFullscreenChange();
+        document.webkitExitFullscreen();
+
+      }
 
     }
 
@@ -3742,128 +3692,118 @@ async function exitPlayerFullscreen(){
       error
     );
 
-    modalBox.classList.remove(
-      'custom-player-fullscreen'
-    );
-
-    handlePlayerFullscreenChange();
-
-  }
-
-}
-
-
-/*
-  Автоматично повертаємо орієнтацію
-  на мобільному в горизонтальне положення.
-
-  На браузерах, де lock() недоступний
-  або заборонений, просто нічого не робимо.
-*/
-
-async function lockPlayerLandscape(){
-
-  const isMobile =
-    window.matchMedia(
-      '(max-width: 767px)'
-    ).matches;
-
-
-  if(
-    !isMobile ||
-    !screen.orientation ||
-    !screen.orientation.lock
-  ){
-
-    return;
-
   }
 
 
   try{
 
-    await screen.orientation.lock(
-      'landscape'
-    );
+    if(
+      screen.orientation &&
+      screen.orientation.unlock
+    ){
+
+      screen.orientation.unlock();
+
+    }
 
   }catch(error){
 
     console.warn(
-      'Orientation lock:',
+      'Orientation unlock unavailable:',
       error
     );
 
   }
 
+
+  updateFullscreenButton();
+
 }
 
 
-function unlockPlayerOrientation(){
+function updateFullscreenButton(){
 
-  if(
-    screen.orientation &&
-    screen.orientation.unlock
-  ){
+  const button =
+    document.getElementById(
+      'modalFullscreenBtn'
+    );
 
-    try{
 
-      screen.orientation.unlock();
+  const player =
+    document.getElementById(
+      'playerContainer'
+    );
 
-    }catch(error){
 
-      console.warn(
-        'Orientation unlock:',
-        error
-      );
+  if(!button)
+    return;
+
+
+  const icon =
+    button.querySelector(
+      'i'
+    );
+
+
+  const text =
+    button.querySelector(
+      'span'
+    );
+
+
+  const fullscreen =
+    Boolean(
+      document.fullscreenElement === player ||
+      document.webkitFullscreenElement === player
+    );
+
+
+  if(fullscreen){
+
+    if(icon){
+
+      icon.className =
+        'fa-solid fa-compress';
 
     }
 
-  }
 
-}
+    if(text){
 
+      text.innerText =
+        'Вийти';
 
-/*
-  Синхронізація стану fullscreen.
-
-  Працює також коли користувач
-  виходить із fullscreen кнопкою
-  самого браузера / системною кнопкою.
-*/
-
-function handlePlayerFullscreenChange(){
-
-  const modalBox =
-    document.getElementById(
-      'modalBox'
-    );
+    }
 
 
-  const isFullscreen =
-    document.fullscreenElement ===
-    modalBox ||
-    modalBox.classList.contains(
-      'custom-player-fullscreen'
-    );
+    button.title =
+      'Вийти з повного екрана';
 
-
-  if(isFullscreen){
-
-    lockPlayerLandscape();
 
   }else{
 
-    unlockPlayerOrientation();
+    if(icon){
+
+      icon.className =
+        'fa-solid fa-expand';
+
+    }
+
+
+    if(text){
+
+      text.innerText =
+        'Повний екран';
+
+    }
+
+
+    button.title =
+      'Повний екран';
 
   }
 
 }
-
-
-document.addEventListener(
-  'fullscreenchange',
-  handlePlayerFullscreenChange
-);
 
 
 function renderModalInfo(event){
@@ -3877,89 +3817,135 @@ function renderModalInfo(event){
   box.innerHTML = `
 
     <div
-      class="grid
-             grid-cols-2
-             sm:grid-cols-3
+      class="flex flex-col sm:flex-row
+             items-stretch sm:items-center
+             justify-between
              gap-3"
     >
 
-      <div>
+      <div
+        class="grid
+               grid-cols-2
+               sm:grid-cols-3
+               gap-3
+               flex-1
+               min-w-0"
+      >
 
-        <div
-          class="text-[9px]
-                 text-zinc-600
-                 uppercase
-                 tracking-wider"
-        >
-          Ліга
+        <div>
+
+          <div
+            class="text-[9px]
+                   text-zinc-600
+                   uppercase
+                   tracking-wider"
+          >
+            Ліга
+          </div>
+
+          <div
+            class="text-xs
+                   text-zinc-200
+                   font-semibold
+                   mt-1 truncate"
+          >
+            ${escapeHtml(
+              event.league || '-'
+            )}
+          </div>
+
         </div>
 
-        <div
-          class="text-xs
-                 text-zinc-200
-                 font-semibold
-                 mt-1 truncate"
-        >
-          ${escapeHtml(
-            event.league || '-'
-          )}
+
+        <div>
+
+          <div
+            class="text-[9px]
+                   text-zinc-600
+                   uppercase
+                   tracking-wider"
+          >
+            Вид спорту
+          </div>
+
+          <div
+            class="text-xs
+                   text-zinc-200
+                   font-semibold
+                   mt-1"
+          >
+            ${escapeHtml(
+              getSportName(event.sport)
+            )}
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div
+            class="text-[9px]
+                   text-zinc-600
+                   uppercase
+                   tracking-wider"
+          >
+            Рахунок
+          </div>
+
+          <div
+            class="text-xs
+                   text-brand-400
+                   font-bold
+                   mt-1"
+          >
+            ${escapeHtml(
+              event.score || 'VS'
+            )}
+          </div>
+
         </div>
 
       </div>
 
 
-      <div>
+      <button
+        id="modalFullscreenBtn"
+        onclick="toggleModalFullscreen()"
+        title="Повний екран"
+        class="
+          shrink-0
+          self-stretch sm:self-auto
+          px-3 py-2
+          rounded-xl
+          bg-brand-600
+          hover:bg-brand-700
+          text-white
+          font-semibold
+          text-xs
+          transition-all
+          flex items-center
+          justify-center
+          gap-2
+          shadow-md
+          shadow-brand-600/20
+          active:scale-95
+        "
+      >
 
-        <div
-          class="text-[9px]
-                 text-zinc-600
-                 uppercase
-                 tracking-wider"
-        >
-          Вид спорту
-        </div>
+        <i class="fa-solid fa-expand"></i>
 
-        <div
-          class="text-xs
-                 text-zinc-200
-                 font-semibold
-                 mt-1"
-        >
-          ${escapeHtml(
-            getSportName(event.sport)
-          )}
-        </div>
+        <span>
+          Повний екран
+        </span>
 
-      </div>
-
-
-      <div>
-
-        <div
-          class="text-[9px]
-                 text-zinc-600
-                 uppercase
-                 tracking-wider"
-        >
-          Рахунок
-        </div>
-
-        <div
-          class="text-xs
-                 text-brand-400
-                 font-bold
-                 mt-1"
-        >
-          ${escapeHtml(
-            event.score || 'VS'
-          )}
-        </div>
-
-      </div>
+      </button>
 
     </div>
 
   `;
+
+  updateFullscreenButton();
 
 }
 
@@ -4217,12 +4203,6 @@ function closePlayerModal(){
     );
 
 
-  const modalBox =
-    document.getElementById(
-      'modalBox'
-    );
-
-
   const iframe =
     document.getElementById(
       'streamIframe'
@@ -4230,24 +4210,38 @@ function closePlayerModal(){
 
 
   if(
-    document.fullscreenElement ===
-    modalBox
+    document.fullscreenElement
   ){
 
-    document.exitFullscreen()
-      .catch(
+    const exitPromise =
+      document.exitFullscreen();
+
+    if(
+      exitPromise &&
+      typeof exitPromise.catch === 'function'
+    ){
+
+      exitPromise.catch(
         () => {}
       );
+
+    }
 
   }
 
 
-  modalBox.classList.remove(
-    'custom-player-fullscreen'
-  );
+  try{
 
+    if(
+      screen.orientation &&
+      screen.orientation.unlock
+    ){
 
-  unlockPlayerOrientation();
+      screen.orientation.unlock();
+
+    }
+
+  }catch(error){}
 
 
   iframe.src =
@@ -4274,18 +4268,15 @@ function closePlayerModal(){
 
 function toggleModalFullscreen(){
 
-  const modalBox =
+  const player =
     document.getElementById(
-      'modalBox'
+      'playerContainer'
     );
 
 
   if(
-    document.fullscreenElement ===
-    modalBox ||
-    modalBox.classList.contains(
-      'custom-player-fullscreen'
-    )
+    document.fullscreenElement === player ||
+    document.webkitFullscreenElement === player
   ){
 
     exitPlayerFullscreen();
@@ -4462,11 +4453,6 @@ document.addEventListener(
           'playerModal'
         );
 
-      const modalBox =
-        document.getElementById(
-          'modalBox'
-        );
-
 
       if(
         !modal.classList.contains(
@@ -4474,18 +4460,15 @@ document.addEventListener(
         )
       ){
 
-        /*
-          Якщо плеєр у fullscreen —
-          Escape спочатку лише виходить
-          із fullscreen.
-        */
+        const player =
+          document.getElementById(
+            'playerContainer'
+          );
+
 
         if(
-          document.fullscreenElement ===
-          modalBox ||
-          modalBox.classList.contains(
-            'custom-player-fullscreen'
-          )
+          document.fullscreenElement === player ||
+          document.webkitFullscreenElement === player
         ){
 
           exitPlayerFullscreen();
@@ -4507,12 +4490,6 @@ document.addEventListener(
 
 /*
   ШВИДКЕ LIVE ОНОВЛЕННЯ.
-
-  У них live перевіряється приблизно
-  кожні 45 секунд.
-
-  Запит не виконується, якщо вкладка
-  прихована.
 */
 
 setInterval(
@@ -4564,12 +4541,6 @@ setInterval(
 
 /*
   SCORE ОНОВЛЕННЯ.
-
-  У них scores перевіряється кожні
-  15 секунд.
-
-  Запит працює у фоні й не блокує
-  інші дані або інтерфейс.
 */
 
 setInterval(
