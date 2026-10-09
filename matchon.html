@@ -3227,11 +3227,11 @@ function renderEventCard(event){
         LIVE
 
         ${
-          event.minute
-          ?
-          `· ${escapeHtml(event.minute)}'`
-          :
-          ''
+  event.minute
+  ?
+  `· <span class="live-minute">${escapeHtml(event.minute)}'</span>`
+  :
+  ''
         }
 
       </span>
