@@ -3338,8 +3338,10 @@ function renderEventCard(event){
   return `
 
     <article
-      class="
-        bg-matte-card
+  class="
+    match-card
+    ${isLive ? 'is-live' : ''}
+    bg-matte-card
         border
         ${
           isLive
