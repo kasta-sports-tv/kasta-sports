@@ -4,13 +4,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Kasta Sports — Live Sports</title>
 
+  <link rel="preconnect" href="https://matchora.to" crossorigin>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <script src="https://cdn.tailwindcss.com"></script>
 
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
@@ -160,6 +163,79 @@
         #000;
     }
 
+    /*
+      Блокуємо будь-які тапи/кліки
+      безпосередньо по сторонньому iframe.
+
+      Плеєр при цьому продовжує
+      завантажуватися та автоматично
+      відтворювати відео.
+    */
+    #streamIframe{
+      pointer-events:none;
+      touch-action:none;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+
+    /*
+      Кнопка "Назад" у fullscreen.
+      Сам iframe залишається повністю
+      неклікабельним.
+    */
+    #playerFullscreenBack{
+      display:none;
+      position:absolute;
+      top:calc(12px + env(safe-area-inset-top));
+      left:12px;
+      z-index:30;
+      pointer-events:auto;
+    }
+
+    #playerContainer:fullscreen{
+      width:100vw!important;
+      height:100vh!important;
+      min-height:100vh!important;
+      max-height:none!important;
+      aspect-ratio:auto!important;
+      border-radius:0!important;
+      padding:0!important;
+      margin:0!important;
+      background:#000!important;
+    }
+
+    #playerContainer:fullscreen #streamIframe{
+      width:100%!important;
+      height:100%!important;
+      max-width:none!important;
+      max-height:none!important;
+    }
+
+    #playerContainer:fullscreen #playerFullscreenBack{
+      display:flex;
+    }
+
+    #playerContainer:-webkit-full-screen{
+      width:100vw!important;
+      height:100vh!important;
+      min-height:100vh!important;
+      max-height:none!important;
+      aspect-ratio:auto!important;
+      border-radius:0!important;
+      padding:0!important;
+      margin:0!important;
+      background:#000!important;
+    }
+
+    #playerContainer:-webkit-full-screen #streamIframe{
+      width:100%!important;
+      height:100%!important;
+    }
+
+    #playerContainer:-webkit-full-screen #playerFullscreenBack{
+      display:flex;
+    }
+
     .status-live-dot{
       width:7px;
       height:7px;
@@ -174,7 +250,7 @@
       padding:4px 6px;
       border-radius:6px;
       background:rgba(255,255,255,.06);
-      color:#a1a1aa;
+      color:#a1a1a1;
       border:1px solid rgba(255,255,255,.05);
     }
 
@@ -226,31 +302,6 @@
       grid-column:1 / -1;
     }
 
-    #playerModal:fullscreen{
-      padding:0!important;
-      background:#000;
-    }
-
-    #playerModal:fullscreen #modalBox{
-      width:100vw!important;
-      height:100vh!important;
-      max-width:none!important;
-      max-height:none!important;
-      border-radius:0!important;
-      border:0!important;
-    }
-
-    #playerModal:fullscreen #playerContainer{
-      aspect-ratio:auto!important;
-      flex:1;
-      min-height:0;
-    }
-
-    #playerModal:fullscreen #streamIframe{
-      width:100%;
-      height:100%;
-    }
-
     @media(max-width:640px){
 
       .mobile-card{
@@ -273,6 +324,53 @@
 
       .score-text{
         font-size:12px!important;
+      }
+
+      /*
+        Мобільний modal не впирається
+        у верхню safe-area.
+      */
+      #playerModal{
+        padding:
+          max(8px, env(safe-area-inset-top))
+          8px
+          max(8px, env(safe-area-inset-bottom))
+          8px!important;
+        align-items:flex-start!important;
+      }
+
+      #playerModal #modalBox{
+        width:100%!important;
+        height:auto!important;
+        max-width:none!important;
+        max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px)!important;
+        border-radius:16px!important;
+        border:1px solid #222228!important;
+        margin-top:0!important;
+      }
+
+      #modalMatchInfo{
+        padding:10px 12px!important;
+      }
+
+      #modalFullscreenBtn{
+        min-width:38px;
+      }
+
+      #playerContainer{
+        max-height:none;
+      }
+
+      #playerContainer:fullscreen{
+        width:100vw!important;
+        height:100dvh!important;
+        min-height:100dvh!important;
+      }
+
+      #playerContainer:-webkit-full-screen{
+        width:100vw!important;
+        height:100dvh!important;
+        min-height:100dvh!important;
       }
 
     }
@@ -401,7 +499,7 @@
 
           <span class="status-live-dot animate-pulse"></span>
 
-          MATCHORA LIVE
+          LIVE
 
         </div>
 
@@ -795,7 +893,7 @@
              max-w-md mb-6"
       id="errorMessage"
     >
-      Matchora API тимчасово недоступний.
+      Сервер даних тимчасово недоступний.
     </p>
 
     <button
@@ -925,7 +1023,7 @@
             id="modalMatchSubtitle"
             class="text-xs text-zinc-400 truncate"
           >
-            Matchora Player
+            Sports Player
           </p>
 
         </div>
@@ -936,22 +1034,6 @@
       <div
         class="flex items-center gap-2 shrink-0"
       >
-
-        <button
-          onclick="toggleModalFullscreen()"
-          title="Повний екран"
-          class="w-8 h-8 rounded-lg
-                 bg-matte-accent
-                 hover:bg-matte-hover
-                 text-zinc-300
-                 flex items-center justify-center
-                 text-xs transition-colors"
-        >
-
-          <i class="fa-solid fa-expand"></i>
-
-        </button>
-
 
         <button
           onclick="closePlayerModal()"
@@ -990,41 +1072,39 @@
         id="streamIframe"
         class="w-full h-full border-0"
         allowfullscreen
-        allow="autoplay; fullscreen; picture-in-picture; orientation-lock"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+        allow="autoplay; fullscreen; picture-in-picture"
         referrerpolicy="strict-origin-when-cross-origin"
       ></iframe>
 
-
-      <div
-        id="iframeLoader"
-        class="absolute inset-0
-               bg-black/90
-               flex flex-col
-               items-center justify-center
-               gap-3
-               pointer-events-none
-               transition-opacity duration-300"
+      <!--
+        Кнопка працює поверх iframe.
+        Сам iframe залишається pointer-events:none.
+      -->
+      <button
+        id="playerFullscreenBack"
+        onclick="exitPlayerFullscreen()"
+        title="Назад"
+        aria-label="Назад"
+        class="
+          items-center
+          justify-center
+          gap-2
+          px-4 py-2
+          rounded-xl
+          bg-black/75
+          hover:bg-black/90
+          border border-white/15
+          text-white
+          text-sm
+          font-semibold
+          shadow-xl
+          backdrop-blur-md
+          active:scale-95
+        "
       >
-
-        <div
-          class="w-10 h-10
-                 border-4
-                 border-brand-600
-                 border-t-transparent
-                 rounded-full
-                 animate-spin"
-        ></div>
-
-        <span
-          class="text-xs
-                 font-semibold
-                 text-zinc-400"
-        >
-          Підключення до Matchora...
-        </span>
-
-      </div>
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Назад</span>
+      </button>
 
     </div>
 
@@ -1086,7 +1166,7 @@
 
 <script>
 
-const MATCHORA_API =
+const SPORTS_API =
   'https://matchora.to/api/v1';
 
 
@@ -1102,6 +1182,13 @@ let currentEvent = null;
 
 let isLoading = false;
 
+let hasLoadedData = false;
+
+
+let scheduleEventsCache = [];
+
+let liveEventsCache = [];
+
 
 window.addEventListener(
   'DOMContentLoaded',
@@ -1114,6 +1201,20 @@ window.addEventListener(
     setInterval(
       fetchAllData,
       300000
+    );
+
+    /*
+      Слідкуємо за зміною fullscreen,
+      щоб правильно відновлювати стан.
+    */
+    document.addEventListener(
+      'fullscreenchange',
+      updateFullscreenButton
+    );
+
+    document.addEventListener(
+      'webkitfullscreenchange',
+      updateFullscreenButton
     );
 
   }
@@ -1185,6 +1286,275 @@ async function fetchJson(url){
 }
 
 
+function rebuildEvents(){
+
+  const eventMap =
+    new Map();
+
+
+  scheduleEventsCache.forEach(
+    event => {
+
+      if(!event || event.id == null)
+        return;
+
+
+      eventMap.set(
+        String(event.id),
+        event
+      );
+
+    }
+  );
+
+
+  liveEventsCache.forEach(
+    event => {
+
+      if(!event || event.id == null)
+        return;
+
+
+      const id =
+        String(event.id);
+
+
+      eventMap.set(
+        id,
+        {
+          ...(eventMap.get(id) || {}),
+          ...event
+        }
+      );
+
+    }
+  );
+
+
+  allEvents =
+    Array.from(
+      eventMap.values()
+    );
+
+
+  allEvents =
+    allEvents.filter(
+      event =>
+        !event.finished &&
+        (
+          isToday(event.kickoff) ||
+          isTomorrow(event.kickoff)
+        )
+    );
+
+
+  buildSportButtons();
+
+  updateStatusCounts();
+
+  renderCurrentView();
+
+
+  document
+    .getElementById(
+      'errorState'
+    )
+    .classList.add(
+      'hidden'
+    );
+
+
+  hasLoadedData =
+    allEvents.length > 0 ||
+    scheduleEventsCache.length > 0;
+
+}
+
+
+function processScheduleData(scheduleData){
+
+  scheduleEventsCache =
+    Array.isArray(
+      scheduleData?.events
+    )
+    ?
+    scheduleData.events
+    :
+    [];
+
+
+  rebuildEvents();
+
+}
+
+
+function mergeLiveData(liveData){
+
+  liveEventsCache =
+    Array.isArray(
+      liveData?.events
+    )
+    ?
+    liveData.events
+    :
+    [];
+
+
+  rebuildEvents();
+
+
+  if(
+    currentStatusFilter === 'live' &&
+    !allEvents.some(
+      event => event.live === true
+    )
+  ){
+
+    setStatusFilter(
+      'all'
+    );
+
+  }
+
+}
+
+
+function mergeScoreData(scoreData){
+
+  const scores =
+    Array.isArray(
+      scoreData?.events
+    )
+    ?
+    scoreData.events
+    :
+    [];
+
+
+  if(!scores.length)
+    return;
+
+
+  const scoreMap =
+    new Map();
+
+
+  scores.forEach(
+    score => {
+
+      if(
+        score &&
+        score.id != null
+      ){
+
+        scoreMap.set(
+          String(score.id),
+          score
+        );
+
+      }
+
+    }
+  );
+
+
+  if(!scoreMap.size)
+    return;
+
+
+  let changed = false;
+
+
+  allEvents =
+    allEvents.map(
+      event => {
+
+        const score =
+          scoreMap.get(
+            String(event.id)
+          );
+
+
+        if(!score)
+          return event;
+
+
+        changed = true;
+
+
+        const updated =
+          {
+            ...event
+          };
+
+
+        if(
+          score.score !== undefined
+        ){
+
+          updated.score =
+            score.score;
+
+        }
+
+
+        if(
+          score.minute !== undefined
+        ){
+
+          updated.minute =
+            score.minute;
+
+        }
+
+
+        if(
+          score.status !== undefined
+        ){
+
+          updated.status =
+            score.status;
+
+        }
+
+
+        if(
+          score.live !== undefined
+        ){
+
+          updated.live =
+            score.live;
+
+        }
+
+
+        if(
+          score.finished !== undefined
+        ){
+
+          updated.finished =
+            score.finished;
+
+        }
+
+
+        return updated;
+
+      }
+    );
+
+
+  if(!changed)
+    return;
+
+
+  updateStatusCounts();
+
+  renderCurrentView();
+
+}
+
+
 async function fetchAllData(){
 
   if(isLoading){
@@ -1193,131 +1563,127 @@ async function fetchAllData(){
 
   isLoading = true;
 
+
   const icon =
     document.getElementById(
       'refreshIcon'
     );
 
+
   if(icon){
+
     icon.classList.add(
       'animate-spin'
     );
+
   }
 
-  showLoading();
+
+  if(!hasLoadedData){
+
+    showLoading();
+
+  }
+
+
+  let scheduleLoaded = false;
 
 
   try{
 
-    const [
-      scheduleData,
-      liveData
-    ] =
-      await Promise.all([
-
-        fetchJson(
-          `${MATCHORA_API}/schedule?watchable=1`
-        ),
-
-        fetchJson(
-          `${MATCHORA_API}/live`
-        )
-
-      ]);
-
-
-    const scheduleEvents =
-      Array.isArray(
-        scheduleData.events
-      )
-      ?
-      scheduleData.events
-      :
-      [];
-
-
-    const liveEvents =
-      Array.isArray(
-        liveData.events
-      )
-      ?
-      liveData.events
-      :
-      [];
-
-
-    const eventMap =
-      new Map();
-
-
-    scheduleEvents.forEach(
-      event => {
-
-        eventMap.set(
-          String(event.id),
-          event
-        );
-
-      }
-    );
-
-
-    liveEvents.forEach(
-      event => {
-
-        eventMap.set(
-          String(event.id),
-          event
-        );
-
-      }
-    );
-
-
-    allEvents =
-      Array.from(
-        eventMap.values()
+    const schedulePromise =
+      fetchJson(
+        `${SPORTS_API}/schedule?watchable=1`
       );
 
 
-    allEvents =
-      allEvents.filter(
-        event =>
-          !event.finished &&
-          (
-            isToday(event.kickoff) ||
-            isTomorrow(event.kickoff)
-          )
+    const livePromise =
+      fetchJson(
+        `${SPORTS_API}/live`
       );
 
 
-    buildSportButtons();
+    schedulePromise
+      .then(
+        scheduleData => {
 
-    updateStatusCounts();
-
-    renderCurrentView();
-
-    hideLoading();
+          scheduleLoaded = true;
 
 
-    document
-      .getElementById(
-        'errorState'
+          processScheduleData(
+            scheduleData
+          );
+
+
+          hideLoading();
+
+        }
       )
-      .classList.add(
-        'hidden'
+      .catch(
+        error => {
+
+          console.warn(
+            'Schedule data error:',
+            error
+          );
+
+        }
       );
+
+
+    livePromise
+      .then(
+        liveData => {
+
+          mergeLiveData(
+            liveData
+          );
+
+          hideLoading();
+
+        }
+      )
+      .catch(
+        error => {
+
+          console.warn(
+            'LIVE data error:',
+            error
+          );
+
+        }
+      );
+
+
+    const results =
+      await Promise.allSettled(
+        [
+          schedulePromise,
+          livePromise
+        ]
+      );
+
+
+    const scheduleFailed =
+      results[0].status === 'rejected';
+
+
+    const liveFailed =
+      results[1].status === 'rejected';
 
 
     if(
-      currentStatusFilter === 'live' &&
-      !allEvents.some(
-        event => event.live === true
-      )
+      scheduleFailed &&
+      liveFailed &&
+      !scheduleLoaded &&
+      !hasLoadedData
     ){
 
-      setStatusFilter(
-        'all'
+      throw (
+        results[0].reason ||
+        new Error(
+          'API недоступний'
+        )
       );
 
     }
@@ -1326,19 +1692,26 @@ async function fetchAllData(){
   }catch(error){
 
     console.error(
-      'Matchora API Error:',
+      'Sports API Error:',
       error
     );
 
-    hideLoading();
 
-    showError(
-      `Помилка Matchora API: ${error.message}`
-    );
+    if(!hasLoadedData){
+
+      showError(
+        `Помилка завантаження даних: ${error.message}`
+      );
+
+    }
+
 
   }finally{
 
+    hideLoading();
+
     isLoading = false;
+
 
     if(icon){
 
@@ -1432,10 +1805,6 @@ function getSportName(sport){
 
 }
 
-
-/* =========================================================
-   SPORT ICONS
-========================================================= */
 
 const sportIcons = {
 
@@ -2628,7 +2997,7 @@ function renderEventCard(event){
           class="score-text
                  text-lg
                  font-black
-                 text-emerald-400"
+                 text-brand-400"
         >
           ${escapeHtml(
             event.score || 'LIVE'
@@ -2813,8 +3182,6 @@ function renderEventCard(event){
 
           `
 
-            <!-- HOME -->
-
             <div
               class="min-w-0
                      flex flex-col
@@ -2860,8 +3227,6 @@ function renderEventCard(event){
             </div>
 
 
-            <!-- SCORE -->
-
             <div
               class="flex flex-col
                      items-center
@@ -2873,8 +3238,6 @@ function renderEventCard(event){
 
             </div>
 
-
-            <!-- AWAY -->
 
             <div
               class="min-w-0
@@ -2925,8 +3288,6 @@ function renderEventCard(event){
           :
 
           `
-
-            <!-- NON TEAM EVENT -->
 
             <div
               class="flex flex-col
@@ -3095,6 +3456,25 @@ async function openEventPlayer(eventId){
     return;
 
 
+  const modal =
+    document.getElementById(
+      'playerModal'
+    );
+
+
+  modal.classList.remove(
+    'hidden'
+  );
+
+  modal.classList.add(
+    'flex'
+  );
+
+
+  document.body.style.overflow =
+    'hidden';
+
+
   if(
     !Array.isArray(event.channels)
   ){
@@ -3103,7 +3483,7 @@ async function openEventPlayer(eventId){
 
       const details =
         await fetchJson(
-          `${MATCHORA_API}/events/${encodeURIComponent(event.id)}`
+          `${SPORTS_API}/events/${encodeURIComponent(event.id)}`
         );
 
       event = {
@@ -3127,21 +3507,9 @@ async function openEventPlayer(eventId){
     event;
 
 
-  const modal =
-    document.getElementById(
-      'playerModal'
-    );
-
-
   const iframe =
     document.getElementById(
       'streamIframe'
-    );
-
-
-  const loader =
-    document.getElementById(
-      'iframeLoader'
     );
 
 
@@ -3204,47 +3572,28 @@ async function openEventPlayer(eventId){
 
   const embed =
     event.embed_url ||
-    `${MATCHORA_API}/../embed/match/${event.id}`;
-
-
-  loader.style.opacity =
-    '1';
+    `${SPORTS_API}/../embed/match/${event.id}`;
 
 
   iframe.src =
     embed;
 
 
-  iframe.onload =
-    () => {
-
-      loader.style.opacity =
-        '0';
-
-    };
-
-
-  modal.classList.remove(
-    'hidden'
-  );
-
-  modal.classList.add(
-    'flex'
-  );
-
-
-  document.body.style.overflow =
-    'hidden';
+  updateFullscreenButton();
 
 }
 
 
-function enterPlayerFullscreen(){
+async function enterPlayerFullscreen(){
 
-  const modal =
+  const player =
     document.getElementById(
-      'playerModal'
+      'playerContainer'
     );
+
+
+  if(!player)
+    return;
 
 
   try{
@@ -3254,10 +3603,44 @@ function enterPlayerFullscreen(){
     ){
 
       if(
-        modal.requestFullscreen
+        player.requestFullscreen
       ){
 
-        modal.requestFullscreen();
+        await player.requestFullscreen();
+
+      }else if(
+        player.webkitRequestFullscreen
+      ){
+
+        player.webkitRequestFullscreen();
+
+      }
+
+
+      /*
+        На мобільному намагаємося
+        автоматично розвернути
+        fullscreen у landscape.
+      */
+      if(
+        screen.orientation &&
+        screen.orientation.lock
+      ){
+
+        try{
+
+          await screen.orientation.lock(
+            'landscape'
+          );
+
+        }catch(error){
+
+          console.warn(
+            'Orientation lock unavailable:',
+            error
+          );
+
+        }
 
       }
 
@@ -3269,6 +3652,154 @@ function enterPlayerFullscreen(){
       'Fullscreen error:',
       error
     );
+
+  }
+
+
+  updateFullscreenButton();
+
+}
+
+
+async function exitPlayerFullscreen(){
+
+  try{
+
+    if(
+      document.fullscreenElement
+    ){
+
+      await document.exitFullscreen();
+
+    }else if(
+      document.webkitFullscreenElement
+    ){
+
+      if(
+        document.webkitExitFullscreen
+      ){
+
+        document.webkitExitFullscreen();
+
+      }
+
+    }
+
+  }catch(error){
+
+    console.warn(
+      'Exit fullscreen error:',
+      error
+    );
+
+  }
+
+
+  try{
+
+    if(
+      screen.orientation &&
+      screen.orientation.unlock
+    ){
+
+      screen.orientation.unlock();
+
+    }
+
+  }catch(error){
+
+    console.warn(
+      'Orientation unlock unavailable:',
+      error
+    );
+
+  }
+
+
+  updateFullscreenButton();
+
+}
+
+
+function updateFullscreenButton(){
+
+  const button =
+    document.getElementById(
+      'modalFullscreenBtn'
+    );
+
+
+  const player =
+    document.getElementById(
+      'playerContainer'
+    );
+
+
+  if(!button)
+    return;
+
+
+  const icon =
+    button.querySelector(
+      'i'
+    );
+
+
+  const text =
+    button.querySelector(
+      'span'
+    );
+
+
+  const fullscreen =
+    Boolean(
+      document.fullscreenElement === player ||
+      document.webkitFullscreenElement === player
+    );
+
+
+  if(fullscreen){
+
+    if(icon){
+
+      icon.className =
+        'fa-solid fa-compress';
+
+    }
+
+
+    if(text){
+
+      text.innerText =
+        'Вийти';
+
+    }
+
+
+    button.title =
+      'Вийти з повного екрана';
+
+
+  }else{
+
+    if(icon){
+
+      icon.className =
+        'fa-solid fa-expand';
+
+    }
+
+
+    if(text){
+
+      text.innerText =
+        'Повний екран';
+
+    }
+
+
+    button.title =
+      'Повний екран';
 
   }
 
@@ -3286,89 +3817,135 @@ function renderModalInfo(event){
   box.innerHTML = `
 
     <div
-      class="grid
-             grid-cols-2
-             sm:grid-cols-3
+      class="flex flex-col sm:flex-row
+             items-stretch sm:items-center
+             justify-between
              gap-3"
     >
 
-      <div>
+      <div
+        class="grid
+               grid-cols-2
+               sm:grid-cols-3
+               gap-3
+               flex-1
+               min-w-0"
+      >
 
-        <div
-          class="text-[9px]
-                 text-zinc-600
-                 uppercase
-                 tracking-wider"
-        >
-          Ліга
+        <div>
+
+          <div
+            class="text-[9px]
+                   text-zinc-600
+                   uppercase
+                   tracking-wider"
+          >
+            Ліга
+          </div>
+
+          <div
+            class="text-xs
+                   text-zinc-200
+                   font-semibold
+                   mt-1 truncate"
+          >
+            ${escapeHtml(
+              event.league || '-'
+            )}
+          </div>
+
         </div>
 
-        <div
-          class="text-xs
-                 text-zinc-200
-                 font-semibold
-                 mt-1 truncate"
-        >
-          ${escapeHtml(
-            event.league || '-'
-          )}
+
+        <div>
+
+          <div
+            class="text-[9px]
+                   text-zinc-600
+                   uppercase
+                   tracking-wider"
+          >
+            Вид спорту
+          </div>
+
+          <div
+            class="text-xs
+                   text-zinc-200
+                   font-semibold
+                   mt-1"
+          >
+            ${escapeHtml(
+              getSportName(event.sport)
+            )}
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div
+            class="text-[9px]
+                   text-zinc-600
+                   uppercase
+                   tracking-wider"
+          >
+            Рахунок
+          </div>
+
+          <div
+            class="text-xs
+                   text-brand-400
+                   font-bold
+                   mt-1"
+          >
+            ${escapeHtml(
+              event.score || 'VS'
+            )}
+          </div>
+
         </div>
 
       </div>
 
 
-      <div>
+      <button
+        id="modalFullscreenBtn"
+        onclick="toggleModalFullscreen()"
+        title="Повний екран"
+        class="
+          shrink-0
+          self-stretch sm:self-auto
+          px-3 py-2
+          rounded-xl
+          bg-brand-600
+          hover:bg-brand-700
+          text-white
+          font-semibold
+          text-xs
+          transition-all
+          flex items-center
+          justify-center
+          gap-2
+          shadow-md
+          shadow-brand-600/20
+          active:scale-95
+        "
+      >
 
-        <div
-          class="text-[9px]
-                 text-zinc-600
-                 uppercase
-                 tracking-wider"
-        >
-          Вид спорту
-        </div>
+        <i class="fa-solid fa-expand"></i>
 
-        <div
-          class="text-xs
-                 text-zinc-200
-                 font-semibold
-                 mt-1"
-        >
-          ${escapeHtml(
-            getSportName(event.sport)
-          )}
-        </div>
+        <span>
+          Повний екран
+        </span>
 
-      </div>
-
-
-      <div>
-
-        <div
-          class="text-[9px]
-                 text-zinc-600
-                 uppercase
-                 tracking-wider"
-        >
-          Рахунок
-        </div>
-
-        <div
-          class="text-xs
-                 text-emerald-400
-                 font-bold
-                 mt-1"
-        >
-          ${escapeHtml(
-            event.score || 'VS'
-          )}
-        </div>
-
-      </div>
+      </button>
 
     </div>
 
   `;
+
+  updateFullscreenButton();
 
 }
 
@@ -3409,8 +3986,7 @@ function renderModalChannels(event){
         class="text-xs
                text-zinc-600"
       >
-        Matchora не повернув
-        окремих каналів для цієї події.
+        Окремих каналів для цієї події немає.
       </div>
 
     `;
@@ -3603,20 +4179,10 @@ function switchMatchChannel(
     );
 
 
-  const loader =
-    document.getElementById(
-      'iframeLoader'
-    );
-
-
   const title =
     document.getElementById(
       'modalMatchSubtitle'
     );
-
-
-  loader.style.opacity =
-    '1';
 
 
   iframe.src =
@@ -3625,15 +4191,6 @@ function switchMatchChannel(
 
   title.innerText =
     `${currentEvent?.league || 'Sports'} • ${name || 'Channel'}`;
-
-
-  iframe.onload =
-    () => {
-
-      loader.style.opacity =
-        '0';
-
-    };
 
 }
 
@@ -3656,12 +4213,35 @@ function closePlayerModal(){
     document.fullscreenElement
   ){
 
-    document.exitFullscreen()
-      .catch(
+    const exitPromise =
+      document.exitFullscreen();
+
+    if(
+      exitPromise &&
+      typeof exitPromise.catch === 'function'
+    ){
+
+      exitPromise.catch(
         () => {}
       );
 
+    }
+
   }
+
+
+  try{
+
+    if(
+      screen.orientation &&
+      screen.orientation.unlock
+    ){
+
+      screen.orientation.unlock();
+
+    }
+
+  }catch(error){}
 
 
   iframe.src =
@@ -3688,11 +4268,18 @@ function closePlayerModal(){
 
 function toggleModalFullscreen(){
 
+  const player =
+    document.getElementById(
+      'playerContainer'
+    );
+
+
   if(
-    document.fullscreenElement
+    document.fullscreenElement === player ||
+    document.webkitFullscreenElement === player
   ){
 
-    document.exitFullscreen();
+    exitPlayerFullscreen();
 
     return;
 
@@ -3873,6 +4460,24 @@ document.addEventListener(
         )
       ){
 
+        const player =
+          document.getElementById(
+            'playerContainer'
+          );
+
+
+        if(
+          document.fullscreenElement === player ||
+          document.webkitFullscreenElement === player
+        ){
+
+          exitPlayerFullscreen();
+
+          return;
+
+        }
+
+
         closePlayerModal();
 
       }
@@ -3883,106 +4488,97 @@ document.addEventListener(
 );
 
 
+/*
+  ШВИДКЕ LIVE ОНОВЛЕННЯ.
+*/
+
 setInterval(
   async () => {
 
     if(
-      !document.hidden &&
-      !isLoading
+      document.hidden ||
+      !hasLoadedData
     ){
 
-      try{
+      return;
 
-        const live =
-          await fetchJson(
-            `${MATCHORA_API}/live`
-          );
+    }
 
 
-        if(
-          Array.isArray(
-            live.events
-          )
-        ){
+    try{
 
-          const liveMap =
-            new Map();
+      const live =
+        await fetchJson(
+          `${SPORTS_API}/live`
+        );
 
 
-          live.events.forEach(
-            event => {
+      if(
+        Array.isArray(
+          live.events
+        )
+      ){
 
-              liveMap.set(
-                String(event.id),
-                event
-              );
-
-            }
-          );
-
-
-          allEvents =
-            allEvents
-              .map(
-                event =>
-                  liveMap.has(
-                    String(event.id)
-                  )
-                  ?
-                  {
-                    ...event,
-                    ...liveMap.get(
-                      String(event.id)
-                    )
-                  }
-                  :
-                  event
-              )
-              .filter(
-                event =>
-                  !event.finished &&
-                  (
-                    isToday(event.kickoff) ||
-                    isTomorrow(event.kickoff)
-                  )
-              );
-
-
-          buildSportButtons();
-
-          updateStatusCounts();
-
-          renderCurrentView();
-
-
-          if(
-            currentStatusFilter === 'live' &&
-            !allEvents.some(
-              event => event.live === true
-            )
-          ){
-
-            setStatusFilter(
-              'all'
-            );
-
-          }
-
-        }
-
-      }catch(error){
-
-        console.warn(
-          'LIVE refresh:',
-          error
+        mergeLiveData(
+          live
         );
 
       }
 
+    }catch(error){
+
+      console.warn(
+        'LIVE refresh:',
+        error
+      );
+
     }
 
   },
-  120000
+  45000
+);
+
+
+/*
+  SCORE ОНОВЛЕННЯ.
+*/
+
+setInterval(
+  async () => {
+
+    if(
+      document.hidden ||
+      !hasLoadedData
+    ){
+
+      return;
+
+    }
+
+
+    try{
+
+      const scores =
+        await fetchJson(
+          `${SPORTS_API}/scores`
+        );
+
+
+      mergeScoreData(
+        scores
+      );
+
+    }catch(error){
+
+      console.warn(
+        'SCORES refresh:',
+        error
+      );
+
+    }
+
+  },
+  15000
 );
 
 </script>
