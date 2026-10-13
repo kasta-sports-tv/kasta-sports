@@ -2,11 +2,12 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sport Player</title>
 
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       width: 100%;
@@ -18,6 +19,8 @@
     .player-container {
       position: fixed;
       inset: 0;
+      width: 100%;
+      height: 100%;
       background: #000;
     }
 
@@ -30,46 +33,87 @@
   </style>
 
   <script>
-    (() => {
+    (function () {
       'use strict';
 
-      // 1. Блокуємо window.open на зовнішній сторінці
-      try {
-        window.open = function () {
-          console.log('[PopupBlock] Заблоковано window.open');
-          return null;
-        };
-      } catch (e) {}
+      const blockedHosts = new Set([
+        'nexify-zone.com',
+        'www.nexify-zone.com',
+        'adzilla.meme',
+        'www.adzilla.meme'
+      ]);
 
-      // 2. Блокуємо посилання з target="_blank"
-      function protectLinks(root) {
-        if (!root || !root.querySelectorAll) return;
-
-        const links = [];
-
-        if (root.matches && root.matches('a[target="_blank"]')) {
-          links.push(root);
+      function isBlocked(url) {
+        try {
+          const parsed = new URL(url, location.href);
+          return blockedHosts.has(parsed.hostname.toLowerCase());
+        } catch (e) {
+          return false;
         }
-
-        root.querySelectorAll('a[target="_blank"]').forEach(link => {
-          links.push(link);
-        });
-
-        links.forEach(link => {
-          link.removeAttribute('target');
-          link.setAttribute('rel', 'noopener noreferrer');
-        });
       }
 
-      // 3. Перевіряємо посилання, що вже є на сторінці
-      document.addEventListener('DOMContentLoaded', () => {
-        protectLinks(document);
+      // Перехоплюємо window.open на зовнішній сторінці
+      const originalOpen = window.open;
 
-        // 4. Перевіряємо нові елементи, які додають скрипти
-        const observer = new MutationObserver(records => {
-          records.forEach(record => {
-            record.addedNodes.forEach(node => {
-              if (node.nodeType === 1) protectLinks(node);
+      window.open = function (url, ...args) {
+        if (url && isBlocked(url)) {
+          console.log('[AdBlock] Заблоковано:', url);
+          return null;
+        }
+
+        return originalOpen.call(window, url, ...args);
+      };
+
+      // Блокуємо посилання на відомі рекламні домени
+      document.addEventListener('click', function (event) {
+        const target = event.target;
+
+        if (!target || !target.closest) return;
+
+        const link = target.closest('a[href]');
+
+        if (link && isBlocked(link.href)) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+
+          console.log(
+            '[AdBlock] Заблоковано рекламне посилання:',
+            link.href
+          );
+        }
+      }, true);
+
+      // Не дозволяємо зовнішнім скриптам додавати такі посилання
+      document.addEventListener('DOMContentLoaded', function () {
+        function cleanLinks(root) {
+          if (!root || !root.querySelectorAll) return;
+
+          const links = [];
+
+          if (root.matches && root.matches('a[href]')) {
+            links.push(root);
+          }
+
+          root.querySelectorAll('a[href]').forEach(function (link) {
+            links.push(link);
+          });
+
+          links.forEach(function (link) {
+            if (isBlocked(link.href)) {
+              link.removeAttribute('href');
+              link.removeAttribute('target');
+            }
+          });
+        }
+
+        cleanLinks(document);
+
+        const observer = new MutationObserver(function (records) {
+          records.forEach(function (record) {
+            record.addedNodes.forEach(function (node) {
+              if (node.nodeType === 1) {
+                cleanLinks(node);
+              }
             });
           });
         });
@@ -78,18 +122,6 @@
           childList: true,
           subtree: true
         });
-
-        // 5. Перехоплюємо кліки по звичайних посиланнях
-        document.addEventListener('click', event => {
-          const link = event.target.closest &&
-            event.target.closest('a[target="_blank"]');
-
-          if (link) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            console.log('[PopupBlock] Заблоковано посилання');
-          }
-        }, true);
       });
     })();
   </script>
@@ -101,8 +133,10 @@
       src="https://liveon5.zip/sonic/index.php?a=3896"
       title="Sport Player"
       frameborder="0"
+      webkitallowfullscreen="true"
+      mozallowfullscreen="true"
+      allowfullscreen="true"
       allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-      allowfullscreen
       scrolling="no">
     </iframe>
   </div>
