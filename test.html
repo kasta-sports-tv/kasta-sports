@@ -2,24 +2,22 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sport Player</title>
 
   <style>
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
-      background: #000;
       overflow: hidden;
+      background: #000;
     }
 
     .player-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
+      position: fixed;
+      inset: 0;
       background: #000;
     }
 
@@ -31,15 +29,68 @@
     }
   </style>
 
-  <!-- Тестове блокування відкриття вкладок зі сторінки-обгортки -->
   <script>
-    (function () {
+    (() => {
       'use strict';
 
-      window.open = function () {
-        console.log('[AdTest] Заблоковано window.open на сторінці');
-        return null;
-      };
+      // 1. Блокуємо window.open на зовнішній сторінці
+      try {
+        window.open = function () {
+          console.log('[PopupBlock] Заблоковано window.open');
+          return null;
+        };
+      } catch (e) {}
+
+      // 2. Блокуємо посилання з target="_blank"
+      function protectLinks(root) {
+        if (!root || !root.querySelectorAll) return;
+
+        const links = [];
+
+        if (root.matches && root.matches('a[target="_blank"]')) {
+          links.push(root);
+        }
+
+        root.querySelectorAll('a[target="_blank"]').forEach(link => {
+          links.push(link);
+        });
+
+        links.forEach(link => {
+          link.removeAttribute('target');
+          link.setAttribute('rel', 'noopener noreferrer');
+        });
+      }
+
+      // 3. Перевіряємо посилання, що вже є на сторінці
+      document.addEventListener('DOMContentLoaded', () => {
+        protectLinks(document);
+
+        // 4. Перевіряємо нові елементи, які додають скрипти
+        const observer = new MutationObserver(records => {
+          records.forEach(record => {
+            record.addedNodes.forEach(node => {
+              if (node.nodeType === 1) protectLinks(node);
+            });
+          });
+        });
+
+        observer.observe(document.documentElement, {
+          childList: true,
+          subtree: true
+        });
+
+        // 5. Перехоплюємо кліки по звичайних посиланнях
+        document.addEventListener('click', event => {
+          const link = event.target.closest &&
+            event.target.closest('a[target="_blank"]');
+
+          if (link) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            console.log('[PopupBlock] Заблоковано посилання');
+          }
+        }, true);
+      });
     })();
   </script>
 </head>
@@ -48,14 +99,10 @@
   <div class="player-container">
     <iframe
       src="https://liveon5.zip/sonic/index.php?a=3896"
-      width="100%"
-      height="100%"
+      title="Sport Player"
       frameborder="0"
-      webkitallowfullscreen="true"
-      mozallowfullscreen="true"
-      msExitFullscreen="true"
-      allowfullscreen="true"
-      allow="encrypted-media"
+      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+      allowfullscreen
       scrolling="no">
     </iframe>
   </div>
