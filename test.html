@@ -1,142 +1,1661 @@
+
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" class="dark h-full">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Адаптивний Video.js 16/9</title>
-<link href="https://unpkg.com/video.js@7.10.2/dist/video-js.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Kasta Sports — Live Sports</title>
 
-<style>
-  body {
-    margin: 0;
-    background: #000;
-  }
+  <link rel="preconnect" href="https://abisnews.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  /* Контейнер 16/9 */
-  .video-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    padding-top: 56.25%;
-    overflow: hidden;
-  }
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  /* Плеєр */
-  .video-container .video-js {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 100% !important;
-  }
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f4f4f5',
+              400: '#a1a1aa',
+              500: '#d4d4d8',
+              600: '#e4e4e7',
+              700: '#f4f4f5',
+              800: '#fafafa'
+            },
+            matte: {
+              bg: '#0b0c0e',
+              card: '#141518',
+              hover: '#202226',
+              border: '#292b30',
+              accent: '#1b1d21'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          },
+          animation: {
+            'pulse-fast': 'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }
+        }
+      }
+    }
+  </script>
 
-  /* Контролбар */
-  .video-js .vjs-control-bar {
-    box-sizing: border-box;
-  }
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #0b0c0e;
+      --card: #141518;
+      --card-hover: #1b1d21;
+      --border: #292b30;
+      --muted: #858891;
+      --accent: #e5e7eb;
+      --live: #ef4444;
+    }
 
-  /* === ВОДЯНИЙ ЗНАК === */
-  .video-watermark {
-    pointer-events: none;
-    z-index: 9999;
-    position: absolute;
-    filter: drop-shadow(0 0 6px rgba(0,191,255,0.8))
-            drop-shadow(0 0 12px rgba(173,216,230,0.6));
-    transition: all 0.3s ease;
-  }
-</style>
+    * { -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      background: var(--page);
+      color: #f4f4f5;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    body { min-height: 100%; }
+
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: var(--page); }
+    ::-webkit-scrollbar-thumb { background: #34363c; border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: #494c54; }
+
+    .glass-nav {
+      background: rgba(15,16,19,.94);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .card-glow {
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .card-glow:hover {
+      background: #191a1e;
+      border-color: #3a3c43;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .player-shadow { box-shadow: 0 24px 70px rgba(0,0,0,.55); }
+
+    .live-glow { box-shadow: inset 3px 0 0 rgba(239,68,68,.8); }
+
+    .channel-active {
+      border-color: #e4e4e7 !important;
+      background: #303238 !important;
+      color: white !important;
+    }
+
+    .modal-backdrop {
+      background: rgba(0,0,0,.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .iframe-frame {
+      background: radial-gradient(circle at center, #17181b, #000 65%);
+    }
+
+    /* Блокуємо кліки всередині стороннього плеєра */
+    #streamIframe {
+      pointer-events: none;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #playerFullscreenBack {
+      display: none;
+      position: absolute;
+      top: calc(12px + env(safe-area-inset-top));
+      left: 12px;
+      z-index: 30;
+      pointer-events: auto;
+    }
+
+    #playerContainer:fullscreen,
+    #playerContainer:-webkit-full-screen {
+      width: 100vw !important;
+      height: 100vh !important;
+      min-height: 100vh !important;
+      max-height: none !important;
+      aspect-ratio: auto !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: #000 !important;
+    }
+
+    #playerContainer:fullscreen #streamIframe,
+    #playerContainer:-webkit-full-screen #streamIframe {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
+    }
+
+    #playerContainer:fullscreen #playerFullscreenBack,
+    #playerContainer:-webkit-full-screen #playerFullscreenBack {
+      display: flex;
+    }
+
+    .status-live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 9px rgba(239,68,68,.65);
+      flex-shrink: 0;
+    }
+
+    .quality-badge {
+      font-size: 9px;
+      line-height: 1;
+      padding: 4px 6px;
+      border-radius: 5px;
+      background: #24262b;
+      color: #c2c4ca;
+      border: 1px solid #36383e;
+    }
+
+    .marquee-wrap {
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .marquee {
+      display: inline-flex;
+      align-items: center;
+      gap: 40px;
+      white-space: nowrap;
+      animation: marquee 24s linear infinite;
+      padding-left: 100%;
+    }
+
+    .marquee:hover { animation-play-state: paused; }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .score-box {
+      min-width: 58px;
+      width: max-content;
+      max-width: 100%;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .score-text {
+      white-space: nowrap;
+      display: block;
+      text-align: center;
+    }
+
+    .tournament-heading { grid-column: 1 / -1; }
+
+    .mobile-card {
+      padding: 11px !important;
+      border-radius: 12px !important;
+      gap: 0;
+    }
+
+    .match-card-header {
+      padding-bottom: 8px !important;
+      margin-bottom: 0;
+    }
+
+    .match-card-teams {
+      padding-top: 9px !important;
+      padding-bottom: 9px !important;
+      gap: 5px !important;
+    }
+
+    .team-logo {
+      width: 43px !important;
+      height: 43px !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+    }
+
+    .team-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .team-name {
+      font-size: 11px !important;
+      line-height: 1.25 !important;
+      font-weight: 700 !important;
+    }
+
+    .score-text { font-size: 14px; }
+
+    .match-card-footer { padding-top: 8px !important; }
+
+    .sport-tab, .status-tab {
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+
+    .sport-tab.bg-brand-600,
+    .status-tab.bg-brand-600 {
+      background: #e5e7eb !important;
+      color: #111216 !important;
+      border-color: #e5e7eb !important;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #777b84 !important;
+      box-shadow: 0 0 0 2px rgba(180,182,188,.08);
+    }
+
+    button { touch-action: manipulation; }
+
+    .player-control {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border-radius: 9px;
+      background: #e5e7eb;
+      color: #111216;
+      font-size: 12px;
+      font-weight: 800;
+      transition: background .15s ease, transform .15s ease;
+    }
+
+    .player-control:hover { background: #fff; }
+    .player-control:active { transform: scale(.96); }
+
+    @media (min-width: 768px) {
+      .mobile-card { padding: 13px !important; }
+      .team-logo { width: 46px !important; height: 46px !important; }
+    }
+
+    @media (max-width: 640px) {
+      .mobile-card { padding: 10px !important; }
+      .team-logo { width: 39px !important; height: 39px !important; }
+      .team-name { font-size: 10px !important; }
+      .score-box { min-width: 48px; }
+      .score-text { font-size: 12px !important; }
+
+      #playerModal {
+        padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom)) 8px !important;
+        align-items: flex-start !important;
+      }
+
+      #playerModal #modalBox {
+        width: 100% !important;
+        height: auto !important;
+        max-width: none !important;
+        max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px) !important;
+        border-radius: 13px !important;
+        border: 1px solid #292b30 !important;
+        margin-top: 0 !important;
+      }
+
+      #modalMatchInfo { padding: 10px 12px !important; }
+      #modalFullscreenBtn { min-width: 38px; }
+      #playerContainer { max-height: none; }
+
+      #playerContainer:fullscreen,
+      #playerContainer:-webkit-full-screen {
+        width: 100vw !important;
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+      }
+    }
+  </style>
 </head>
-<body>
 
-<div class="video-container" id="videoContainer">
-  <video id="videoPlayer" class="video-js vjs-default-skin" controls preload="auto" playsinline></video>
+<body class="h-full flex flex-col antialiased selection:bg-zinc-500 selection:text-white">
 
-  <!-- 🔥 Водяний знак -->
-  <div class="video-watermark" id="wm">
-    <img src="https://imgpx.com/QNw0mYKgAwaA.png">
+<header class="sticky top-0 z-40 glass-nav border-b border-matte-border">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 gap-3">
+      <div class="flex items-center gap-3 cursor-pointer shrink-0" onclick="resetFilters()">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-500 to-zinc-800 flex items-center justify-center text-white shadow-lg">
+          <i class="fa-solid fa-trophy text-lg"></i>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold tracking-tight text-white block leading-none">
+            KASTA<span class="text-zinc-400">SPORTS</span>
+          </span>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-zinc-500">Match Center</span>
+        </div>
+      </div>
+
+      <div class="hidden md:flex flex-1 max-w-md mx-4">
+        <div class="relative w-full">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+          <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Пошук команд, ліг або подій..."
+            class="w-full bg-matte-accent text-sm text-zinc-100 placeholder-zinc-600 rounded-xl pl-10 pr-10 py-2 border border-matte-border transition-all" />
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="hidden sm:flex items-center gap-2 bg-matte-card border border-matte-border px-3 py-1.5 rounded-lg text-xs font-mono">
+          <i class="fa-regular fa-clock text-zinc-400"></i>
+          <span id="kyivClock" class="font-bold text-white text-sm">--:--</span>
+        </div>
+
+        <div class="hidden lg:flex items-center gap-2 bg-red-500/5 border border-red-500/15 px-3 py-1.5 rounded-lg text-[10px] font-bold text-red-400">
+          <span class="status-live-dot animate-pulse"></span> LIVE
+        </div>
+
+        <button onclick="fetchAllData()" id="refreshBtn" class="flex items-center gap-2 bg-matte-accent hover:bg-matte-hover border border-matte-border text-zinc-200 text-xs font-semibold py-2 px-3 rounded-lg transition-all active:scale-95">
+          <i class="fa-solid fa-arrows-rotate text-zinc-400" id="refreshIcon"></i>
+          <span class="hidden sm:inline">Оновити</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="pb-3 md:hidden">
+      <div class="relative w-full">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm"></i>
+        <input type="text" id="searchInputMobile" oninput="handleSearch(this.value)" placeholder="Пошук матчу або команди..."
+          class="w-full bg-matte-accent text-sm text-zinc-100 placeholder-zinc-600 rounded-xl pl-10 pr-4 py-2 border border-matte-border" />
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col gap-5">
+
+  <div class="flex items-center gap-3 bg-matte-card border border-matte-border rounded-xl px-3 py-2 overflow-hidden">
+    <div class="shrink-0 w-7 h-7 rounded-lg bg-matte-hover text-zinc-300 flex items-center justify-center">
+      <i class="fa-brands fa-telegram"></i>
+    </div>
+    <div class="marquee-wrap">
+      <div class="marquee text-xs text-zinc-400">
+        <span><i class="fa-brands fa-telegram text-zinc-300 mr-1"></i> Telegram: @SportKasTV</span>
+        <span class="text-zinc-600">•</span>
+        <span>Kasta Sports — прямі спортивні трансляції</span>
+        <span class="text-zinc-600">•</span>
+        <span>Приєднуйтесь до Telegram-групи</span>
+        <span class="text-zinc-600">•</span>
+        <span>@SportKasTV</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between gap-3 border-b border-matte-border pb-3">
+    <div class="flex items-center bg-matte-card p-1 rounded-xl border border-matte-border overflow-x-auto no-scrollbar">
+      <button onclick="setStatusFilter('all')" id="status-all" class="status-tab text-xs font-medium px-3 py-2 rounded-lg text-zinc-400 hover:text-white transition-all shrink-0 flex items-center gap-1.5">
+        <span>Усі</span><span id="status-count-all" class="text-[9px] opacity-60">0</span>
+      </button>
+      <button onclick="setStatusFilter('live')" id="status-live" class="status-tab text-xs font-medium px-3 py-2 rounded-lg text-zinc-900 bg-brand-600 transition-all flex items-center gap-1.5 shrink-0">
+        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+        <span>LIVE</span><span id="status-count-live" class="text-[9px] opacity-70">0</span>
+      </button>
+      <button onclick="setStatusFilter('upcoming')" id="status-upcoming" class="status-tab text-xs font-medium px-3 py-2 rounded-lg text-zinc-400 hover:text-white transition-all shrink-0 flex items-center gap-1.5">
+        <span>Скоро</span><span id="status-count-upcoming" class="text-[9px] opacity-60">0</span>
+      </button>
+      <button onclick="setStatusFilter('tomorrow')" id="status-tomorrow" class="status-tab text-xs font-medium px-3 py-2 rounded-lg text-zinc-400 hover:text-white transition-all shrink-0 flex items-center gap-1.5">
+        <span>Завтра</span><span id="status-count-tomorrow" class="text-[9px] opacity-60">0</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+    <button onclick="setSportFilter('all')" id="sport-all" class="sport-tab shrink-0 px-3.5 py-2 rounded-lg text-xs font-semibold bg-brand-600 text-zinc-900 border border-brand-600 flex items-center gap-1.5">
+      <i class="fa-solid fa-layer-group text-[11px]"></i> Усі види спорту
+    </button>
+    <div id="sportButtons" class="flex gap-2"></div>
+  </div>
+
+  <div id="loadingState" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+    <script>
+      document.write(Array(6).fill(0).map(() => `
+        <div class="bg-matte-card border border-matte-border rounded-xl p-3 animate-pulse flex flex-col gap-3">
+          <div class="flex justify-between">
+            <div class="h-3 w-28 bg-matte-accent rounded"></div>
+            <div class="h-4 w-14 bg-matte-accent rounded-full"></div>
+          </div>
+          <div class="flex items-center justify-between py-2">
+            <div class="flex flex-col items-center gap-2"><div class="w-10 h-10 bg-matte-accent rounded-lg"></div><div class="h-3 w-16 bg-matte-accent rounded"></div></div>
+            <div class="h-4 w-8 bg-matte-accent rounded"></div>
+            <div class="flex flex-col items-center gap-2"><div class="w-10 h-10 bg-matte-accent rounded-lg"></div><div class="h-3 w-16 bg-matte-accent rounded"></div></div>
+          </div>
+          <div class="h-7 bg-matte-accent rounded-lg"></div>
+        </div>
+      `).join(''));
+    </script>
+  </div>
+
+  <div id="errorState" class="hidden flex-col items-center justify-center py-16 text-center">
+    <div class="w-16 h-16 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl flex items-center justify-center mb-4 text-2xl">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <h3 class="text-lg font-bold text-white mb-2">Не вдалося завантажити дані</h3>
+    <p class="text-sm text-zinc-400 max-w-md mb-6" id="errorMessage">Сервер даних тимчасово недоступний.</p>
+    <button onclick="fetchAllData()" class="px-5 py-2 bg-zinc-200 hover:bg-white text-zinc-900 font-semibold rounded-xl text-sm transition-all">Спробувати знову</button>
+  </div>
+
+  <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center">
+    <div class="w-16 h-16 bg-matte-accent text-zinc-500 rounded-2xl flex items-center justify-center mb-4 text-2xl border border-matte-border">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
+    <h3 class="text-lg font-bold text-white mb-1">Подій не знайдено</h3>
+    <p class="text-sm text-zinc-400">Спробуйте змінити фільтри або пошук.</p>
+  </div>
+
+  <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+</main>
+
+<div id="playerModal" class="fixed inset-0 z-50 hidden items-center justify-center p-2 sm:p-4 md:p-6">
+  <div class="absolute inset-0 modal-backdrop" onclick="closePlayerModal()"></div>
+
+  <div id="modalBox" class="relative w-full max-w-6xl bg-matte-card border border-matte-border rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[96vh] z-10">
+
+    <div class="flex items-center justify-between px-4 py-3 bg-matte-bg border-b border-matte-border">
+      <div class="flex items-center gap-3 overflow-hidden">
+        <span id="modalLiveDot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shrink-0"></span>
+        <div class="truncate">
+          <h4 id="modalMatchTitle" class="text-sm sm:text-base font-bold text-white truncate">Match Streaming</h4>
+          <p id="modalMatchSubtitle" class="text-xs text-zinc-400 truncate">Sports Player</p>
+        </div>
+      </div>
+      <button onclick="closePlayerModal()" title="Закрити" class="w-8 h-8 rounded-lg bg-matte-accent hover:bg-red-500/20 hover:text-red-400 text-zinc-300 flex items-center justify-center text-xs transition-colors">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+    </div>
+
+    <div id="playerContainer" class="relative w-full aspect-video bg-black iframe-frame flex items-center justify-center overflow-hidden">
+      <iframe id="streamIframe" class="w-full h-full border-0"
+        allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin"></iframe>
+
+      <button id="playerFullscreenBack" onclick="exitPlayerFullscreen()" title="Назад" aria-label="Назад"
+        class="items-center justify-center gap-2 px-4 py-2 rounded-xl bg-black/75 hover:bg-black/90 border border-white/15 text-white text-sm font-semibold shadow-xl backdrop-blur-md active:scale-95">
+        <i class="fa-solid fa-arrow-left"></i><span>Назад</span>
+      </button>
+    </div>
+
+    <div id="modalMatchInfo" class="px-4 py-3 bg-matte-card border-b border-matte-border"></div>
+
+    <div class="p-4 bg-matte-bg border-t border-matte-border">
+      <div class="flex items-center justify-between gap-3 mb-2">
+        <div class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Трансляції цієї події</div>
+        <div id="modalChannelsCount" class="text-[10px] text-zinc-500">0</div>
+      </div>
+      <div id="modalChannelsList" class="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1"></div>
+    </div>
   </div>
 </div>
 
-<script src="https://unpkg.com/video.js@7.10.2/dist/video.min.js"></script>
 <script>
-  // === Отримання URL з параметру ?url= ===
-  function getQueryVariable(variable) {
-    const query = window.location.search.substring(1);
-    const vars = query.split("&");
-    for (let i = 0; i < vars.length; i++) {
-      const pair = vars[i].split("=");
-      if (pair[0] === variable) return decodeURIComponent(pair[1]);
-    }
-    return null;
+/* НОВИЙ API */
+const SPORTS_API = 'https://abisnews.com/api-central.php';
+
+let allEvents = [];
+let currentStatusFilter = 'live';
+let currentSportFilter = 'all';
+let searchQuery = '';
+let currentEvent = null;
+let isLoading = false;
+let hasLoadedData = false;
+let currentStreamUrl = '';
+let soundEnabled = true;
+
+/*
+  API не повертає окремого статусу LIVE.
+  Для відображення LIVE використовується приблизне часове вікно
+  від початку події. Це не замінює фактичний статус матчу.
+*/
+const sportLiveDurations = {
+  football: 165,
+  hockey: 180,
+  basketball: 180,
+  tennis: 240,
+  mma: 180,
+  boxing: 180,
+  formula1: 180,
+  baseball: 240,
+  americanfootball: 240
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  startKyivClock();
+  fetchAllData();
+
+  setInterval(fetchAllData, 180000);
+
+  document.addEventListener('fullscreenchange', updateFullscreenButton);
+  document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+});
+
+function startKyivClock() {
+  function updateClock() {
+    const time = new Date().toLocaleTimeString('uk-UA', {
+      timeZone: 'Europe/Kyiv',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const element = document.getElementById('kyivClock');
+    if (element) element.innerText = time;
   }
 
-  const nowPlayVideoUrl = getQueryVariable("url") || 'https://cors.orestlutij9.workers.dev/?url=https://mfvideo246.top/hls/ms11.m3u8';
+  updateClock();
+  setInterval(updateClock, 1000);
+}
 
-  const options = {
-    autoplay: false, // автоплей вимкнено
-    muted: false,    // звук увімкнено одразу
-    preload: 'auto',
-    controls: true
+async function fetchJson(url) {
+  const response = await fetch(url, {
+    method: 'GET',
+    cache: 'no-store',
+    headers: { 'Accept': 'application/json' }
+  });
+
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+  return await response.json();
+}
+
+/* Перетворення назви події API у формат картки сайту */
+function normalizeEvent(raw, index) {
+  const timestamp = Number(raw.timestamp || 0);
+  const eventTitle = String(raw.event || 'Спортивна подія').trim();
+  const sport = String(raw.sport || 'other').toLowerCase();
+
+  const links = Array.isArray(raw.links)
+    ? raw.links.filter(url => typeof url === 'string' && /^https?:\/\//i.test(url))
+    : [];
+
+  let title = eventTitle;
+  let league = '';
+
+  /*
+    Наприклад:
+    Football: Newcastle Jets vs Gamba Osaka
+    Tennis ATP Shanghai: Arthur Gea vs Jakub Mensik
+  */
+  const colonIndex = title.indexOf(':');
+
+  if (colonIndex !== -1) {
+    const prefix = title.slice(0, colonIndex).trim();
+    const rest = title.slice(colonIndex + 1).trim();
+
+    if (prefix && rest) {
+      const prefixLower = prefix.toLowerCase();
+
+      const genericSportNames = [
+        'football', 'soccer', 'tennis', 'hockey',
+        'basketball', 'boxing', 'mma', 'baseball',
+        'american football', 'motorsport'
+      ];
+
+      if (genericSportNames.includes(prefixLower)) {
+        title = rest;
+      } else {
+        league = prefix;
+        title = rest;
+      }
+    }
+  }
+
+  const parts = title.split(/\s+vs\.?\s+/i);
+  const home = parts.length > 1 ? parts[0].trim() : title;
+  const away = parts.length > 1 ? parts.slice(1).join(' vs ').trim() : '';
+
+  if (!league) league = getSportName(sport);
+
+  const now = Math.floor(Date.now() / 1000);
+  const elapsedMinutes = (now - timestamp) / 60;
+  const liveDuration = sportLiveDurations[sport] || 180;
+
+  const isLive = timestamp > 0 &&
+    timestamp <= now &&
+    elapsedMinutes <= liveDuration;
+
+  const isUpcoming = timestamp > now;
+
+  return {
+    id: `${timestamp}-${index}-${eventTitle}`,
+    timestamp,
+    kickoff: timestamp,
+    date: raw.date || '',
+    time: raw.time || '',
+    sport,
+    eventTitle,
+    home,
+    away,
+    league,
+    live: isLive,
+    upcoming: isUpcoming,
+    finished: !isLive && !isUpcoming,
+    score: '',
+    minute: '',
+    status: isLive ? 'LIVE' : '',
+    channels: links.map((url, linkIndex) => ({
+      name: getChannelName(url, linkIndex),
+      embed_url: url,
+      url,
+      dead: false,
+      playing: linkIndex === 0,
+      country: '',
+      lang: '',
+      quality: ''
+    })),
+    channel_count: links.length
+  };
+}
+
+function getChannelName(url, index) {
+  try {
+    const parsed = new URL(url);
+    let name = parsed.pathname.split('/').filter(Boolean).pop() || `Трансляція ${index + 1}`;
+    name = name.replace(/\.php$/i, '').replace(/[_-]/g, ' ');
+    return name.replace(/\b\w/g, char => char.toUpperCase());
+  } catch (error) {
+    return `Трансляція ${index + 1}`;
+  }
+}
+
+function rebuildEvents(apiData) {
+  const rawEvents = Array.isArray(apiData?.events) ? apiData.events : [];
+  const now = Math.floor(Date.now() / 1000);
+
+  allEvents = rawEvents
+    .map((event, index) => normalizeEvent(event, index))
+    .filter(event => event.timestamp > 0)
+    .filter(event => {
+      /*
+        Залишаємо лише події, які ще не почалися,
+        або потрапляють у приблизне часове вікно LIVE.
+        Завершені та застарілі події не показуємо.
+      */
+      return event.upcoming || event.live;
+    })
+    .sort((a, b) => {
+      if (a.live && !b.live) return -1;
+      if (!a.live && b.live) return 1;
+      return a.timestamp - b.timestamp;
+    });
+
+  buildSportButtons();
+  updateStatusCounts();
+  renderCurrentView();
+
+  document.getElementById('errorState').classList.add('hidden');
+  document.getElementById('errorState').classList.remove('flex');
+
+  hasLoadedData = true;
+}
+
+async function fetchAllData() {
+  if (isLoading) return;
+
+  isLoading = true;
+
+  const icon = document.getElementById('refreshIcon');
+  if (icon) icon.classList.add('animate-spin');
+
+  if (!hasLoadedData) showLoading();
+
+  try {
+    const data = await fetchJson(SPORTS_API);
+
+    if (data.status && data.status !== 'ok') {
+      throw new Error('API повернув помилку');
+    }
+
+    if (!Array.isArray(data.events)) {
+      throw new Error('У відповіді API немає масиву events');
+    }
+
+    rebuildEvents(data);
+    hideLoading();
+
+    if (currentStatusFilter === 'live' &&
+        !allEvents.some(event => event.live)) {
+      setStatusFilter('all');
+    }
+  } catch (error) {
+    console.error('Sports API Error:', error);
+
+    if (!hasLoadedData) {
+      showError(
+        `Помилка завантаження API: ${error.message}. Перевірте доступність API та CORS.`
+      );
+    }
+  } finally {
+    hideLoading();
+    isLoading = false;
+
+    if (icon) icon.classList.remove('animate-spin');
+  }
+}
+
+const sportTranslations = {
+  football: 'Футбол',
+  soccer: 'Футбол',
+  tennis: 'Теніс',
+  hockey: 'Хокей',
+  basketball: 'Баскетбол',
+  mma: 'ММА',
+  formula1: 'Автоспорт',
+  baseball: 'Бейсбол',
+  americanfootball: 'Американський футбол',
+  boxing: 'Бокс',
+  volleyball: 'Волейбол',
+  handball: 'Гандбол',
+  rugby: 'Регбі',
+  cricket: 'Крикет',
+  golf: 'Гольф',
+  motorsport: 'Автоспорт'
+};
+
+function getSportName(sport) {
+  const key = String(sport || '').trim().toLowerCase();
+
+  return sportTranslations[key] ||
+    String(sport || 'Інше')
+      .replaceAll('_', ' ')
+      .replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
+const sportIcons = {
+  football: 'fa-futbol',
+  soccer: 'fa-futbol',
+  basketball: 'fa-basketball',
+  tennis: 'fa-table-tennis-paddle-ball',
+  hockey: 'fa-hockey-puck',
+  mma: 'fa-hand-fist',
+  boxing: 'fa-hand-fist',
+  formula1: 'fa-flag-checkered',
+  baseball: 'fa-baseball',
+  americanfootball: 'fa-football',
+  volleyball: 'fa-volleyball',
+  handball: 'fa-hand',
+  rugby: 'fa-football',
+  cricket: 'fa-baseball',
+  golf: 'fa-golf-ball-tee',
+  motorsport: 'fa-car'
+};
+
+function getSportIcon(sport) {
+  return sportIcons[String(sport || '').toLowerCase()] || 'fa-trophy';
+}
+
+const sportOrder = [
+  'football', 'soccer', 'basketball', 'tennis', 'hockey',
+  'volleyball', 'handball', 'baseball', 'americanfootball',
+  'rugby', 'boxing', 'mma', 'golf', 'cricket', 'formula1',
+  'motorsport'
+];
+
+function getSportOrder(sport) {
+  const index = sportOrder.indexOf(String(sport || '').toLowerCase());
+  return index === -1 ? 999 : index;
+}
+
+function buildSportButtons() {
+  const container = document.getElementById('sportButtons');
+  const counts = new Map();
+
+  allEvents.forEach(event => {
+    if (!event.sport) return;
+    counts.set(event.sport, (counts.get(event.sport) || 0) + 1);
+  });
+
+  const sports = Array.from(counts.keys()).sort((a, b) => {
+    const orderA = getSportOrder(a);
+    const orderB = getSportOrder(b);
+
+    if (orderA !== orderB) return orderA - orderB;
+
+    return getSportName(a).localeCompare(getSportName(b), 'uk');
+  });
+
+  container.innerHTML = sports.map(sport => `
+    <button onclick="setSportFilter('${escapeAttr(sport)}')"
+      id="sport-${escapeAttr(sport)}"
+      class="sport-tab shrink-0 px-3 py-2 rounded-lg text-xs font-semibold bg-matte-card text-zinc-400 border border-matte-border hover:text-white hover:bg-matte-hover transition-all flex items-center gap-1.5">
+      <i class="fa-solid ${getSportIcon(sport)} text-[11px]"></i>
+      <span>${escapeHtml(getSportName(sport))}</span>
+      <span class="text-[9px] text-zinc-400 bg-matte-accent px-1.5 py-0.5 rounded-md">${counts.get(sport)}</span>
+    </button>
+  `).join('');
+
+  updateSportButtonStyles();
+}
+
+function updateSportButtonStyles() {
+  document.querySelectorAll('.sport-tab').forEach(button => {
+    button.classList.remove(
+      'bg-brand-600', 'text-white', 'text-zinc-900',
+      'border-brand-500', 'border-brand-600'
+    );
+
+    button.classList.add('bg-matte-card', 'text-zinc-400', 'border-matte-border');
+  });
+
+  const activeId = currentSportFilter === 'all'
+    ? 'sport-all'
+    : `sport-${currentSportFilter}`;
+
+  const active = document.getElementById(activeId);
+
+  if (active) {
+    active.classList.remove('bg-matte-card', 'text-zinc-400', 'border-matte-border');
+    active.classList.add('bg-brand-600', 'text-zinc-900', 'border-brand-600');
+  }
+}
+
+function updateStatusCounts() {
+  const all = allEvents.length;
+  const live = allEvents.filter(event => event.live).length;
+  const upcoming = allEvents.filter(event => event.upcoming && isToday(event.kickoff)).length;
+  const tomorrow = allEvents.filter(event => isTomorrow(event.kickoff)).length;
+
+  const values = {
+    'status-count-all': all,
+    'status-count-live': live,
+    'status-count-upcoming': upcoming,
+    'status-count-tomorrow': tomorrow
   };
 
-  let player = videojs('videoPlayer', options, function() {
-    this.src([{ src: nowPlayVideoUrl, type: 'application/x-mpegURL' }]);
+  Object.entries(values).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) element.innerText = value;
+  });
+}
+
+function setSportFilter(sport) {
+  currentSportFilter = sport;
+  updateSportButtonStyles();
+  renderCurrentView();
+}
+
+function setStatusFilter(status) {
+  currentStatusFilter = status;
+
+  document.querySelectorAll('.status-tab').forEach(button => {
+    button.classList.remove('bg-brand-600', 'text-white', 'text-zinc-900');
+    button.classList.add('text-zinc-400');
   });
 
-  window.addEventListener('unload', function() {
-    if (player) player.dispose();
-  });
+  const active = document.getElementById(`status-${status}`);
 
-  // === Watermark logic ===
-  const wm = document.getElementById("wm");
-  const wmImg = wm.querySelector("img");
-  const playerEl = document.querySelector(".video-js");
-  playerEl.appendChild(wm);
-
-  const baseWidth = 80; // масштаб для всіх режимів
-
-  function updateWatermark() {
-    const isFullscreen =
-      document.fullscreenElement ||
-      document.webkitFullscreenElement ||
-      player.isFullscreen();
-    const isDesktop = window.innerWidth > 768;
-
-    if (isFullscreen) {
-      if (isDesktop) {
-        // ПК fullscreen
-        wmImg.style.width = (baseWidth * 2.8) + "px";
-        wm.style.top = "10%";
-        wm.style.right = "6%";
-      } else {
-        // Телефон fullscreen
-        wmImg.style.width = (baseWidth * 1.4) + "px";
-        wm.style.top = "4%";
-        wm.style.right = "10%";
-      }
-    } else {
-      if (isDesktop) {
-        // ПК normal
-        wmImg.style.width = (baseWidth * 2.0) + "px";
-        wm.style.top = "6%";
-        wm.style.right = "5%";
-      } else {
-        // Телефон normal — масштабування повністю під контролем
-        wmImg.style.width = baseWidth + "px"; // <- змінюєш baseWidth для масштабу
-        wm.style.top = "3%";                  // <- вертикальне положення
-        wm.style.right = "4%";                // <- горизонтальне положення
-      }
-    }
+  if (active) {
+    active.classList.add('bg-brand-600', 'text-zinc-900');
+    active.classList.remove('text-zinc-400');
   }
 
-  // Події для оновлення водяного знаку
-  player.on("fullscreenchange", updateWatermark);
-  window.addEventListener("resize", updateWatermark);
-  document.addEventListener("fullscreenchange", updateWatermark);
-  document.addEventListener("webkitfullscreenchange", updateWatermark);
+  renderCurrentView();
+}
 
-  // Перший запуск
-  setTimeout(updateWatermark, 300);
+function handleSearch(value) {
+  searchQuery = value.trim().toLowerCase();
+
+  const desktop = document.getElementById('searchInput');
+  const mobile = document.getElementById('searchInputMobile');
+
+  if (desktop && document.activeElement !== desktop) desktop.value = value;
+  if (mobile && document.activeElement !== mobile) mobile.value = value;
+
+  const clear = document.getElementById('clearSearchBtn');
+  if (clear) clear.classList.toggle('hidden', !searchQuery);
+
+  renderCurrentView();
+}
+
+function clearSearch() {
+  const desktop = document.getElementById('searchInput');
+  const mobile = document.getElementById('searchInputMobile');
+
+  if (desktop) desktop.value = '';
+  if (mobile) mobile.value = '';
+
+  searchQuery = '';
+
+  const clear = document.getElementById('clearSearchBtn');
+  if (clear) clear.classList.add('hidden');
+
+  renderCurrentView();
+}
+
+function resetFilters() {
+  currentStatusFilter = 'live';
+  currentSportFilter = 'all';
+
+  clearSearch();
+  setStatusFilter('live');
+  setSportFilter('all');
+}
+
+function getFilteredEvents() {
+  let list = [...allEvents];
+
+  if (currentStatusFilter === 'live') {
+    list = list.filter(event => event.live);
+  }
+
+  if (currentStatusFilter === 'upcoming') {
+    list = list.filter(event => event.upcoming && isToday(event.kickoff));
+  }
+
+  if (currentStatusFilter === 'tomorrow') {
+    list = list.filter(event => isTomorrow(event.kickoff));
+  }
+
+  if (currentSportFilter !== 'all') {
+    list = list.filter(event => event.sport === currentSportFilter);
+  }
+
+  if (searchQuery) {
+    list = list.filter(event => {
+      const text = [
+        event.home,
+        event.away,
+        event.league,
+        event.eventTitle,
+        getSportName(event.sport)
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      return text.includes(searchQuery);
+    });
+  }
+
+  list.sort((a, b) => {
+    if (a.live && !b.live) return -1;
+    if (!a.live && b.live) return 1;
+    return a.kickoff - b.kickoff;
+  });
+
+  return list;
+}
+
+function isToday(timestamp) {
+  if (!timestamp) return false;
+
+  const date = new Date(Number(timestamp) * 1000);
+  const now = new Date();
+
+  return date.toLocaleDateString('uk-UA', { timeZone: 'Europe/Kyiv' }) ===
+    now.toLocaleDateString('uk-UA', { timeZone: 'Europe/Kyiv' });
+}
+
+function isTomorrow(timestamp) {
+  if (!timestamp) return false;
+
+  const date = new Date(Number(timestamp) * 1000);
+  const now = new Date();
+
+  const todayKyiv = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Kyiv' });
+  const todayParts = todayKyiv.split('-').map(Number);
+  const tomorrow = new Date(Date.UTC(todayParts[0], todayParts[1] - 1, todayParts[2] + 1));
+
+  const tomorrowKey = [
+    tomorrow.getUTCFullYear(),
+    String(tomorrow.getUTCMonth() + 1).padStart(2, '0'),
+    String(tomorrow.getUTCDate()).padStart(2, '0')
+  ].join('-');
+
+  return date.toLocaleDateString('en-CA', { timeZone: 'Europe/Kyiv' }) === tomorrowKey;
+}
+
+function formatTime(timestamp) {
+  if (!timestamp) return '--:--';
+
+  return new Date(Number(timestamp) * 1000).toLocaleTimeString('uk-UA', {
+    timeZone: 'Europe/Kyiv',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function formatDate(timestamp) {
+  if (!timestamp) return '';
+
+  return new Date(Number(timestamp) * 1000).toLocaleDateString('uk-UA', {
+    timeZone: 'Europe/Kyiv',
+    day: '2-digit',
+    month: '2-digit'
+  });
+}
+
+function renderCurrentView() {
+  const grid = document.getElementById('eventsGrid');
+  const empty = document.getElementById('emptyState');
+  const filtered = getFilteredEvents();
+
+  if (!filtered.length) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    empty.classList.add('flex');
+    return;
+  }
+
+  empty.classList.add('hidden');
+  empty.classList.remove('flex');
+
+  if (currentSportFilter !== 'all') {
+    renderGroupedEvents(filtered, grid);
+    return;
+  }
+
+  grid.innerHTML = filtered.map(renderEventCard).join('');
+}
+
+function renderGroupedEvents(events, grid) {
+  const groups = new Map();
+
+  events.forEach(event => {
+    const league = String(event.league || 'Інші турніри').trim();
+
+    if (!groups.has(league)) groups.set(league, []);
+    groups.get(league).push(event);
+  });
+
+  let html = '';
+
+  groups.forEach((matches, league) => {
+    html += `
+      <div class="tournament-heading flex items-center gap-3 mt-1 mb-1">
+        <div class="w-7 h-7 rounded-lg bg-matte-hover text-zinc-300 flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-trophy text-[10px]"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="text-sm font-bold text-white truncate">${escapeHtml(league)}</div>
+          <div class="text-[9px] text-zinc-500 uppercase tracking-wider">
+            ${matches.length} ${matches.length === 1 ? 'подія' : 'подій'}
+          </div>
+        </div>
+        <div class="h-px bg-matte-border flex-1"></div>
+      </div>
+    `;
+
+    html += matches.map(renderEventCard).join('');
+  });
+
+  grid.innerHTML = html;
+}
+
+/* КАРТКА ПОДІЇ */
+function renderEventCard(event) {
+  const isLive = event.live === true;
+  const channels = Array.isArray(event.channels) ? event.channels : [];
+  const channelsCount = channels.length;
+  const hasTwoTeams = Boolean(event.home && event.away);
+
+  const homeLogo = fallbackLogo(event.home || event.eventTitle);
+  const awayLogo = fallbackLogo(event.away || event.eventTitle);
+
+  const statusBadge = isLive
+    ? `
+      <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[9px] font-bold bg-red-500/10 text-red-400 shrink-0">
+        <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+        LIVE
+      </span>
+    `
+    : `
+      <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] font-semibold bg-matte-hover text-zinc-300 shrink-0">
+        <i class="fa-regular fa-clock"></i>
+        ${formatTime(event.kickoff)}
+      </span>
+    `;
+
+  const center = isLive
+    ? `
+      <div class="score-box">
+        <span class="score-text text-base font-black text-white">LIVE</span>
+        <span class="score-text text-[9px] text-red-400 font-semibold mt-1">У прямому ефірі</span>
+      </div>
+    `
+    : `
+      <div class="score-box">
+        <span class="score-text text-xs font-bold text-zinc-500">VS</span>
+        <span class="score-text text-[9px] text-zinc-500 font-mono mt-1">${formatDate(event.kickoff)}</span>
+      </div>
+    `;
+
+  return `
+    <article class="bg-matte-card border ${isLive ? 'border-red-500/20 live-glow' : 'border-matte-border'} rounded-xl p-3 mobile-card flex flex-col justify-between card-glow">
+
+      <div class="match-card-header flex items-center justify-between gap-2 border-b border-matte-border min-w-0">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <div class="w-5 h-5 text-zinc-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid ${getSportIcon(event.sport)} text-[11px]"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="text-[11px] font-semibold text-zinc-200 truncate">
+              ${escapeHtml(event.league || getSportName(event.sport))}
+            </div>
+            <div class="text-[9px] text-zinc-500 truncate">${escapeHtml(getSportName(event.sport))}</div>
+          </div>
+        </div>
+        ${statusBadge}
+      </div>
+
+      <div class="match-card-teams grid ${hasTwoTeams ? 'grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]' : 'grid-cols-1'} items-center text-center gap-1">
+        ${
+          hasTwoTeams
+          ? `
+            <div class="min-w-0 flex flex-col items-center gap-1.5">
+              <div class="team-logo flex items-center justify-center">
+                <img src="${escapeAttr(homeLogo)}" alt="${escapeAttr(event.home)}" loading="lazy">
+              </div>
+              <span class="team-name text-xs font-bold text-white line-clamp-2 leading-tight max-w-full break-words">
+                ${escapeHtml(event.home)}
+              </span>
+            </div>
+
+            <div class="flex flex-col items-center justify-center shrink-0 px-1">
+              ${center}
+            </div>
+
+            <div class="min-w-0 flex flex-col items-center gap-1.5">
+              <div class="team-logo flex items-center justify-center">
+                <img src="${escapeAttr(awayLogo)}" alt="${escapeAttr(event.away)}" loading="lazy">
+              </div>
+              <span class="team-name text-xs font-bold text-white line-clamp-2 leading-tight max-w-full break-words">
+                ${escapeHtml(event.away)}
+              </span>
+            </div>
+          `
+          : `
+            <div class="flex flex-col items-center justify-center py-2 gap-2">
+              <div class="w-10 h-10 flex items-center justify-center">
+                <i class="fa-solid ${getSportIcon(event.sport)} text-zinc-400 text-2xl"></i>
+              </div>
+              <span class="text-xs font-bold text-white line-clamp-2 leading-tight max-w-full">
+                ${escapeHtml(event.eventTitle)}
+              </span>
+              <span class="text-[10px] text-zinc-500">${formatDate(event.kickoff)} · ${formatTime(event.kickoff)}</span>
+            </div>
+          `
+        }
+      </div>
+
+      <div class="match-card-footer border-t border-matte-border">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 text-[10px] text-zinc-500 min-w-0">
+            <i class="fa-solid fa-tv text-zinc-400"></i>
+            <span>${channelsCount} ${channelsCount === 1 ? 'трансляція' : 'трансляцій'}</span>
+          </div>
+
+          ${
+            channelsCount > 0
+            ? `
+              <button onclick="openEventPlayer('${escapeAttr(event.id)}')"
+                class="px-3 py-1.5 bg-zinc-200 hover:bg-white text-zinc-900 font-bold rounded-lg text-[10px] transition-all flex items-center gap-1.5 active:scale-95 shrink-0">
+                <i class="fa-solid fa-play text-[9px]"></i>
+                Дивитися
+              </button>
+            `
+            : `
+              <span class="px-2.5 py-1.5 bg-matte-bg text-zinc-500 rounded-lg text-[9px] shrink-0">
+                Без трансляції
+              </span>
+            `
+          }
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+async function openEventPlayer(eventId) {
+  const event = allEvents.find(item => String(item.id) === String(eventId));
+  if (!event) return;
+
+  if (!event.channels || !event.channels.length) return;
+
+  currentEvent = event;
+  currentStreamUrl = event.channels[0].url || event.channels[0].embed_url;
+  soundEnabled = true;
+
+  const modal = document.getElementById('playerModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+
+  document.getElementById('modalMatchTitle').innerText =
+    event.away ? `${event.home} vs ${event.away}` : event.eventTitle;
+
+  document.getElementById('modalMatchSubtitle').innerText = [
+    event.league,
+    getSportName(event.sport),
+    event.live ? 'LIVE' : formatTime(event.kickoff)
+  ].filter(Boolean).join(' • ');
+
+  document.getElementById('modalLiveDot').classList.toggle('hidden', !event.live);
+
+  renderModalInfo(event);
+  renderModalChannels(event);
+
+  loadCurrentStream();
+  updateFullscreenButton();
+}
+
+/*
+  Завантажує сторінку трансляції.
+  Параметри autoplay/mute можуть підтримуватися або ігноруватися
+  самим сайтом трансляції.
+*/
+function addPlayerParameters(url, autoplay, muted) {
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.set('autoplay', autoplay ? '1' : '0');
+    parsed.searchParams.set('mute', muted ? '1' : '0');
+    return parsed.toString();
+  } catch (error) {
+    return url;
+  }
+}
+
+function loadCurrentStream() {
+  if (!currentStreamUrl) return;
+
+  const iframe = document.getElementById('streamIframe');
+
+  iframe.src = addPlayerParameters(
+    currentStreamUrl,
+    true,
+    !soundEnabled
+  );
+
+  updateSoundButton();
+}
+
+function playCurrentStream() {
+  if (!currentStreamUrl) return;
+
+  /*
+    Кнопка Play повторно завантажує поточну сторінку трансляції.
+    Вона не може натиснути внутрішню кнопку стороннього плеєра,
+    якщо той не надає зовнішнього API керування.
+  */
+  loadCurrentStream();
+}
+
+function togglePlayerSound() {
+  soundEnabled = !soundEnabled;
+
+  /*
+    Зміна параметра URL — лише запит до стороннього плеєра.
+    Вимкнення/увімкнення звуку гарантоване тільки тоді,
+    коли сайт трансляції підтримує mute/autoplay у URL.
+  */
+  loadCurrentStream();
+  updateSoundButton();
+}
+
+function updateSoundButton() {
+  const button = document.getElementById('modalSoundBtn');
+  if (!button) return;
+
+  const icon = button.querySelector('i');
+  const text = button.querySelector('span');
+
+  if (soundEnabled) {
+    if (icon) icon.className = 'fa-solid fa-volume-high';
+    if (text) text.innerText = 'Звук';
+    button.title = 'Спробувати ввімкнути звук';
+  } else {
+    if (icon) icon.className = 'fa-solid fa-volume-xmark';
+    if (text) text.innerText = 'Без звуку';
+    button.title = 'Спробувати вимкнути звук';
+  }
+}
+
+async function enterPlayerFullscreen() {
+  const player = document.getElementById('playerContainer');
+  if (!player) return;
+
+  try {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      if (player.requestFullscreen) {
+        await player.requestFullscreen();
+      } else if (player.webkitRequestFullscreen) {
+        player.webkitRequestFullscreen();
+      }
+
+      if (screen.orientation && screen.orientation.lock) {
+        try {
+          await screen.orientation.lock('landscape');
+        } catch (error) {
+          console.warn('Orientation lock unavailable:', error);
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Fullscreen error:', error);
+  }
+
+  updateFullscreenButton();
+}
+
+async function exitPlayerFullscreen() {
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  } catch (error) {
+    console.warn('Exit fullscreen error:', error);
+  }
+
+  try {
+    if (screen.orientation && screen.orientation.unlock) {
+      screen.orientation.unlock();
+    }
+  } catch (error) {}
+
+  updateFullscreenButton();
+}
+
+function updateFullscreenButton() {
+  const button = document.getElementById('modalFullscreenBtn');
+  const player = document.getElementById('playerContainer');
+
+  if (!button) return;
+
+  const icon = button.querySelector('i');
+  const text = button.querySelector('span');
+
+  const fullscreen = Boolean(
+    document.fullscreenElement === player ||
+    document.webkitFullscreenElement === player
+  );
+
+  if (fullscreen) {
+    if (icon) icon.className = 'fa-solid fa-compress';
+    if (text) text.innerText = 'Вийти';
+    button.title = 'Вийти з повного екрана';
+  } else {
+    if (icon) icon.className = 'fa-solid fa-expand';
+    if (text) text.innerText = 'Повний екран';
+    button.title = 'Повний екран';
+  }
+}
+
+function renderModalInfo(event) {
+  const box = document.getElementById('modalMatchInfo');
+
+  box.innerHTML = `
+    <div class="flex flex-col gap-3">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div>
+          <div class="text-[9px] text-zinc-500 uppercase tracking-wider">Подія</div>
+          <div class="text-xs text-zinc-200 font-semibold mt-1 truncate">
+            ${escapeHtml(event.eventTitle || '-')}
+          </div>
+        </div>
+        <div>
+          <div class="text-[9px] text-zinc-500 uppercase tracking-wider">Вид спорту</div>
+          <div class="text-xs text-zinc-200 font-semibold mt-1">
+            ${escapeHtml(getSportName(event.sport))}
+          </div>
+        </div>
+        <div>
+          <div class="text-[9px] text-zinc-500 uppercase tracking-wider">Час</div>
+          <div class="text-xs text-white font-bold mt-1">
+            ${formatDate(event.kickoff)} · ${formatTime(event.kickoff)}
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="modalPlayBtn" onclick="playCurrentStream()" title="Завантажити трансляцію"
+          class="player-control">
+          <i class="fa-solid fa-play"></i><span>Play</span>
+        </button>
+
+        <button id="modalSoundBtn" onclick="togglePlayerSound()" title="Спробувати ввімкнути звук"
+          class="player-control">
+          <i class="fa-solid fa-volume-high"></i><span>Звук</span>
+        </button>
+
+        <button id="modalFullscreenBtn" onclick="toggleModalFullscreen()" title="Повний екран"
+          class="player-control">
+          <i class="fa-solid fa-expand"></i><span>Повний екран</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  updateFullscreenButton();
+  updateSoundButton();
+}
+
+function renderModalChannels(event) {
+  const container = document.getElementById('modalChannelsList');
+  const count = document.getElementById('modalChannelsCount');
+  const channels = Array.isArray(event.channels) ? event.channels : [];
+
+  count.innerText = `${channels.length} трансляцій`;
+
+  if (!channels.length) {
+    container.innerHTML = `
+      <div class="text-xs text-zinc-500">Для цієї події немає доступних посилань.</div>
+    `;
+    return;
+  }
+
+  container.innerHTML = channels
+    .map((channel, index) => renderChannelButton(channel, index))
+    .join('');
+}
+
+function renderChannelButton(channel, index) {
+  const url = channel.url || channel.embed_url || '';
+
+  return `
+    <button onclick="switchMatchChannel('${escapeAttr(url)}','${escapeAttr(channel.name || '')}',this)"
+      class="channel-button px-3 py-2 rounded-lg border ${index === 0 ? 'border-zinc-400 bg-zinc-200/10 text-white' : 'border-matte-border bg-matte-accent text-zinc-300'} text-xs flex items-center gap-2 transition-all hover:border-zinc-400">
+      <span class="w-1.5 h-1.5 rounded-full ${index === 0 ? 'bg-green-400' : 'bg-zinc-500'}"></span>
+      <span class="max-w-[180px] truncate">${escapeHtml(channel.name || `Трансляція ${index + 1}`)}</span>
+    </button>
+  `;
+}
+
+function switchMatchChannel(url, name, element) {
+  if (!url || !/^https?:\/\//i.test(url)) return;
+
+  currentStreamUrl = url;
+  soundEnabled = true;
+
+  document.querySelectorAll('.channel-button').forEach(button => {
+    button.classList.remove('channel-active');
+  });
+
+  if (element) element.classList.add('channel-active');
+
+  loadCurrentStream();
+
+  document.getElementById('modalMatchSubtitle').innerText =
+    `${currentEvent?.league || 'Sports'} • ${name || 'Трансляція'}`;
+}
+
+function closePlayerModal() {
+  const modal = document.getElementById('playerModal');
+  const iframe = document.getElementById('streamIframe');
+
+  if (document.fullscreenElement) {
+    const exitPromise = document.exitFullscreen();
+    if (exitPromise && typeof exitPromise.catch === 'function') {
+      exitPromise.catch(() => {});
+    }
+  } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+
+  try {
+    if (screen.orientation && screen.orientation.unlock) {
+      screen.orientation.unlock();
+    }
+  } catch (error) {}
+
+  iframe.src = 'about:blank';
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  document.body.style.overflow = '';
+
+  currentEvent = null;
+  currentStreamUrl = '';
+}
+
+function toggleModalFullscreen() {
+  const player = document.getElementById('playerContainer');
+
+  if (
+    document.fullscreenElement === player ||
+    document.webkitFullscreenElement === player
+  ) {
+    exitPlayerFullscreen();
+    return;
+  }
+
+  enterPlayerFullscreen();
+}
+
+function showLoading() {
+  document.getElementById('loadingState').classList.remove('hidden');
+  document.getElementById('errorState').classList.add('hidden');
+}
+
+function hideLoading() {
+  document.getElementById('loadingState').classList.add('hidden');
+}
+
+function showError(message) {
+  const error = document.getElementById('errorState');
+
+  error.classList.remove('hidden');
+  error.classList.add('flex');
+
+  document.getElementById('errorMessage').innerText = message;
+  document.getElementById('eventsGrid').innerHTML = '';
+}
+
+function fallbackLogo(text) {
+  const label = String(text || 'TEAM').substring(0, 8);
+
+  return 'https://placehold.co/100x100/18191d/e4e4e7?text=' +
+    encodeURIComponent(label);
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function escapeAttr(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('\\', '\\\\')
+    .replaceAll("'", '&#039;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    const modal = document.getElementById('playerModal');
+
+    if (!modal.classList.contains('hidden')) {
+      const player = document.getElementById('playerContainer');
+
+      if (
+        document.fullscreenElement === player ||
+        document.webkitFullscreenElement === player
+      ) {
+        exitPlayerFullscreen();
+        return;
+      }
+
+      closePlayerModal();
+    }
+  }
+});
+
+/* Оновлення приблизного LIVE-статусу та подій */
+setInterval(() => {
+  if (document.hidden || !hasLoadedData) return;
+
+  /*
+    Повторно визначаємо статус за timestamp,
+    оскільки API не повертає окремого поля live.
+  */
+  const now = Math.floor(Date.now() / 1000);
+
+  allEvents = allEvents
+    .map(event => {
+      const elapsedMinutes = (now - event.timestamp) / 60;
+      const duration = sportLiveDurations[event.sport] || 180;
+
+      const live = event.timestamp <= now &&
+        elapsedMinutes <= duration;
+
+      const upcoming = event.timestamp > now;
+
+      return {
+        ...event,
+        live,
+        upcoming,
+        finished: !live && !upcoming
+      };
+    })
+    .filter(event => event.live || event.upcoming);
+
+  buildSportButtons();
+  updateStatusCounts();
+  renderCurrentView();
+}, 60000);
 </script>
 
 </body>
