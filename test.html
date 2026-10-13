@@ -40,72 +40,78 @@
         'nexify-zone.com',
         'www.nexify-zone.com',
         'adzilla.meme',
-        'www.adzilla.meme'
+        'www.adzilla.meme',
+        'tmll7.com',
+        'www.tmll7.com',
+        'jcphi.com',
+        'www.jcphi.com'
       ]);
 
       function isBlocked(url) {
         try {
           const parsed = new URL(url, location.href);
-          return blockedHosts.has(parsed.hostname.toLowerCase());
+          const host = parsed.hostname.toLowerCase();
+
+          return Array.from(blockedHosts).some(function (blocked) {
+            return host === blocked || host.endsWith('.' + blocked);
+          });
         } catch (e) {
           return false;
         }
       }
 
-      // Перехоплюємо window.open на зовнішній сторінці
+      // Блокуємо відомі рекламні адреси через window.open
       const originalOpen = window.open;
 
       window.open = function (url, ...args) {
         if (url && isBlocked(url)) {
-          console.log('[AdBlock] Заблоковано:', url);
+          console.log('[AdBlock] Заблоковано window.open:', url);
           return null;
         }
 
-        return originalOpen.call(window, url, ...args);
+        return originalOpen.apply(window, [url, ...args]);
       };
 
-      // Блокуємо посилання на відомі рекламні домени
+      // Перевіряємо кліки по посиланнях зовнішньої сторінки
       document.addEventListener('click', function (event) {
         const target = event.target;
 
-        if (!target || !target.closest) return;
+        if (!target || typeof target.closest !== 'function') {
+          return;
+        }
 
         const link = target.closest('a[href]');
 
         if (link && isBlocked(link.href)) {
           event.preventDefault();
           event.stopImmediatePropagation();
-
-          console.log(
-            '[AdBlock] Заблоковано рекламне посилання:',
-            link.href
-          );
+          console.log('[AdBlock] Заблоковано посилання:', link.href);
         }
       }, true);
 
-      // Не дозволяємо зовнішнім скриптам додавати такі посилання
-      document.addEventListener('DOMContentLoaded', function () {
-        function cleanLinks(root) {
-          if (!root || !root.querySelectorAll) return;
+      // Видаляємо відомі рекламні посилання, додані до зовнішньої сторінки
+      function cleanLinks(root) {
+        if (!root || !root.querySelectorAll) return;
 
-          const links = [];
+        const links = [];
 
-          if (root.matches && root.matches('a[href]')) {
-            links.push(root);
-          }
-
-          root.querySelectorAll('a[href]').forEach(function (link) {
-            links.push(link);
-          });
-
-          links.forEach(function (link) {
-            if (isBlocked(link.href)) {
-              link.removeAttribute('href');
-              link.removeAttribute('target');
-            }
-          });
+        if (root.matches && root.matches('a[href]')) {
+          links.push(root);
         }
 
+        root.querySelectorAll('a[href]').forEach(function (link) {
+          links.push(link);
+        });
+
+        links.forEach(function (link) {
+          if (isBlocked(link.href)) {
+            link.removeAttribute('href');
+            link.removeAttribute('target');
+          }
+        });
+      }
+
+      function startObserver() {
         cleanLinks(document);
 
         const observer = new MutationObserver(function (records) {
@@ -122,7 +128,13 @@
           childList: true,
           subtree: true
         });
-      });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startObserver);
+      } else {
+        startObserver();
+      }
     })();
   </script>
 </head>
@@ -135,6 +147,7 @@
       frameborder="0"
       webkitallowfullscreen="true"
       mozallowfullscreen="true"
+      msExitFullscreen="true"
       allowfullscreen="true"
       allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
       scrolling="no">
