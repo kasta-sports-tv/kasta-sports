@@ -222,12 +222,12 @@ const menu = document.getElementById("liveMenu");
 function loadStream(i) {
     current = i;
 
-    // Зупиняємо попередній плеєр Playerjs, якщо він існує
+    // Зупиняємо попередній плеєр Playerjs безпечним способом
     try {
         if (typeof Playerjs === "function" && Playerjs.api) {
             Playerjs.api("destroy");
         }
-    } else (e) {}
+    } catch (e) {}
 
     const playerContainer = document.getElementById("player");
     playerContainer.innerHTML = "";
