@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <title>ARMATH - Football Matches</title>
 
 <style>
@@ -38,19 +38,34 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-top: 130px; /* Відступ під закріплену шапку */
     padding-bottom: 90px;
 }
 
 /* =========================
-   HEADER
+   STICKY HEADER CONTAINER
 ========================= */
+.sticky-header-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-color);
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 10px;
+}
+
 header {
     width: 100%;
     max-width: 900px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
+    padding: 14px 20px;
 }
 
 .logo-brand {
@@ -74,14 +89,12 @@ header {
     font-size: 18px;
 }
 
-/* =========================
-   LEAGUES FILTER BAR
-========================= */
+/* LEAGUES FILTER BAR */
 .leagues-container {
     width: 100%;
     max-width: 900px;
     padding: 0 16px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .leagues-scroll {
@@ -89,18 +102,18 @@ header {
     gap: 12px;
     overflow-x: auto;
     scrollbar-width: none;
-    padding: 4px 0;
+    padding: 2px 0;
 }
 .leagues-scroll::-webkit-scrollbar {
     display: none;
 }
 
 .league-tab {
-    flex: 0 0 56px;
-    height: 56px;
+    flex: 0 0 52px;
+    height: 52px;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
-    border-radius: 16px;
+    border-radius: 14px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -119,30 +132,27 @@ header {
     font-size: 9px;
     color: var(--text-muted);
     margin-top: 2px;
-    max-width: 50px;
+    max-width: 46px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-/* =========================
-   FILTERS SUB-BAR
-========================= */
+/* FILTERS SUB-BAR */
 .filters-bar {
     width: 100%;
     max-width: 900px;
     padding: 0 16px;
     display: flex;
     gap: 10px;
-    margin-bottom: 16px;
 }
 
 .filter-btn {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     color: var(--text-muted);
-    padding: 8px 16px;
-    border-radius: 20px;
+    padding: 6px 14px;
+    border-radius: 18px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -176,7 +186,7 @@ header {
 }
 
 /* =========================
-   MATCHES GRID (АДАПТИВНО ДЛЯ ПК ТА МОБІЛОК)
+   MATCHES GRID
 ========================= */
 .matches-container {
     width: 100%;
@@ -390,7 +400,7 @@ header {
     border: 1px solid var(--card-border);
     border-radius: 24px;
     width: 100%;
-    max-width: 640px;
+    max-width: 850px; /* Збільшено ширину для ПК */
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     display: flex;
@@ -423,7 +433,7 @@ header {
     line-height: 1;
 }
 
-/* Плеєр у вигляді фіксованого вікна */
+/* Плеєр */
 #player-wrapper {
     position: relative;
     width: 100%;
@@ -491,11 +501,27 @@ header {
     transition: opacity .8s ease;
 }
 
-/* Кнопки SD / HD одразу під плеєром */
+@media (max-width: 900px) and (orientation: landscape) {
+    #playerLogo.fullscreen-mobile {
+        top: var(--logo-top);
+        right: calc(var(--logo-right) + 6.8%);
+        width: calc(var(--logo-width) - 2%);
+    }
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
+    #playerLogo.fullscreen-mobile {
+        top: calc(var(--logo-top) + 34.74%);
+        right: calc(var(--logo-right) - 0.01%);
+        width: calc(var(--logo-width) - 0.1%);
+    }
+}
+
+/* Кнопки SD / HD під плеєром (ширші) */
 .streams-control {
     display: flex;
-    gap: 10px;
-    padding: 16px 20px 0 20px;
+    gap: 12px;
+    padding: 18px 24px 0 24px;
 }
 
 .stream-btn {
@@ -503,9 +529,9 @@ header {
     background: #17241c;
     border: 1px solid var(--card-border);
     color: var(--text-muted);
-    padding: 10px;
-    border-radius: 12px;
-    font-size: 13px;
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
@@ -519,13 +545,13 @@ header {
 }
 
 .stream-btn:disabled {
-    opacity: 0.4;
+    opacity: 0.3;
     cursor: not-allowed;
 }
 
-/* Команди нижче кнопок потоків */
+/* Команди нижче */
 .cinema-info {
-    padding: 16px 20px 20px 20px;
+    padding: 16px 24px 22px 24px;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -541,13 +567,13 @@ header {
 }
 
 .team-cinema img {
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
     object-fit: contain;
 }
 
 .team-cinema span {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
 }
 </style>
@@ -555,24 +581,26 @@ header {
 
 <body>
 
-    <header>
-        <div class="logo-brand">
-            <span>⚽</span> ARMATCH
+    <div class="sticky-header-wrapper">
+        <header>
+            <div class="logo-brand">
+                <span>⚽</span> ARMATCH
+            </div>
+            <button class="settings-btn">⚙️</button>
+        </header>
+
+        <!-- Смужка ліг -->
+        <div class="leagues-container">
+            <div class="leagues-scroll" id="leaguesScroll"></div>
         </div>
-        <button class="settings-btn">⚙️</button>
-    </header>
 
-    <!-- Смужка ліг -->
-    <div class="leagues-container">
-        <div class="leagues-scroll" id="leaguesScroll"></div>
-    </div>
-
-    <!-- Фільтри -->
-    <div class="filters-bar">
-        <button class="filter-btn active" onclick="setFilter('all', this)">Усі матчі</button>
-        <button class="filter-btn" onclick="setFilter('live', this)">
-            <span class="live-dot"></span> LIVE
-        </button>
+        <!-- Фільтри -->
+        <div class="filters-bar">
+            <button class="filter-btn active" onclick="setFilter('all', this)">Усі матчі</button>
+            <button class="filter-btn" onclick="setFilter('live', this)">
+                <span class="live-dot"></span> LIVE
+            </button>
+        </div>
     </div>
 
     <!-- Список матчів -->
@@ -616,12 +644,12 @@ header {
 
             <div class="cinema-info">
                 <div class="team-cinema">
-                    <img id="modalHomeLogo" src="" alt="">
+                    <img id="modalHomeLogo" src="" alt="" onerror="this.src='https://via.placeholder.com/56'">
                     <span id="modalHomeName"></span>
                 </div>
                 <span style="color: var(--text-muted); font-weight: bold;">VS</span>
                 <div class="team-cinema">
-                    <img id="modalAwayLogo" src="" alt="">
+                    <img id="modalAwayLogo" src="" alt="" onerror="this.src='https://via.placeholder.com/56'">
                     <span id="modalAwayName"></span>
                 </div>
             </div>
@@ -652,15 +680,19 @@ async function fetchMatches() {
     }
 }
 
-// Декодування Base64 посилань логотипів із джерела
+// Покращене декодування Base64 посилань для ПК та мобільних
 function decodeTeamLogo(url) {
     if (!url) return '';
     if (url.includes('/cdn/team/')) {
         try {
             const base64Part = url.split('/cdn/team/')[1].split('?')[0];
-            const decoded = atob(base64Part);
+            // Доповнюємо padding якщо потрібно для base64
+            const padded = base64Part.padEnd(base64Part.length + (4 - base64Part.length % 4) % 4, '=');
+            const decoded = atob(padded);
             if (decoded.startsWith('http')) return decoded;
-        } catch (e) {}
+        } catch (e) {
+            return url; // Повертаємо оригінал як fallback
+        }
     }
     return url;
 }
@@ -679,7 +711,7 @@ function renderLeagues() {
     leaguesSet.forEach(league => {
         html += `
             <div class="league-tab ${selectedLeague === league ? 'active' : ''}" onclick="selectLeague('${league}')" title="${league}">
-                <span style="font-size: 14px; font-weight:bold; color:var(--accent-green);">${league.charAt(0)}</span>
+                <span style="font-size: 13px; font-weight:bold; color:var(--accent-green);">${league.charAt(0)}</span>
                 <span>${league}</span>
             </div>
         `;
@@ -701,16 +733,17 @@ function setFilter(filter, btn) {
     renderMatches();
 }
 
-// Виправлений розрахунок часу: WIB (UTC+7) мінус 4 години дає Київський час
+// Правильна конвертація київського часу (+3 UTC), перевіряємо відносно реального unix time в json
 function formatKyivTime(matchTimeUnix) {
     if (!matchTimeUnix) return { time: "--:--" , date: "" };
-    const kyivDate = new Date((matchTimeUnix - 4 * 3600) * 1000);
+    // Уникаємо плутанини: якщо matchTimeUnix у секундах, переводимо в мілісекунди і переводимо у київський час (UTC+3)
+    const dateObj = new Date(matchTimeUnix * 1000);
     
-    const hours = String(kyivDate.getUTCHours()).padStart(2, '0');
-    const minutes = String(kyivDate.getUTCMinutes()).padStart(2, '0');
-    const day = kyivDate.getUTCDate();
+    const hours = String(dateObj.getHours()).padStart(2, '0');
+    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    const day = dateObj.getDate();
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const month = months[kyivDate.getUTCMonth()];
+    const month = months[dateObj.getMonth()];
 
     return {
         time: `${hours}:${minutes}`,
@@ -718,12 +751,14 @@ function formatKyivTime(matchTimeUnix) {
     };
 }
 
+// Визначення реального стану за часом
 function getMatchState(matchTimeUnix) {
     if (!matchTimeUnix) return { type: 'upcoming' };
     const now = Date.now();
-    const matchStartMs = (matchTimeUnix - 4 * 3600) * 1000;
+    const matchStartMs = matchTimeUnix * 1000;
     const diffMinutes = (now - matchStartMs) / (1000 * 60);
 
+    // Матч іде, якщо від початку пройшло від -10 хвилин до 180 хвилин (3 години)
     if (diffMinutes >= -10 && diffMinutes <= 180) {
         return { type: 'live' };
     } else if (diffMinutes > 180) {
@@ -885,29 +920,60 @@ function PlayerjsEvents(event, id, info) {
             playerInstance.api("poster", "none"); 
             playerInstance.api("hideposter");
         }
+        const posterImg = document.querySelector("#player img[src*='poster'], #player [class*='poster']");
+        if (posterImg) {
+            posterImg.style.display = "none";
+            posterImg.style.opacity = "0";
+        }
     }
 }
 
+// Твоя оригінальна логіка логотипа для фулскріну
 function handleFullscreen() {
     const fs = document.fullscreenElement || document.webkitFullscreenElement;
+    
     if (fs) {
         if (screen.orientation && screen.orientation.lock) {
             screen.orientation.lock('landscape').catch(() => {});
         }
+
         fs.appendChild(logo);
         logo.style.position = 'fixed';
+        
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const videoHeight = screenWidth * (9 / 16);
+        
+        if (screenHeight > videoHeight) {
+            const blackBarHeight = (screenHeight - videoHeight) / 2;
+            logo.style.top = `calc(${blackBarHeight}px + var(--logo-top))`;
+        } else {
+            logo.style.top = 'var(--logo-top)';
+        }
+
+        if (screenWidth <= 900) {
+            logo.classList.add('fullscreen-mobile');
+        }
     } else {
         if (screen.orientation && screen.orientation.unlock) {
             screen.orientation.unlock();
         }
+
         const container = document.getElementById('player-wrapper');
         container.appendChild(logo);
         logo.style.position = 'absolute';
+        logo.style.top = 'var(--logo-top)';
+        logo.classList.remove('fullscreen-mobile');
     }
 }
 
 document.addEventListener('fullscreenchange', handleFullscreen);
 document.addEventListener('webkitfullscreenchange', handleFullscreen);
+window.addEventListener('resize', () => {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        handleFullscreen();
+    }
+});
 
 setInterval(fetchMatches, 60000);
 fetchMatches();
