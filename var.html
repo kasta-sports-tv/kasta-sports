@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ARMATH - Football Matches</title>
+
+<style>
+:root {
+    --bg-color: #0b1015;
+    --card-bg: #121821;
+    --card-border: #1e293b;
+    --accent-green: #00ff87;
+    --accent-glow: rgba(0, 255, 135, 0.4);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --danger-red: #ef4444;
+    --logo-width: 22%;
+    --logo-top: 1.2%;
+    --logo-right: 2.2%;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 80px; /* Місце під нижню панель */
+}
+
+/* =========================
+   HEADER
+========================= */
+header {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+}
+
+.logo-brand {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.logo-brand span {
+    color: var(--accent-green);
+}
+
+.settings-btn {
+    background: none;
+    border: none;
+    color: var(--accent-green);
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* =========================
+   LEagues FILTER BAR (SCROLLABLE)
+========================= */
+.leagues-container {
+    width: 100%;
+    max-width: 480px;
+    padding: 0 16px;
+    margin-bottom: 12px;
+}
+
+.leagues-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    padding: 4px 0;
+}
+.leagues-scroll::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.league-tab {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 56px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.league-tab.active {
+    background: rgba(0, 255, 135, 0.15);
+    border-color: var(--accent-green);
+    box-shadow: 0 0 15px rgba(0, 255, 135, 0.3);
+}
+
+.league-tab img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.league-tab span {
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    max-width: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* =========================
+   FILTER SUB-BAR (ALL / LIVE)
+========================= */
+.filters-bar {
+    width: 100%;
+    max-width: 480px;
+    padding: 0 16px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.filter-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-btn.active {
+    background: var(--text-main);
+    color: var(--bg-color);
+    border-color: var(--text-main);
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--danger-red);
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 8px var(--danger-red);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px var(--danger-red); }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+/* =========================
+   MATCHES LIST & CARDS
+========================= */
+.matches-container {
+    width: 100%;
+    max-width: 480px;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.match-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid var(--card-border);
+    transition: transform 0.2s;
+}
+
+.match-card:active {
+    transform: scale(0.98);
+}
+
+/* Зміїна рамка (анімація зеленого променя) */
+.match-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 22px;
+    background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+    animation: snakeBorder 4s linear infinite;
+    opacity: 0.4;
+    z-index: 0;
+    pointer-events: none;
+}
+
+@keyframes snakeBorder {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+.match-card-inner {
+    position: relative;
+    z-index: 1;
+    background: var(--card-bg);
+    border-radius: 18px;
+    padding: 4px;
+}
+
+/* Турнір у картці */
+.tournament-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px 10px;
+    border-radius: 12px;
+    width: fit-content;
+}
+
+.tournament-header img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+.tournament-header span {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Головний контент картки (Команди + Час) */
+.match-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 32%;
+    text-align: center;
+    gap: 8px;
+}
+
+.team-logo {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+}
+
+.team-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+/* Центральний блок (Час / LIVE / Завершено) */
+.match-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 32%;
+}
+
+.match-time {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: 0.5px;
+}
+
+.match-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid var(--danger-red);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--danger-red);
+}
+
+.status-badge.finished {
+    background: rgba(148, 163, 184, 0.1);
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+}
+
+/* =========================
+   BOTTOM NAVIGATION BAR
+========================= */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #0f172a;
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+    z-index: 1000;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 10px;
+    text-decoration: none;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.nav-item.active {
+    color: var(--accent-green);
+}
+
+.nav-item svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+}
+
+/* =========================
+   CINEMA / PLAYER MODAL OVERLAY
+========================= */
+#player-modal {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 99999;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+#player-modal.active {
+    display: flex;
+}
+
+.player-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #121821;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.player-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.player-header-title img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.close-player-btn {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+/* PLAYER WRAPPER STYLES FROM YOUR CODE */
+#player-wrapper {
+    position: relative;
+    width: 100vw;
+    max-width: 100vw;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+}
+
+@supports not (aspect-ratio: 16 / 9) {
+    #player-wrapper {
+        height: calc(100vw * 9 / 16);
+    }
+}
+
+#player {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background: #000;
+}
+
+#player iframe,
+#player video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    background: #000 !important;
+}
+
+#myImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+    z-index: 9999;
+    transition: opacity 2s ease;
+    pointer-events: none;
+}
+
+#spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
+    border: 5px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 10000;
+    pointer-events: none;
+    transition: opacity .8s ease;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+#playerLogo {
+    position: absolute;
+    top: var(--logo-top);
+    right: var(--logo-right);
+    width: var(--logo-width);
+    z-index: 9999999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .8s ease;
+}
+
+/* Інформаційна панель під плеєром для кінотеатру */
+.cinema-info {
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    background: var(--bg-color);
+    flex: 1;
+}
+
+.teams-cinema-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 400px;
+}
+
+.team-cinema {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 40%;
+    text-align: center;
+}
+
+.team-cinema img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+}
+
+.team-cinema span {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.streams-control {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 10px;
+}
+
+.stream-btn {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--accent-green);
+    color: var(--accent-green);
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.stream-btn.active, .stream-btn:hover {
+    background: var(--accent-green);
+    color: var(--bg-color);
+}
+
+.stream-btn:disabled {
+    border-color: var(--card-border);
+    color: var(--text-muted);
+    background: transparent;
+    cursor: not-allowed;
+}
+</style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo-brand">
+            <span>⚽</span> ARMATCH
+        </div>
+        <button class="settings-btn">⚙️</button>
+    </header>
+
+    <!-- Смужка ліг -->
+    <div class="leagues-container">
+        <div class="leagues-scroll" id="leaguesScroll">
+            <!-- Динамічно заповнюється скриптом -->
+        </div>
+    </div>
+
+    <!-- Кнопки фільтрів -->
+    <div class="filters-bar">
+        <button class="filter-btn active" onclick="setFilter('all', this)">Усі матчі</button>
+        <button class="filter-btn" onclick="setFilter('live', this)">
+            <span class="live-dot"></span> LIVE
+        </button>
+    </div>
+
+    <!-- Список матчів -->
+    <div class="matches-container" id="matchesContainer">
+        <!-- Картки додаватимуться автоматично -->
+    </div>
+
+    <!-- Нижнє меню -->
+    <nav class="bottom-nav">
+        <a class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            Матчі
+        </a>
+        <a class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
+            ТБ 24/7
+        </a>
+        <a class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            Ставки
+        </a>
+    </nav>
+
+    <!-- МОДАЛЬНИЙ КІНОТЕАТР ПЛЕЄРА -->
+    <div id="player-modal">
+        <div class="player-header">
+            <div class="player-header-title" id="modalTournamentTitle">
+                <!-- Лого + Назва турніру -->
+            </div>
+            <button class="close-player-btn" onclick="closePlayer()">✕</button>
+        </div>
+
+        <div id="player-wrapper">
+            <div id="player"></div>
+            <img id="myImage" src="https://static.espreso.tv/uploads/article/2537469/images/im-championsleague.png">
+            <div id="spinner"></div>
+            <img id="playerLogo" src="https://kasta-sports-tv.github.io/iptv/logo/player-logo.png" alt="Logo">
+        </div>
+
+        <div class="cinema-info">
+            <div class="teams-cinema-row">
+                <div class="team-cinema">
+                    <img id="modalHomeLogo" src="" alt="">
+                    <span id="modalHomeName"></span>
+                </div>
+                <span style="color: var(--text-muted); font-weight: bold;">VS</span>
+                <div class="team-cinema">
+                    <img id="modalAwayLogo" src="" alt="">
+                    <span id="modalAwayName"></span>
+                </div>
+            </div>
+
+            <div class="streams-control">
+                <button class="stream-btn" id="btnSd" onclick="switchStream('sd')">Stream SD</button>
+                <button class="stream-btn" id="btnHd" onclick="switchStream('hd')">Stream HD</button>
+            </div>
+        </div>
+    </div>
+
+<!-- СКРИПТИ -->
+<script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
+
+<script>
+const JSON_URL = "https://raw.githubusercontent.com/kasta-sports-tv/football/main/data/matches.json";
+
+let allMatches = [];
+let currentFilter = 'all';
+let selectedLeague = 'all';
+let playerInstance = null;
+let activeMatchStreams = { sd: '', hd: '' };
+
+// Завантаження даних з твого JSON
+async function fetchMatches() {
+    try {
+        const response = await fetch(JSON_URL + '?t=' + Date.now());
+        const data = await response.json();
+        allMatches = data.matches || [];
+        renderLeagues();
+        renderMatches();
+    } catch (e) {
+        console.error("Помилка завантаження матчі:", e);
+    }
+}
+
+// Рендер табів ліг зліва направо
+function renderLeagues() {
+    const container = document.getElementById('leaguesScroll');
+    const leaguesSet = new Set(allMatches.map(m => m.competition));
+    
+    let html = `
+        <div class="league-tab ${selectedLeague === 'all' ? 'active' : ''}" onclick="selectLeague('all')">
+            <span style="font-size: 16px;">⚽</span>
+            <span>Усі</span>
+        </div>
+    `;
+
+    leaguesSet.forEach(league => {
+        html += `
+            <div class="league-tab ${selectedLeague === league ? 'active' : ''}" onclick="selectLeague('${league}')" title="${league}">
+                <span style="font-size: 14px; font-weight:bold; color:var(--accent-green);">${league.charAt(0)}</span>
+                <span>${league}</span>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+function selectLeague(league) {
+    selectedLeague = league;
+    renderLeagues();
+    renderMatches();
+}
+
+function setFilter(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderMatches();
+}
+
+// Конвертація часу джерела (WIB UTC+7) у Київський час (+3 зимовий / +4 літній, але за умовою мінус 4 години від WIB)
+function formatKyivTime(matchTimeUnix) {
+    if (!matchTimeUnix) return { time: "--:--" , date: "" };
+    // matchTimeUnix у секундах. Джерело WIB (UTC+7). Київ = UTC+2/+3. Різниця 4 години назад від WIB.
+    const kyivDate = new Date((matchTimeUnix - 4 * 3600) * 1000);
+    
+    const hours = String(kyivDate.getUTCHours()).padStart(2, '0');
+    const minutes = String(kyivDate.getUTCMinutes()).padStart(2, '0');
+    const day = kyivDate.getUTCDate();
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = months[kyivDate.getUTCMonth()];
+
+    return {
+        time: `${hours}:${minutes}`,
+        date: `${day} ${month}`,
+        timestamp: kyivDate.getTime()
+    };
+}
+
+// Визначення стану матчу за часом (без орієнтації на статус від API)
+function getMatchState(matchTimeUnix) {
+    if (!matchTimeUnix) return { type: 'upcoming' };
+    const now = Date.now();
+    const matchStartMs = (matchTimeUnix - 4 * 3600) * 1000;
+    const diffMinutes = (now - matchStartMs) / (1000 * 60);
+
+    // До 5 хв до початку або під час матчу (тривалість 3 години / 180 хв)
+    if (diffMinutes >= -10 && diffMinutes <= 180) {
+        return { type: 'live' };
+    } else if (diffMinutes > 180) {
+        return { type: 'finished' };
+    }
+    return { type: 'upcoming' };
+}
+
+// Рендер карток матчів
+function renderMatches() {
+    const container = document.getElementById('matchesContainer');
+    
+    const filtered = allMatches.filter(m => {
+        if (selectedLeague !== 'all' && m.competition !== selectedLeague) return false;
+        
+        const state = getMatchState(m.match_time);
+        if (currentFilter === 'live' && state.type !== 'live') return false;
+        
+        return true;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted);">Матчів не знайдено</div>`;
+        return;
+    }
+
+    let html = '';
+    filtered.forEach(m => {
+        const timeInfo = formatKyivTime(m.match_time);
+        const state = getMatchState(m.match_time);
+
+        let centerContent = '';
+        if (state.type === 'live') {
+            centerContent = `
+                <div class="status-badge">
+                    <span class="live-dot"></span> LIVE
+                </div>
+            `;
+        } else if (state.type === 'finished') {
+            centerContent = `
+                <div class="status-badge finished">
+                    Завершено
+                </div>
+            `;
+        } else {
+            centerContent = `
+                <div class="match-time">${timeInfo.time}</div>
+                <div class="match-date">${timeInfo.date}</div>
+            `;
+        }
+
+        html += `
+            <div class="match-card" onclick='openPlayerModal(${JSON.stringify(m)})'>
+                <div class="match-card-inner">
+                    <div class="tournament-header">
+                        <span>⚽</span>
+                        <span>${m.competition}</span>
+                    </div>
+                    <div class="match-content">
+                        <div class="team">
+                            <img class="team-logo" src="${m.home_logo || ''}" alt="" onerror="this.src='https://via.placeholder.com/44'">
+                            <span class="team-name">${m.home}</span>
+                        </div>
+                        <div class="match-center">
+                            ${centerContent}
+                        </div>
+                        <div class="team">
+                            <img class="team-logo" src="${m.away_logo || ''}" alt="" onerror="this.src='https://via.placeholder.com/44'">
+                            <span class="team-name">${m.away}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+// =========================
+// КІНОТЕАТР ТА ПЛЕЄР
+// =========================
+function openPlayerModal(match) {
+    const modal = document.getElementById('player-modal');
+    modal.classList.add('active');
+
+    document.getElementById('modalTournamentTitle').innerHTML = `<span>⚽</span> ${match.competition}`;
+    document.getElementById('modalHomeLogo').src = match.home_logo || '';
+    document.getElementById('modalHomeName').textContent = match.home;
+    document.getElementById('modalAwayLogo').src = match.away_logo || '';
+    document.getElementById('modalAwayName').textContent = match.away;
+
+    activeMatchStreams = {
+        sd: match.streams && match.streams.sd ? match.streams.sd : '',
+        hd: match.streams && match.streams.hd ? match.streams.hd : ''
+    };
+
+    const btnSd = document.getElementById('btnSd');
+    const btnHd = document.getElementById('btnHd');
+
+    btnSd.disabled = !activeMatchStreams.sd;
+    btnHd.disabled = !activeMatchStreams.hd;
+
+    // Запускаємо кращий доступний потік за замовчуванням
+    if (activeMatchStreams.hd) {
+        initPlayer(activeMatchStreams.hd);
+        btnHd.classList.add('active');
+        btnSd.classList.remove('active');
+    } else if (activeMatchStreams.sd) {
+        initPlayer(activeMatchStreams.sd);
+        btnSd.classList.add('active');
+        btnHd.classList.remove('active');
+    } else {
+        initPlayer(''); // Порожній або заглушка
+    }
+}
+
+function switchStream(quality) {
+    const url = activeMatchStreams[quality];
+    if (!url) return;
+
+    document.getElementById('btnSd').classList.toggle('active', quality === 'sd');
+    document.getElementById('btnHd').classList.toggle('active', quality === 'hd');
+
+    if (playerInstance && playerInstance.api) {
+        playerInstance.api("file", url);
+    } else {
+        initPlayer(url);
+    }
+}
+
+function closePlayer() {
+    const modal = document.getElementById('player-modal');
+    modal.classList.remove('active');
+    if (playerInstance && playerInstance.api) {
+        try { playerInstance.api("pause"); } catch(e){}
+    }
+}
+
+// Ініціалізація твого оригінального плеєра
+function initPlayer(streamUrl) {
+    const playerContainer = document.getElementById('player');
+    playerContainer.innerHTML = ''; // Очищаємо перед реініціалізацією
+
+    playerInstance = new Playerjs({
+        id: "player",
+        file: streamUrl,
+        poster: "",
+        autoplay: 1,
+        lang: "en"
+    });
+}
+
+// Логіка зникнення постера/спінера та орієнтації з твого коду
+const img = document.getElementById("myImage");
+const spinner = document.getElementById("spinner");
+const logo = document.getElementById("playerLogo");
+
+setTimeout(() => {
+    img.style.opacity = "0";
+    spinner.style.opacity = "0";
+    logo.style.opacity = "1";
+
+    setTimeout(() => {
+        img.remove();
+        spinner.remove();
+    }, 2000);
+}, 4000);
+
+function PlayerjsEvents(event, id, info) {
+    if (event == "play") {
+        if (typeof playerInstance !== 'undefined' && playerInstance.api) {
+            playerInstance.api("poster", "none"); 
+            playerInstance.api("hideposter");
+        }
+        const posterImg = document.querySelector("#player img[src*='poster'], #player [class*='poster']");
+        if (posterImg) {
+            posterImg.style.display = "none";
+            posterImg.style.opacity = "0";
+        }
+    }
+}
+
+function handleFullscreen() {
+    const fs = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fs) {
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(() => {});
+        }
+        fs.appendChild(logo);
+        logo.style.position = 'fixed';
+        
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const videoHeight = screenWidth * (9 / 16);
+        
+        if (screenHeight > videoHeight) {
+            const blackBarHeight = (screenHeight - videoHeight) / 2;
+            logo.style.top = `calc(${blackBarHeight}px + var(--logo-top))`;
+        } else {
+            logo.style.top = 'var(--logo-top)';
+        }
+
+        if (screenWidth <= 900) {
+            logo.classList.add('fullscreen-mobile');
+        }
+    } else {
+        if (screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+        }
+        const container = document.getElementById('player-wrapper');
+        container.appendChild(logo);
+        logo.style.position = 'absolute';
+        logo.style.top = 'var(--logo-top)';
+        logo.classList.remove('fullscreen-mobile');
+    }
+}
+
+document.addEventListener('fullscreenchange', handleFullscreen);
+document.addEventListener('webkitfullscreenchange', handleFullscreen);
+
+// Автоматичне оновлення списку що хвилини для точного оновлення статусів LIVE
+setInterval(fetchMatches, 60000);
+
+// Первинний запуск
+fetchMatches();
+</script>
+
+</body>
+</html>
