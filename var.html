@@ -811,6 +811,7 @@ function getMatchState(matchTimeUnix) {
     return { type: 'upcoming' };
 }
 
+
 function renderMatches() {
     const container = document.getElementById('matchesContainer');
     
@@ -848,8 +849,10 @@ function renderMatches() {
 
         let tournamentHeaderContent = tournamentLogo ? `<img src="${tournamentLogo}" alt="">` : `<span>⚽</span>`;
 
+        const matchData = JSON.stringify(m).replace(/'/g, '&#39;');
+
         html += `
-            <div class="match-card" onclick='openPlayerModal(${JSON.stringify(m)})'>
+            <div class="match-card" onclick='openPlayerModal(${matchData})'>
                 <div class="match-card-inner">
                     <div class="tournament-header">
                         ${tournamentHeaderContent}
