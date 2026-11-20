@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,369 +14,276 @@
     --logo-top: 1.2%;
     --logo-right: 2.2%;
 }
+html, body { margin:0; padding:0; width:100%; background:#000; overflow:hidden; }
+body { position:fixed; top:0; left:0; right:0; bottom:0; }
 
-/* =========================
-   HARD RESET (Blogspot safe)
-========================= */
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    background: #000;
-    overflow: hidden;
-}
-
-/* =========================
-   FIX: REMOVE BLOGSPOT GAP
-========================= */
-body {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-/* =========================
-   JW STYLE WRAPPER (FULL WIDTH TOP)
-========================= */
 #player-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    max-width: 100vw;
-    margin: 0;
-    padding: 0;
-
-    aspect-ratio: 16 / 9;
-    background: #000;
-    overflow: hidden;
+    position:absolute; top:0; left:0; width:100vw; max-width:100vw;
+    margin:0; padding:0; aspect-ratio:16 / 9; background:#000; overflow:hidden;
 }
-
-/* fallback */
-@supports not (aspect-ratio: 16 / 9) {
-    #player-wrapper {
-        height: calc(100vw * 9 / 16);
-    }
+@supports not (aspect-ratio:16 / 9) {
+    #player-wrapper { height:calc(100vw * 9 / 16); }
 }
-
-/* =========================
-   PLAYER AREA
-========================= */
 #player {
-    position: absolute;
-    inset: 0;
-    width: 100% !important;
-    height: 100% !important;
-    background: #000;
+    position:absolute; inset:0; width:100% !important;
+    height:100% !important; background:#000;
+}
+#player iframe, #player video {
+    width:100% !important; height:100% !important;
+    object-fit:contain !important; background:#000 !important;
 }
 
-/* VK PLAYER FIX */
-#player iframe,
-#player video {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain !important;
-    background: #000 !important;
-}
-
-/* =========================
-   POSTER (LOCKED TO PLAYER)
-========================= */
 #myImage {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: #000;
-    z-index: 9999;
-    transition: opacity 2s ease;
-    pointer-events: none;
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:contain; background:#000; z-index:9999;
+    transition:opacity 2s ease; pointer-events:none;
 }
 
-/* =========================
-   NETFLIX SPINNER
-========================= */
-#spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: 37px 0 0 -25px;
-    width: 50px;
-    height: 50px;
-    z-index: 10000;
-    pointer-events: none;
-    opacity: 1;
-    visibility: visible;
-    transition: opacity .3s ease, visibility .3s ease;
+/* Netflix loader */
+#loader {
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:50px;
+    height:50px;
+    transform:translate(-50%, -50%);
+    z-index:10000;
+    pointer-events:none;
+    opacity:1;
+    visibility:visible;
+    transition:opacity .3s ease, visibility .3s ease;
 }
-
-#spinner:after {
-    content: "";
-    background-image: url(https://assets.nflxext.com/en_us/pages/wiplayer/site-spinner.png);
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    background-size: 100%;
-    position: absolute;
-    margin: -6px;
-    width: inherit;
-    height: inherit;
-    animation: nfLoader-spin 1.1s linear infinite !important;
-    -webkit-animation: nfLoader-spin 1.1s linear infinite !important;
+#loader:after {
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:url("https://assets.nflxext.com/en_us/pages/wiplayer/site-spinner.png");
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:100%;
+    animation:nfLoader-spin 1.1s linear infinite;
+    -webkit-animation:nfLoader-spin 1.1s linear infinite;
 }
-
-#spinner.hidden {
-    opacity: 0;
-    visibility: hidden;
+#loader.hidden {
+    opacity:0;
+    visibility:hidden;
 }
-
 @keyframes nfLoader-spin {
-    100% {
-        transform: rotate(360deg);
-    }
+    100% { transform:rotate(360deg); }
 }
-
 @-webkit-keyframes nfLoader-spin {
-    100% {
-        -webkit-transform: rotate(360deg);
-    }
+    100% { -webkit-transform:rotate(360deg); }
 }
 
-/* =========================
-   PLAYER LOGO STYLES
-========================= */
 #playerLogo {
-    position: absolute;
-    top: var(--logo-top);
-    right: var(--logo-right);
-    width: var(--logo-width);
-    z-index: 9999999;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity .8s ease;
+    position:absolute; top:var(--logo-top); right:var(--logo-right);
+    width:var(--logo-width); z-index:9999999;
+    pointer-events:none; opacity:0; transition:opacity .8s ease;
+}
+@media (max-width:900px) and (orientation:landscape) {
+ #playerLogo.fullscreen-mobile {
+    top:var(--logo-top);
+    right:calc(var(--logo-right) + 6.8%);
+    width:calc(var(--logo-width) - 2%);
+ }
+}
+@media (max-width:600px) and (orientation:portrait) {
+ #playerLogo.fullscreen-mobile {
+    top:calc(var(--logo-top) + 34.74%);
+    right:calc(var(--logo-right) - 0.01%);
+    width:calc(var(--logo-width) - 0.1%);
+ }
 }
 
-@media (max-width: 900px) and (orientation: landscape) {
-    #playerLogo.fullscreen-mobile {
-        top: var(--logo-top);
-        right: calc(var(--logo-right) + 6.8%);
-        width: calc(var(--logo-width) - 2%);
-    }
-}
-
-@media (max-width: 600px) and (orientation: portrait) {
-    #playerLogo.fullscreen-mobile {
-        top: calc(var(--logo-top) + 34.74%);
-        right: calc(var(--logo-right) - 0.01%);
-        width: calc(var(--logo-width) - 0.1%);
-    }
-}
-
-/* =========================
-   BLOGSPOT / VK TEXT FIX
-========================= */
 #player * {
-    box-sizing: border-box !important;
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    white-space: nowrap !important;
-    word-break: normal !important;
-    line-height: normal !important;
+    box-sizing:border-box !important;
+    writing-mode:horizontal-tb !important;
+    text-orientation:mixed !important;
+    white-space:nowrap !important;
+    word-break:normal !important;
+    line-height:normal !important;
 }
-
-/* quality menu fix */
-#player [class*="quality"],
-#player [class*="menu"],
-#player [class*="settings"] {
-    writing-mode: horizontal-tb !important;
-    white-space: nowrap !important;
+#player [class*="quality"], #player [class*="menu"], #player [class*="settings"] {
+    writing-mode:horizontal-tb !important;
+    white-space:nowrap !important;
 }
-
-/* =========================
-   MOBILE FIX (KEY FIX HERE)
-========================= */
-@media (max-width: 768px) {
-
-    html, body {
-        height: 100%;
-        overflow: hidden;
-    }
-
-    #player-wrapper {
-        width: 100vw;
-        left: 0;
-        top: 0;
-    }
+@media (max-width:768px) {
+ html, body { height:100%; overflow:hidden; }
+ #player-wrapper { width:100vw; left:0; top:0; }
 }
-
 </style>
 </head>
 
 <body>
-
 <div id="player-wrapper">
-
     <div id="player"></div>
 
-    <img id="myImage"
-         src="https://football24.ua/resources/photos/news/201801/431110.jpg?v=202009074600&w=1080&h=608&fit=cover&output=webp&q=75">
+    <img id="myImage" src="https://football24.ua/resources/photos/news/201801/431110.jpg?v=202009074600&w=1080&h=608&fit=cover&output=webp&q=75">
 
-    <div id="spinner"></div>
+    <div id="loader"></div>
 
     <img id="playerLogo" src="https://kasta-sports-tv.github.io/iptv/logo/player-logo.png" alt="Logo">
-
 </div>
 
 <script>
 const img = document.getElementById("myImage");
-const spinner = document.getElementById("spinner");
+const loader = document.getElementById("loader");
 const logo = document.getElementById("playerLogo");
 
-// Керування Netflix-індикатором
-function showSpinner() {
-    spinner.classList.remove("hidden");
+function showLoader() {
+    loader.classList.remove("hidden");
 }
 
-function hideSpinner() {
-    spinner.classList.add("hidden");
+function hideLoader() {
+    loader.classList.add("hidden");
 }
 
-// Індикатор спочатку видимий
-showSpinner();
-
-// Таймер постера та логотипа
-// Не впливає на роботу індикатора завантаження
+/* Прибираємо початкову заставку через 4 секунди */
 setTimeout(() => {
     img.style.opacity = "0";
-
-    // Показуємо логотип після завершення зникання постера
+    hideLoader();
     logo.style.opacity = "1";
 
     setTimeout(() => {
         img.remove();
     }, 2000);
 }, 4000);
+
+/* Відстеження завантаження та буферизації відео */
+let playbackRequested = false;
+const observedVideos = new WeakSet();
+
+function attachVideoEvents(video) {
+    if (observedVideos.has(video)) return;
+    observedVideos.add(video);
+
+    video.addEventListener("play", () => {
+        playbackRequested = true;
+        showLoader();
+    });
+
+    video.addEventListener("playing", () => {
+        playbackRequested = true;
+        hideLoader();
+    });
+
+    video.addEventListener("waiting", () => {
+        if (playbackRequested && !video.paused) showLoader();
+    });
+
+    video.addEventListener("stalled", () => {
+        if (playbackRequested && !video.paused) showLoader();
+    });
+
+    video.addEventListener("canplay", () => {
+        if (!video.paused) hideLoader();
+    });
+
+    video.addEventListener("canplaythrough", () => {
+        if (!video.paused) hideLoader();
+    });
+
+    video.addEventListener("pause", () => {
+        hideLoader();
+    });
+
+    video.addEventListener("ended", () => {
+        hideLoader();
+    });
+
+    video.addEventListener("error", () => {
+        hideLoader();
+    });
+}
+
+/* PlayerJS може створити video не одразу */
+function scanForVideos() {
+    document.querySelectorAll("#player video").forEach(attachVideoEvents);
+}
+
+const videoObserver = new MutationObserver(scanForVideos);
+videoObserver.observe(document.getElementById("player"), {
+    childList:true,
+    subtree:true
+});
+
+scanForVideos();
 </script>
 
 <script src="https://kasta-sports-tv.github.io/iptv/vk-playerjs.js"></script>
 
 <script>
 const params = new URLSearchParams(window.location.search);
-
-const streamUrl =
-    params.get("url") ||
-    "https://lotus.stingray.com/manifest/ose-347ads-montreal/samsungtvplus/master.m3u8";
+const streamUrl = params.get("url") || "https://lotus.stingray.com/manifest/ose-347ads-montreal/samsungtvplus/master.m3u8";
 
 var player = new Playerjs({
-    id: "player",
-    file: decodeURIComponent(streamUrl),
-    poster: "",
-    autoplay: 0,
-    lang: "en"
+    id:"player",
+    file:decodeURIComponent(streamUrl),
+    poster:"",
+    autoplay:0,
+    lang:"en"
 });
 
-function PlayerjsEvents(event, id, info) {
-
-    // Початкове завантаження або зміна потоку
-    if (event == "init" || event == "new") {
-        showSpinner();
-    }
-
-    // Початок відтворення
-    if (event == "play") {
-        hideSpinner();
-
-        if (typeof player !== 'undefined' && player.api) {
-            player.api("poster", "none");
+function PlayerjsEvents(event,id,info) {
+    if(event=="play") {
+        if(typeof player!=='undefined' && player.api) {
+            player.api("poster","none");
             player.api("hideposter");
         }
 
         const posterImg = document.querySelector("#player img[src*='poster'], #player [class*='poster']");
-        if (posterImg) {
-            posterImg.style.display = "none";
-            posterImg.style.opacity = "0";
+        if(posterImg) {
+            posterImg.style.display="none";
+            posterImg.style.opacity="0";
         }
-    }
-
-    // Початок буферизації
-    if (event == "buffering") {
-        showSpinner();
-    }
-
-    // Завершення буферизації
-    if (event == "buffered") {
-        hideSpinner();
-    }
-
-    // Пауза або зупинка
-    if (event == "pause" || event == "stop") {
-        hideSpinner();
-    }
-
-    // Помилка завантаження або відтворення
-    if (event == "error" || event == "loaderror") {
-        hideSpinner();
     }
 }
 
-/* =========================
-   FULLSCREEN LOGO & ORIENTATION HANDLER
-========================= */
+/* Fullscreen handler */
 function handleFullscreen() {
     const fs = document.fullscreenElement || document.webkitFullscreenElement;
 
-    if (fs) {
-        // 1. Автоповорот екрана у горизонтальне положення
-        if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock('landscape').catch(() => {
-                // Ігноруємо помилку, якщо пристрій/браузер блокує примусовий поворот
-            });
+    if(fs) {
+        if(screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(()=>{});
         }
 
-        // 2. Логіка логотипа
         fs.appendChild(logo);
-        logo.style.position = 'fixed';
+        logo.style.position='fixed';
 
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-        const videoHeight = screenWidth * (9 / 16);
+        const screenWidth=window.innerWidth;
+        const screenHeight=window.innerHeight;
+        const videoHeight=screenWidth*(9/16);
 
-        if (screenHeight > videoHeight) {
-            const blackBarHeight = (screenHeight - videoHeight) / 2;
-            logo.style.top = `calc(${blackBarHeight}px + var(--logo-top))`;
+        if(screenHeight>videoHeight) {
+            const blackBarHeight=(screenHeight-videoHeight)/2;
+            logo.style.top=`calc(${blackBarHeight}px + var(--logo-top))`;
         } else {
-            logo.style.top = 'var(--logo-top)';
+            logo.style.top='var(--logo-top)';
         }
 
-        if (screenWidth <= 900) {
-            logo.classList.add('fullscreen-mobile');
-        }
+        if(screenWidth<=900) logo.classList.add('fullscreen-mobile');
     } else {
-        // 1. Розблокування орієнтації екрана при виході з фулскріну
-        if (screen.orientation && screen.orientation.unlock) {
+        if(screen.orientation && screen.orientation.unlock) {
             screen.orientation.unlock();
         }
 
-        // 2. Скидання логіки логотипа
-        const container = document.getElementById('player-wrapper');
+        const container=document.getElementById('player-wrapper');
         container.appendChild(logo);
-        logo.style.position = 'absolute';
-        logo.style.top = 'var(--logo-top)';
+        logo.style.position='absolute';
+        logo.style.top='var(--logo-top)';
         logo.classList.remove('fullscreen-mobile');
     }
 }
 
-document.addEventListener('fullscreenchange', handleFullscreen);
-document.addEventListener('webkitfullscreenchange', handleFullscreen);
+document.addEventListener('fullscreenchange',handleFullscreen);
+document.addEventListener('webkitfullscreenchange',handleFullscreen);
 
-window.addEventListener('resize', () => {
-    if (document.fullscreenElement || document.webkitFullscreenElement) {
+window.addEventListener('resize',()=>{
+    if(document.fullscreenElement || document.webkitFullscreenElement) {
         handleFullscreen();
     }
 });
 </script>
-
 </body>
 </html>
