@@ -79,9 +79,9 @@ const streamUrl =
 // Отримуємо постер з &poster=...
 const posterUrl = params.get("poster") || "";
 
-// Отримуємо ClearKey KID та KEY
-const clearKeyKid = params.get("kid") || "";
-const clearKeyValue = params.get("key") || "";
+// ClearKey для тесту (KID та KEY)
+const clearKeyKid = "6cfb55b12aaa9df1626a8adaa4f26329";
+const clearKeyValue = "84486e2e8e5fdee2ef8240019923078c";
 
 // Створення плеєра
 var playerConfig = {
@@ -89,18 +89,17 @@ var playerConfig = {
     file: decodeURIComponent(streamUrl),
     poster: decodeURIComponent(posterUrl),
     autoplay: 0,
-    lang: "en"
-};
+    lang: "en",
 
-// Додаємо ClearKey, якщо передані обидва значення
-if (clearKeyKid && clearKeyValue) {
-    playerConfig.drm = {
-        clearkey: {
-            keyId: clearKeyKid.replace(/-/g, ""),
-            key: clearKeyValue.replace(/-/g, "")
+    // ClearKey DRM configuration
+    drm: {
+        "org.w3.clearkey": {
+            "clearkeys": {
+                [clearKeyKid]: clearKeyValue
+            }
         }
-    };
-}
+    }
+};
 
 var player = new Playerjs(playerConfig);
 
