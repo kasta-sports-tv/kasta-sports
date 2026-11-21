@@ -24,6 +24,7 @@ body{
     font-family:Questrial,Arial,Helvetica,Sans-Serif;
 }
 
+/* Головний контейнер */
 .page-wrap{
     width:100%;
     height:100%;
@@ -34,6 +35,7 @@ body{
     margin:0;
 }
 
+/* Контейнер плеєра */
 .player-wrap{
     width:100%;
     max-width:100%;
@@ -43,18 +45,21 @@ body{
     overflow:hidden;
 }
 
+/* Сам плеєр */
 #video-player,
 .video-js{
     width:100% !important;
     height:100% !important;
 }
 
+/* Відео */
 .video-js .vjs-tech{
     width:100%;
     height:100%;
     object-fit:contain;
 }
 
+/* Нижня панель */
 .video-js .vjs-control-bar{
     font-size:11px;
     height:34px !important;
@@ -72,6 +77,7 @@ body{
     height:34px;
 }
 
+/* Велика кнопка */
 .video-js .vjs-big-play-button{
     border:none;
     border-radius:100px;
@@ -103,10 +109,10 @@ poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/im
 <!-- DASH.js -->
 <script src="https://cdn.jsdelivr.net/npm/dashjs@4.7.4/dist/dash.all.min.js"></script>
 
-<!-- Video.js DASH -->
+<!-- DASH support -->
 <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-dash@5.1.1/dist/videojs-dash.min.js"></script>
 
-<!-- EME / DRM -->
+<!-- ClearKey EME -->
 <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-eme@5.5.2/dist/videojs-contrib-eme.min.js"></script>
 
 <!-- Other plugins -->
@@ -119,12 +125,13 @@ poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/im
 <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
 
 <script src="https://dl.dropbox.com/scl/fi/v0ulq6iiu152blz4h4vt9/luxmtyadv.min.js?rlkey=o1bzgv7mh6oa6gamnfwr2fljz"></script>
+
 <script src="https://kasta-sports-tv.github.io/iptv/luxmty/demo-luxmty-advanced.js"></script>
 
 <script>
 
 // =====================================
-// MPD + CLEARKEY SETTINGS
+// MPD + CLEARKEY
 // =====================================
 
 const MPD_URL = "https://video.beeline.tv/live/d/channel321.isml/manifest-stb.mpd";
@@ -132,16 +139,15 @@ const MPD_URL = "https://video.beeline.tv/live/d/channel321.isml/manifest-stb.mp
 const CLEARKEY_ID = "6cfb55b12aaa9df1626a8adaa4f26329";
 const CLEARKEY_KEY = "84486e2e8e5fdee2ef8240019923078c";
 
+
 // =====================================
 // HEX TO BASE64URL
 // =====================================
 
 function hexToBase64Url(hex){
 
-    hex = hex.replace(/[^a-fA-F0-9]/g,'');
-
-    if(hex.length % 2 !== 0){
-        throw new Error("Некоректний HEX ключ");
+    if(!/^[0-9a-fA-F]{32}$/.test(hex)){
+        throw new Error("KID/KEY повинен містити 32 HEX символи");
     }
 
     const bytes = new Uint8Array(
@@ -155,16 +161,18 @@ function hexToBase64Url(hex){
     });
 
     return btoa(binary)
-        .replace(/\+/g,'-')
-        .replace(/\//g,'_')
-        .replace(/=+$/,'');
+        .replace(/\+/g,"-")
+        .replace(/\//g,"_")
+        .replace(/=+$/,"");
 }
 
+
 // =====================================
-// CREATE PLAYER
+// CREATE VIDEO.JS PLAYER
 // =====================================
 
 const player = videojs('video-player',{
+
     controls:true,
     autoplay:false,
     preload:'auto',
@@ -172,6 +180,7 @@ const player = videojs('video-player',{
     fluid:false,
     liveui:true,
     inactivityTimeout:2000,
+
     playbackRates:[0.5,1,1.25,1.5,2],
 
     html5:{
@@ -181,61 +190,92 @@ const player = videojs('video-player',{
         nativeAudioTracks:false,
         nativeVideoTracks:false
     }
+
 });
 
-// =====================================
-// INITIALIZE EME
-// =====================================
-
-player.eme();
 
 // =====================================
-// LOAD MPD WITH CLEARKEY
+// INITIALIZE PLAYER
 // =====================================
 
 player.ready(function(){
 
+    console.log("Video.js initialized");
+
+    // Перевірка EME
+    if(typeof player.eme !== "function"){
+        console.error("EME plugin не завантажився!");
+        return;
+    }
+
+    // Ініціалізація DRM до завантаження джерела
+    player.eme();
+
+    // Перевірка ClearKey
+    let kid;
+    let key;
+
     try{
 
-        const kid = hexToBase64Url(CLEARKEY_ID);
-        const key = hexToBase64Url(CLEARKEY_KEY);
+        kid = hexToBase64Url(CLEARKEY_ID);
+        key = hexToBase64Url(CLEARKEY_KEY);
 
-        player.src({
+    }catch(error){
 
-            src: MPD_URL,
-            type: "application/dash+xml",
+        console.error("ClearKey configuration error:",error);
+        return;
 
-            keySystems: {
+    }
 
-                "org.w3.clearkey": {
 
-                    getLicense: function(
-                        emeOptions,
-                        keyMessage,
-                        callback
-                    ){
+    // =================================
+    // LOAD MPD + CLEARKEY
+    // =================================
 
-                        try{
+    player.src({
 
-                            const license = {
-                                keys: [{
-                                    kty: "oct",
-                                    kid: kid,
-                                    k: key
-                                }],
-                                type: "temporary"
-                            };
+        src:MPD_URL,
 
-                            const response = new TextEncoder()
-                                .encode(JSON.stringify(license));
+        type:"application/dash+xml",
 
-                            callback(null,response);
+        keySystems:{
 
-                        }catch(error){
+            "org.w3.clearkey":{
 
-                            callback(error);
+                initDataTypes:["cenc"],
 
-                        }
+                getLicense:function(
+                    emeOptions,
+                    keyMessage,
+                    callback
+                ){
+
+                    try{
+
+                        const license = {
+
+                            keys:[{
+
+                                kty:"oct",
+                                kid:kid,
+                                k:key
+
+                            }],
+
+                            type:"temporary"
+
+                        };
+
+                        const response = new TextEncoder()
+                            .encode(JSON.stringify(license));
+
+                        callback(null,response);
+
+                    }catch(error){
+
+                        console.error("ClearKey license error:",error);
+
+                        callback(error);
 
                     }
 
@@ -243,78 +283,105 @@ player.ready(function(){
 
             }
 
-        });
+        }
 
-        console.log("MPD + ClearKey завантажено");
+    });
 
-    }catch(error){
-
-        console.error("ClearKey error:",error);
-
-    }
+    console.log("MPD source configured");
 
 });
+
 
 // =====================================
 // MOBILE UI
 // =====================================
 
 if(player.mobileUi){
-player.mobileUi({
-    touchControls:{
-        seekSeconds:10
-    }
-});
+
+    player.mobileUi({
+
+        touchControls:{
+            seekSeconds:10
+        }
+
+    });
+
 }
+
 
 // =====================================
 // QUALITY SELECTOR
 // =====================================
 
 if(player.hlsQualitySelector){
-player.hlsQualitySelector({
-    displayCurrentQuality:true
-});
+
+    player.hlsQualitySelector({
+
+        displayCurrentQuality:true
+
+    });
+
 }
 
 if(player.qualityMenu){
-player.qualityMenu();
+
+    player.qualityMenu();
+
 }
+
 
 // =====================================
 // LOGO
 // =====================================
 
 if(player.logo){
-player.logo({
-    image:"https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
-    url:"#",
-    width:60,
-    fadeDelay:0
-});
+
+    player.logo({
+
+        image:"https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
+
+        url:"#",
+
+        width:60,
+
+        fadeDelay:0
+
+    });
+
 }
+
 
 // =====================================
 // CONTEXT MENU
 // =====================================
 
 if(player.contextmenuUI){
-player.contextmenuUI({
-    content:[
-        {
-            label:"Luxmty Player"
-        }
-    ]
-});
+
+    player.contextmenuUI({
+
+        content:[
+
+            {
+                label:"Luxmty Player"
+            }
+
+        ]
+
+    });
+
 }
+
 
 // =====================================
 // POSTER TIME
 // =====================================
 
 if(player.posterTime){
-player.posterTime();
+
+    player.posterTime();
+
 }
+
 
 // =====================================
 // KEYBOARD CONTROLS
@@ -322,37 +389,44 @@ player.posterTime();
 
 document.addEventListener("keydown",function(e){
 
-if(e.code==="Space"){
-e.preventDefault();
-if(player.paused()){player.play();}
-else{player.pause();}
-}
+    if(e.code==="Space"){
 
-if(e.code==="ArrowRight"){
-player.currentTime(player.currentTime()+10);
-}
+        e.preventDefault();
 
-if(e.code==="ArrowLeft"){
-player.currentTime(player.currentTime()-10);
-}
+        if(player.paused()){
+            player.play();
+        }else{
+            player.pause();
+        }
 
-if(e.code==="ArrowUp"){
-player.volume(Math.min(1,player.volume()+0.1));
-}
+    }
 
-if(e.code==="ArrowDown"){
-player.volume(Math.max(0,player.volume()-0.1));
-}
+    if(e.code==="ArrowRight"){
+        player.currentTime(player.currentTime()+10);
+    }
 
-if(e.key==="m"){
-player.muted(!player.muted());
-}
+    if(e.code==="ArrowLeft"){
+        player.currentTime(player.currentTime()-10);
+    }
 
-if(e.key==="f"){
-player.requestFullscreen();
-}
+    if(e.code==="ArrowUp"){
+        player.volume(Math.min(1,player.volume()+0.1));
+    }
+
+    if(e.code==="ArrowDown"){
+        player.volume(Math.max(0,player.volume()-0.1));
+    }
+
+    if(e.key==="m"){
+        player.muted(!player.muted());
+    }
+
+    if(e.key==="f"){
+        player.requestFullscreen();
+    }
 
 });
+
 
 // =====================================
 // ERROR HANDLING
@@ -360,20 +434,32 @@ player.requestFullscreen();
 
 player.on("error",function(){
 
-    console.error("Video.js error:",player.error());
+    console.error("PLAYER ERROR:",player.error());
 
 });
 
 player.on("loadedmetadata",function(){
+
     console.log("MPD metadata loaded");
+
 });
 
 player.on("playing",function(){
+
     console.log("Playback started");
+
 });
 
 player.on("waiting",function(){
+
     console.log("Buffering...");
+
+});
+
+player.on("canplay",function(){
+
+    console.log("Stream ready");
+
 });
 
 </script>
