@@ -1,60 +1,382 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Luxmty Video Player</title>
 
-  <script src="https://cdn.jsdelivr.net/gh/neokin77/cdn@046a27f1e59699047067a616d64b0edbf08ca0cf/playerjsv6.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video-js.min.css">
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: black;
-    }
+<style>
+html,
+body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
 
-    #player-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: black;
-    }
+body{
+    background:#222;
+    background:radial-gradient(#000,hsl(200deg,30%,6%));
+    color:#aaa;
+    font-family:Questrial,Arial,Helvetica,Sans-Serif;
+}
 
-    #player {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+.page-wrap{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    margin:0;
+}
+
+.player-wrap{
+    width:100%;
+    max-width:100%;
+    aspect-ratio:16/9;
+    background:#000;
+    position:relative;
+    overflow:hidden;
+}
+
+#video-player,
+.video-js{
+    width:100% !important;
+    height:100% !important;
+}
+
+.video-js .vjs-tech{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+.video-js .vjs-control-bar{
+    font-size:11px;
+    height:34px !important;
+}
+
+.video-js .vjs-button{
+    width:34px;
+}
+
+.video-js .vjs-time-control{
+    line-height:34px;
+}
+
+.video-js .vjs-progress-control{
+    height:34px;
+}
+
+.video-js .vjs-big-play-button{
+    border:none;
+    border-radius:100px;
+}
+</style>
 </head>
 
 <body>
-  <div id="player-container">
-    <div id="player"></div>
-  </div>
 
-  <script>
-    var player = new Playerjs({
-      id: "player",
+<div class="page-wrap">
+<div class="player-wrap">
 
-      file: "https://video.beeline.tv/live/d/channel321.isml/manifest-stb.mpd",
+<video-js
+id="video-player"
+class="video-js vjs-luxmty vjs-16-9 vjs-show-big-play-button-on-pause"
+controls
+playsinline
+preload="auto"
+poster="https://raw.githubusercontent.com/EmilioSG11/videojs-cosmos-skin/main/images/bbunny.jpg">
 
-      type: "dash",
+</video-js>
 
-      drm: {
-        clearkey: {
-          keyId: "6cfb55b12aaa9df1626a8adaa4f26329",
-          key: "84486e2e8e5fdee2ef8240019923078c"
-        }
-      },
+</div>
+</div>
 
-      autoplay: false,
-      volume: 0.5,
-      poster: ""
+<!-- Video.js -->
+<script src="https://cdn.jsdelivr.net/npm/video.js@8.12.0/dist/video.min.js"></script>
+
+<!-- DASH.js -->
+<script src="https://cdn.jsdelivr.net/npm/dashjs@4.7.4/dist/dash.all.min.js"></script>
+
+<!-- Video.js DASH -->
+<script src="https://cdn.jsdelivr.net/npm/videojs-contrib-dash@5.1.1/dist/videojs-dash.min.js"></script>
+
+<!-- EME / DRM -->
+<script src="https://cdn.jsdelivr.net/npm/videojs-contrib-eme@5.5.2/dist/videojs-contrib-eme.min.js"></script>
+
+<!-- Other plugins -->
+<script src="https://cdn.jsdelivr.net/npm/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-mobile-ui@1.0.1/dist/videojs-mobile-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/EmilioSG11/videojs-hls-quality-selector@main/dist/videojs-hls-quality-selector.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-logo@3.0.0/dist/videojs-logo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@misterben/videojs-poster-time@1.0.0/dist/videojs-poster-time.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-contextmenu-ui@7.0.0/dist/videojs-contextmenu-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-menu@1.0.1/dist/videojs-contrib-quality-menu.js"></script>
+
+<script src="https://dl.dropbox.com/scl/fi/v0ulq6iiu152blz4h4vt9/luxmtyadv.min.js?rlkey=o1bzgv7mh6oa6gamnfwr2fljz"></script>
+<script src="https://kasta-sports-tv.github.io/iptv/luxmty/demo-luxmty-advanced.js"></script>
+
+<script>
+
+// =====================================
+// MPD + CLEARKEY SETTINGS
+// =====================================
+
+const MPD_URL = "https://video.beeline.tv/live/d/channel321.isml/manifest-stb.mpd";
+
+const CLEARKEY_ID = "6cfb55b12aaa9df1626a8adaa4f26329";
+const CLEARKEY_KEY = "84486e2e8e5fdee2ef8240019923078c";
+
+// =====================================
+// HEX TO BASE64URL
+// =====================================
+
+function hexToBase64Url(hex){
+
+    hex = hex.replace(/[^a-fA-F0-9]/g,'');
+
+    if(hex.length % 2 !== 0){
+        throw new Error("Некоректний HEX ключ");
+    }
+
+    const bytes = new Uint8Array(
+        hex.match(/.{2}/g).map(b => parseInt(b,16))
+    );
+
+    let binary = "";
+
+    bytes.forEach(b => {
+        binary += String.fromCharCode(b);
     });
-  </script>
+
+    return btoa(binary)
+        .replace(/\+/g,'-')
+        .replace(/\//g,'_')
+        .replace(/=+$/,'');
+}
+
+// =====================================
+// CREATE PLAYER
+// =====================================
+
+const player = videojs('video-player',{
+    controls:true,
+    autoplay:false,
+    preload:'auto',
+    responsive:true,
+    fluid:false,
+    liveui:true,
+    inactivityTimeout:2000,
+    playbackRates:[0.5,1,1.25,1.5,2],
+
+    html5:{
+        vhs:{
+            overrideNative:true
+        },
+        nativeAudioTracks:false,
+        nativeVideoTracks:false
+    }
+});
+
+// =====================================
+// INITIALIZE EME
+// =====================================
+
+player.eme();
+
+// =====================================
+// LOAD MPD WITH CLEARKEY
+// =====================================
+
+player.ready(function(){
+
+    try{
+
+        const kid = hexToBase64Url(CLEARKEY_ID);
+        const key = hexToBase64Url(CLEARKEY_KEY);
+
+        player.src({
+
+            src: MPD_URL,
+            type: "application/dash+xml",
+
+            keySystems: {
+
+                "org.w3.clearkey": {
+
+                    getLicense: function(
+                        emeOptions,
+                        keyMessage,
+                        callback
+                    ){
+
+                        try{
+
+                            const license = {
+                                keys: [{
+                                    kty: "oct",
+                                    kid: kid,
+                                    k: key
+                                }],
+                                type: "temporary"
+                            };
+
+                            const response = new TextEncoder()
+                                .encode(JSON.stringify(license));
+
+                            callback(null,response);
+
+                        }catch(error){
+
+                            callback(error);
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+        console.log("MPD + ClearKey завантажено");
+
+    }catch(error){
+
+        console.error("ClearKey error:",error);
+
+    }
+
+});
+
+// =====================================
+// MOBILE UI
+// =====================================
+
+if(player.mobileUi){
+player.mobileUi({
+    touchControls:{
+        seekSeconds:10
+    }
+});
+}
+
+// =====================================
+// QUALITY SELECTOR
+// =====================================
+
+if(player.hlsQualitySelector){
+player.hlsQualitySelector({
+    displayCurrentQuality:true
+});
+}
+
+if(player.qualityMenu){
+player.qualityMenu();
+}
+
+// =====================================
+// LOGO
+// =====================================
+
+if(player.logo){
+player.logo({
+    image:"https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
+    url:"#",
+    width:60,
+    fadeDelay:0
+});
+}
+
+// =====================================
+// CONTEXT MENU
+// =====================================
+
+if(player.contextmenuUI){
+player.contextmenuUI({
+    content:[
+        {
+            label:"Luxmty Player"
+        }
+    ]
+});
+}
+
+// =====================================
+// POSTER TIME
+// =====================================
+
+if(player.posterTime){
+player.posterTime();
+}
+
+// =====================================
+// KEYBOARD CONTROLS
+// =====================================
+
+document.addEventListener("keydown",function(e){
+
+if(e.code==="Space"){
+e.preventDefault();
+if(player.paused()){player.play();}
+else{player.pause();}
+}
+
+if(e.code==="ArrowRight"){
+player.currentTime(player.currentTime()+10);
+}
+
+if(e.code==="ArrowLeft"){
+player.currentTime(player.currentTime()-10);
+}
+
+if(e.code==="ArrowUp"){
+player.volume(Math.min(1,player.volume()+0.1));
+}
+
+if(e.code==="ArrowDown"){
+player.volume(Math.max(0,player.volume()-0.1));
+}
+
+if(e.key==="m"){
+player.muted(!player.muted());
+}
+
+if(e.key==="f"){
+player.requestFullscreen();
+}
+
+});
+
+// =====================================
+// ERROR HANDLING
+// =====================================
+
+player.on("error",function(){
+
+    console.error("Video.js error:",player.error());
+
+});
+
+player.on("loadedmetadata",function(){
+    console.log("MPD metadata loaded");
+});
+
+player.on("playing",function(){
+    console.log("Playback started");
+});
+
+player.on("waiting",function(){
+    console.log("Buffering...");
+});
+
+</script>
+
 </body>
 </html>
