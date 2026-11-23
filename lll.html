@@ -63,6 +63,7 @@
     }
 
     var streamUrl = xorDecrypt(_c, _k);
+    console.log("STREAM URL:", streamUrl);
 
     if (!streamUrl || streamUrl.indexOf('https://') !== 0) {
         console.error('decode fail');
