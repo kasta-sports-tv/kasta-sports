@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secure Player</title>
+<script src="https://ssl.p.jwpcdn.com/player/v/8.37.0/jwplayer.js"></script>
+<script disable-devtool-auto src='https://cdn.jsdelivr.net/npm/disable-devtool'></script>
+<script>window.CHANNEL_ID = "eurosport1";</script>
+<script src="https://customer-vz2c0b.fastestservers.shop/embed.js" defer></script>
+<script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
+<script type="text/javascript">
+    aclib.runPop({
+        zoneId: '10298126',
+    });
+</script>
+<script type="text/javascript">
+    aclib.runPop({
+        zoneId: '12362098',
+    });
+</script>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+    html, body { margin:0; padding:0; background:#000; height:100%; overflow:hidden; }
+    #player { width:100%; height:100%; }
+    .jw-text-watermark {
+        position:absolute; z-index:10; color:rgba(255,255,255,0.45);
+        font-family:'Montserrat',sans-serif; font-size:23px; pointer-events:none;
+        text-shadow:1px 1px 1px rgba(0,0,0,0.9); white-space:nowrap; user-select:none;
+        opacity:0; transition:opacity 0.6s ease-in-out;
+    }
+    .jw-text-session {
+        position:absolute; z-index:11; color:rgba(255,255,255,0.35);
+        font-family:monospace; font-size:11px; pointer-events:none; user-select:none;
+        opacity:0; transition:opacity 1s ease;
+    }
+    .jw-text-live { font-family:'Montserrat',sans-serif!important; color:#83cf00!important; font-size:15px!important; }
+    .jw-rightclick, .jw-stats { display:none!important; }
+</style>
+</head>
+<body>
+<div id="player"></div>
+<script>
+(function(){
+    var _c = "fe2a593487981ffa962e6a722a56ad8b9ecdbdd10443b512d6d4dcb01638eecac20f5809a0f303998a083c535456e3f4f287f2f93253e928e7aa9a9e2613bbcade295b2099ce5b8fb77464464056ecdbeea2bcd02e69aa3cebadd3b14118b6e6a5141d09a79b40b78d1f62794457eef495b6fed22108e830dacb9989413295cad03a5417a1e8489aa4295c44350de2eacbb9abfb32548b05fba1c382421ff5e6a51c1d09b0c1059bb41748453709b5d5d6ccbec24955a914dc88dabc0022f0abff3049218c8c5de69575";  
+    var _k = "965e2d44f4a230d5e04d0e1c07629ab9a6e3cab46630dc66b3fbaad37256c184"; 
+
+    function hexToBytes(h) {
+        var b = new Uint8Array(h.length / 2);
+        for (var i = 0; i < h.length; i += 2)
+            b[i >> 1] = parseInt(h.substr(i, 2), 16);
+        return b;
+    }
+
+    function xorDecrypt(cipherHex, keyHex) {
+        var c = hexToBytes(cipherHex);
+        var k = hexToBytes(keyHex);
+        var s = '';
+        for (var i = 0; i < c.length; i++)
+            s += String.fromCharCode(c[i] ^ k[i % k.length]);
+        return s;
+    }
+
+    var streamUrl = xorDecrypt(_c, _k);
+
+    if (!streamUrl || streamUrl.indexOf('https://') !== 0) {
+        console.error('decode fail');
+        streamUrl = '';
+    }
+
+    var ipText      = "NTQuMTQ3LjE2OS4yMTc=";
+    var sessionText = "561ffd70";
+
+    jwplayer.key = "W7zSm81+mmIsg7F+fyHRKhF3ggLkTqtGMhvI92kbqf/ysE99";
+
+    var player = jwplayer("player").setup({
+        playlist: [{ file: streamUrl, type: "hls" }],
+        width: "100%", height: "100%",
+        autostart: true, primary: "html5"
+    });
+
+    player.on("ready", function() {
+        var jwContainer = document.querySelector('.jw-wrapper');
+        if (!jwContainer) return;
+
+        var wmIP = document.createElement('div');
+        wmIP.className = 'jw-text-watermark';
+        wmIP.innerText = ipText;
+        jwContainer.appendChild(wmIP);
+
+        var wmSession = document.createElement('div');
+        wmSession.className = 'jw-text-session';
+        wmSession.innerText = sessionText;
+        jwContainer.appendChild(wmSession);
+
+        function showMoveIP() {
+            var maxX = Math.max(10, jwContainer.offsetWidth  - 300);
+            var maxY = Math.max(10, jwContainer.offsetHeight - 100);
+            wmIP.style.left    = Math.floor(Math.random() * maxX) + 'px';
+            wmIP.style.top     = Math.floor(Math.random() * maxY) + 'px';
+            wmIP.style.opacity = "1";
+            setTimeout(function(){ wmIP.style.opacity = "0"; }, 5000);
+        }
+
+        function showMoveSession() {
+            var pos = [
+                {top:"20px",left:"20px"},{top:"20px",right:"20px"},
+                {bottom:"80px",left:"20px"},{bottom:"80px",right:"20px"}
+            ];
+            var p = pos[Math.floor(Math.random() * pos.length)];
+            ['top','bottom','left','right'].forEach(function(k){ wmSession.style[k]='auto'; });
+            Object.keys(p).forEach(function(k){ wmSession.style[k]=p[k]; });
+            wmSession.style.opacity = "1";
+            setTimeout(function(){ wmSession.style.opacity = "0"; }, 7000);
+        }
+
+        setInterval(showMoveIP,      60000); setTimeout(showMoveIP,      5000);
+        setInterval(showMoveSession, 45000); setTimeout(showMoveSession, 15000);
+
+        setInterval(function(){
+            var v = document.querySelector("video");
+            if (v) v.disablePictureInPicture = true;
+        }, 2000);
+    });
+
+    document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+})();
+</script>
+</body>
+</html>
