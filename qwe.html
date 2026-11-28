@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Kingdome Test</title>
+<title>OnDemand API Test</title>
 
 <style>
 * {
@@ -19,42 +18,82 @@ body {
 }
 
 header {
-    padding: 18px;
+    padding: 16px;
     background: #141518;
     border-bottom: 1px solid #292b30;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
 }
 
 h2 {
     margin: 0;
-    font-size: 19px;
+    font-size: 18px;
+}
+
+button {
+    cursor: pointer;
 }
 
 #refresh {
     border: 0;
     background: #292b30;
     color: white;
-    padding: 9px 13px;
+    padding: 10px 13px;
     border-radius: 6px;
 }
 
 #refresh:disabled {
-    opacity: 0.5;
+    opacity: .5;
 }
 
 #status {
     padding: 12px;
     color: #aaa;
-    font-size: 13px;
+    font-size: 12px;
     text-align: center;
     overflow-wrap: anywhere;
 }
 
+#filters {
+    display: flex;
+    gap: 7px;
+    padding: 0 12px 10px;
+    overflow-x: auto;
+}
+
+.filter {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    border: 1px solid #292b30;
+    border-radius: 20px;
+    background: #17191d;
+    color: #aaa;
+    font-size: 12px;
+}
+
+.filter.active {
+    background: #762727;
+    border-color: #a33b3b;
+    color: white;
+}
+
+#search {
+    display: block;
+    width: calc(100% - 24px);
+    margin: 0 12px 10px;
+    padding: 12px;
+    border: 1px solid #292b30;
+    border-radius: 7px;
+    background: #17191d;
+    color: white;
+    outline: none;
+}
+
 #matches {
     padding: 12px;
-    height: calc(100dvh - 65px);
+    height: calc(100dvh - 170px);
     overflow-y: auto;
 }
 
@@ -66,28 +105,89 @@ h2 {
     text-transform: uppercase;
 }
 
-.match {
-    padding: 15px;
-    margin-bottom: 8px;
+.card {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding: 9px;
     background: #17191d;
     border: 1px solid #292b30;
     border-radius: 9px;
     cursor: pointer;
+    min-height: 95px;
 }
 
-.match:active {
+.card:active {
     background: #292b30;
 }
 
-.match-name {
-    font-size: 15px;
-    font-weight: bold;
+.poster {
+    width: 115px;
+    min-width: 115px;
+    height: 76px;
+    object-fit: cover;
+    border-radius: 5px;
+    background: #25272b;
 }
 
-.match-time {
-    margin-top: 7px;
+.card-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.card-league {
+    margin-top: 5px;
     color: #999;
-    font-size: 12px;
+    font-size: 11px;
+}
+
+.card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 7px;
+}
+
+.tag {
+    padding: 4px 7px;
+    border-radius: 4px;
+    background: #292b30;
+    color: #bbb;
+    font-size: 10px;
+}
+
+.tag.live {
+    background: #612222;
+    color: #ffaaaa;
+}
+
+.teams {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 9px;
+    font-size: 11px;
+    color: #ccc;
+    flex-wrap: wrap;
+}
+
+.team {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.team img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
 }
 
 #playerModal {
@@ -97,50 +197,146 @@ h2 {
     z-index: 10;
     background: #090a0c;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .player-header {
-    height: 55px;
+    min-height: 55px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 15px;
+    padding: 0 14px;
     background: #17191d;
+    gap: 10px;
 }
 
 #playerTitle {
     font-size: 14px;
     font-weight: bold;
+    overflow-wrap: anywhere;
 }
 
 #closePlayer {
+    flex-shrink: 0;
     border: 0;
     background: #292b30;
     color: white;
     border-radius: 6px;
-    padding: 9px 14px;
-    font-size: 14px;
+    padding: 9px 12px;
 }
 
 .player-frame {
     width: 100%;
     aspect-ratio: 16 / 9;
-    background: #000;
     flex-shrink: 0;
+    background: #000;
 }
 
-iframe {
+#player {
     width: 100%;
     height: 100%;
     border: 0;
+    background: #000;
 }
 
-.player-url {
+#playerStatus {
+    padding: 10px;
+    color: #999;
+    font-size: 12px;
+}
+
+.player-teams {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    padding: 14px;
+    background: #141518;
+}
+
+.player-team {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.player-team img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+#sources {
     padding: 12px;
+}
+
+.section-title {
+    color: #aaa;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 8px 0 10px;
+}
+
+.source-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.source-button {
+    padding: 10px 13px;
+    border: 1px solid #33363d;
+    border-radius: 6px;
+    background: #202226;
+    color: white;
+    font-size: 12px;
+}
+
+.source-button.active {
+    background: #762727;
+    border-color: #a33b3b;
+}
+
+#details {
+    padding: 12px;
+}
+
+#details summary {
+    color: #aaa;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#details pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 10px;
+    color: #aaa;
+    background: #141518;
+    padding: 12px;
+    border-radius: 7px;
+}
+
+#empty {
+    text-align: center;
     color: #888;
-    font-size: 11px;
-    word-break: break-all;
+    padding: 30px 10px;
+    font-size: 13px;
+}
+
+@media (max-width: 400px) {
+    .poster {
+        width: 95px;
+        min-width: 95px;
+        height: 68px;
+    }
+
+    .card-title {
+        font-size: 13px;
+    }
 }
 </style>
 </head>
@@ -148,15 +344,25 @@ iframe {
 <body>
 
 <header>
-    <h2>KINGDOME TEST</h2>
-    <button onclick="loadMatches()" id="refresh">Оновити</button>
+    <h2>ONDEMAND TEST</h2>
+    <button id="refresh" onclick="loadData(true)">Оновити</button>
 </header>
 
-<div id="status">Завантаження матчів...</div>
+<div id="status">Завантаження API...</div>
+
+<input
+    id="search"
+    type="search"
+    placeholder="Пошук матчів і каналів..."
+    oninput="renderMatches()"
+>
+
+<div id="filters"></div>
 
 <div id="matches"></div>
 
 <div id="playerModal">
+
     <div class="player-header">
         <div id="playerTitle">Плеєр</div>
         <button id="closePlayer" onclick="closePlayer()">Закрити ✕</button>
@@ -165,23 +371,52 @@ iframe {
     <div class="player-frame">
         <iframe
             id="player"
-            allowfullscreen
-            allow="autoplay; encrypted-media; picture-in-picture">
+            title="OnDemand Player"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups"
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowfullscreen>
         </iframe>
     </div>
 
-    <div class="player-url" id="playerUrl"></div>
+    <div id="playerStatus">Очікування плеєра...</div>
+
+    <div class="player-teams" id="playerTeams"></div>
+
+    <div id="sources"></div>
+
+    <div id="details">
+        <details>
+            <summary>Показати повний JSON трансляції</summary>
+            <pre id="rawJSON"></pre>
+        </details>
+    </div>
+
 </div>
 
 <script>
-const API = "https://kingdome.li/";
-const PROXY = "https://api.allorigins.win/raw?url=";
+const API = "https://ondemand.st/papi/api/streams";
 
+const PROXY =
+    "https://api.allorigins.win/raw?url=";
+
+const CACHE_KEY = "ondemand_test_cache";
+const CACHE_TIME = 60000;
+
+let allStreams = [];
+let currentCategory = "Усі";
+let currentItem = null;
 let loading = false;
+let currentSource = "";
 
-// Отримання JSON через XMLHttpRequest
-function getJSON(url, timeout = 20000) {
+
+// =====================================
+// XHR: отримання JSON
+// =====================================
+
+function getJSON(url, timeout = 25000) {
+
     return new Promise((resolve, reject) => {
+
         const xhr = new XMLHttpRequest();
 
         xhr.open("GET", url, true);
@@ -189,23 +424,27 @@ function getJSON(url, timeout = 20000) {
         xhr.responseType = "text";
 
         xhr.onload = function() {
+
             if (xhr.status < 200 || xhr.status >= 300) {
                 reject(new Error("HTTP " + xhr.status));
                 return;
             }
 
             try {
+
                 const data = JSON.parse(xhr.responseText);
 
-                if (!Array.isArray(data)) {
-                    reject(new Error("Неправильний формат JSON"));
+                if (!data || !Array.isArray(data.streams)) {
+                    reject(new Error("Неправильна структура API"));
                     return;
                 }
 
                 resolve(data);
 
             } catch (error) {
-                reject(new Error("Помилка читання JSON: " + error.message));
+
+                reject(new Error("JSON: " + error.message));
+
             }
         };
 
@@ -214,7 +453,7 @@ function getJSON(url, timeout = 20000) {
         };
 
         xhr.ontimeout = function() {
-            reject(new Error("Timeout: перевищено час очікування"));
+            reject(new Error("Timeout"));
         };
 
         xhr.onabort = function() {
@@ -225,7 +464,53 @@ function getJSON(url, timeout = 20000) {
     });
 }
 
-async function loadMatches() {
+
+// =====================================
+// КЕШ
+// =====================================
+
+function readCache() {
+
+    try {
+
+        const raw = localStorage.getItem(CACHE_KEY);
+
+        if (!raw) return null;
+
+        const cache = JSON.parse(raw);
+
+        if (Date.now() - cache.time > CACHE_TIME) {
+            return null;
+        }
+
+        return cache.data;
+
+    } catch (error) {
+        return null;
+    }
+}
+
+function writeCache(data) {
+
+    try {
+
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+            time: Date.now(),
+            data: data
+        }));
+
+    } catch (error) {
+        console.warn("Кеш недоступний:", error);
+    }
+}
+
+
+// =====================================
+// ЗАВАНТАЖЕННЯ API
+// =====================================
+
+async function loadData(force = false) {
+
     if (loading) return;
 
     loading = true;
@@ -236,48 +521,22 @@ async function loadMatches() {
     refresh.disabled = true;
     refresh.textContent = "Завантаження...";
 
-    status.textContent = "Завантаження матчів...";
-
     let data = null;
-    let source = "";
     let directError = "";
     let proxyError = "";
 
-    // Спроба 1: прямий Kingdome
-    try {
-        console.log("Спроба 1: XMLHttpRequest → Kingdome");
+    // Спочатку перевіряємо кеш
+    if (!force) {
 
-        data = await getJSON(API);
+        data = readCache();
 
-        source = "Прямий API (XHR)";
+        if (data) {
 
-        console.log("Прямий Kingdome успішний");
+            currentSource = "Кеш";
 
-    } catch (error) {
-        directError = error.message || String(error);
+            console.log("OnDemand: використано кеш");
 
-        console.warn("Прямий запит не спрацював:", directError);
-
-        // Спроба 2: AllOrigins
-        try {
-            console.log("Спроба 2: XMLHttpRequest → AllOrigins");
-
-            const proxyURL = PROXY + encodeURIComponent(API);
-
-            data = await getJSON(proxyURL);
-
-            source = "AllOrigins (XHR)";
-
-            console.log("AllOrigins успішний");
-
-        } catch (error2) {
-            proxyError = error2.message || String(error2);
-
-            console.error("Помилка AllOrigins:", proxyError);
-
-            status.textContent =
-                "Помилка обох запитів. Прямий: " +
-                directError + " | Проксі: " + proxyError;
+            processData(data);
 
             loading = false;
             refresh.disabled = false;
@@ -287,92 +546,663 @@ async function loadMatches() {
         }
     }
 
-    // Формування списку матчів
-    const container = document.getElementById("matches");
-    container.innerHTML = "";
+    status.textContent = "Запит до OnDemand API...";
 
-    let count = 0;
+    // 1. Прямий API
+    try {
 
-    for (const group of data) {
-        if (!Array.isArray(group.matches)) continue;
+        console.log("Спроба 1: прямий OnDemand API");
 
-        const category = document.createElement("div");
-        category.className = "category";
-        category.textContent = group.category || "Інше";
+        data = await getJSON(API);
 
-        container.appendChild(category);
+        currentSource = "Прямий API";
 
-        for (const item of group.matches) {
-            if (!item || !item.url) continue;
+        console.log("Прямий API успішний");
 
-            const button = document.createElement("div");
-            button.className = "match";
+    } catch (error) {
 
-            const name = document.createElement("div");
-            name.className = "match-name";
-            name.textContent = item.match || "Матч";
+        directError = error.message || String(error);
 
-            const time = document.createElement("div");
-            time.className = "match-time";
+        console.warn("Прямий API:", directError);
 
-            if (item.kick) {
-                const date = new Date(item.kick);
+        // 2. AllOrigins
+        try {
 
-                time.textContent = isNaN(date.getTime())
-                    ? item.kick
-                    : date.toLocaleString("uk-UA", {
-                        timeZone: "Europe/Kyiv",
-                        dateStyle: "short",
-                        timeStyle: "short"
-                    });
-            } else {
-                time.textContent = item.url;
-            }
+            console.log("Спроба 2: AllOrigins");
 
-            button.appendChild(name);
-            button.appendChild(time);
+            const proxyURL =
+                PROXY + encodeURIComponent(API);
 
-            button.onclick = () => {
-                openPlayer(
-                    item.match || "Kingdome Player",
-                    item.url
-                );
-            };
+            data = await getJSON(proxyURL);
 
-            container.appendChild(button);
-            count++;
+            currentSource = "AllOrigins";
+
+            console.log("AllOrigins успішний");
+
+        } catch (error2) {
+
+            proxyError = error2.message || String(error2);
+
+            console.error("AllOrigins:", proxyError);
+
+            // 3. Якщо є старий кеш — показуємо його
+            try {
+
+                const raw = localStorage.getItem(CACHE_KEY);
+
+                if (raw) {
+
+                    const oldCache = JSON.parse(raw);
+
+                    if (oldCache.data) {
+
+                        status.textContent =
+                            "API недоступний. Показано старий кеш.";
+
+                        currentSource = "Старий кеш";
+
+                        processData(oldCache.data);
+
+                        loading = false;
+                        refresh.disabled = false;
+                        refresh.textContent = "Оновити";
+
+                        return;
+                    }
+                }
+
+            } catch (e) {}
+
+            status.textContent =
+                "Помилка API. Прямий: " +
+                directError +
+                " | AllOrigins: " +
+                proxyError;
+
+            loading = false;
+            refresh.disabled = false;
+            refresh.textContent = "Оновити";
+
+            return;
         }
     }
 
-    status.textContent =
-        "Завантажено матчів: " + count +
-        " | Джерело: " + source;
+    writeCache(data);
 
-    console.log("Усього матчів:", count);
-    console.log("Джерело:", source);
-
-    if (count === 0) {
-        status.textContent = "API відповів, але матчів не знайдено.";
-    }
+    processData(data);
 
     loading = false;
     refresh.disabled = false;
     refresh.textContent = "Оновити";
 }
 
-function openPlayer(name, url) {
-    document.getElementById("playerTitle").textContent = name;
-    document.getElementById("playerUrl").textContent = url;
-    document.getElementById("player").src = url;
-    document.getElementById("playerModal").style.display = "flex";
+
+// =====================================
+// ОБРОБКА ВСІХ КАТЕГОРІЙ
+// =====================================
+
+function processData(data) {
+
+    allStreams = [];
+
+    for (const group of data.streams) {
+
+        const category =
+            group.category ||
+            group.name ||
+            "Інше";
+
+        const streams =
+            Array.isArray(group.streams)
+                ? group.streams
+                : [];
+
+        for (const item of streams) {
+
+            if (!item) continue;
+
+            // Не відкидаємо 24/7
+            allStreams.push({
+                ...item,
+                _category: category
+            });
+        }
+    }
+
+    console.log("Усього трансляцій:", allStreams.length);
+    console.log("Джерело:", currentSource);
+
+    buildFilters();
+    renderMatches();
+
+    document.getElementById("status").textContent =
+        "Завантажено: " + allStreams.length +
+        " | Джерело: " + currentSource;
 }
+
+
+// =====================================
+// ФІЛЬТРИ КАТЕГОРІЙ
+// =====================================
+
+function buildFilters() {
+
+    const filters = document.getElementById("filters");
+
+    filters.innerHTML = "";
+
+    const categories = [
+        "Усі",
+        ...new Set(allStreams.map(item => item._category))
+    ];
+
+    for (const category of categories) {
+
+        const button = document.createElement("button");
+
+        button.className =
+            "filter" +
+            (currentCategory === category ? " active" : "");
+
+        button.textContent = category;
+
+        button.onclick = () => {
+
+            currentCategory = category;
+
+            buildFilters();
+            renderMatches();
+        };
+
+        filters.appendChild(button);
+    }
+}
+
+
+// =====================================
+// ЧАС КИЄВА
+// =====================================
+
+function formatTime(timestamp) {
+
+    if (!timestamp) return "";
+
+    const date = new Date(Number(timestamp) * 1000);
+
+    if (isNaN(date.getTime())) return "";
+
+    return date.toLocaleString("uk-UA", {
+        timeZone: "Europe/Kyiv",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+
+// =====================================
+// БЕЗПЕЧНЕ СТВОРЕННЯ ЗОБРАЖЕНЬ
+// =====================================
+
+function makeImage(url, className, alt) {
+
+    const img = document.createElement("img");
+
+    img.className = className;
+    img.alt = alt || "";
+    img.loading = "lazy";
+    img.referrerPolicy = "no-referrer";
+
+    if (url && /^https?:\/\//i.test(url)) {
+        img.src = url;
+    }
+
+    img.onerror = function() {
+        this.style.visibility = "hidden";
+    };
+
+    return img;
+}
+
+
+// =====================================
+// СПИСОК ТРАНСЛЯЦІЙ
+// =====================================
+
+function renderMatches() {
+
+    const container = document.getElementById("matches");
+
+    const search =
+        document.getElementById("search").value
+            .toLowerCase()
+            .trim();
+
+    container.innerHTML = "";
+
+    let filtered = allStreams.filter(item => {
+
+        const categoryMatch =
+            currentCategory === "Усі" ||
+            item._category === currentCategory;
+
+        const searchText = [
+            item.name,
+            item.league,
+            item.category_name,
+            item.teams?.home?.name,
+            item.teams?.away?.name
+        ].join(" ").toLowerCase();
+
+        return categoryMatch && searchText.includes(search);
+    });
+
+    if (filtered.length === 0) {
+
+        container.innerHTML =
+            '<div id="empty">Нічого не знайдено</div>';
+
+        return;
+    }
+
+    let lastCategory = "";
+
+    for (const item of filtered) {
+
+        if (lastCategory !== item._category) {
+
+            lastCategory = item._category;
+
+            const heading = document.createElement("div");
+
+            heading.className = "category";
+            heading.textContent = lastCategory;
+
+            container.appendChild(heading);
+        }
+
+        const card = document.createElement("div");
+
+        card.className = "card";
+
+        const poster = makeImage(
+            item.poster,
+            "poster",
+            item.name
+        );
+
+        card.appendChild(poster);
+
+        const info = document.createElement("div");
+        info.className = "card-info";
+
+        const title = document.createElement("div");
+        title.className = "card-title";
+        title.textContent = item.name || "Без назви";
+
+        info.appendChild(title);
+
+        if (item.league) {
+
+            const league = document.createElement("div");
+
+            league.className = "card-league";
+            league.textContent = item.league;
+
+            info.appendChild(league);
+        }
+
+        const meta = document.createElement("div");
+        meta.className = "card-meta";
+
+        const statusTag = document.createElement("span");
+
+        statusTag.className =
+            "tag" +
+            (String(item.status).toLowerCase() === "live"
+                ? " live"
+                : "");
+
+        statusTag.textContent =
+            item.always_live
+                ? "24/7"
+                : (item.status || "UNKNOWN").toUpperCase();
+
+        meta.appendChild(statusTag);
+
+        if (item.viewers !== undefined) {
+
+            const viewers = document.createElement("span");
+
+            viewers.className = "tag";
+            viewers.textContent = "Глядачі: " + item.viewers;
+
+            meta.appendChild(viewers);
+        }
+
+        info.appendChild(meta);
+
+        const home = item.teams?.home;
+        const away = item.teams?.away;
+
+        if (home?.name || away?.name) {
+
+            const teams = document.createElement("div");
+            teams.className = "teams";
+
+            if (home?.name) {
+
+                const homeBox = document.createElement("span");
+                homeBox.className = "team";
+
+                if (home.badge) {
+                    homeBox.appendChild(
+                        makeImage(home.badge, "", home.name)
+                    );
+                }
+
+                const homeName = document.createElement("span");
+                homeName.textContent = home.name;
+
+                homeBox.appendChild(homeName);
+                teams.appendChild(homeBox);
+            }
+
+            const vs = document.createElement("span");
+            vs.textContent = "—";
+            teams.appendChild(vs);
+
+            if (away?.name) {
+
+                const awayBox = document.createElement("span");
+                awayBox.className = "team";
+
+                if (away.badge) {
+                    awayBox.appendChild(
+                        makeImage(away.badge, "", away.name)
+                    );
+                }
+
+                const awayName = document.createElement("span");
+                awayName.textContent = away.name;
+
+                awayBox.appendChild(awayName);
+                teams.appendChild(awayBox);
+            }
+
+            info.appendChild(teams);
+        }
+
+        const dateText = formatTime(item.starts_at);
+
+        if (dateText) {
+
+            const date = document.createElement("div");
+
+            date.className = "card-league";
+            date.textContent = dateText;
+
+            info.appendChild(date);
+        }
+
+        card.appendChild(info);
+
+        card.onclick = () => openPlayer(item);
+
+        container.appendChild(card);
+    }
+
+    document.getElementById("status").textContent =
+        "Показано: " + filtered.length +
+        " / " + allStreams.length +
+        " | Джерело: " + currentSource;
+}
+
+
+// =====================================
+// ВІДКРИТТЯ ПЛЕЄРА
+// =====================================
+
+function openPlayer(item) {
+
+    currentItem = item;
+
+    document.getElementById("playerTitle").textContent =
+        item.name || "OnDemand Player";
+
+    document.getElementById("playerModal").style.display = "flex";
+
+    document.getElementById("rawJSON").textContent =
+        JSON.stringify(item, null, 2);
+
+    // Команди
+    const teams = document.getElementById("playerTeams");
+
+    teams.innerHTML = "";
+
+    const home = item.teams?.home;
+    const away = item.teams?.away;
+
+    if (home?.name || away?.name) {
+
+        if (home?.name) {
+
+            const box = document.createElement("div");
+            box.className = "player-team";
+
+            if (home.badge) {
+                box.appendChild(
+                    makeImage(home.badge, "", home.name)
+                );
+            }
+
+            const name = document.createElement("span");
+            name.textContent = home.name;
+
+            box.appendChild(name);
+            teams.appendChild(box);
+        }
+
+        const vs = document.createElement("span");
+        vs.textContent = "VS";
+        vs.style.color = "#888";
+
+        teams.appendChild(vs);
+
+        if (away?.name) {
+
+            const box = document.createElement("div");
+            box.className = "player-team";
+
+            if (away.badge) {
+                box.appendChild(
+                    makeImage(away.badge, "", away.name)
+                );
+            }
+
+            const name = document.createElement("span");
+            name.textContent = away.name;
+
+            box.appendChild(name);
+            teams.appendChild(box);
+        }
+
+    } else {
+
+        teams.innerHTML = '<span style="color:#777">Без даних про команди</span>';
+    }
+
+    // Джерела
+    buildSources(item);
+
+    // Основний embed
+    let mainEmbed = item.embed;
+
+    if (!mainEmbed && item.sources?.length) {
+        mainEmbed = item.sources[0].embed;
+    }
+
+    if (mainEmbed) {
+
+        setPlayer(mainEmbed, "Основний плеєр");
+
+    } else {
+
+        document.getElementById("playerStatus").textContent =
+            "У API немає основного embed.";
+
+        document.getElementById("player").src = "about:blank";
+    }
+}
+
+
+// =====================================
+// ВИБІР ДЖЕРЕЛ
+// =====================================
+
+function buildSources(item) {
+
+    const container = document.getElementById("sources");
+
+    container.innerHTML = "";
+
+    const heading = document.createElement("div");
+
+    heading.className = "section-title";
+    heading.textContent =
+        "ДОСТУПНІ ДЖЕРЕЛА: " +
+        (item.sources?.length || 0);
+
+    container.appendChild(heading);
+
+    const buttons = document.createElement("div");
+
+    buttons.className = "source-buttons";
+
+    container.appendChild(buttons);
+
+    // Основний embed
+    if (item.embed) {
+
+        const button = document.createElement("button");
+
+        button.className = "source-button active";
+        button.textContent = "Основний embed";
+
+        button.onclick = () => {
+
+            setActiveSource(button);
+            setPlayer(item.embed, "Основний embed");
+        };
+
+        buttons.appendChild(button);
+    }
+
+    const sources = Array.isArray(item.sources)
+        ? item.sources
+        : [];
+
+    sources.forEach((source, index) => {
+
+        if (!source.embed) return;
+
+        const button = document.createElement("button");
+
+        button.className = "source-button";
+
+        let label = source.name || "Server " + (index + 1);
+
+        if (source.sd) label += " SD";
+        if (source.hd) label += " HD";
+
+        button.textContent = label;
+
+        button.onclick = () => {
+
+            setActiveSource(button);
+
+            setPlayer(
+                source.embed,
+                label
+            );
+        };
+
+        buttons.appendChild(button);
+    });
+
+    if (buttons.children.length === 0) {
+
+        const message = document.createElement("div");
+
+        message.style.color = "#888";
+        message.style.fontSize = "12px";
+        message.textContent = "Доступних embed-посилань немає.";
+
+        container.appendChild(message);
+    }
+}
+
+
+function setActiveSource(button) {
+
+    document.querySelectorAll(".source-button")
+        .forEach(el => el.classList.remove("active"));
+
+    button.classList.add("active");
+}
+
+
+// =====================================
+// ЗАПУСК ПЛЕЄРА
+// =====================================
+
+function setPlayer(url, label) {
+
+    if (!url || !/^https?:\/\//i.test(url)) {
+
+        document.getElementById("playerStatus").textContent =
+            "Некоректне посилання плеєра.";
+
+        return;
+    }
+
+    const player = document.getElementById("player");
+
+    player.src = "about:blank";
+
+    document.getElementById("playerStatus").textContent =
+        "Завантаження: " + label;
+
+    setTimeout(() => {
+
+        player.src = url;
+
+    }, 100);
+}
+
+
+// =====================================
+// ЗАКРИТТЯ ПЛЕЄРА
+// =====================================
 
 function closePlayer() {
+
     document.getElementById("player").src = "about:blank";
+
     document.getElementById("playerModal").style.display = "none";
+
+    currentItem = null;
 }
 
-loadMatches();
+
+// =====================================
+// СТАРТ
+// =====================================
+
+loadData();
+
 </script>
 
 </body>
