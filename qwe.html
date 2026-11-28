@@ -32,6 +32,18 @@ h2 {
     font-size: 19px;
 }
 
+#refresh {
+    border: 0;
+    background: #292b30;
+    color: white;
+    padding: 9px 13px;
+    border-radius: 6px;
+}
+
+#refresh:disabled {
+    opacity: 0.5;
+}
+
 #status {
     padding: 12px;
     color: #aaa;
@@ -153,8 +165,7 @@ iframe {
         <iframe
             id="player"
             allowfullscreen
-            allow="autoplay; encrypted-media; picture-in-picture"
-            referrerpolicy="no-referrer">
+            allow="autoplay; encrypted-media; picture-in-picture">
         </iframe>
     </div>
 
@@ -163,78 +174,107 @@ iframe {
 
 <script>
 const API = "https://kingdome.li/";
+const PROXY = "https://api.allorigins.win/raw?url=";
 
-async function loadMatches() {
-    const status = document.getElementById("status");
-    const container = document.getElementById("matches");
+let loading = false;
 
-    status.textContent = "Завантаження...";
-    container.innerHTML = "";
+async function fetchWithTimeout(url, timeout = 15000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
 
-    let data;
-
-    // 1. Прямий запит
     try {
-        console.log("Спроба 1: прямий запит");
-
-        const response = await fetch(API, {
+        const response = await fetch(url, {
             method: "GET",
-            cache: "no-store"
+            cache: "no-store",
+            signal: controller.signal
         });
 
         if (!response.ok) {
             throw new Error("HTTP " + response.status);
         }
 
-        data = await response.json();
+        const data = await response.json();
 
-        console.log("Kingdome: прямий запит успішний");
+        if (!Array.isArray(data)) {
+            throw new Error("Отримано не масив JSON");
+        }
+
+        return data;
+
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+async function loadMatches() {
+    if (loading) return;
+
+    loading = true;
+
+    const status = document.getElementById("status");
+    const refresh = document.getElementById("refresh");
+
+    refresh.disabled = true;
+    refresh.textContent = "Завантаження...";
+
+    status.textContent = "Завантаження матчів...";
+
+    let data = null;
+    let source = "";
+    let directError = "";
+    let proxyError = "";
+
+    // Спроба 1: прямий API
+    try {
+        console.log("Спроба 1: прямий API");
+
+        data = await fetchWithTimeout(API);
+
+        source = "Прямий API";
+
+        console.log("Прямий API працює");
 
     } catch (error) {
+        directError = error.message || String(error);
 
-        console.warn("Прямий запит не спрацював:", error);
+        console.warn("Прямий API не спрацював:", directError);
 
-        // 2. Спроба через публічний CORS-проксі
+        // Спроба 2: AllOrigins
         try {
             console.log("Спроба 2: AllOrigins");
 
-            const proxyURL =
-                "https://api.allorigins.win/raw?url=" +
-                encodeURIComponent(API);
+            const proxyURL = PROXY + encodeURIComponent(API);
 
-            const response = await fetch(proxyURL, {
-                cache: "no-store"
-            });
+            data = await fetchWithTimeout(proxyURL);
 
-            if (!response.ok) {
-                throw new Error("Proxy HTTP " + response.status);
-            }
+            source = "AllOrigins";
 
-            data = await response.json();
+            console.log("AllOrigins працює");
 
-            console.log("Kingdome: запит через проксі успішний");
+        } catch (error2) {
+            proxyError = error2.message || String(error2);
 
-        } catch (proxyError) {
-
-            console.error("Помилка проксі:", proxyError);
+            console.error("AllOrigins не спрацював:", proxyError);
 
             status.textContent =
-                "Помилка завантаження API. Перевір Console.";
+                "Помилка обох запитів. Прямий: " +
+                directError + " | Проксі: " + proxyError;
+
+            loading = false;
+            refresh.disabled = false;
+            refresh.textContent = "Оновити";
 
             return;
         }
     }
 
-    if (!Array.isArray(data)) {
-        status.textContent = "Неправильний формат JSON";
-        console.log("Отримані дані:", data);
-        return;
-    }
+    // Формування списку
+    const container = document.getElementById("matches");
+    container.innerHTML = "";
 
     let count = 0;
 
     for (const group of data) {
-
         if (!Array.isArray(group.matches)) continue;
 
         const category = document.createElement("div");
@@ -244,8 +284,7 @@ async function loadMatches() {
         container.appendChild(category);
 
         for (const item of group.matches) {
-
-            if (!item.url) continue;
+            if (!item || !item.url) continue;
 
             const button = document.createElement("div");
             button.className = "match";
@@ -258,8 +297,11 @@ async function loadMatches() {
             time.className = "match-time";
 
             if (item.kick) {
-                time.textContent = new Date(item.kick)
-                    .toLocaleString("uk-UA", {
+                const date = new Date(item.kick);
+
+                time.textContent = isNaN(date.getTime())
+                    ? item.kick
+                    : date.toLocaleString("uk-UA", {
                         timeZone: "Europe/Kyiv",
                         dateStyle: "short",
                         timeStyle: "short"
@@ -271,19 +313,32 @@ async function loadMatches() {
             button.appendChild(name);
             button.appendChild(time);
 
-            button.onclick = () => openPlayer(
-                item.match || "Kingdome Player",
-                item.url
-            );
+            button.onclick = () => {
+                openPlayer(
+                    item.match || "Kingdome Player",
+                    item.url
+                );
+            };
 
             container.appendChild(button);
             count++;
         }
     }
 
-    status.textContent = "Завантажено матчів: " + count;
+    status.textContent =
+        "Завантажено матчів: " + count +
+        " | Джерело: " + source;
 
     console.log("Усього матчів:", count);
+    console.log("Джерело:", source);
+
+    if (count === 0) {
+        status.textContent = "API відповів, але матчів не знайдено.";
+    }
+
+    loading = false;
+    refresh.disabled = false;
+    refresh.textContent = "Оновити";
 }
 
 function openPlayer(name, url) {
