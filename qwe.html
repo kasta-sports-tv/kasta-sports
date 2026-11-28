@@ -49,6 +49,7 @@ h2 {
     color: #aaa;
     font-size: 13px;
     text-align: center;
+    overflow-wrap: anywhere;
 }
 
 #matches {
@@ -178,32 +179,50 @@ const PROXY = "https://api.allorigins.win/raw?url=";
 
 let loading = false;
 
-async function fetchWithTimeout(url, timeout = 15000) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeout);
+// Отримання JSON через XMLHttpRequest
+function getJSON(url, timeout = 20000) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
 
-    try {
-        const response = await fetch(url, {
-            method: "GET",
-            cache: "no-store",
-            signal: controller.signal
-        });
+        xhr.open("GET", url, true);
+        xhr.timeout = timeout;
+        xhr.responseType = "text";
 
-        if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-        }
+        xhr.onload = function() {
+            if (xhr.status < 200 || xhr.status >= 300) {
+                reject(new Error("HTTP " + xhr.status));
+                return;
+            }
 
-        const data = await response.json();
+            try {
+                const data = JSON.parse(xhr.responseText);
 
-        if (!Array.isArray(data)) {
-            throw new Error("Отримано не масив JSON");
-        }
+                if (!Array.isArray(data)) {
+                    reject(new Error("Неправильний формат JSON"));
+                    return;
+                }
 
-        return data;
+                resolve(data);
 
-    } finally {
-        clearTimeout(timer);
-    }
+            } catch (error) {
+                reject(new Error("Помилка читання JSON: " + error.message));
+            }
+        };
+
+        xhr.onerror = function() {
+            reject(new Error("Network error / CORS"));
+        };
+
+        xhr.ontimeout = function() {
+            reject(new Error("Timeout: перевищено час очікування"));
+        };
+
+        xhr.onabort = function() {
+            reject(new Error("Запит скасовано"));
+        };
+
+        xhr.send();
+    });
 }
 
 async function loadMatches() {
@@ -224,37 +243,37 @@ async function loadMatches() {
     let directError = "";
     let proxyError = "";
 
-    // Спроба 1: прямий API
+    // Спроба 1: прямий Kingdome
     try {
-        console.log("Спроба 1: прямий API");
+        console.log("Спроба 1: XMLHttpRequest → Kingdome");
 
-        data = await fetchWithTimeout(API);
+        data = await getJSON(API);
 
-        source = "Прямий API";
+        source = "Прямий API (XHR)";
 
-        console.log("Прямий API працює");
+        console.log("Прямий Kingdome успішний");
 
     } catch (error) {
         directError = error.message || String(error);
 
-        console.warn("Прямий API не спрацював:", directError);
+        console.warn("Прямий запит не спрацював:", directError);
 
         // Спроба 2: AllOrigins
         try {
-            console.log("Спроба 2: AllOrigins");
+            console.log("Спроба 2: XMLHttpRequest → AllOrigins");
 
             const proxyURL = PROXY + encodeURIComponent(API);
 
-            data = await fetchWithTimeout(proxyURL);
+            data = await getJSON(proxyURL);
 
-            source = "AllOrigins";
+            source = "AllOrigins (XHR)";
 
-            console.log("AllOrigins працює");
+            console.log("AllOrigins успішний");
 
         } catch (error2) {
             proxyError = error2.message || String(error2);
 
-            console.error("AllOrigins не спрацював:", proxyError);
+            console.error("Помилка AllOrigins:", proxyError);
 
             status.textContent =
                 "Помилка обох запитів. Прямий: " +
@@ -268,7 +287,7 @@ async function loadMatches() {
         }
     }
 
-    // Формування списку
+    // Формування списку матчів
     const container = document.getElementById("matches");
     container.innerHTML = "";
 
