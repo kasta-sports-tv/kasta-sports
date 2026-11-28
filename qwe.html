@@ -1,14 +1,433 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
-<title>ARENA SPORT 1 PREMIUM SERBIA HD</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#090b10">
+  <title>Kasta Sports — Test</title>
+  <style>
+    :root{color-scheme:dark;--bg:#090b10;--panel:#11151d;--panel2:#171d27;--line:#252d3a;--text:#f4f6fa;--muted:#929baa;--red:#ef3548;--green:#28d17c;--blue:#4b91ff}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overscroll-behavior:none}
+    body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+    button,input{font:inherit}
+    button{color:inherit}
+    .app{height:100dvh;max-width:1600px;margin:auto;display:flex;flex-direction:column;min-height:0}
+    header{flex:none;padding:15px clamp(14px,3vw,34px) 12px;background:linear-gradient(180deg,#10141c 0%,#0b0e14 100%);border-bottom:1px solid var(--line)}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:11px;min-width:0}
+    .brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(145deg,#ff4658,#a90e28);display:grid;place-items:center;font-weight:950;font-style:italic;box-shadow:0 5px 22px #ef354833}
+    .brand-name{font-size:18px;font-weight:900;letter-spacing:.7px;white-space:nowrap}
+    .brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:2px}
+    .top-right{display:flex;align-items:center;gap:12px}
+    .clock{font-size:12px;color:#c5cbd5;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .refresh{width:36px;height:36px;border:1px solid var(--line);border-radius:11px;background:#171c26;display:grid;place-items:center;cursor:pointer}
+    .refresh:active{transform:scale(.96)}
+    .toolbar{display:flex;align-items:center;gap:10px;margin-top:15px}
+    .search-wrap{position:relative;flex:1;min-width:0}
+    .search-wrap span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#7e8999}
+    .search{width:100%;height:42px;border:1px solid var(--line);border-radius:12px;background:#0a0e15;color:var(--text);padding:0 14px 0 39px;outline:none;font-size:13px}
+    .search:focus{border-color:#52647e}
+    .filters{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:12px 0 1px;white-space:nowrap}
+    .filters::-webkit-scrollbar{display:none}
+    .filter{border:1px solid var(--line);background:#121722;color:#aeb7c5;border-radius:9px;padding:8px 13px;font-size:11px;font-weight:750;cursor:pointer;flex:none}
+    .filter.active{background:#a91e32;border-color:#d9384b;color:#fff}
+    .statusline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px;font-size:11px;color:var(--muted)}
+    .status-left{display:flex;align-items:center;gap:7px;min-width:0}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 9px #28d17c88;flex:none}
+    main{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px clamp(12px,2.5vw,30px) 12px}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px 12px;flex:none}
+    .section-title{font-size:15px;font-weight:850;letter-spacing:.2px}
+    .count{font-size:11px;color:var(--muted)}
+    .matches{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:1px 2px 18px;scrollbar-width:thin;scrollbar-color:#394354 transparent}
+    .matches::-webkit-scrollbar{width:5px}.matches::-webkit-scrollbar-thumb{background:#394354;border-radius:9px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,245px),1fr));gap:14px}
+    .match-card{position:relative;isolation:isolate;min-width:0;aspect-ratio:16/10;border:1px solid #293242;border-radius:15px;overflow:hidden;background:#171e29;cursor:pointer;text-align:left;padding:0;display:block;box-shadow:0 5px 18px #0004;transition:transform .16s,border-color .16s}
+    .match-card:active{transform:scale(.985)}
+    .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;background:linear-gradient(135deg,#202b3b,#10151e)}
+    .poster-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#070a10aa 0%,#070a1020 38%,#070a10b8 72%,#070a10f2 100%)}
+    .card-top{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:center;gap:7px}
+    .league{font-size:10px;font-weight:800;color:#fff;background:#090d15b8;border:1px solid #ffffff25;border-radius:7px;padding:6px 8px;max-width:72%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;backdrop-filter:blur(8px)}
+    .live{font-size:9px;letter-spacing:.7px;font-weight:900;color:#fff;background:#d91f38;border-radius:6px;padding:6px 8px;box-shadow:0 0 15px #e51e3b55}
+    .upcoming{font-size:9px;font-weight:850;color:#e9efff;background:#253b60d9;border:1px solid #7caaff55;border-radius:6px;padding:6px 8px}
+    .card-bottom{position:absolute;left:12px;right:12px;bottom:11px}
+    .teams{font-size:clamp(13px,1.4vw,16px);font-weight:900;line-height:1.22;text-shadow:0 2px 9px #000;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;color:#d3d9e3;font-size:10px;font-weight:650}
+    .time{white-space:nowrap;font-variant-numeric:tabular-nums}
+    .watch{display:flex;align-items:center;gap:5px;color:#fff;background:#ffffff20;border:1px solid #ffffff40;padding:5px 8px;border-radius:7px;font-size:9px;font-weight:850;backdrop-filter:blur(6px)}
+    .empty{padding:45px 15px;text-align:center;color:var(--muted);font-size:13px;line-height:1.6}
+    .error{color:#ff9aa5}
+    .footer{flex:none;text-align:center;color:#586273;font-size:9px;padding:2px 8px 5px}
+    .modal{position:fixed;inset:0;z-index:20;background:#05070bf2;display:none;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+    .modal.open{display:flex}
+    .modal-head{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:#0d1119}
+    .modal-title{font-size:14px;font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .close{width:36px;height:36px;border:1px solid var(--line);border-radius:10px;background:#1a202b;font-size:22px;line-height:1;cursor:pointer;flex:none}
+    .player-area{width:100%;max-width:1100px;margin:0 auto;flex:none;aspect-ratio:16/9;max-height:calc(100dvh - 190px);background:#000;position:relative}
+    .player-area iframe{width:100%;height:100%;border:0;display:block;background:#000}
+    .modal-content{flex:1;min-height:0;overflow-y:auto;padding:14px max(14px,calc((100% - 1060px)/2))}
+    .match-info{display:flex;align-items:center;justify-content:center;gap:clamp(12px,5vw,60px);padding:10px 0 16px}
+    .team{width:35%;max-width:180px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font-size:12px;font-weight:800}
+    .team img{width:clamp(42px,8vw,68px);height:clamp(42px,8vw,68px);object-fit:contain;filter:drop-shadow(0 3px 8px #0008)}
+    .vs{font-size:13px;font-weight:900;color:#697587}
+    .details{text-align:center;color:var(--muted);font-size:11px;line-height:1.7}
+    .modal-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:14px 0}
+    .action{border:1px solid var(--line);background:#171e29;border-radius:9px;padding:9px 13px;font-size:11px;font-weight:750;cursor:pointer}
+    .action.primary{background:#a91e32;border-color:#d9384b}
+    @media(min-width:1100px){.grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:17px}}
+    @media(max-width:600px){
+      header{padding:10px 12px 9px}.brand-mark{width:34px;height:34px;border-radius:10px}.brand-name{font-size:15px}.brand-sub{font-size:8px}
+      .clock{font-size:10px}.toolbar{margin-top:10px}.search{height:39px}.filters{padding-top:9px;gap:6px}.filter{padding:7px 10px;font-size:10px}
+      .statusline{font-size:10px;margin-top:7px}main{padding:11px 10px 8px}.section-head{padding-bottom:9px}
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+      .match-card{aspect-ratio: .91;border-radius:12px}
+      .card-top{top:7px;left:7px;right:7px}.league{font-size:8px;padding:5px 6px}.live,.upcoming{font-size:8px;padding:5px 6px}
+      .card-bottom{left:8px;right:8px;bottom:8px}.teams{font-size:12px}.meta{font-size:9px;margin-top:6px}.watch{font-size:8px;padding:4px 6px}
+      .player-area{max-height:none;aspect-ratio:16/9}.modal-head{padding:8px 10px}.modal-title{font-size:12px}
+    }
+    @media(max-width:350px){.grid{grid-template-columns:1fr}.match-card{aspect-ratio:16/10}}
+    @media(min-width:700px) and (max-height:650px){.player-area{max-height:calc(100dvh - 135px);width:auto;height:calc(100dvh - 135px);aspect-ratio:16/9}}
+  </style>
 </head>
+<body>
+<div class="app">
+  <header>
+    <div class="top">
+      <div class="brand">
+        <div class="brand-mark">K</div>
+        <div><div class="brand-name">KASTA SPORTS</div><div class="brand-sub">MATCH CENTER</div></div>
+      </div>
+      <div class="top-right"><div class="clock" id="kyivClock">--:--:-- · KYIV</div><button class="refresh" id="refreshBtn" aria-label="Оновити" title="Оновити">↻</button></div>
+    </div>
+    <div class="toolbar">
+      <div class="search-wrap"><span>⌕</span><input class="search" id="searchInput" type="search" placeholder="Пошук матчу або ліги..." autocomplete="off"></div>
+    </div>
+    <div class="filters" id="filters"><button class="filter active" data-filter="all">Усі матчі</button></div>
+    <div class="statusline">
+      <div class="status-left"><span class="dot"></span><span id="loadStatus">Підключення до джерел...</span></div>
+      <span id="updatedAt">Київ</span>
+    </div>
+  </header>
+  <main>
+    <div class="section-head"><div class="section-title">Трансляції</div><div class="count" id="matchCount">0 матчів</div></div>
+    <div class="matches" id="matches"><div class="empty">Завантаження матчів...</div></div>
+  </main>
+  <div class="footer">KASTA SPORTS · Час показано за Києвом</div>
+</div>
 
-<body bgcolor="black">
+<div class="modal" id="playerModal" role="dialog" aria-modal="true">
+  <div class="modal-head"><div class="modal-title" id="modalTitle">Матч</div><button class="close" id="closeModal" aria-label="Закрити">×</button></div>
+  <div class="player-area" id="playerArea"></div>
+  <div class="modal-content">
+    <div class="match-info" id="teamInfo"></div>
+    <div class="details" id="matchDetails"></div>
+    <div class="modal-actions"><button class="action primary" id="openPlayer">Відкрити плеєр окремо ↗</button></div>
+  </div>
+</div>
 
-<iframe src="https://hdm1.net/embed.php?s=75e07dac3d" width="100%" height="100%" allowfullscreen="yes" scrolling="no" frameborder="0"></iframe>
+<script>
+(() => {
+  "use strict";
 
-3926
+  // API №1: тільки матчі, категорії та URL плеєрів.
+  const KINGDOM_API_URL = "https://kingdome.li/";
+  // API №2: тільки метадані матчів. Його embed/sources навмисно НЕ використовуються.
+  const ONDEMAND_API_URL = "https://ondemand.st/papi/api/streams";
 
+  const CACHE_TTL = 60 * 1000;
+  const CACHE_KEYS = { kingdom: "kasta_kingdom_cache_v1", ondemand: "kasta_ondemand_cache_v1" };
+  const $ = id => document.getElementById(id);
+  let allMatches = [];
+  let activeFilter = "all";
+  let selectedMatch = null;
+  let refreshTimer = null;
+
+  const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[ch]));
+
+  function kyivDate(dateOrSeconds) {
+    if (!dateOrSeconds) return null;
+    const n = Number(dateOrSeconds);
+    const d = new Date(n < 1e12 ? n * 1000 : n);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+  function formatDate(date) {
+    if (!date) return "";
+    return new Intl.DateTimeFormat("uk-UA", {
+      timeZone:"Europe/Kyiv", day:"2-digit", month:"2-digit", year:"numeric"
+    }).format(date);
+  }
+  function formatTime(date) {
+    if (!date) return "";
+    return new Intl.DateTimeFormat("uk-UA", {
+      timeZone:"Europe/Kyiv", hour:"2-digit", minute:"2-digit", hour12:false
+    }).format(date);
+  }
+  function updateClock() {
+    $("kyivClock").textContent = new Intl.DateTimeFormat("uk-UA", {
+      timeZone:"Europe/Kyiv", hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false
+    }).format(new Date()) + " · KYIV";
+  }
+
+  function readCache(key) {
+    try {
+      const item = JSON.parse(localStorage.getItem(key) || "null");
+      if (item && Date.now() - item.savedAt < CACHE_TTL && item.data) return item.data;
+    } catch (_) {}
+    return null;
+  }
+  function writeCache(key, data) {
+    try { localStorage.setItem(key, JSON.stringify({savedAt:Date.now(), data})); } catch (_) {}
+  }
+  async function fetchJSON(url, cacheKey, force=false) {
+    if (!force) {
+      const cached = readCache(cacheKey);
+      if (cached) return {data:cached, cached:true};
+    }
+    const response = await fetch(url, {method:"GET", mode:"cors", cache:"no-store"});
+    if (!response.ok) throw new Error("HTTP " + response.status + " для " + new URL(url).hostname);
+    const data = await response.json();
+    writeCache(cacheKey, data);
+    return {data, cached:false};
+  }
+
+  function flattenKingdom(data) {
+    // Очікувана форма: [{category:"...", matches:[{match,kick,url}]}]
+    // Також підтримуємо обгортки {data:[...]} та {categories:[...]}.
+    const groups = Array.isArray(data) ? data :
+      (data && (data.data || data.categories || data.matches) ? (data.data || data.categories || data.matches) : []);
+    const result = [];
+    for (const group of groups) {
+      if (Array.isArray(group.matches)) {
+        for (const item of group.matches) {
+          if (!item || !item.url) continue;
+          result.push({
+            category: group.category || group.name || "Інше",
+            name: item.match || item.name || "Матч",
+            playerUrl: item.url,
+            kick: item.kick || item.date || item.starts_at || null
+          });
+        }
+      } else if (group.url) {
+        result.push({
+          category: group.category || "Інше",
+          name: group.match || group.name || "Трансляція",
+          playerUrl: group.url,
+          kick: group.kick || null
+        });
+      }
+    }
+    return result;
+  }
+
+  function flattenOnDemand(data) {
+    const result = [];
+    const groups = Array.isArray(data?.streams) ? data.streams : [];
+    for (const group of groups) {
+      for (const item of (Array.isArray(group.streams) ? group.streams : [])) {
+        if (!item || Number(item.always_live) === 1) continue;
+        result.push(item);
+      }
+    }
+    return result;
+  }
+
+  function normalizeText(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/&/g, " and ")
+      .replace(/\b(vs\.?|versus|v)\b/g, " ")
+      .replace(/[^a-z0-9а-яіїєґ]+/gi, " ")
+      .replace(/\b(fc|cf|afc|sc|club|football|team)\b/g, " ")
+      .replace(/\s+/g, " ").trim();
+  }
+  function tokenSet(text) { return new Set(normalizeText(text).split(" ").filter(x => x.length > 1)); }
+  function similarity(a, b) {
+    const A = tokenSet(a), B = tokenSet(b);
+    if (!A.size || !B.size) return 0;
+    let same = 0;
+    for (const token of A) if (B.has(token)) same++;
+    return same / Math.max(A.size, B.size);
+  }
+  function timeDifference(a, b) {
+    const da = kyivDate(a), db = kyivDate(b);
+    return da && db ? Math.abs(da.getTime() - db.getTime()) / 60000 : null;
+  }
+  function matchMetadata(kingdomMatch, metadata) {
+    let best = null, bestScore = 0;
+    const name = kingdomMatch.name;
+    for (const candidate of metadata) {
+      const score = similarity(name, candidate.name);
+      if (score > bestScore) { bestScore = score; best = candidate; }
+      if (score >= 0.98) break;
+    }
+    // Додатково перевіряємо час, якщо обидва джерела його мають.
+    if (best && bestScore >= 0.45 && kingdomMatch.kick && best.starts_at) {
+      const diff = timeDifference(kingdomMatch.kick, best.starts_at);
+      if (diff !== null && diff > 360) return null;
+    }
+    return best && bestScore >= 0.45 ? best : null;
+  }
+
+  function buildMatches(kingdomData, onDemandData) {
+    const kingdom = flattenKingdom(kingdomData);
+    const metadata = flattenOnDemand(onDemandData);
+    return kingdom.map((item, index) => {
+      const info = matchMetadata(item, metadata);
+      const date = info?.starts_at ? kyivDate(info.starts_at) : kyivDate(item.kick);
+      const end = info?.ends_at ? kyivDate(info.ends_at) : null;
+      let status = info?.status || "";
+      if (status !== "live" && date) {
+        const now = Date.now();
+        if (date.getTime() <= now && (!end || end.getTime() > now)) status = "live";
+        else status = "upcoming";
+      }
+      return {
+        id: "kingdom-" + index + "-" + item.playerUrl,
+        category: item.category,
+        name: item.name,
+        playerUrl: item.playerUrl,
+        poster: info?.poster || "",
+        league: info?.league || "",
+        date,
+        end,
+        status,
+        home: info?.teams?.home || null,
+        away: info?.teams?.away || null,
+        matched: Boolean(info)
+      };
+    }).sort((a,b) => {
+      if (a.status === "live" && b.status !== "live") return -1;
+      if (b.status === "live" && a.status !== "live") return 1;
+      return (a.date?.getTime() || 0) - (b.date?.getTime() || 0);
+    });
+  }
+
+  function categoryFilters(matches) {
+    const categories = [...new Set(matches.map(m => m.category).filter(Boolean))];
+    $("filters").innerHTML = `<button class="filter ${activeFilter==="all"?"active":""}" data-filter="all">Усі матчі</button>` +
+      categories.map(c => `<button class="filter ${activeFilter===c?"active":""}" data-filter="${escapeHTML(c)}">${escapeHTML(c.replace(/-/g," "))}</button>`).join("");
+    $("filters").querySelectorAll(".filter").forEach(button => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        categoryFilters(allMatches);
+        renderMatches();
+      });
+    });
+  }
+
+  function cardHTML(match) {
+    const status = match.status === "live"
+      ? '<span class="live">● LIVE</span>'
+      : '<span class="upcoming">UPCOMING</span>';
+    const dateText = match.date ? `${formatDate(match.date)} · ${formatTime(match.date)}` : "Час уточнюється";
+    const league = match.league || match.category.replace(/-/g," ");
+    const poster = match.poster ? `<img class="poster" src="${escapeHTML(match.poster)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : "";
+    return `<button class="match-card" data-id="${escapeHTML(match.id)}" aria-label="${escapeHTML(match.name)}">
+      ${poster}<div class="poster-shade"></div>
+      <div class="card-top"><span class="league">${escapeHTML(league)}</span>${status}</div>
+      <div class="card-bottom"><div class="teams">${escapeHTML(match.name)}</div>
+      <div class="meta"><span class="time">${escapeHTML(dateText)}</span><span class="watch">▶ ДИВИТИСЯ</span></div></div>
+    </button>`;
+  }
+
+  function renderMatches() {
+    const query = normalizeText($("searchInput").value);
+    const filtered = allMatches.filter(match => {
+      const categoryOK = activeFilter === "all" || match.category === activeFilter;
+      const queryOK = !query || normalizeText(`${match.name} ${match.category} ${match.league}`).includes(query);
+      return categoryOK && queryOK;
+    });
+    $("matchCount").textContent = `${filtered.length} матчів`;
+    if (!filtered.length) {
+      $("matches").innerHTML = '<div class="empty">Матчів не знайдено.<br>Спробуйте змінити пошук або категорію.</div>';
+      return;
+    }
+    $("matches").innerHTML = `<div class="grid">${filtered.map(cardHTML).join("")}</div>`;
+    $("matches").querySelectorAll(".match-card").forEach(card => {
+      card.addEventListener("click", () => {
+        const match = allMatches.find(m => m.id === card.dataset.id);
+        if (match) openMatch(match);
+      });
+    });
+  }
+
+  function safeImage(url) {
+    if (!url || !/^https?:\/\//i.test(url)) return "";
+    return url;
+  }
+  function openMatch(match) {
+    selectedMatch = match;
+    $("modalTitle").textContent = match.name;
+    $("playerArea").innerHTML = "";
+    const frame = document.createElement("iframe");
+    frame.src = match.playerUrl;
+    frame.title = match.name;
+    frame.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    frame.allowFullscreen = true;
+    frame.referrerPolicy = "strict-origin-when-cross-origin";
+    // Не встановлюємо sandbox: сторонній embed може його не підтримувати.
+    $("playerArea").appendChild(frame);
+
+    const home = match.home || {}, away = match.away || {};
+    const homeImg = safeImage(home.badge), awayImg = safeImage(away.badge);
+    $("teamInfo").innerHTML = `
+      <div class="team">${homeImg ? `<img src="${escapeHTML(homeImg)}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : ""}
+        <span>${escapeHTML(home.name || "")}</span></div>
+      <div class="vs">VS</div>
+      <div class="team">${awayImg ? `<img src="${escapeHTML(awayImg)}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : ""}
+        <span>${escapeHTML(away.name || "")}</span></div>`;
+    const details = [match.league, match.date ? `${formatDate(match.date)} · ${formatTime(match.date)} (Київ)` : "", match.status === "live" ? "LIVE" : ""].filter(Boolean);
+    $("matchDetails").textContent = details.join("  •  ") || "Інформація про матч відсутня";
+    $("openPlayer").onclick = () => window.open(match.playerUrl, "_blank", "noopener,noreferrer");
+    $("playerModal").classList.add("open");
+  }
+  function closeMatch() {
+    $("playerModal").classList.remove("open");
+    $("playerArea").innerHTML = "";
+    selectedMatch = null;
+  }
+
+  async function loadData(force=false) {
+    $("loadStatus").textContent = force ? "Оновлення даних..." : "Завантаження матчів...";
+    $("refreshBtn").style.opacity = ".5";
+    try {
+      // Обидва джерела завантажуються паралельно; помилки джерел показуються окремо.
+      const results = await Promise.allSettled([
+        fetchJSON(KINGDOM_API_URL, CACHE_KEYS.kingdom, force),
+        fetchJSON(ONDEMAND_API_URL, CACHE_KEYS.ondemand, force)
+      ]);
+      const kingdomResult = results[0], onDemandResult = results[1];
+      if (kingdomResult.status !== "fulfilled") throw new Error("Kingdome: " + kingdomResult.reason.message);
+      if (onDemandResult.status !== "fulfilled") throw new Error("OnDemand: " + onDemandResult.reason.message);
+      allMatches = buildMatches(kingdomResult.value.data, onDemandResult.value.data);
+      categoryFilters(allMatches);
+      renderMatches();
+      const cached = kingdomResult.value.cached || onDemandResult.value.cached;
+      $("loadStatus").textContent = `${allMatches.length} трансляцій · ${allMatches.filter(m=>m.matched).length} збагачено даними`;
+      $("updatedAt").textContent = (cached ? "Кеш" : "Оновлено") + " " + formatTime(new Date());
+    } catch (error) {
+      $("loadStatus").textContent = "Помилка завантаження";
+      $("matches").innerHTML = `<div class="empty error">${escapeHTML(error.message)}<br><br>Якщо браузер повідомляє про CORS, потрібен невеликий серверний проксі. Налаштування JavaScript на самому сайті не може обійти CORS.</div>`;
+      $("matchCount").textContent = "—";
+    } finally {
+      $("refreshBtn").style.opacity = "1";
+    }
+  }
+
+  $("searchInput").addEventListener("input", renderMatches);
+  $("refreshBtn").addEventListener("click", () => loadData(true));
+  $("closeModal").addEventListener("click", closeMatch);
+  $("playerModal").addEventListener("click", event => { if (event.target === $("playerModal")) closeMatch(); });
+  document.addEventListener("keydown", event => { if (event.key === "Escape") closeMatch(); });
+
+  updateClock();
+  setInterval(updateClock, 1000);
+  loadData(false);
+  refreshTimer = setInterval(() => loadData(false), CACHE_TTL);
+})();
+</script>
 </body>
 </html>
